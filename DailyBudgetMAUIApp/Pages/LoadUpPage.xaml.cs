@@ -2,9 +2,9 @@ using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class LogonPage : ContentPage
+public partial class LoadUpPage : ContentPage
 {
-	public LogonPage(LogonPageViewModel viewModel)
+	public LoadUpPage(LoadUpPageViewModel viewModel)
 	{
 		InitializeComponent();
 		this.BindingContext = viewModel;

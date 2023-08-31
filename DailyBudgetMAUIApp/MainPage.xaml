@@ -35,6 +35,13 @@
                 Clicked="OnCounterClicked"
                 HorizontalOptions="Center" />
 
+            <Button
+                x:Name="SignOut"
+                Text="Sign Out"
+                SemanticProperties.Hint="Signs Out of Account"
+                Clicked="SignOutClicked"
+                HorizontalOptions="Center" />
+
         </VerticalStackLayout>
     </ScrollView>
 

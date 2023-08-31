@@ -4,11 +4,17 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:DailyBudgetMAUIApp"
-    Shell.FlyoutBehavior="Disabled">
+    xmlns:Pages="clr-namespace:DailyBudgetMAUIApp.Pages"
+    >
 
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Title="Landing Page"
+        ContentTemplate="{DataTemplate Pages:LoadUpPage}"
+        Route="LoadUpPage" />
+
+    <ShellContent
+        Title="Login Page"
+        ContentTemplate="{DataTemplate Pages:LogonPage}"
+        Route="LogonPage" />
 
 </Shell>
