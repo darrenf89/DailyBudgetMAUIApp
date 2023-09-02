@@ -3,13 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyBudgetMAUIApp.Pages.LogonPage"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
-             Shell.NavBarIsVisible = "False"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             >
     <VerticalStackLayout>
-        <Label 
-            Text="{Binding Title}"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+
+        <StackLayout Orientation="Horizontal">
+            <Frame ZIndex="1" HasShadow="True" BorderColor="White" HeightRequest="56" WidthRequest="56" CornerRadius="28">
+                <Image Source="lock.png" HeightRequest="20" WidthRequest="20" />
+            </Frame>
+            <Frame HeightRequest="45" Margin="-20,0,0,0" Padding="0" HasShadow="True" BorderColor="White"  HorizontalOptions="FillAndExpand">
+                <handlers:BorderlessEntry Text="{Binding NickName}" Margin="20,0,0,0" VerticalOptions="Center" Placeholder="Enter a Nickname" Keyboard="Text" />
+            </Frame>
+        </StackLayout>
 
         <StackLayout Orientation="Horizontal">
             <Frame ZIndex="1" HasShadow="True" BorderColor="White" HeightRequest="56" WidthRequest="56" CornerRadius="28">
@@ -29,7 +34,7 @@
             </Frame>
         </StackLayout>
 
-        <Button Text="Sign in" WidthRequest="100" CornerRadius="20" HorizontalOptions="Center" Command="{Binding LoginCommand}" />
+        <Button Text="Sign up" WidthRequest="100" CornerRadius="20" HorizontalOptions="Center" Command="{Binding SignUpCommand}" />
         
     </VerticalStackLayout>
 </ContentPage>

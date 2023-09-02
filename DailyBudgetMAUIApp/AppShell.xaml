@@ -8,11 +8,15 @@
     >
 
     <ShellContent
+        FlyoutItemIsVisible="False" 
+        Shell.FlyoutBehavior="Disabled"
         Title="Landing Page"
         ContentTemplate="{DataTemplate Pages:LoadUpPage}"
         Route="LoadUpPage" />
 
     <ShellContent
+        FlyoutItemIsVisible="False" 
+        Shell.FlyoutBehavior="Disabled"
         Title="Login Page"
         ContentTemplate="{DataTemplate Pages:LogonPage}"
         Route="LogonPage" />
