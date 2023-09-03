@@ -13,5 +13,6 @@ namespace DailyBudgetMAUIApp.Models
         public string Password { get; set; }
         public bool isEmailVerified { get; set; }
         public DateTime SessionExpiry { get; set; }
+        public int DefaultBudgetID { get; set; }
     }
 }

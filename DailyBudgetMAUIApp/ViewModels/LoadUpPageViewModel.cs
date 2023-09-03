@@ -26,7 +26,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void Register()
         {
-            await Shell.Current.GoToAsync(nameof(LogonPage));
+            await Shell.Current.GoToAsync(nameof(RegisterPage));
         }
 
         private async void CheckUserLoginDetails()
@@ -47,6 +47,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     userDetailsStr = JsonConvert.SerializeObject(userDetails);
                     Preferences.Set(nameof(App.UserDetails), userDetailsStr);
+                    Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
 
                     App.UserDetails = userDetails;
 

@@ -10,6 +10,8 @@
     <ShellContent
         FlyoutItemIsVisible="False" 
         Shell.FlyoutBehavior="Disabled"
+        Shell.TabBarIsVisible="False"
+        Shell.NavBarIsVisible="false"
         Title="Landing Page"
         ContentTemplate="{DataTemplate Pages:LoadUpPage}"
         Route="LoadUpPage" />
@@ -17,8 +19,19 @@
     <ShellContent
         FlyoutItemIsVisible="False" 
         Shell.FlyoutBehavior="Disabled"
+        Shell.TabBarIsVisible="False"
+        Shell.NavBarIsVisible="false"
         Title="Login Page"
         ContentTemplate="{DataTemplate Pages:LogonPage}"
         Route="LogonPage" />
+
+    <ShellContent
+        FlyoutItemIsVisible="False" 
+        Shell.FlyoutBehavior="Disabled"
+        Shell.TabBarIsVisible="False"
+        Shell.NavBarIsVisible="false"
+        Title="Register Page"
+        ContentTemplate="{DataTemplate Pages:RegisterPage}"
+        Route="RegisterPage" />
 
 </Shell>

@@ -11,13 +11,15 @@ public static class MauiProgram
 	{
 
         var builder = MauiApp.CreateBuilder();
-		builder			
+
+        builder			
 			. UseMauiApp<App>()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-			});
+                fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialDesignIcons");
+            });
 
 		builder.Services.AddSingleton<IRestDataService, RestDataService>();
         builder.Services.AddSingleton<IProductTools, ProductTools>();
@@ -26,10 +28,12 @@ public static class MauiProgram
         builder.Services.AddSingleton<MainPage>();
 		builder.Services.AddTransient<LogonPage>();
         builder.Services.AddTransient<LoadUpPage>();
+		builder.Services.AddTransient<RegisterPage>();
 
         //ViewModes
         builder .Services.AddTransient<LogonPageViewModel>();
         builder.Services.AddTransient<LoadUpPageViewModel>();
+		builder.Services.AddTransient<RegisterPageViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();

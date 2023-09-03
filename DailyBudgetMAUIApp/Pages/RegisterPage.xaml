@@ -1,40 +1,57 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DailyBudgetMAUIApp.Pages.LogonPage"
+             x:Class="DailyBudgetMAUIApp.Pages.RegisterPage"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
-             Title="{Binding Title}"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             Shell.NavBarIsVisible = "False"
              >
-    <VerticalStackLayout>
+    <Grid>
+        <Image Source="logonbackgroundorange.jpg"
+               Aspect="AspectFill" />
+        <VerticalStackLayout VerticalOptions="End">
+            
+            <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,0,0,50" >
+                <Image Source="colorlogonobackgroundorangepurple.png" Aspect="AspectFill" ></Image>
+            </Border>
 
-        <StackLayout Orientation="Horizontal">
-            <Frame ZIndex="1" HasShadow="True" BorderColor="White" HeightRequest="56" WidthRequest="56" CornerRadius="28">
-                <Image Source="lock.png" HeightRequest="20" WidthRequest="20" />
-            </Frame>
-            <Frame HeightRequest="45" Margin="-20,0,0,0" Padding="0" HasShadow="True" BorderColor="White"  HorizontalOptions="FillAndExpand">
-                <handlers:BorderlessEntry Text="{Binding NickName}" Margin="20,0,0,0" VerticalOptions="Center" Placeholder="Enter a Nickname" Keyboard="Text" />
-            </Frame>
-        </StackLayout>
-
-        <StackLayout Orientation="Horizontal">
-            <Frame ZIndex="1" HasShadow="True" BorderColor="White" HeightRequest="56" WidthRequest="56" CornerRadius="28">
-                <Image Source="user.png" HeightRequest="20" WidthRequest="20" />
-            </Frame>
-            <Frame HeightRequest="45" Margin="-20,0,0,0" Padding="0" HasShadow="True" BorderColor="White"  HorizontalOptions="FillAndExpand">
-                <handlers:BorderlessEntry Text="{Binding Email}" Margin="20,0,0,0" VerticalOptions="Center" Placeholder="Email" Keyboard="Email" />
-            </Frame>
-        </StackLayout>
-
-        <StackLayout Orientation="Horizontal">
-            <Frame ZIndex="1" HasShadow="True" BorderColor="White" HeightRequest="56" WidthRequest="56" CornerRadius="28">
-                <Image Source="lock.png" HeightRequest="20" WidthRequest="20" />
-            </Frame>
-            <Frame HeightRequest="45" Margin="-20,0,0,0" Padding="0" HasShadow="True" BorderColor="White"  HorizontalOptions="FillAndExpand">
-                <handlers:BorderlessEntry Text="{Binding Password}" Margin="20,0,0,0" VerticalOptions="Center" Placeholder="Password" IsPassword="True" />
-            </Frame>
-        </StackLayout>
-
-        <Button Text="Sign up" WidthRequest="100" CornerRadius="20" HorizontalOptions="Center" Command="{Binding SignUpCommand}" />
-        
-    </VerticalStackLayout>
+            <Border Style="{StaticResource FrameWhiteStandardContent}">
+                <VerticalStackLayout HorizontalOptions="Center" >
+                    <Label Text="Welcome!" 
+                            TextColor="{DynamicResource Primary}" 
+                            FontSize="Large" 
+                            HorizontalOptions="Center" 
+                            FontAttributes="Bold"
+                            Margin="0,10,0,2"/>
+                    <Label Text="Start your budgeting jounrey today." 
+                            TextColor="{DynamicResource Primary}" 
+                            FontSize="Small" 
+                            HorizontalOptions="Center" />
+                    <Border Stroke="{DynamicResource Tertiary}" 
+                            WidthRequest="280" 
+                            Margin="0,20,0,40" 
+                            StrokeThickness="0.8"/>
+                    <Button Text="Register Now"
+                            TextColor="White"
+                            WidthRequest="180" 
+                            Style="{StaticResource PrimaryButton}" 
+                            Command="{Binding SignUpCommand}">
+                        <Button.ImageSource>
+                            <FontImageSource 
+                                 FontFamily="MaterialDesignIcons"
+                                 Glyph="{x:Static helpers:MaterialDesignIconsFonts.Lock_open}"
+                                 Size="20" />
+                        </Button.ImageSource>
+                    </Button>
+                    <Label Text="Or register using your social media" 
+                            TextColor="{DynamicResource Primary}" 
+                            FontSize="Caption"
+                           FontAttributes="Bold"
+                            HorizontalOptions="Center"
+                            Margin="0,25,0,15"/>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </Grid>
+    
 </ContentPage>

@@ -6,7 +6,8 @@ public partial class App : Application
 {
 	public static UserDetailsModel UserDetails;
 	public static int SessionPeriod = 7;
-	public App()
+	public static int DefaultBudgetID { get; set; } = 0;
+    public App()
 	{
 		InitializeComponent();
 

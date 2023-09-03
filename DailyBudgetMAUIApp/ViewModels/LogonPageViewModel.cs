@@ -78,8 +78,10 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                         string userDetailsStr = JsonConvert.SerializeObject(userDetails);
                                         Preferences.Set(nameof(App.UserDetails), userDetailsStr);
+                                        Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
 
                                         App.UserDetails = userDetails;
+                                        App.DefaultBudgetID = userDetails.DefaultBudgetID;
                                         await Shell.Current.GoToAsync(nameof(MainPage));
                                     }
                                 }

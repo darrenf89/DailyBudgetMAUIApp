@@ -1,16 +1,37 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DailyBudgetMAUIApp.Pages.LoadUpPage"
-             Title="LoadUpPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+             xmlns:local="clr-namespace:ABI.Microsoft.UI.Xaml.Resources;assembly=Microsoft.WinUI"
+             x:Class="DailyBudgetMAUIApp.Pages.LoadUpPage">
+    <Grid>
+        <Image Source="LandingPageBackground.jpg"
+               Aspect="AspectFill" />
+        <VerticalStackLayout VerticalOptions="End">
+            <Border Style="{StaticResource PictureFrame150Circle}" Margin="0,00,0,180" >
+                <Image Source="justlogoorangetwo.png" Aspect="AspectFill" ></Image>
+            </Border>
 
-        <Button Text="Sign in" WidthRequest="100" CornerRadius="20" HorizontalOptions="Center" Command="{Binding LogonCommand}" />
+            <HorizontalStackLayout Spacing="35" HorizontalOptions="Center" HeightRequest="40" Margin="0,0,0,20">
+                
+                
+                <Border Style="{StaticResource PrimaryBorderTertiaryShadow}" >
+                    <Button Style="{StaticResource LightButton150Width}"
+                        Text="Sign in"  
+                        Command="{Binding LogonCommand}">
+                    </Button>
+                </Border>
 
-        <Button Text="Register" WidthRequest="100" CornerRadius="20" HorizontalOptions="Center" Command="{Binding RegisterCommand}" />
-    </VerticalStackLayout>
+                <Border Style="{StaticResource PrimaryBorderTertiaryShadow}" >
+                    <Button Style="{StaticResource LightButton150Width}"   
+                            Text="Register"          
+                            Command="{Binding RegisterCommand}">
+                    </Button>
+                </Border>
+            </HorizontalStackLayout>
+            
+            <Image Source="whitenamenobackground.png" HeightRequest="80" HorizontalOptions="Center" Margin="0,80,0,50"></Image>
+            
+        </VerticalStackLayout>
+
+    </Grid>
 </ContentPage>

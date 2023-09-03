@@ -1,4 +1,7 @@
+using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +19,10 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         private string _email;
-
         [ObservableProperty]
         private string _password;
-
+        [ObservableProperty]
+        private string _passwordConfirm;
         [ObservableProperty]
         private string _nickName;
         [ObservableProperty]
@@ -27,9 +30,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool _isAgreedToTerms;
 
-        [ICommand]
-        
-        SignUp()
+        [ICommand]        
+        async void SignUp()
         {
 
         }

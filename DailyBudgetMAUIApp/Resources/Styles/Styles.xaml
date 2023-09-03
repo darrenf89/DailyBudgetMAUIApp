@@ -4,6 +4,126 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
+    <Style TargetType="Border" x:Key="FrameWhiteStandardContent">
+        <Setter Property="Margin" Value="20,0,20,0"/>
+        <Setter Property="Padding" Value="10,10,10,10"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 10"/>
+        <Setter Property="Background" Value="{DynamicResource White}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Tertiary}" Offset="0,0" Radius="40" Opacity="0.95" />
+        </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="PictureFrame150Circle">
+        <Setter Property="StrokeShape" Value="RoundRectangle 75"/>
+        <Setter Property="Stroke" Value="Transparent"/>
+        <Setter Property="StrokeThickness" Value="0"/>
+        <Setter Property="HeightRequest" Value="150"/>
+        <Setter Property="WidthRequest" Value="150"/>
+        <Setter Property="HorizontalOptions" Value="Center"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Tertiary}" Offset="0,0" Radius="80" Opacity="0.95" />
+        </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="PictureFrame300Rectangle">
+        <Setter Property="StrokeShape" Value="RoundRectangle 50"/>
+        <Setter Property="Stroke" Value="Transparent"/>
+        <Setter Property="StrokeThickness" Value="0"/>
+        <Setter Property="HeightRequest" Value="100"/>
+        <Setter Property="WidthRequest" Value="300"/>
+        <Setter Property="HorizontalOptions" Value="Center"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+        <Setter Property="BackgroundColor" Value="Transparent"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Tertiary}" Offset="0,0" Radius="80" Opacity="0.95" />
+        </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="PrimaryBorderTertiaryShadow">
+        <Setter Property="Stroke" Value="{DynamicResource Primary}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 15"/>
+        <Setter Property="HeightRequest" Value="42"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Tertiary}" Offset="0,0" Radius="40" Opacity="0.9" />
+        </Setter>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="TranslationY" Value="0"/>
+                            <Setter Property="Opacity" Value="1"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="0.9" />
+                            <Setter Property="TranslationY" Value="0"/>
+                            <Setter Property="Opacity" Value="0.8"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="LightButton150Width">
+        <Setter Property="WidthRequest" Value="150"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="{DynamicResource Primary}"/>
+        <Setter Property="BackgroundColor" Value="{DynamicResource Light}" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="TranslationY" Value="0"/>
+                            <Setter Property="Opacity" Value="1"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="0.9" />
+                            <Setter Property="TranslationY" Value="0"/>
+                            <Setter Property="Opacity" Value="0.8"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="PrimaryButton">
+        <Setter Property="HeightRequest" Value="32"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="CornerRadius" Value="15"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="{DynamicResource Light}"/>
+        <Setter Property="BackgroundColor" Value="{DynamicResource Primary}" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="TranslationY" Value="0"/>
+                            <Setter Property="Opacity" Value="1"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="0.9" />
+                            <Setter Property="TranslationY" Value="0"/>
+                            <Setter Property="Opacity" Value="0.8"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
     </Style>
@@ -401,5 +521,7 @@
         <Setter Property="UnselectedTabColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray950}}" />
         <Setter Property="SelectedTabColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>
+
+
 
 </ResourceDictionary>
