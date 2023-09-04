@@ -11,12 +11,12 @@
                Aspect="AspectFill" />
         <VerticalStackLayout VerticalOptions="End">
             
-            <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,0,0,50" >
-                <Image Source="colorlogonobackgroundorangepurple.png" Aspect="AspectFill" ></Image>
+            <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,0,0,50">
+                <Image Source="colorlogonobackground.png" Aspect="AspectFill" ></Image>
             </Border>
 
             <Border Style="{StaticResource FrameWhiteStandardContent}">
-                <VerticalStackLayout HorizontalOptions="Center" >
+                <VerticalStackLayout HorizontalOptions="Fill" >
                     <Label Text="Welcome!" 
                             TextColor="{DynamicResource Primary}" 
                             FontSize="Large" 
@@ -29,8 +29,92 @@
                             HorizontalOptions="Center" />
                     <Border Stroke="{DynamicResource Tertiary}" 
                             WidthRequest="280" 
-                            Margin="0,20,0,40" 
-                            StrokeThickness="0.8"/>
+                            Margin="0,20,0,30" 
+                            StrokeThickness="0.75"/>                    
+                    <HorizontalStackLayout HorizontalOptions="Start">
+                        <Border Style="{StaticResource FrameLogonStandardContent}">
+                            <handlers:BorderlessEntry Text="{Binding NickName}"
+                               Placeholder="Tell us how you'd like to be known!"
+                               Keyboard="Text" 
+                               Style="{StaticResource LogonEntry}"
+                               MaxLength="10" />                            
+                        </Border>
+                        <Image Margin="15,0,0,15">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons"
+                                Glyph="{x:Static helpers:MaterialDesignIconsFonts.Badge}"
+                                Size="25" 
+                                Color="{DynamicResource Primary}"/>
+                            </Image.Source>
+                        </Image>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout HorizontalOptions="Fill">
+                        <Border Style="{StaticResource FrameLogonStandardContent}">
+                            <handlers:BorderlessEntry Text="{Binding Email}"
+                               Placeholder="Enter an Email address!"
+                               Keyboard="Text" 
+                               Style="{StaticResource LogonEntry}"
+                               MaxLength="40"/>
+                        </Border>
+                        <Image Margin="15,0,0,15">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons"
+                                Glyph="{x:Static helpers:MaterialDesignIconsFonts.Email}"
+                                Size="25" 
+                                Color="{DynamicResource Primary}"/>
+                            </Image.Source>
+                        </Image>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout HorizontalOptions="Fill">
+                        <Border Style="{StaticResource FrameLogonStandardContent}">
+                            <handlers:BorderlessEntry Text="{Binding Password}"
+                               Placeholder="Please enter a password!"
+                               Keyboard="Text"
+                               IsPassword="True"
+                               Style="{StaticResource LogonEntry}" />
+                        </Border>
+                        <Image Margin="15,0,0,15">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons"
+                                Glyph="{x:Static helpers:MaterialDesignIconsFonts.Vpn_key_off}"
+                                Size="25" 
+                                Color="{DynamicResource Primary}"/>
+                            </Image.Source>
+                        </Image>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout HorizontalOptions="Fill">
+                        <Border Style="{StaticResource FrameLogonStandardContent}">
+                            <handlers:BorderlessEntry Text="{Binding PasswordConfirm}"
+                               Placeholder="Please confirm your password!"
+                               Keyboard="Text" 
+                               Style="{StaticResource LogonEntry}"
+                               IsPassword="True"/>
+                        </Border>
+                        <Image Margin="15,0,0,15">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons"
+                                Glyph="{x:Static helpers:MaterialDesignIconsFonts.Vpn_key}"
+                                Size="25" 
+                                Color="{DynamicResource Primary}"/>
+                            </Image.Source>
+                        </Image>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center">
+                        <CheckBox />
+                        <Label Text="I have read and agree to the Terms of Service"
+                               VerticalOptions="Center"
+                               TextColor="{DynamicResource Gray400}"
+                               FontSize="Caption"
+                               Padding="0" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center">
+                        <CheckBox/>
+                        <Label Text="I agree to be contacted by dBuget"
+                               VerticalOptions="Center"
+                               TextColor="{DynamicResource Gray400}"
+                               FontSize="Caption"
+                               Padding="0" />
+                    </HorizontalStackLayout>
                     <Button Text="Register Now"
                             TextColor="White"
                             WidthRequest="180" 
@@ -46,11 +130,36 @@
                     <Label Text="Or register using your social media" 
                             TextColor="{DynamicResource Primary}" 
                             FontSize="Caption"
-                           FontAttributes="Bold"
+                            FontAttributes="Bold"
                             HorizontalOptions="Center"
                             Margin="0,25,0,15"/>
+                    <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20">
+                        <Image Source="fb_icon_325x325.png" WidthRequest="35"/>
+                        <Image Source="google.png" WidthRequest="35"/>
+                        <Image Source="twitter.png" WidthRequest="35"/>
+                    </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
+            <VerticalStackLayout Margin="0,20,0,20">
+                <Label HorizontalOptions="Center" VerticalOptions="Center" >
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Already have an Account? "
+                                  FontAttributes="Bold" 
+                                  FontSize="Medium"/>
+                            <Span Text="Login"
+                                  TextColor="{DynamicResource Primary}"
+                                  TextDecorations="Underline"
+                                  FontAttributes="Bold"
+                                  FontSize="Medium">      
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding NavigateSignInCommand}"/>
+                                </Span.GestureRecognizers>
+                            </Span>                            
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </Grid>
     

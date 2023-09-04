@@ -35,5 +35,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
 
         }
+
+        [ICommand]
+        async void NavigateSignInCommand()
+        {
+
+        }
     }
 }
