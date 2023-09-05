@@ -74,7 +74,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<UserDetailsModel> RegisterNewUserAsync(RegisterModel User)
         {
-            UserDetailsModel UserModel = null;
+            UserDetailsModel UserModel = new();
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
@@ -85,32 +85,38 @@ namespace DailyBudgetMAUIApp.DataServices
             {
 
                 string jsonRequest = JsonSerializer.Serialize<RegisterModel>(User, _jsonSerialiserOptions);
-                HttpRequestMessage request = new();
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.SendAsync(request, $"{_url}/userAccounts/registerUser");
+                HttpResponseMessage response = await _httpClient.PostAsync($"{_url}/userAccounts/registeruser", request);
                 string content = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
                     UserModel = JsonSerializer.Deserialize<UserDetailsModel>(content, _jsonSerialiserOptions);
+                    UserModel.Error = null;
                     return UserModel;
                 }
                 else
                 {
-                    UserModel = JsonSerializer.Deserialize<UserDetailsModel>(content, _jsonSerialiserOptions);
+                    ErrorClass error = JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    error.StatusCode = response.StatusCode;
+                    UserModel.Error = error;
                     return UserModel;
                 }       
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying to get Salt --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get Register User --> {ex.Message}");
+                ErrorClass error = new();
+                error.ErrorMessage = ex.Message;
+                UserModel.Error = error;
                 return UserModel;
             }
         }
 
         public async Task<UserDetailsModel> GetUserDetailsAsync(string UserEmail)
         {
-            UserDetailsModel User = null;
+            UserDetailsModel User = new();
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
@@ -121,13 +127,14 @@ namespace DailyBudgetMAUIApp.DataServices
             {
 
                 HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/userAccounts/getLogonDetails/{System.Web.HttpUtility.UrlEncode(UserEmail)}");
-                string content = await response.Content.ReadAsStringAsync();
+                string content = "";
+                content = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
 
                     User = JsonSerializer.Deserialize<UserDetailsModel>(content, _jsonSerialiserOptions);
-
+                    User.Error = null;
                     return User;
                 }
                 else
@@ -142,7 +149,10 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Update to write to log instead
-                Debug.WriteLine($"Error Trying to get Salt --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get User Details --> {ex.Message}");
+                ErrorClass error = new();
+                error.ErrorMessage = ex.Message;
+                User.Error = error;
                 return User;
             }
         }

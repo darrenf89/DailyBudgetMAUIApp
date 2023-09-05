@@ -3,6 +3,7 @@ using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -104,7 +105,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ICommand]
-        async void NavigateSignInCommand()
+        async void NavigateSignIn()
         {
             await Shell.Current.GoToAsync(nameof(LogonPage));
         }

@@ -11,7 +11,7 @@
                Aspect="AspectFill" />
         <VerticalStackLayout VerticalOptions="End">
             
-            <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,0,0,50">
+            <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,0,0,45">
                 <Image Source="colorlogonobackground.png" Aspect="AspectFill" ></Image>
             </Border>
 
@@ -99,7 +99,7 @@
                             </Image.Source>
                         </Image>
                     </HorizontalStackLayout>
-                    <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center">
+                    <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="0,0,0,10">
                         <CheckBox x:Name="chbxTOS" IsChecked="{Binding IsAgreedToTerms}"/>
                         <Label Text="I have read and agree to the Terms of Service"
                                VerticalOptions="Center"
@@ -107,7 +107,7 @@
                                FontSize="Caption"
                                Padding="0" />
                     </HorizontalStackLayout>
-                    <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center">
+                    <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="0,0,0,10">
                         <CheckBox x:Name="chbxDPA" IsChecked="{Binding IsDPAPermissions}"/>
                         <Label Text="I agree to be contacted by dBuget"
                                VerticalOptions="Center"
@@ -140,25 +140,22 @@
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
-            <VerticalStackLayout Margin="0,20,0,20">
-                <Label HorizontalOptions="Center" VerticalOptions="Center" >
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Text="Already have an Account? "
-                                  FontAttributes="Bold" 
-                                  FontSize="Medium"/>
-                            <Span Text="Login"
-                                  TextColor="{DynamicResource Primary}"
-                                  TextDecorations="Underline"
-                                  FontAttributes="Bold"
-                                  FontSize="Medium">      
-                                <Span.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding NavigateSignInCommand}"/>
-                                </Span.GestureRecognizers>
-                            </Span>                            
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
+            <VerticalStackLayout Margin="0,40,0,20">
+                <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Already have an Account? "
+                            FontAttributes="Bold" 
+                            FontSize="Small">
+                    </Label>
+                    <Label Text="Login"
+                            TextColor="{DynamicResource Primary}"
+                            TextDecorations="Underline"
+                            FontAttributes="Bold"
+                            FontSize="Small">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateSignInCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
             </VerticalStackLayout>
         </VerticalStackLayout>
     </Grid>

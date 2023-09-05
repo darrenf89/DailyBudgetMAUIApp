@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyBudgetMAUIApp.Pages.LogonPage"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              Shell.NavBarIsVisible = "False"
              Title="{Binding Title}">
-                 <Grid>
+    <Grid>
         <Image Source="logonbackgroundorange.jpg"
                Aspect="AspectFill" />
         <VerticalStackLayout VerticalOptions="End">
@@ -98,24 +99,21 @@
                 </VerticalStackLayout>
             </Border>
             <VerticalStackLayout Margin="0,20,0,20">
-                <Label HorizontalOptions="Center" VerticalOptions="Center" >
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Text="Need an Account? "
-                                  FontAttributes="Bold" 
-                                  FontSize="Medium"/>
-                            <Span Text="Register"
-                                  TextColor="{DynamicResource Primary}"
-                                  TextDecorations="Underline"
-                                  FontAttributes="Bold"
-                                  FontSize="Medium">      
-                                <Span.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding NavigateRegisterCommand}"/>
-                                </Span.GestureRecognizers>
-                            </Span>                            
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
+                <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Need an Account? "
+                            FontAttributes="Bold" 
+                            FontSize="Small">
+                    </Label>
+                    <Label Text="Register"
+                            TextColor="{DynamicResource Primary}"
+                            TextDecorations="Underline"
+                            FontAttributes="Bold"
+                            FontSize="Small">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateRegisterCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
             </VerticalStackLayout>
         </VerticalStackLayout>
     </Grid>
