@@ -16,7 +16,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public RegisterModel CreateUserSecurityDetails(RegisterModel obj)
         {
             Random rnd = new();
-            int number = rnd.Next(int.MaxValue);
+            int number = rnd.Next(2000);
             string Salt = GenerateSalt(number);
 
             string HashedPassword = GenerateHashedPassword(obj.Password, Salt);

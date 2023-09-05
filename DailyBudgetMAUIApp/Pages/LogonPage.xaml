@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyBudgetMAUIApp.Pages.LogonPage"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              Shell.NavBarIsVisible = "False"
              Title="{Binding Title}">
-                 <Grid>
+    <Grid>
         <Image Source="logonbackgroundorange.jpg"
                Aspect="AspectFill" />
         <VerticalStackLayout VerticalOptions="End">
