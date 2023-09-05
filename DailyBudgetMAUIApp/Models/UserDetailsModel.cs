@@ -14,5 +14,7 @@ namespace DailyBudgetMAUIApp.Models
         public bool isEmailVerified { get; set; }
         public DateTime SessionExpiry { get; set; }
         public int DefaultBudgetID { get; set; }
+        public ErrorClass? Error { get; set; } = null;
+
     }
 }

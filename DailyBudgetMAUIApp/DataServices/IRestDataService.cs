@@ -9,7 +9,7 @@ namespace DailyBudgetMAUIApp.DataServices
 {
     public interface IRestDataService
     {
-        public string RegisterNewUserAsync(RegisterModel User);
+        Task<UserDetailsModel> RegisterNewUserAsync(RegisterModel User);
         Task<string> GetUserSaltAsync(string UserEmail);
         public string LogoutUserAsync(RegisterModel User);
         Task<UserDetailsModel> GetUserDetailsAsync(string UserEmail);

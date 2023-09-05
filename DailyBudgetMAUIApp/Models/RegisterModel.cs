@@ -127,7 +127,5 @@ namespace DailyBudgetMAUIApp.Models
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NickName)));
             }
         }
-
-
     }
 }

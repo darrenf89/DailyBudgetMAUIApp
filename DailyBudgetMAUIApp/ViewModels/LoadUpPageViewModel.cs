@@ -50,6 +50,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                     Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
 
                     App.UserDetails = userDetails;
+                    App.DefaultBudgetID = userDetails.DefaultBudgetID;
+
+                    //TODO: Update User Session
 
                     await Shell.Current.GoToAsync(nameof(MainPage));
                 }

@@ -5,31 +5,118 @@
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              Shell.NavBarIsVisible = "False"
              Title="{Binding Title}">
-    <VerticalStackLayout>
-        <Label 
-            Text="{Binding Title}"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+                 <Grid>
+        <Image Source="logonbackgroundorange.jpg"
+               Aspect="AspectFill" />
+        <VerticalStackLayout VerticalOptions="End">
+            
+            <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,0,0,50">
+                <Image Source="colorlogonobackground.png" Aspect="AspectFill" ></Image>
+            </Border>
 
-        <StackLayout Orientation="Horizontal">
-            <Frame ZIndex="1" HasShadow="True" BorderColor="White" HeightRequest="56" WidthRequest="56" CornerRadius="28">
-                <Image Source="user.png" HeightRequest="20" WidthRequest="20" />
-            </Frame>
-            <Frame HeightRequest="45" Margin="-20,0,0,0" Padding="0" HasShadow="True" BorderColor="White"  HorizontalOptions="FillAndExpand">
-                <handlers:BorderlessEntry Text="{Binding Email}" Margin="20,0,0,0" VerticalOptions="Center" Placeholder="Email" Keyboard="Email" />
-            </Frame>
-        </StackLayout>
-
-        <StackLayout Orientation="Horizontal">
-            <Frame ZIndex="1" HasShadow="True" BorderColor="White" HeightRequest="56" WidthRequest="56" CornerRadius="28">
-                <Image Source="lock.png" HeightRequest="20" WidthRequest="20" />
-            </Frame>
-            <Frame HeightRequest="45" Margin="-20,0,0,0" Padding="0" HasShadow="True" BorderColor="White"  HorizontalOptions="FillAndExpand">
-                <handlers:BorderlessEntry Text="{Binding Password}" Margin="20,0,0,0" VerticalOptions="Center" Placeholder="Password" IsPassword="True" />
-            </Frame>
-        </StackLayout>
-
-        <Button Text="Sign in" WidthRequest="100" CornerRadius="20" HorizontalOptions="Center" Command="{Binding LoginCommand}" />
-        
-    </VerticalStackLayout>
+            <Border Style="{StaticResource FrameWhiteStandardContent}">
+                <VerticalStackLayout HorizontalOptions="Fill" >
+                    <Label Text="Welcome!" 
+                            TextColor="{DynamicResource Primary}" 
+                            FontSize="Large" 
+                            HorizontalOptions="Center" 
+                            FontAttributes="Bold"
+                            Margin="0,10,0,2"/>
+                    <Label Text="Login and continue the daily grind to freedom!" 
+                            TextColor="{DynamicResource Primary}" 
+                            FontSize="Small" 
+                            HorizontalOptions="Center" />
+                    <Border Stroke="{DynamicResource Tertiary}" 
+                            WidthRequest="280" 
+                            Margin="0,20,0,30" 
+                            StrokeThickness="0.75"/>                    
+                    <HorizontalStackLayout HorizontalOptions="Fill">
+                        <Border Style="{StaticResource FrameLogonStandardContent}">
+                            <handlers:BorderlessEntry Text="{Binding Email}"
+                               Placeholder="Enter an Email address!"
+                               Keyboard="Text" 
+                               Style="{StaticResource LogonEntry}"
+                               MaxLength="40"/>
+                        </Border>
+                        <Image Margin="15,0,0,15">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons"
+                                Glyph="{x:Static helpers:MaterialDesignIconsFonts.Email}"
+                                Size="25" 
+                                Color="{DynamicResource Primary}"/>
+                            </Image.Source>
+                        </Image>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout HorizontalOptions="Fill">
+                        <Border Style="{StaticResource FrameLogonStandardContent}">
+                            <handlers:BorderlessEntry Text="{Binding Password}"
+                               Placeholder="Please enter a password!"
+                               Keyboard="Text"
+                               IsPassword="True"
+                               Style="{StaticResource LogonEntry}" />
+                        </Border>
+                        <Image Margin="15,0,0,15">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons"
+                                Glyph="{x:Static helpers:MaterialDesignIconsFonts.Vpn_key}"
+                                Size="25" 
+                                Color="{DynamicResource Primary}"/>
+                            </Image.Source>
+                        </Image>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center">
+                        <CheckBox x:Name="chbxDPA" IsChecked="{Binding rememberMe}"/>
+                        <Label Text="Remember Me!"
+                               VerticalOptions="Center"
+                               TextColor="{DynamicResource Gray400}"
+                               FontSize="Caption"
+                               Padding="0" />
+                    </HorizontalStackLayout>
+                    <Button Text="Register Now"
+                            TextColor="White"
+                            WidthRequest="180" 
+                            Style="{StaticResource PrimaryButton}" 
+                            Command="{Binding LoginCommand}">
+                        <Button.ImageSource>
+                            <FontImageSource 
+                                 FontFamily="MaterialDesignIcons"
+                                 Glyph="{x:Static helpers:MaterialDesignIconsFonts.Lock_open}"
+                                 Size="20" />
+                        </Button.ImageSource>
+                    </Button>
+                    <Label Text="Or sign in using your social media" 
+                            TextColor="{DynamicResource Primary}" 
+                            FontSize="Caption"
+                            FontAttributes="Bold"
+                            HorizontalOptions="Center"
+                            Margin="0,25,0,15"/>
+                    <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20">
+                        <Image Source="fb_icon_325x325.png" WidthRequest="35"/>
+                        <Image Source="google.png" WidthRequest="35"/>
+                        <Image Source="twitter.png" WidthRequest="35"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            <VerticalStackLayout Margin="0,20,0,20">
+                <Label HorizontalOptions="Center" VerticalOptions="Center" >
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Need an Account? "
+                                  FontAttributes="Bold" 
+                                  FontSize="Medium"/>
+                            <Span Text="Register"
+                                  TextColor="{DynamicResource Primary}"
+                                  TextDecorations="Underline"
+                                  FontAttributes="Bold"
+                                  FontSize="Medium">      
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding NavigateRegisterCommand}"/>
+                                </Span.GestureRecognizers>
+                            </Span>                            
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>

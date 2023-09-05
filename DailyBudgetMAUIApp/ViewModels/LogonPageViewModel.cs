@@ -1,5 +1,6 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
@@ -28,6 +29,15 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         private string _password;
+
+        [ObservableProperty]
+        private string _rememberMe;
+
+        [ICommand]
+        async void NavigateRegister()
+        {
+            await Shell.Current.GoToAsync(nameof(RegisterPage));
+        }
 
         [ICommand]
         async void Login()
@@ -82,6 +92,9 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                         App.UserDetails = userDetails;
                                         App.DefaultBudgetID = userDetails.DefaultBudgetID;
+
+                                        //TODO: Sign in or update User Session and save to DB
+
                                         await Shell.Current.GoToAsync(nameof(MainPage));
                                     }
                                 }
