@@ -61,9 +61,9 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //TODO: Update to write to log instead
-                Debug.WriteLine($"Error Trying to get Salt --> {ex.Message}");
-                return ($"Error");
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
             }
         }
 
@@ -106,11 +106,9 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying to get Register User --> {ex.Message}");
-                ErrorClass error = new();
-                error.ErrorMessage = ex.Message;
-                UserModel.Error = error;
-                return UserModel;
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
             }
         }
 
@@ -148,12 +146,51 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Update to write to log instead
-                Debug.WriteLine($"Error Trying to get User Details --> {ex.Message}");
-                ErrorClass error = new();
-                error.ErrorMessage = ex.Message;
-                User.Error = error;
-                return User;
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> CreateNewErrorLog(ErrorLog NewLog)
+        {
+            string returnString = "";
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                return "You have no Internet Connection, unfortunately you need that. Please try again when you are back in civilised society";
+            }
+
+            try
+            {
+                string jsonRequest = JsonSerializer.Serialize<ErrorLog>(NewLog, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await _httpClient.PostAsync($"{_url}/userAccounts/logerror", request);
+                string content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    ErrorLog ErrorLog = JsonSerializer.Deserialize<ErrorLog>(content, _jsonSerialiserOptions);
+                    if(ErrorLog.ErrorLogID != 0)
+                    {
+                        return ErrorLog.ErrorMessage;
+                    }
+                    else
+                    {
+                        return "Opps something went wrong. It was probably one of our graduate developers fault ... Sorry about that!";
+                    }
+
+                }
+                else
+                {
+                    return "Opps something went wrong. It was probably one of our graduate developers fault ... Sorry about that!";
+                }       
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error Trying to Log the Error --> {ex.Message}");
+                throw new Exception(ex.Message);
             }
         }
     }

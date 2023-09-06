@@ -13,6 +13,7 @@ namespace DailyBudgetMAUIApp.DataServices
         Task<string> GetUserSaltAsync(string UserEmail);
         public string LogoutUserAsync(RegisterModel User);
         Task<UserDetailsModel> GetUserDetailsAsync(string UserEmail);
+        Task<string> CreateNewErrorLog(ErrorLog NewLog);
 
     }
 }

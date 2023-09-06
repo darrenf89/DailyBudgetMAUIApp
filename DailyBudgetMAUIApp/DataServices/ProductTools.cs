@@ -13,6 +13,13 @@ namespace DailyBudgetMAUIApp.DataServices
 {
     internal class ProductTools : IProductTools
     {
+        private readonly IRestDataService _ds;
+
+        public ProductTools(IRestDataService ds)
+        {
+            _ds = ds;
+        }
+
         public RegisterModel CreateUserSecurityDetails(RegisterModel obj)
         {
             Random rnd = new();
@@ -49,6 +56,32 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 return Convert.ToBase64String(obj.GetBytes(nHash));
             }
+
+        }
+
+        public async Task<string> HandleCatchedException(Exception ex, string Page, string Method)
+        {
+            try
+            {
+                //TODO: Create the error log object with information
+                ErrorLog NewLog = new ErrorLog(ex, Page, Method);
+
+                //TODO: Send object to API To log the Error
+
+                string ResponseString = await _ds.CreateNewErrorLog(NewLog);
+
+                //TODO: Create the return string to be displayyed on Generic Error Page
+                return ResponseString;
+            }
+            catch (Exception EndExcption)
+            {
+                Debug.WriteLine($"Error Trying to Log the Error --> {ex.Message}");
+                //TODO: Write the error to a physical file
+
+                throw new Exception("Fatal Error Trying to Log an Error");
+            }
+
+
 
         }
     }

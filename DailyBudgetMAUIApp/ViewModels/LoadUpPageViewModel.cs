@@ -1,9 +1,11 @@
-﻿using DailyBudgetMAUIApp.Models;
+﻿using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +14,12 @@ namespace DailyBudgetMAUIApp.ViewModels
 {
     public partial class LoadUpPageViewModel : BaseViewModel
     {
-        public LoadUpPageViewModel()
+        private readonly IProductTools _pt;
+
+        public LoadUpPageViewModel(IProductTools pt)
         {
             CheckUserLoginDetails();
+            _pt = pt
         }
 
         [ICommand]
@@ -31,31 +36,41 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         private async void CheckUserLoginDetails()
         {
-            string userDetailsStr = Preferences.Get(nameof(App.UserDetails),"");
-
-            if (!string.IsNullOrEmpty(userDetailsStr))
+            try
             {
-                UserDetailsModel userDetails = JsonConvert.DeserializeObject<UserDetailsModel>(userDetailsStr);
+                string userDetailsStr = Preferences.Get(nameof(App.UserDetails),"");
 
-                if (userDetails.SessionExpiry > DateTime.UtcNow) 
+                if (!string.IsNullOrEmpty(userDetailsStr))
                 {
-                    userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
-                    if (Preferences.ContainsKey(nameof(App.UserDetails)))
+                    UserDetailsModel userDetails = JsonConvert.DeserializeObject<UserDetailsModel>(userDetailsStr);
+
+                    if (userDetails.SessionExpiry > DateTime.UtcNow) 
                     {
-                        Preferences.Remove(nameof(App.UserDetails));
+                        userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
+                        if (Preferences.ContainsKey(nameof(App.UserDetails)))
+                        {
+                            Preferences.Remove(nameof(App.UserDetails));
+                        }
+
+                        userDetailsStr = JsonConvert.SerializeObject(userDetails);
+                        Preferences.Set(nameof(App.UserDetails), userDetailsStr);
+                        Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
+
+                        App.UserDetails = userDetails;
+                        App.DefaultBudgetID = userDetails.DefaultBudgetID;
+
+                        //TODO: Update User Session
+
+                        await Shell.Current.GoToAsync(nameof(MainPage));
                     }
-
-                    userDetailsStr = JsonConvert.SerializeObject(userDetails);
-                    Preferences.Set(nameof(App.UserDetails), userDetailsStr);
-                    Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
-
-                    App.UserDetails = userDetails;
-                    App.DefaultBudgetID = userDetails.DefaultBudgetID;
-
-                    //TODO: Update User Session
-
-                    await Shell.Current.GoToAsync(nameof(MainPage));
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($" --> {ex.Message}");
+                string Error = await _pt.HandleCatchedException(ex, "LoadupPage", "CheckUserLoginDetails");
+                //TODO: Pass the ErrorMessage when the page navigates
+                await Shell.Current.GoToAsync(nameof(ErrorPage));
             }
         }
 
