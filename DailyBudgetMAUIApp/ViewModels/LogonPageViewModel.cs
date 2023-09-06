@@ -6,6 +6,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,80 +43,91 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void Login()
         {
-            if(!string.IsNullOrEmpty(Email))
+            try
             {
-                if (!string.IsNullOrEmpty(Password))
+                if(!string.IsNullOrEmpty(Email))
                 {
-                    UserDetailsModel userDetails = new UserDetailsModel();
-
-                    string salt = await _ds.GetUserSaltAsync(Email);
-                    
-                    switch (salt)
+                    if (!string.IsNullOrEmpty(Password))
                     {
-                        case "User not found":
-                            //TODO: Throw some validation that UserName or Password isn't valid
-                            break;
-                        case not "":
+                        UserDetailsModel userDetails = new UserDetailsModel();
 
-                            userDetails = await _ds.GetUserDetailsAsync(Email);
-
-                            if (userDetails == null)
-                            {
+                        string salt = await _ds.GetUserSaltAsync(Email);
+                        
+                        switch (salt)
+                        {
+                            case "User not found":
                                 //TODO: Throw some validation that UserName or Password isn't valid
-                            }
-                            else
-                            {
-                                string HashPassword = _pt.GenerateHashedPassword(Password, salt);
-                                if(userDetails.Password != HashPassword)
+                                break;
+                            case not "":
+
+                                userDetails = await _ds.GetUserDetailsAsync(Email);
+
+                                if (userDetails == null)
                                 {
                                     //TODO: Throw some validation that UserName or Password isn't valid
                                 }
                                 else
                                 {
-                                    if (!userDetails.isEmailVerified)
+                                    string HashPassword = _pt.GenerateHashedPassword(Password, salt);
+                                    if(userDetails.Password != HashPassword)
                                     {
-                                        //TODO: Throw some validation that Email isn't verified
+                                        //TODO: Throw some validation that UserName or Password isn't valid
                                     }
                                     else
                                     {
-                                        //TODO: if Remember me set session date otherwise set to current time.
-                                        userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
-
-                                        if (Preferences.ContainsKey(nameof(App.UserDetails)))
+                                        if (!userDetails.isEmailVerified)
                                         {
-                                            Preferences.Remove(nameof(App.UserDetails));
+                                            //TODO: Throw some validation that Email isn't verified
                                         }
+                                        else
+                                        {
+                                            //TODO: if Remember me set session date otherwise set to current time.
+                                            userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
 
-                                        string userDetailsStr = JsonConvert.SerializeObject(userDetails);
-                                        Preferences.Set(nameof(App.UserDetails), userDetailsStr);
-                                        Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
+                                            if (Preferences.ContainsKey(nameof(App.UserDetails)))
+                                            {
+                                                Preferences.Remove(nameof(App.UserDetails));
+                                            }
 
-                                        App.UserDetails = userDetails;
-                                        App.DefaultBudgetID = userDetails.DefaultBudgetID;
+                                            string userDetailsStr = JsonConvert.SerializeObject(userDetails);
+                                            Preferences.Set(nameof(App.UserDetails), userDetailsStr);
+                                            Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
 
-                                        //TODO: Sign in or update User Session and save to DB
+                                            App.UserDetails = userDetails;
+                                            App.DefaultBudgetID = userDetails.DefaultBudgetID;
 
-                                        await Shell.Current.GoToAsync(nameof(MainPage));
+                                            //TODO: Sign in or update User Session and save to DB
+
+                                            await Shell.Current.GoToAsync(nameof(MainPage));
+                                        }
                                     }
                                 }
-                            }
 
-                            break;
-                        default:
-                            throw new Exception("Error Calling API");                            
+                                break;
+                            default:
+                                throw new Exception("Error Calling API");                            
+                        }
+                    }
+                    else
+                    {
+                        //TODO: Throw some validation to enter UserName or Password
                     }
                 }
-                else
+                else 
                 {
                     //TODO: Throw some validation to enter UserName or Password
                 }
-            }
-            else 
-            {
-                //TODO: Throw some validation to enter UserName or Password
-            }
 
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($" --> {ex.Message}");
+                string ErrorMessage = await _pt.HandleCatchedException(ex, "LogonPage", "Login");
+                //TODO: Pass the ErrorMessage when the page navigates
+                await Shell.Current.GoToAsync(nameof(ErrorPage));
+            }
         }
+        
 
     }
 }

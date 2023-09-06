@@ -6,6 +6,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,68 +40,78 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]        
         async void SignUp()
         {
-            //TODO: Check that passwords match
-            if(IsAgreedToTerms && String.Equals(Password, PasswordConfirm))
+            try
             {
-                UserDetailsModel UserDetails = await _ds.GetUserDetailsAsync(Email);
-                if(UserDetails.Error != null)
+                //TODO: Check that passwords match
+                if(IsAgreedToTerms && String.Equals(Password, PasswordConfirm))
                 {
-                    RegisterModel NewUser = new RegisterModel();
-                    NewUser.Email = Email;
-                    NewUser.Password = Password;
-                    NewUser.isDPAPermissions = IsDPAPermissions;
-                    NewUser.isAgreedToTerms = IsAgreedToTerms;
-                    NewUser.NickName = NickName;
-                    
-                    NewUser = _pt.CreateUserSecurityDetails(NewUser);
-
-                    UserDetailsModel ReturnUser = await _ds.RegisterNewUserAsync(NewUser);
-
-                    if(ReturnUser.Error == null)
+                    UserDetailsModel UserDetails = await _ds.GetUserDetailsAsync(Email);
+                    if(UserDetails.Error != null)
                     {
-                        ReturnUser.SessionExpiry = DateTime.UtcNow.AddDays(0);
+                        RegisterModel NewUser = new RegisterModel();
+                        NewUser.Email = Email;
+                        NewUser.Password = Password;
+                        NewUser.isDPAPermissions = IsDPAPermissions;
+                        NewUser.isAgreedToTerms = IsAgreedToTerms;
+                        NewUser.NickName = NickName;
+                        
+                        NewUser = _pt.CreateUserSecurityDetails(NewUser);
 
-                        if (Preferences.ContainsKey(nameof(App.UserDetails)))
+                        UserDetailsModel ReturnUser = await _ds.RegisterNewUserAsync(NewUser);
+
+                        if(ReturnUser.Error == null)
                         {
-                            Preferences.Remove(nameof(App.UserDetails));
+                            ReturnUser.SessionExpiry = DateTime.UtcNow.AddDays(0);
+
+                            if (Preferences.ContainsKey(nameof(App.UserDetails)))
+                            {
+                                Preferences.Remove(nameof(App.UserDetails));
+                            }
+
+                            string userDetailsStr = JsonConvert.SerializeObject(ReturnUser);
+                            Preferences.Set(nameof(App.UserDetails), userDetailsStr);
+                            Preferences.Set(nameof(App.DefaultBudgetID), ReturnUser.DefaultBudgetID);
+
+                            App.UserDetails = ReturnUser;
+                            App.DefaultBudgetID = ReturnUser.DefaultBudgetID;
+
+                            //TODO: Sign in User Session and save to DB
+
+                            await Shell.Current.GoToAsync(nameof(MainPage));
+                        }
+                        else
+                        {
+                            //TODO: Error creating the user - return to error screen
                         }
 
-                        string userDetailsStr = JsonConvert.SerializeObject(ReturnUser);
-                        Preferences.Set(nameof(App.UserDetails), userDetailsStr);
-                        Preferences.Set(nameof(App.DefaultBudgetID), ReturnUser.DefaultBudgetID);
-
-                        App.UserDetails = ReturnUser;
-                        App.DefaultBudgetID = ReturnUser.DefaultBudgetID;
-
-                        //TODO: Sign in User Session and save to DB
-
-                        await Shell.Current.GoToAsync(nameof(MainPage));
                     }
                     else
                     {
-                        //TODO: Error creating the user - return to error screen
+                        //TODO: Validate that username is taken / Something has gone wrong!
+
+                    }
+                }
+                else
+                {
+                    if(IsAgreedToTerms)
+                    {
+                        //TODO: Validate that you must agree to terms
+
+                    }
+                    else
+                    {
+                        //TODO: or validate that passwords dont match
+
                     }
 
                 }
-                else
-                {
-                    //TODO: Validate that username is taken / Something has gone wrong!
-
-                }
             }
-            else
+            catch(Exception ex)
             {
-                if(IsAgreedToTerms)
-                {
-                    //TODO: Validate that you must agree to terms
-
-                }
-                else
-                {
-                    //TODO: or validate that passwords dont match
-
-                }
-
+                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                string ErrorMessage = await _pt.HandleCatchedException(ex, "RegisterPage", "SignUp");
+                //TODO: Pass the ErrorMessage when the page navigates
+                await Shell.Current.GoToAsync(nameof(ErrorPage));
             }
         }
 
