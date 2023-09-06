@@ -19,7 +19,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public LoadUpPageViewModel(IProductTools pt)
         {
             CheckUserLoginDetails();
-            _pt = pt
+            _pt = pt;
         }
 
         [ICommand]
@@ -52,6 +52,11 @@ namespace DailyBudgetMAUIApp.ViewModels
                             Preferences.Remove(nameof(App.UserDetails));
                         }
 
+                        if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                        {
+                            Preferences.Remove(nameof(App.DefaultBudgetID));
+                        }
+
                         userDetailsStr = JsonConvert.SerializeObject(userDetails);
                         Preferences.Set(nameof(App.UserDetails), userDetailsStr);
                         Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
@@ -63,14 +68,32 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         await Shell.Current.GoToAsync(nameof(MainPage));
                     }
+                    else
+                    {
+                        if (Preferences.ContainsKey(nameof(App.UserDetails)))
+                        {
+                            Preferences.Remove(nameof(App.UserDetails));
+                        }
+
+                        if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                        {
+                            Preferences.Remove(nameof(App.DefaultBudgetID));
+                        }
+                    }
                 }
+
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($" --> {ex.Message}");
-                string Error = await _pt.HandleCatchedException(ex, "LoadupPage", "CheckUserLoginDetails");
+                ErrorLog Error = await _pt.HandleCatchedException(ex, "LoadupPage", "CheckUserLoginDetails");
                 //TODO: Pass the ErrorMessage when the page navigates
-                await Shell.Current.GoToAsync(nameof(ErrorPage));
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    }
+                    );
             }
         }
 

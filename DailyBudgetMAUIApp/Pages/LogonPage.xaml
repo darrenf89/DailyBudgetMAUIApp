@@ -28,9 +28,10 @@
                             FontSize="Small" 
                             HorizontalOptions="Center" />
                     <Border Stroke="{DynamicResource Tertiary}" 
-                            WidthRequest="280" 
+                            WidthRequest="280"
+                            HeightRequest="2"
                             Margin="0,20,0,30" 
-                            StrokeThickness="0.75"/>                    
+                            StrokeThickness="1"/>                    
                     <HorizontalStackLayout HorizontalOptions="Fill">
                         <Border Style="{StaticResource FrameLogonStandardContent}">
                             <handlers:BorderlessEntry Text="{Binding Email}"
@@ -65,7 +66,7 @@
                             </Image.Source>
                         </Image>
                     </HorizontalStackLayout>
-                    <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center">
+                    <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="0,0,0,20">
                         <CheckBox x:Name="chbxDPA" IsChecked="{Binding rememberMe}"/>
                         <Label Text="Remember Me!"
                                VerticalOptions="Center"
@@ -73,7 +74,7 @@
                                FontSize="Caption"
                                Padding="0" />
                     </HorizontalStackLayout>
-                    <Button Text="Register Now"
+                    <Button Text="Sign in"
                             TextColor="White"
                             WidthRequest="180" 
                             Style="{StaticResource PrimaryButton}" 

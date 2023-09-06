@@ -34,4 +34,12 @@
         ContentTemplate="{DataTemplate Pages:RegisterPage}"
         Route="RegisterPage" />
 
+    <ShellContent
+        FlyoutItemIsVisible="False" 
+        Shell.FlyoutBehavior="Disabled"
+        Shell.TabBarIsVisible="False"
+        Title="Oh uh Something Went Wrong!"
+        ContentTemplate="{DataTemplate Pages:ErrorPage}"
+        Route="ErrorPage" />
+
 </Shell>

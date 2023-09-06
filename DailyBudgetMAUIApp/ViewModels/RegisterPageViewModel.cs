@@ -4,12 +4,8 @@ using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -68,6 +64,11 @@ namespace DailyBudgetMAUIApp.ViewModels
                                 Preferences.Remove(nameof(App.UserDetails));
                             }
 
+                            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                            {
+                                Preferences.Remove(nameof(App.DefaultBudgetID));
+                            }
+
                             string userDetailsStr = JsonConvert.SerializeObject(ReturnUser);
                             Preferences.Set(nameof(App.UserDetails), userDetailsStr);
                             Preferences.Set(nameof(App.DefaultBudgetID), ReturnUser.DefaultBudgetID);
@@ -109,9 +110,13 @@ namespace DailyBudgetMAUIApp.ViewModels
             catch(Exception ex)
             {
                 Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
-                string ErrorMessage = await _pt.HandleCatchedException(ex, "RegisterPage", "SignUp");
+                ErrorLog Error = await _pt.HandleCatchedException(ex, "RegisterPage", "SignUp");
                 //TODO: Pass the ErrorMessage when the page navigates
-                await Shell.Current.GoToAsync(nameof(ErrorPage));
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });
             }
         }
 

@@ -59,7 +59,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         }
 
-        public async Task<string> HandleCatchedException(Exception ex, string Page, string Method)
+        public async Task<ErrorLog> HandleCatchedException(Exception ex, string Page, string Method)
         {
             try
             {
@@ -68,14 +68,14 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 //TODO: Send object to API To log the Error
 
-                string ResponseString = await _ds.CreateNewErrorLog(NewLog);
+                ErrorLog Response = await _ds.CreateNewErrorLog(NewLog);
 
                 //TODO: Create the return string to be displayyed on Generic Error Page
-                return ResponseString;
+                return Response;
             }
             catch (Exception EndExcption)
             {
-                Debug.WriteLine($"Error Trying to Log the Error --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to Log the Error --> {EndExcption.Message}");
                 //TODO: Write the error to a physical file
 
                 throw new Exception("Fatal Error Trying to Log an Error");

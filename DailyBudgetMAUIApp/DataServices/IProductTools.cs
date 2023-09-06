@@ -12,6 +12,6 @@ namespace DailyBudgetMAUIApp.DataServices
         public string GenerateSalt(int nSalt);
         public string GenerateHashedPassword(string NonHasdedPassword, string Salt);
         public RegisterModel CreateUserSecurityDetails(RegisterModel obj);
-        public Task<string> HandleCatchedException(Exception ex, string page, string Method);
+        public Task<ErrorLog> HandleCatchedException(Exception ex, string page, string Method);
     }
 }

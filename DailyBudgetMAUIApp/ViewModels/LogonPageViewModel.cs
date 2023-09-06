@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -32,7 +33,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string _password;
 
         [ObservableProperty]
-        private string _rememberMe;
+        private bool _rememberMe;
 
         [ICommand]
         async void NavigateRegister()
@@ -45,7 +46,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!string.IsNullOrEmpty(Email))
+                if (!string.IsNullOrEmpty(Email))
                 {
                     if (!string.IsNullOrEmpty(Password))
                     {
@@ -82,11 +83,23 @@ namespace DailyBudgetMAUIApp.ViewModels
                                         else
                                         {
                                             //TODO: if Remember me set session date otherwise set to current time.
-                                            userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
+                                            if(RememberMe)
+                                            {
+                                                userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
+                                            }
+                                            else
+                                            {
+                                                userDetails.SessionExpiry = DateTime.UtcNow.AddDays(0);
+                                            }
 
                                             if (Preferences.ContainsKey(nameof(App.UserDetails)))
                                             {
                                                 Preferences.Remove(nameof(App.UserDetails));
+                                            }
+
+                                            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                                            {
+                                                Preferences.Remove(nameof(App.DefaultBudgetID));
                                             }
 
                                             string userDetailsStr = JsonConvert.SerializeObject(userDetails);
@@ -122,9 +135,13 @@ namespace DailyBudgetMAUIApp.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine($" --> {ex.Message}");
-                string ErrorMessage = await _pt.HandleCatchedException(ex, "LogonPage", "Login");
+                ErrorLog Error = await _pt.HandleCatchedException(ex, "LogonPage", "Login");
                 //TODO: Pass the ErrorMessage when the page navigates
-                await Shell.Current.GoToAsync(nameof(ErrorPage));
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });
             }
         }
         

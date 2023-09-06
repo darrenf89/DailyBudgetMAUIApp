@@ -152,13 +152,14 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public async Task<string> CreateNewErrorLog(ErrorLog NewLog)
+        public async Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog)
         {
-            string returnString = "";
+            ErrorLog ErrorLog = new();
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
-                return "You have no Internet Connection, unfortunately you need that. Please try again when you are back in civilised society";
+                ErrorLog.ErrorMessage = "You have no Internet Connection, unfortunately you need that. Please try again when you are back in civilised society";
+                return ErrorLog;
             }
 
             try
@@ -166,25 +167,27 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = JsonSerializer.Serialize<ErrorLog>(NewLog, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.PostAsync($"{_url}/userAccounts/logerror", request);
+                HttpResponseMessage response = await _httpClient.PostAsync($"{_url}/error/adderrorlogentry", request);
                 string content = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
-                    ErrorLog ErrorLog = JsonSerializer.Deserialize<ErrorLog>(content, _jsonSerialiserOptions);
+                    ErrorLog = JsonSerializer.Deserialize<ErrorLog>(content, _jsonSerialiserOptions);
                     if(ErrorLog.ErrorLogID != 0)
                     {
-                        return ErrorLog.ErrorMessage;
+                        return ErrorLog;
                     }
                     else
                     {
-                        return "Opps something went wrong. It was probably one of our graduate developers fault ... Sorry about that!";
+                        ErrorLog.ErrorMessage = "Opps something went wrong. It was probably one of our graduate developers fault ... Sorry about that!";
+                        return ErrorLog;
                     }
 
                 }
                 else
                 {
-                    return "Opps something went wrong. It was probably one of our graduate developers fault ... Sorry about that!";
+                    ErrorLog.ErrorMessage = "Opps something went wrong. It was probably one of our graduate developers fault ... Sorry about that!";
+                    return ErrorLog;
                 }       
             }
             catch (Exception ex)

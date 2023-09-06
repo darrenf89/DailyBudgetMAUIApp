@@ -29,11 +29,13 @@ public static class MauiProgram
 		builder.Services.AddTransient<LogonPage>();
         builder.Services.AddTransient<LoadUpPage>();
 		builder.Services.AddTransient<RegisterPage>();
+        builder.Services.AddTransient<ErrorPage>();
 
         //ViewModes
         builder .Services.AddTransient<LogonPageViewModel>();
         builder.Services.AddTransient<LoadUpPageViewModel>();
-		builder.Services.AddTransient<RegisterPageViewModel>();
+        builder.Services.AddTransient<ErrorPageViewModel>();
+        builder.Services.AddTransient<RegisterPageViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();

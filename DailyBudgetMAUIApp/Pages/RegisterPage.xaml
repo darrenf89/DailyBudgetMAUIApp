@@ -29,8 +29,9 @@
                             HorizontalOptions="Center" />
                     <Border Stroke="{DynamicResource Tertiary}" 
                             WidthRequest="280" 
+                            HeightRequest="2"
                             Margin="0,20,0,30" 
-                            StrokeThickness="0.75"/>                    
+                            StrokeThickness="1"/>                    
                     <HorizontalStackLayout HorizontalOptions="Start">
                         <Border Style="{StaticResource FrameLogonStandardContent}">
                             <handlers:BorderlessEntry Text="{Binding NickName}"
