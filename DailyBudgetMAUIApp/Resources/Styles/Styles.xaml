@@ -2,8 +2,20 @@
 <?xaml-comp compile="true" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
 
+    <xct:InvertedBoolConverter x:Key="BoolConverter"/>
+
+    <Style TargetType="Label" x:Key="ErrorMessage">
+        <Setter Property="TextColor" Value="{DynamicResource Danger}"/>
+        <Setter Property="FontSize" Value="Micro"/>
+        <Setter Property="Margin" Value="10,0,0,0"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="LineBreakMode" Value="WordWrap"/>
+        <Setter Property="WidthRequest" Value="215"/>
+    </Style>
+    
     <Style TargetType="Border" x:Key="FrameWhiteStandardContent">
         <Setter Property="Margin" Value="20,0,20,0"/>
         <Setter Property="Padding" Value="15,15,15,15"/>
@@ -15,7 +27,7 @@
     </Style>
 
     <Style TargetType="Border" x:Key="FrameLogonStandardContent">
-        <Setter Property="Margin" Value="0,0,0,15"/>
+        <Setter Property="Margin" Value="0,0,0,0"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="HorizontalOptions" Value="Fill"/>

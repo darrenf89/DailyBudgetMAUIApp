@@ -1,4 +1,5 @@
-﻿using DailyBudgetMAUIApp.DataServices;
+﻿using CommunityToolkit.Maui;
+using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,8 @@ public static class MauiProgram
 
         builder			
 			. UseMauiApp<App>()
-			.ConfigureFonts(fonts =>
+            .UseMauiCommunityToolkit()
+            .ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");

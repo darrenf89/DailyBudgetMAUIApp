@@ -32,13 +32,57 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool _isDPAPermissions;
         [ObservableProperty]
         private bool _isAgreedToTerms;
+        [ObservableProperty]
+        private bool _emailValid;
+        [ObservableProperty]
+        private bool _emailRequired;
+        [ObservableProperty]
+        private bool _nickNameRequired;
+        [ObservableProperty]
+        private bool _passwordRequired;
+        [ObservableProperty]
+        private bool _passwordSameSame;
+
+        public bool PageIsValid()
+        {
+            bool IsValid = true;
+            if (Password == "" || Password == null)
+            {
+                PasswordRequired = false;
+                IsValid = false;
+            }
+
+            if (!String.Equals(Password, PasswordConfirm) || Password == null || PasswordConfirm == null)
+            {
+                PasswordSameSame = false;
+                IsValid = false;
+            }
+
+            if (NickName == "" || NickName == null)
+            {
+                NickNameRequired = false;
+                IsValid = false;
+            }
+
+            if (Email == "" || Email == null)
+            {
+                EmailRequired = false;
+                IsValid = false;
+            }
+
+            return IsValid;
+        }
 
         [ICommand]        
         async void SignUp()
         {
             try
             {
-                //TODO: Check that passwords match
+                if(!PageIsValid())                
+                {
+                    return;
+                }
+
                 if(IsAgreedToTerms && String.Equals(Password, PasswordConfirm))
                 {
                     UserDetailsModel UserDetails = await _ds.GetUserDetailsAsync(Email);
@@ -82,29 +126,25 @@ namespace DailyBudgetMAUIApp.ViewModels
                         }
                         else
                         {
-                            //TODO: Error creating the user - return to error screen
+                            await Application.Current.MainPage.DisplayAlert("Opps", "There was an error creating your User account, please try again!", "OK");
                         }
 
                     }
                     else
                     {
-                        //TODO: Validate that username is taken / Something has gone wrong!
-
+                        await Application.Current.MainPage.DisplayAlert("Opps", "This Email is already taken, reset your password or try a different Email", "OK");
                     }
                 }
                 else
                 {
                     if(IsAgreedToTerms)
                     {
-                        //TODO: Validate that you must agree to terms
-
+                        await Application.Current.MainPage.DisplayAlert("Opps", "Your Passwords don't match ...", "OK");
                     }
                     else
                     {
-                        //TODO: or validate that passwords dont match
-
+                        await Application.Current.MainPage.DisplayAlert("Opps", "You have to agree to our Terms of Service", "OK");
                     }
-
                 }
             }
             catch(Exception ex)
