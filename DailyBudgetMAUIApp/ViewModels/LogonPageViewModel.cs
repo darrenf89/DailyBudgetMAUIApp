@@ -35,6 +35,31 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool _rememberMe;
 
+        [ObservableProperty]
+        private bool _emailRequired;
+
+        [ObservableProperty]
+        private bool _emailValid;
+
+        [ObservableProperty]
+        private bool _passwordRequired;
+        public bool PageIsValid()
+        {
+            bool IsValid = true;
+            if (Password == "" || Password == null)
+            {
+                PasswordRequired = false;
+                IsValid = false;
+            }
+
+            if (Email == "" || Email == null)
+            {
+                EmailRequired = false;
+                IsValid = false;
+            }
+
+            return IsValid;
+        }
         [ICommand]
         async void NavigateRegister()
         {
@@ -46,6 +71,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
+                if (!PageIsValid())
+                {
+                    return;
+                }
+
                 if (!string.IsNullOrEmpty(Email))
                 {
                     if (!string.IsNullOrEmpty(Password))
@@ -57,7 +87,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         switch (salt)
                         {
                             case "User not found":
-                                //TODO: Throw some validation that UserName or Password isn't valid
+                                await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 break;
                             case not "":
 
@@ -65,24 +95,23 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                 if (userDetails == null)
                                 {
-                                    //TODO: Throw some validation that UserName or Password isn't valid
+                                    await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 }
                                 else
                                 {
                                     string HashPassword = _pt.GenerateHashedPassword(Password, salt);
                                     if(userDetails.Password != HashPassword)
                                     {
-                                        //TODO: Throw some validation that UserName or Password isn't valid
+                                        await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                     }
                                     else
                                     {
                                         if (!userDetails.isEmailVerified)
                                         {
-                                            //TODO: Throw some validation that Email isn't verified
+                                            await Application.Current.MainPage.DisplayAlert("Opps", "You haven't validated your email .. do that and come back!", "OK");
                                         }
                                         else
                                         {
-                                            //TODO: if Remember me set session date otherwise set to current time.
                                             if(RememberMe)
                                             {
                                                 userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
@@ -100,6 +129,11 @@ namespace DailyBudgetMAUIApp.ViewModels
                                             if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
                                             {
                                                 Preferences.Remove(nameof(App.DefaultBudgetID));
+                                            }
+
+                                            if (Preferences.ContainsKey(nameof(App.SessionLastUpdate)))
+                                            {
+                                                Preferences.Remove(nameof(App.SessionLastUpdate));
                                             }
 
                                             string userDetailsStr = JsonConvert.SerializeObject(userDetails);
@@ -123,12 +157,12 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     else
                     {
-                        //TODO: Throw some validation to enter UserName or Password
+                        await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                     }
                 }
                 else 
                 {
-                    //TODO: Throw some validation to enter UserName or Password
+                    await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                 }
 
             }
@@ -136,7 +170,6 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 Debug.WriteLine($" --> {ex.Message}");
                 ErrorLog Error = await _pt.HandleCatchedException(ex, "LogonPage", "Login");
-                //TODO: Pass the ErrorMessage when the page navigates
                 await Shell.Current.GoToAsync(nameof(ErrorPage),
                     new Dictionary<string, object>
                     {

@@ -151,7 +151,6 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
                 ErrorLog Error = await _pt.HandleCatchedException(ex, "RegisterPage", "SignUp");
-                //TODO: Pass the ErrorMessage when the page navigates
                 await Shell.Current.GoToAsync(nameof(ErrorPage),
                     new Dictionary<string, object>
                     {

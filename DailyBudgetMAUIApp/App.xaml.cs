@@ -6,9 +6,13 @@ namespace DailyBudgetMAUIApp;
 
 public partial class App : Application
 {
-	public static UserDetailsModel UserDetails;
-	public static int SessionPeriod = 7;
-	public static int DefaultBudgetID { get; set; } = 0;
+	public static UserDetailsModel UserDetails;	
+	public static int DefaultBudgetID;
+    public static Budgets DefaultBudget;
+    public static DateTime SessionLastUpdate;
+
+    public static int SessionPeriod = 7;
+
     public App()
 	{
 		InitializeComponent();

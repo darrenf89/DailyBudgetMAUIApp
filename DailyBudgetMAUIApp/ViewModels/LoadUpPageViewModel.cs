@@ -43,22 +43,19 @@ namespace DailyBudgetMAUIApp.ViewModels
                 if (!string.IsNullOrEmpty(userDetailsStr))
                 {
                     UserDetailsModel userDetails = JsonConvert.DeserializeObject<UserDetailsModel>(userDetailsStr);
+                    Preferences.Remove(nameof(App.UserDetails));
 
                     if (userDetails.SessionExpiry > DateTime.UtcNow) 
                     {
                         userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
-                        if (Preferences.ContainsKey(nameof(App.UserDetails)))
-                        {
-                            Preferences.Remove(nameof(App.UserDetails));
-                        }
+                        userDetailsStr = JsonConvert.SerializeObject(userDetails);
+                        Preferences.Set(nameof(App.UserDetails), userDetailsStr);
 
                         if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
                         {
                             Preferences.Remove(nameof(App.DefaultBudgetID));
                         }
 
-                        userDetailsStr = JsonConvert.SerializeObject(userDetails);
-                        Preferences.Set(nameof(App.UserDetails), userDetailsStr);
                         Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
 
                         App.UserDetails = userDetails;
@@ -79,6 +76,16 @@ namespace DailyBudgetMAUIApp.ViewModels
                         {
                             Preferences.Remove(nameof(App.DefaultBudgetID));
                         }
+
+                        if (Preferences.ContainsKey(nameof(App.DefaultBudget)))
+                        {
+                            Preferences.Remove(nameof(App.DefaultBudget));
+                        }
+
+                        if (Preferences.ContainsKey(nameof(App.SessionLastUpdate)))
+                        {
+                            Preferences.Remove(nameof(App.SessionLastUpdate));
+                        }
                     }
                 }
 
@@ -87,13 +94,11 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 Debug.WriteLine($" --> {ex.Message}");
                 ErrorLog Error = await _pt.HandleCatchedException(ex, "LoadupPage", "CheckUserLoginDetails");
-                //TODO: Pass the ErrorMessage when the page navigates
                 await Shell.Current.GoToAsync(nameof(ErrorPage),
                     new Dictionary<string, object>
                     {
                         ["Error"] = Error
-                    }
-                    );
+                    });
             }
         }
 

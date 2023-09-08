@@ -4,6 +4,7 @@
              x:Class="DailyBudgetMAUIApp.Pages.LogonPage"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"             
              Shell.NavBarIsVisible = "False"
              Title="{Binding Title}">
     <ScrollView>
@@ -12,7 +13,7 @@
                    Aspect="AspectFill" />
             <VerticalStackLayout VerticalOptions="End">
             
-                <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,0,0,50">
+                <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,0,0,45">
                     <Image Source="colorlogonobackground.png" Aspect="AspectFill" ></Image>
                 </Border>
 
@@ -32,15 +33,57 @@
                                 WidthRequest="280"
                                 HeightRequest="2"
                                 Margin="0,20,0,30" 
-                                StrokeThickness="1"/>                    
-                        <HorizontalStackLayout HorizontalOptions="Fill">
-                            <Border Style="{StaticResource FrameLogonStandardContent}">
-                                <handlers:BorderlessEntry Text="{Binding Email}"
-                                   Placeholder="Enter an Email address!"
-                                   Keyboard="Text" 
-                                   Style="{StaticResource LogonEntry}"
-                                   MaxLength="40"/>
-                            </Border>
+                                StrokeThickness="1"/>
+                        <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Start">
+                            <VerticalStackLayout Margin="0,0,0,15">
+                                <Border Style="{StaticResource FrameLogonStandardContent}">
+                                    <handlers:BorderlessEntry Text="{Binding Email}"
+                                       Placeholder="Enter an Email address!"
+                                       Keyboard="Text" 
+                                       Style="{StaticResource LogonEntry}"
+                                       MaxLength="40">
+                                        <Entry.Behaviors>
+                                            <xct:EmailValidationBehavior 
+                                            Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused"
+                                            IsValid="{Binding EmailValid}" />
+                                            <xct:TextValidationBehavior
+                                            MinimumLength="1"
+                                            Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused"
+                                            IsValid="{Binding EmailRequired}" />
+                                        </Entry.Behaviors>
+                                    </handlers:BorderlessEntry>
+                                </Border>
+                                <HorizontalStackLayout 
+                                IsVisible="{Binding EmailRequired, Converter={StaticResource BoolConverter}}"                                                 
+                                Margin="20,0,0,0">
+                                    <Image>
+                                        <Image.Source>
+                                            <FontImageSource 
+                                            FontFamily="MaterialDesignIcons"                                                         
+                                            Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}"                                                         
+                                            Size="15"                                                          
+                                            Color="{DynamicResource Danger}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Label Text="Please let us know your email, pretty please!"
+                                   Style="{StaticResource ErrorMessage}"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout                                    
+                                IsVisible="{Binding EmailValid, Converter={StaticResource BoolConverter}}"
+                                Margin="20,0,0,0">
+                                    <Image>
+                                        <Image.Source>
+                                            <FontImageSource 
+                                            FontFamily="MaterialDesignIcons"                                                         
+                                            Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}"                                                         
+                                            Size="15"                                                          
+                                            Color="{DynamicResource Danger}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Label Text="You have to enter a valid email ... or else!!" 
+                                   Style="{StaticResource ErrorMessage}"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
                             <Image Margin="15,0,0,15">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons"
@@ -50,14 +93,38 @@
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
-                        <HorizontalStackLayout HorizontalOptions="Fill">
-                            <Border Style="{StaticResource FrameLogonStandardContent}">
-                                <handlers:BorderlessEntry Text="{Binding Password}"
+                        <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Start">
+                            <VerticalStackLayout Margin="0,0,0,15">
+                                <Border Style="{StaticResource FrameLogonStandardContent}">
+                                    <handlers:BorderlessEntry Text="{Binding Password}"
                                    Placeholder="Please enter a password!"
                                    Keyboard="Text"
                                    IsPassword="True"
-                                   Style="{StaticResource LogonEntry}" />
-                            </Border>
+                                   Style="{StaticResource LogonEntry}">
+                                        <Entry.Behaviors>
+                                            <xct:TextValidationBehavior
+                                            MinimumLength="1"
+                                            Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused"
+                                            IsValid="{Binding PasswordRequired}" />
+                                        </Entry.Behaviors>
+                                    </handlers:BorderlessEntry>
+                                </Border>
+                                <HorizontalStackLayout 
+                                IsVisible="{Binding PasswordRequired, Converter={StaticResource BoolConverter}}"
+                                Margin="20,0,0,0">
+                                    <Image>
+                                        <Image.Source>
+                                            <FontImageSource 
+                                            FontFamily="MaterialDesignIcons"                                                         
+                                            Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}"                                                         
+                                            Size="15"                                                          
+                                            Color="{DynamicResource Danger}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Label Text="Come on ... you must know you need a password!"                                   
+                                       Style="{StaticResource ErrorMessage}"/>
+                                </HorizontalStackLayout>                                
+                            </VerticalStackLayout>
                             <Image Margin="15,0,0,15">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons"
@@ -100,7 +167,7 @@
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>
-                <VerticalStackLayout Margin="0,20,0,20">
+                <VerticalStackLayout Margin="0,40,0,145">
                     <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
                         <Label Text="Need an Account? "
                                 FontAttributes="Bold" 

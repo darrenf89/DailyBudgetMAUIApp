@@ -196,5 +196,80 @@ namespace DailyBudgetMAUIApp.DataServices
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<Budgets> GetBudgetDetailsAsync(int BudgetID)
+        {
+            Budgets Budget = new Budgets();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/budgets/getbudgetDetails/{BudgetID}");
+                string content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    Budget = JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
+
+                    return Budget;
+                }
+                else
+                {
+                    ErrorClass error = JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    Budget.Error = error;
+                    return Budget;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Budget Details in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<DateTime> GetBudgetLastUpdatedAsync(int BudgetID)
+        {
+            Budgets Budget = new Budgets();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/budgets/getlastupdated/{BudgetID}");
+                string content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    Budget = JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
+
+                    return Budget.LastUpdated;
+                }
+                else
+                {
+                    ErrorClass error = JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Budget Details in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
