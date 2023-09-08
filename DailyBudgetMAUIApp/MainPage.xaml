@@ -32,14 +32,12 @@
                 x:Name="CounterBtn"
                 Text="Click me"
                 SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
                 HorizontalOptions="Center" />
 
             <Button
                 x:Name="SignOut"
                 Text="Sign Out"
                 SemanticProperties.Hint="Signs Out of Account"
-                Clicked="SignOutClicked"
                 HorizontalOptions="Center" />
 
         </VerticalStackLayout>

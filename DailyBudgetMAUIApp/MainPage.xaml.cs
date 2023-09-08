@@ -1,43 +1,43 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Pages;
+using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.ViewModels;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace DailyBudgetMAUIApp;
 
 public partial class MainPage : ContentPage
 {
-    private readonly IRestDataService _ds;
-    int count = 0;
-
-	public MainPage(IRestDataService ds)
+    private readonly MainPageViewModel _vm;
+    public MainPage(MainPageViewModel viewModel)
 	{
 		InitializeComponent();
-		_ds = ds;
-
-	}
-
-	private async void OnCounterClicked(object sender, EventArgs e)
-	{
-		count++;
-
-		string salt = await _ds.GetUserSaltAsync("Darren.fillis100gmail.com");
-
-		Debug.WriteLine($"----> {salt}");
-
-		CounterBtn.Text = salt;
-
-
-		SemanticScreenReader.Announce(CounterBtn.Text);
-	}
-
-    private async void SignOutClicked(object sender, EventArgs e)
-    {
-		if(Preferences.ContainsKey(nameof(App.UserDetails)))
-		{
-			Preferences.Remove(nameof(App.UserDetails));
-		}
-
-		await Shell.Current.GoToAsync(nameof(LogonPage));
+        this.BindingContext = viewModel;
+        _vm = viewModel;
     }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (_vm.IsBudgetUpdate)
+        {
+            App.DefaultBudget = _vm.DefaultBudget;
+            App.SessionLastUpdate = DateTime.UtcNow;
+
+            string budgetString = JsonConvert.SerializeObject(_vm.DefaultBudget);
+            Preferences.Set(nameof(App.DefaultBudget), budgetString);
+            Preferences.Set(nameof(App.SessionLastUpdate), DateTime.UtcNow.ToString());
+        }
+
+        if (_vm.DefaultBudgetID == 1 || !_vm.DefaultBudget.IsCreated)
+        {
+            //TODO: Navigate to create Budget journey as no budget assinged!
+        }
+        
+
+    }
+
 }
 

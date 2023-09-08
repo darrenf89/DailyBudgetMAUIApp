@@ -63,14 +63,11 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             try
             {
-                //TODO: Create the error log object with information
                 ErrorLog NewLog = new ErrorLog(ex, Page, Method);
 
-                //TODO: Send object to API To log the Error
 
                 ErrorLog Response = await _ds.CreateNewErrorLog(NewLog);
 
-                //TODO: Create the return string to be displayyed on Generic Error Page
                 return Response;
             }
             catch (Exception EndExcption)
@@ -83,6 +80,15 @@ namespace DailyBudgetMAUIApp.DataServices
 
 
 
+        }
+
+        public DateTime GetBudgetLastUpdated(int BudgetID)
+        {
+            Task<DateTime> LastUpdatedAsync = _ds.GetBudgetLastUpdatedAsync(BudgetID);
+
+            DateTime LastUpdate = LastUpdatedAsync;
+
+            return LastUpdate;
         }
     }
 }
