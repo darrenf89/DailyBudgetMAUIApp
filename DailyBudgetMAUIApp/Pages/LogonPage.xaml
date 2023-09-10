@@ -9,11 +9,12 @@
              Title="{Binding Title}">
     <ScrollView>
         <Grid>
-            <Image Source="logonbackgroundorange.jpg"
-                   Aspect="AspectFill" />
-            <VerticalStackLayout VerticalOptions="End">
             
-                <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,0,0,45">
+            <Image Source="logonbackgroundorange.jpg"
+                   Aspect="AspectFill" />            
+
+            <VerticalStackLayout VerticalOptions="Start">
+                <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,50,0,45">
                     <Image Source="colorlogonobackground.png" Aspect="AspectFill" ></Image>
                 </Border>
 
@@ -134,8 +135,8 @@
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
-                        <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="0,0,0,20">
-                            <CheckBox x:Name="chbxDPA" IsChecked="{Binding rememberMe}"/>
+                        <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="0,0,0,10">
+                            <CheckBox IsChecked="{Binding RememberMe}"/>
                             <Label Text="Remember Me!"
                                    VerticalOptions="Center"
                                    TextColor="{DynamicResource Gray400}"

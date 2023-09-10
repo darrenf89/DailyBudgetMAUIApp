@@ -13,6 +13,18 @@
             Text="{Binding Error.ErrorMessage}"
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
+        <Button Text="Go home"
+            TextColor="White"
+            WidthRequest="180" 
+            Style="{StaticResource PrimaryButton}" 
+            Command="{Binding GoToLandingPageCommand}">
+            <Button.ImageSource>
+                <FontImageSource 
+                    FontFamily="MaterialDesignIcons"
+                    Glyph="{x:Static helpers:MaterialDesignIconsFonts.Lock_open}"
+                    Size="20" />
+            </Button.ImageSource>
+        </Button>
     </VerticalStackLayout>
     
 </ContentPage>

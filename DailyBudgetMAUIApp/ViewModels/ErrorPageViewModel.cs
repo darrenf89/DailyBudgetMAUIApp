@@ -1,5 +1,7 @@
 ﻿using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,12 @@ namespace DailyBudgetMAUIApp.ViewModels
         public ErrorPageViewModel()
         {
 
+        }
+
+        [ICommand]
+        async void GoToLandingPage()
+        {
+            await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
         }
     }
 }

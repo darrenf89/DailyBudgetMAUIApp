@@ -36,6 +36,7 @@
 
             <Button
                 x:Name="SignOut"
+                Command="{Binding SignOutCommand}"
                 Text="Sign Out"
                 SemanticProperties.Hint="Signs Out of Account"
                 HorizontalOptions="Center" />

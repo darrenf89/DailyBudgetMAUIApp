@@ -84,11 +84,9 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public DateTime GetBudgetLastUpdated(int BudgetID)
         {
-            Task<DateTime> LastUpdatedAsync = _ds.GetBudgetLastUpdatedAsync(BudgetID);
+            DateTime LastUpdated = _ds.GetBudgetLastUpdatedAsync(BudgetID).Result;
 
-            DateTime LastUpdate = LastUpdatedAsync;
-
-            return LastUpdate;
+            return LastUpdated;
         }
     }
 }

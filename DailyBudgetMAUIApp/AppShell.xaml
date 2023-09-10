@@ -42,4 +42,11 @@
         ContentTemplate="{DataTemplate Pages:ErrorPage}"
         Route="ErrorPage" />
 
+    <ShellContent
+        FlyoutItemIsVisible="True" 
+        Shell.TabBarIsVisible="true"
+        Title="Home Page"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
+
 </Shell>

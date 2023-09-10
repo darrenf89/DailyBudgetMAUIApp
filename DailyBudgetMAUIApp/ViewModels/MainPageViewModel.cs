@@ -1,10 +1,10 @@
+using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using Newtonsoft.Json;
-using System.Diagnostics;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -15,6 +15,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {
+            var popup = new PopUpPage();
+            Application.Current.MainPage.ShowPopup(popup);
+            
             Title = "Home Page!";
             _ds = ds;
             _pt = pt;
@@ -53,6 +56,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                 }
             }
 
+            popup.Close();
+
         }
 
         [ObservableProperty]
@@ -63,6 +68,32 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         private bool _isBudgetUpdate;
+
+        [ICommand]
+        async void SignOut()
+        {
+            if (Preferences.ContainsKey(nameof(App.UserDetails)))
+            {
+                Preferences.Remove(nameof(App.UserDetails));
+            }
+
+            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+            {
+                Preferences.Remove(nameof(App.DefaultBudgetID));
+            }
+
+            if (Preferences.ContainsKey(nameof(App.DefaultBudget)))
+            {
+                Preferences.Remove(nameof(App.DefaultBudget));
+            }
+
+            if (Preferences.ContainsKey(nameof(App.SessionLastUpdate)))
+            {
+                Preferences.Remove(nameof(App.SessionLastUpdate));
+            }
+
+            await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
+        }
 
     }
 }

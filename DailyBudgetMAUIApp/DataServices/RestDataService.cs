@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.Net.Mail;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace DailyBudgetMAUIApp.DataServices
 {
+    //TODO: UPDATE ALL CALLS TO USE USING STREAM
     internal class RestDataService : IRestDataService
     {
 
@@ -48,13 +50,13 @@ namespace DailyBudgetMAUIApp.DataServices
                 if (response.IsSuccessStatusCode)
                 {
                     
-                    User = JsonSerializer.Deserialize<RegisterModel>(content, _jsonSerialiserOptions);
+                    User = System.Text.Json.JsonSerializer.Deserialize<RegisterModel>(content, _jsonSerialiserOptions);
 
                     return User.Salt;
                 }
                 else
                 {
-                    ErrorClass error = JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
                     return error.ErrorMessage;
                 }
                 
@@ -84,7 +86,7 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
 
-                string jsonRequest = JsonSerializer.Serialize<RegisterModel>(User, _jsonSerialiserOptions);
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<RegisterModel>(User, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
                 HttpResponseMessage response = await _httpClient.PostAsync($"{_url}/userAccounts/registeruser", request);
@@ -92,13 +94,13 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (response.IsSuccessStatusCode)
                 {
-                    UserModel = JsonSerializer.Deserialize<UserDetailsModel>(content, _jsonSerialiserOptions);
+                    UserModel = System.Text.Json.JsonSerializer.Deserialize<UserDetailsModel>(content, _jsonSerialiserOptions);
                     UserModel.Error = null;
                     return UserModel;
                 }
                 else
                 {
-                    ErrorClass error = JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
                     error.StatusCode = response.StatusCode;
                     UserModel.Error = error;
                     return UserModel;
@@ -131,13 +133,13 @@ namespace DailyBudgetMAUIApp.DataServices
                 if (response.IsSuccessStatusCode)
                 {
 
-                    User = JsonSerializer.Deserialize<UserDetailsModel>(content, _jsonSerialiserOptions);
+                    User = System.Text.Json.JsonSerializer.Deserialize<UserDetailsModel>(content, _jsonSerialiserOptions);
                     User.Error = null;
                     return User;
                 }
                 else
                 {
-                    ErrorClass error = JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
                     error.StatusCode = response.StatusCode;
                     User.Error = error;
                     return User;
@@ -164,7 +166,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             try
             {
-                string jsonRequest = JsonSerializer.Serialize<ErrorLog>(NewLog, _jsonSerialiserOptions);
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<ErrorLog>(NewLog, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
                 HttpResponseMessage response = await _httpClient.PostAsync($"{_url}/error/adderrorlogentry", request);
@@ -172,7 +174,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (response.IsSuccessStatusCode)
                 {
-                    ErrorLog = JsonSerializer.Deserialize<ErrorLog>(content, _jsonSerialiserOptions);
+                    ErrorLog = System.Text.Json.JsonSerializer.Deserialize<ErrorLog>(content, _jsonSerialiserOptions);
                     if(ErrorLog.ErrorLogID != 0)
                     {
                         return ErrorLog;
@@ -209,19 +211,32 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
 
-                HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/budgets/getbudgetdetails/{BudgetID}");
-                string content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getbudgetdetailsonly/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
                 {
 
-                    Budget = JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        Budget = serializer.Deserialize<Budgets>(reader);
+                    }
 
                     return Budget;
                 }
                 else
                 {
-                    ErrorClass error = JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
                     Budget.Error = error;
                     return Budget;
                 }
@@ -253,13 +268,13 @@ namespace DailyBudgetMAUIApp.DataServices
                 if (response.IsSuccessStatusCode)
                 {
 
-                    Budget = JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
+                    Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
 
                     return Budget.LastUpdated;
                 }
                 else
                 {
-                    ErrorClass error = JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
                     throw new Exception(error.ErrorMessage);
                 }
 

@@ -1,14 +1,11 @@
-﻿using DailyBudgetMAUIApp.DataServices;
+﻿using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -18,6 +15,26 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public LoadUpPageViewModel(IProductTools pt)
         {
+            if (Preferences.ContainsKey(nameof(App.UserDetails)))
+            {
+                Preferences.Remove(nameof(App.UserDetails));
+            }
+
+            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+            {
+                Preferences.Remove(nameof(App.DefaultBudgetID));
+            }
+
+            if (Preferences.ContainsKey(nameof(App.DefaultBudget)))
+            {
+                Preferences.Remove(nameof(App.DefaultBudget));
+            }
+
+            if (Preferences.ContainsKey(nameof(App.SessionLastUpdate)))
+            {
+                Preferences.Remove(nameof(App.SessionLastUpdate));
+            }
+
             CheckUserLoginDetails();
             _pt = pt;
         }
@@ -38,6 +55,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
+
                 string userDetailsStr = Preferences.Get(nameof(App.UserDetails),"");
 
                 if (!string.IsNullOrEmpty(userDetailsStr))

@@ -1,16 +1,13 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using CommunityToolkit.Maui.Views;
+
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -23,7 +20,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             Title = "Sign In";
             _ds = ds;
-            _pt = pt;   
+            _pt = pt;
         }
 
         [ObservableProperty]
@@ -43,6 +40,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         private bool _passwordRequired;
+
         public bool PageIsValid()
         {
             bool IsValid = true;
@@ -69,12 +67,15 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void Login()
         {
+            var popup = new PopUpPage();
+            Application.Current.MainPage.ShowPopup(popup);
             try
             {
                 if (!PageIsValid())
                 {
+                    popup.Close();
                     return;
-                }
+                }                
 
                 if (!string.IsNullOrEmpty(Email))
                 {
@@ -87,6 +88,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         switch (salt)
                         {
                             case "User not found":
+                                popup.Close();
                                 await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 break;
                             case not "":
@@ -95,6 +97,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                 if (userDetails == null)
                                 {
+                                    popup.Close();
                                     await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 }
                                 else
@@ -102,12 +105,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     string HashPassword = _pt.GenerateHashedPassword(Password, salt);
                                     if(userDetails.Password != HashPassword)
                                     {
+                                        popup.Close();
                                         await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                     }
                                     else
                                     {
                                         if (!userDetails.isEmailVerified)
                                         {
+                                            popup.Close();
                                             await Application.Current.MainPage.DisplayAlert("Opps", "You haven't validated your email .. do that and come back!", "OK");
                                         }
                                         else
@@ -144,7 +149,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                             App.DefaultBudgetID = userDetails.DefaultBudgetID;
 
                                             //TODO: Sign in or update User Session and save to DB
-
+                                            popup.Close();
                                             await Shell.Current.GoToAsync(nameof(MainPage));
                                         }
                                     }
@@ -157,11 +162,13 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     else
                     {
+                        popup.Close();
                         await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                     }
                 }
                 else 
                 {
+                    IsButtonBusy = false; 
                     await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                 }
 

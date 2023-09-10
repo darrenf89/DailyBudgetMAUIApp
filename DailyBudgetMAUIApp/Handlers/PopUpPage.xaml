@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+           x:Class="DailyBudgetMAUIApp.Handlers.PopUpPage"
+           xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+           CanBeDismissedByTappingOutsideOfPopup="False"
+           Color="Transparent">
+    <VerticalStackLayout HeightRequest="300" WidthRequest="200">
+            <!--<Label 
+                Text="We are doing something!"
+                FontAttributes="Bold"
+                FontSize="Small"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" 
+                TextColor="{DynamicResource Tertiary}"
+                Margin="15,30,15,30"/>-->
+            <ActivityIndicator 
+                IsRunning="True" 
+                IsVisible="True"
+                VerticalOptions="StartAndExpand" 
+                HorizontalOptions="Center"
+                BackgroundColor="Transparent"
+                Margin="0,100,0,0"
+                Color="{DynamicResource Primary}"
+                Scale="1">
+            </ActivityIndicator>
+            <Label 
+                Text="Loading ..."
+                FontAttributes="Bold"
+                FontSize="Medium"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                FontFamily="OpenSansSemibold"
+                TextColor="{DynamicResource Light}"
+                Margin="0,20,0,0"/>
+        </VerticalStackLayout>
+</xct:Popup>

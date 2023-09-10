@@ -11,9 +11,9 @@
         <Grid>
             <Image Source="logonbackgroundorange.jpg"
                Aspect="AspectFill" />
-            <VerticalStackLayout VerticalOptions="End">
+            <VerticalStackLayout VerticalOptions="Start">
 
-                <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,0,0,45">
+                <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,50,0,45">
                     <Image Source="colorlogonobackground.png" Aspect="AspectFill" ></Image>
                 </Border>
 
