@@ -21,22 +21,10 @@ public partial class MainPage : ContentPage
     {
         base.OnAppearing();
 
-        if (_vm.IsBudgetUpdate)
-        {
-            App.DefaultBudget = _vm.DefaultBudget;
-            App.SessionLastUpdate = DateTime.UtcNow;
-
-            string budgetString = JsonConvert.SerializeObject(_vm.DefaultBudget);
-            Preferences.Set(nameof(App.DefaultBudget), budgetString);
-            Preferences.Set(nameof(App.SessionLastUpdate), DateTime.UtcNow.ToString());
-        }
-
-        if (_vm.DefaultBudgetID == 1 || !_vm.DefaultBudget.IsCreated)
+        if (App.DefaultBudgetID == 1 || App.DefaultBudget.IsCreated)
         {
             //TODO: Navigate to create Budget journey as no budget assinged!
         }
-        
-
     }
 
 }

@@ -15,26 +15,6 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public LoadUpPageViewModel(IProductTools pt)
         {
-            if (Preferences.ContainsKey(nameof(App.UserDetails)))
-            {
-                Preferences.Remove(nameof(App.UserDetails));
-            }
-
-            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
-            {
-                Preferences.Remove(nameof(App.DefaultBudgetID));
-            }
-
-            if (Preferences.ContainsKey(nameof(App.DefaultBudget)))
-            {
-                Preferences.Remove(nameof(App.DefaultBudget));
-            }
-
-            if (Preferences.ContainsKey(nameof(App.SessionLastUpdate)))
-            {
-                Preferences.Remove(nameof(App.SessionLastUpdate));
-            }
-
             CheckUserLoginDetails();
             _pt = pt;
         }
@@ -93,16 +73,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                         if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
                         {
                             Preferences.Remove(nameof(App.DefaultBudgetID));
-                        }
-
-                        if (Preferences.ContainsKey(nameof(App.DefaultBudget)))
-                        {
-                            Preferences.Remove(nameof(App.DefaultBudget));
-                        }
-
-                        if (Preferences.ContainsKey(nameof(App.SessionLastUpdate)))
-                        {
-                            Preferences.Remove(nameof(App.SessionLastUpdate));
                         }
                     }
                 }

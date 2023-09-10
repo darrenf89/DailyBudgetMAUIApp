@@ -5,48 +5,50 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:DailyBudgetMAUIApp"
     xmlns:Pages="clr-namespace:DailyBudgetMAUIApp.Pages"
-    >
+    Shell.FlyoutBehavior="Flyout"
+    Shell.TabBarIsVisible="True">
+    
+    <Shell.MenuItemTemplate>
+        <DataTemplate>
+            <VerticalStackLayout>
+                <Image Source="{Binding Icon}"/>
+                <Label Text="{Binding Text}"
+                       FontAttributes="Bold"/>ing in 
+            </VerticalStackLayout>
+        </DataTemplate>
+    </Shell.MenuItemTemplate>
 
-    <ShellContent
-        FlyoutItemIsVisible="False" 
-        Shell.FlyoutBehavior="Disabled"
-        Shell.TabBarIsVisible="False"
-        Shell.NavBarIsVisible="false"
-        Title="Landing Page"
-        ContentTemplate="{DataTemplate Pages:LoadUpPage}"
-        Route="LoadUpPage" />
+    <ShellItem Route="LoadUpPage" FlyoutItemIsVisible="False">
+        <ShellContent ContentTemplate="{DataTemplate Pages:LoadUpPage}"/>
+    </ShellItem>
 
-    <ShellContent
-        FlyoutItemIsVisible="False" 
-        Shell.FlyoutBehavior="Disabled"
-        Shell.TabBarIsVisible="False"
-        Shell.NavBarIsVisible="false"
-        Title="Login Page"
-        ContentTemplate="{DataTemplate Pages:LogonPage}"
-        Route="LogonPage" />
+    <ShellItem Route="ErrorPage" FlyoutItemIsVisible="False">
+        <ShellContent  ContentTemplate="{DataTemplate Pages:ErrorPage}"/>
+    </ShellItem>
 
-    <ShellContent
-        FlyoutItemIsVisible="False" 
-        Shell.FlyoutBehavior="Disabled"
-        Shell.TabBarIsVisible="False"
-        Shell.NavBarIsVisible="false"
-        Title="Register Page"
-        ContentTemplate="{DataTemplate Pages:RegisterPage}"
-        Route="RegisterPage" />
+    <FlyoutItem Title="Dashboard" Route="MainPage">
+        <ShellContent ContentTemplate="{DataTemplate local:MainPage}"
+                      Title="Dashboard" 
+                      Route="MainPage"
+                      Icon="dashboard.svg"/>
+        <Tab Title="Bills" Route="AddBill" Icon="bill.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>
+        </Tab>
+        <Tab Route="AddTransactions" Title="Transactions" Icon="transaction.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddTransaction}"/>
+        </Tab>
+        <Tab Route="AddIncome" Title="Incomes" Icon="income.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddIncome}"/>
+        </Tab>
+        <Tab Route="AddSaving" Title="Savings" Icon="saving.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddSaving}"/>
+        </Tab>
+    </FlyoutItem>
 
-    <ShellContent
-        FlyoutItemIsVisible="False" 
-        Shell.FlyoutBehavior="Disabled"
-        Shell.TabBarIsVisible="False"
-        Title="Oh uh Something Went Wrong!"
-        ContentTemplate="{DataTemplate Pages:ErrorPage}"
-        Route="ErrorPage" />
+    <FlyoutItem Title="Add a Bill" Route="AddBill">
+        <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>
+    </FlyoutItem>
 
-    <ShellContent
-        FlyoutItemIsVisible="True" 
-        Shell.TabBarIsVisible="true"
-        Title="Home Page"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-
+    <MenuItem Text="Logout" Command="{Binding LogoutCommand}"/>
+    
 </Shell>

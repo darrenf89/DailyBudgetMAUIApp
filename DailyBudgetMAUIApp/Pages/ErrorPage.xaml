@@ -4,8 +4,9 @@
              xmlns:local="clr-namespace:ABI.Microsoft.UI.Xaml.Resources;assembly=Microsoft.WinUI"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
-             x:Class="DailyBudgetMAUIApp.Pages.ErrorPage"
-             Title="Oh uh Something Went Wrong!"
+             x:Class="DailyBudgetMAUIApp.Pages.ErrorPage"   
+             Shell.FlyoutBehavior="Disabled"
+             Shell.TabBarIsVisible="False"
              Shell.NavBarIsVisible = "False">
     
     <VerticalStackLayout>

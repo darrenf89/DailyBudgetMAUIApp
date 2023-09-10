@@ -136,11 +136,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 Preferences.Remove(nameof(App.DefaultBudgetID));
                                             }
 
-                                            if (Preferences.ContainsKey(nameof(App.SessionLastUpdate)))
-                                            {
-                                                Preferences.Remove(nameof(App.SessionLastUpdate));
-                                            }
-
                                             string userDetailsStr = JsonConvert.SerializeObject(userDetails);
                                             Preferences.Set(nameof(App.UserDetails), userDetailsStr);
                                             Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
@@ -150,7 +145,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                             //TODO: Sign in or update User Session and save to DB
                                             popup.Close();
-                                            await Shell.Current.GoToAsync(nameof(MainPage));
+                                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                                         }
                                     }
                                 }

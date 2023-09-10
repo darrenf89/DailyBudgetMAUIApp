@@ -32,6 +32,11 @@ public static class MauiProgram
         builder.Services.AddTransient<LoadUpPage>();
 		builder.Services.AddTransient<RegisterPage>();
         builder.Services.AddTransient<ErrorPage>();
+        builder.Services.AddTransient<AddBill>();
+        builder.Services.AddTransient<AddTransaction>();
+        builder.Services.AddTransient<AddIncome>();
+        builder.Services.AddTransient<AddSaving>();
+
 
         //ViewModes
         builder.Services.AddSingleton<MainPageViewModel>();

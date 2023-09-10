@@ -122,7 +122,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                             //TODO: Sign in User Session and save to DB
 
-                            await Shell.Current.GoToAsync(nameof(MainPage));
+                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                         }
                         else
                         {

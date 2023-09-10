@@ -13,6 +13,12 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
+
+        [ObservableProperty]
+        private int _defaultBudgetID;
+
+        [ObservableProperty]
+        private Budgets _defaultBudget;
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {
             var popup = new PopUpPage();
@@ -24,19 +30,23 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID),1);
 
-            if(!Preferences.ContainsKey(nameof(App.DefaultBudget)))
+            if(App.DefaultBudget == null)
             {
                 DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID).Result;
-                IsBudgetUpdate = true;
+
+                App.DefaultBudget = DefaultBudget;
+                App.SessionLastUpdate = DateTime.UtcNow;
             }      
             else
             {
-                if (!Preferences.ContainsKey(nameof(App.SessionLastUpdate)))
+                if (App.SessionLastUpdate == default(DateTime))
                 {
-                    Preferences.Remove(nameof(App.DefaultBudget));
 
                     DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID).Result;
-                    IsBudgetUpdate = true;
+
+                    App.DefaultBudget = DefaultBudget;
+                    App.SessionLastUpdate = DateTime.UtcNow;
+
                 }
                 else
                 {
@@ -46,11 +56,9 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         if (App.SessionLastUpdate < LastUpdate)
                         {
-                            Preferences.Remove(nameof(App.DefaultBudget));
-                            Preferences.Remove(nameof(App.SessionLastUpdate));
-
                             DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID).Result;
-                            IsBudgetUpdate = true;
+                            App.DefaultBudget = DefaultBudget;
+                            App.SessionLastUpdate = DateTime.UtcNow;
                         }
                     }
                 }
@@ -60,14 +68,6 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
-        [ObservableProperty]
-        private int _defaultBudgetID;
-
-        [ObservableProperty]
-        private Budgets _defaultBudget;
-
-        [ObservableProperty]
-        private bool _isBudgetUpdate;
 
         [ICommand]
         async void SignOut()
@@ -80,16 +80,6 @@ namespace DailyBudgetMAUIApp.ViewModels
             if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
             {
                 Preferences.Remove(nameof(App.DefaultBudgetID));
-            }
-
-            if (Preferences.ContainsKey(nameof(App.DefaultBudget)))
-            {
-                Preferences.Remove(nameof(App.DefaultBudget));
-            }
-
-            if (Preferences.ContainsKey(nameof(App.SessionLastUpdate)))
-            {
-                Preferences.Remove(nameof(App.SessionLastUpdate));
             }
 
             await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
