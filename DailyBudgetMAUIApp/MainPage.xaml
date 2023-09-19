@@ -16,15 +16,17 @@
                    HorizontalOptions="Start"
                    Grid.Column="0"/>
             <Button TextColor="White"
+                    BackgroundColor="{StaticResource Primary}"
                     Command="{Binding GoToAccountSettingsCommand}"
                     HorizontalOptions="End"
                     Grid.Column="1"
                     Padding="10,0,0,0">
                 <Button.ImageSource>
-                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Settings_suggest}" Size="30"/>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Settings_suggest}" Size="30" />
                 </Button.ImageSource>
             </Button>
             <Button TextColor="White"
+                    BackgroundColor="{StaticResource Primary}"
                     Command="{Binding GoToAccountSettingsCommand}"
                     HorizontalOptions="End"
                     Grid.Column="2"

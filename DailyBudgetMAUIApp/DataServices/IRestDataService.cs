@@ -16,6 +16,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog);
         public Task<Budgets> GetBudgetDetailsAsync(int BudgetID);
         public Task<DateTime> GetBudgetLastUpdatedAsync(int BudgetID);
+        public Task<BudgetSettingValues> GetBudgetSettings(int BudgetID);
 
     }
 }

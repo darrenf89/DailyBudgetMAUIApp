@@ -276,7 +276,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 else
                 {
                     ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
+                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
                 }
 
             }
@@ -284,6 +284,43 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to get Budget Details in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<BudgetSettingValues> GetBudgetSettings(int BudgetID)
+        {
+            BudgetSettingValues BudgetSettings = new BudgetSettingValues();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/budgets/getbudgetsettings/{BudgetID}");
+                string content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    BudgetSettings = System.Text.Json.JsonSerializer.Deserialize<BudgetSettingValues>(content, _jsonSerialiserOptions);
+
+                    return BudgetSettings;
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Budget Settings in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
