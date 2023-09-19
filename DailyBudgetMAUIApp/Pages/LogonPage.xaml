@@ -15,7 +15,7 @@
                    Aspect="AspectFill" />            
 
             <VerticalStackLayout VerticalOptions="Start">
-                <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,50,0,45">
+                <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,50,0,180">
                     <Image Source="colorlogonobackground.png" Aspect="AspectFill" ></Image>
                 </Border>
 
@@ -169,7 +169,7 @@
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>
-                <VerticalStackLayout Margin="0,40,0,145">
+                <VerticalStackLayout Margin="0,40,0,0">
                     <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
                         <Label Text="Need an Account? "
                                 FontAttributes="Bold" 

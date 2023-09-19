@@ -19,12 +19,22 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         private Budgets _defaultBudget;
+
+        [ObservableProperty]
+        private bool _isBudgetCreated;
+
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {
-            var popup = new PopUpPage();
-            Application.Current.MainPage.ShowPopup(popup);
-            
-            Title = "Home Page!";
+
+            if (DateTime.Now.Hour > 12)
+            {
+                Title = $"Good afternoon {App.UserDetails.NickName}!";
+            }
+            else
+            {
+                Title = $"Good morning {App.UserDetails.NickName}!";
+            }
+
             _ds = ds;
             _pt = pt;
 
@@ -35,6 +45,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID).Result;
 
                 App.DefaultBudget = DefaultBudget;
+                IsBudgetCreated = App.DefaultBudget.IsCreated;
                 App.SessionLastUpdate = DateTime.UtcNow;
             }      
             else
@@ -45,6 +56,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID).Result;
 
                     App.DefaultBudget = DefaultBudget;
+                    IsBudgetCreated = App.DefaultBudget.IsCreated;
                     App.SessionLastUpdate = DateTime.UtcNow;
 
                 }
@@ -58,14 +70,19 @@ namespace DailyBudgetMAUIApp.ViewModels
                         {
                             DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID).Result;
                             App.DefaultBudget = DefaultBudget;
+                            IsBudgetCreated = App.DefaultBudget.IsCreated;
                             App.SessionLastUpdate = DateTime.UtcNow;
                         }
                     }
                 }
             }
 
-            popup.Close();
+        }
 
+        [ICommand]
+        async void NavigateCreateNewBudget()
+        {
+            await Shell.Current.GoToAsync($"{nameof(CreatNewBudget)}?BudgetID={DefaultBudgetID}");
         }
 
 

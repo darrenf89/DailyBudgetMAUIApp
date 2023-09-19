@@ -23,7 +23,8 @@ namespace DailyBudgetMAUIApp.DataServices
         public RestDataService()
         {
             _httpClient = new HttpClient();
-            _baseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5074" : "https://localhost:7141";
+            //_baseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5074" : "https://localhost:7141";
+            _baseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "https://dailybudgetwebapi.azurewebsites.net/" : "https://dailybudgetwebapi.azurewebsites.net/";
             _url = $"{_baseAddress}/api/v1";
 
             _jsonSerialiserOptions = new JsonSerializerOptions

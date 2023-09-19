@@ -54,7 +54,7 @@
                                 </Border>
                                 <HorizontalStackLayout                                    
                                 IsVisible="{Binding NickNameRequired, Converter={StaticResource BoolConverter}}"
-                                Margin="20,0,0,0">
+                                Margin="10,0,0,0">
                                     <Image>
                                         <Image.Source>
                                             <FontImageSource 
@@ -99,7 +99,7 @@
                                 </Border>
                                 <HorizontalStackLayout 
                                 IsVisible="{Binding EmailRequired, Converter={StaticResource BoolConverter}}"                                                 
-                                Margin="20,0,0,0">
+                                Margin="10,0,0,0">
                                     <Image>
                                         <Image.Source>
                                             <FontImageSource 
@@ -114,7 +114,7 @@
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout                                    
                                 IsVisible="{Binding EmailValid, Converter={StaticResource BoolConverter}}"
-                                Margin="20,0,0,0">
+                                Margin="10,0,0,0">
                                     <Image>
                                         <Image.Source>
                                             <FontImageSource 
@@ -147,16 +147,18 @@
                                     IsPassword="True"
                                     Style="{StaticResource LogonEntry}">
                                         <Entry.Behaviors>
-                                            <xct:TextValidationBehavior
-                                            MinimumLength="1"
-                                            Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused"
-                                            IsValid="{Binding PasswordRequired}" />
+                                            <xct:TextValidationBehavior MinimumLength="1"
+                                                                        Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused"
+                                                                        IsValid="{Binding PasswordRequired}" />
+                                            <xct:TextValidationBehavior RegexPattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$" 
+                                                                        Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused"
+                                                                        IsValid="{Binding PasswordStrong}"/>
                                         </Entry.Behaviors>
                                     </handlers:BorderlessEntry>
                                 </Border>
                                 <HorizontalStackLayout 
                                 IsVisible="{Binding PasswordRequired, Converter={StaticResource BoolConverter}}"
-                                Margin="20,0,0,0">
+                                Margin="10,0,0,0">
                                     <Image>
                                         <Image.Source>
                                             <FontImageSource 
@@ -167,6 +169,21 @@
                                         </Image.Source>
                                     </Image>
                                     <Label Text="Come on ... you must know you need a password!"                                   
+                                       Style="{StaticResource ErrorMessage}"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout 
+                                IsVisible="{Binding PasswordStrong, Converter={StaticResource BoolConverter}}"
+                                Margin="10,0,0,0">
+                                    <Image>
+                                        <Image.Source>
+                                            <FontImageSource 
+                                            FontFamily="MaterialDesignIcons"                                                         
+                                            Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}"                                                         
+                                            Size="15"                                                          
+                                            Color="{DynamicResource Danger}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Label Text="Password must be at least 8 characters long, have an Uppercase, Lowercase, Number  and Special character!"                                   
                                        Style="{StaticResource ErrorMessage}"/>
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
@@ -199,7 +216,7 @@
                                 </Border>
                                 <HorizontalStackLayout 
                                 IsVisible="{Binding PasswordSameSame, Converter={StaticResource BoolConverter}}"
-                                Margin="20,0,0,0">
+                                Margin="10,0,0,0">
                                     <Image>
                                         <Image.Source>
                                             <FontImageSource 
@@ -231,7 +248,7 @@
                                Padding="0" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="0,0,0,10">
-                            <CheckBox x:Name="chbxDPA" IsChecked="{Binding IsDPAPermissions}"/>
+                            <CheckBox x:Name="chbxDPA" IsChecked="{Binding IsDPAPermissions}" />
                             <Label Text="I agree to be contacted by dBuget"
                                VerticalOptions="Center"
                                TextColor="{DynamicResource Gray400}"

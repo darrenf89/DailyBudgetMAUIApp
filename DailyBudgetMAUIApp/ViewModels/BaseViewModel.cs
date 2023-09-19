@@ -17,5 +17,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         private string _title;
+
+
     }
 }

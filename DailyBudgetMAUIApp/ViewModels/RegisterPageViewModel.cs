@@ -1,4 +1,6 @@
+using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
@@ -42,6 +44,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool _passwordRequired;
         [ObservableProperty]
         private bool _passwordSameSame;
+        [ObservableProperty]
+        private bool _passwordStrong;
 
         public bool PageIsValid()
         {
@@ -76,10 +80,13 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]        
         async void SignUp()
         {
+            var popup = new PopUpPage();
+            Application.Current.MainPage.ShowPopup(popup);
             try
             {
                 if(!PageIsValid())                
                 {
+                    popup.Close();
                     return;
                 }
 
@@ -121,17 +128,19 @@ namespace DailyBudgetMAUIApp.ViewModels
                             App.DefaultBudgetID = ReturnUser.DefaultBudgetID;
 
                             //TODO: Sign in User Session and save to DB
-
+                            popup.Close();
                             await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                         }
                         else
                         {
+                            popup.Close();
                             await Application.Current.MainPage.DisplayAlert("Opps", "There was an error creating your User account, please try again!", "OK");
                         }
 
                     }
                     else
                     {
+                        popup.Close();
                         await Application.Current.MainPage.DisplayAlert("Opps", "This Email is already taken, reset your password or try a different Email", "OK");
                     }
                 }
@@ -139,10 +148,12 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     if(IsAgreedToTerms)
                     {
+                        popup.Close();
                         await Application.Current.MainPage.DisplayAlert("Opps", "Your Passwords don't match ...", "OK");
                     }
                     else
                     {
+                        popup.Close();
                         await Application.Current.MainPage.DisplayAlert("Opps", "You have to agree to our Terms of Service", "OK");
                     }
                 }
@@ -151,6 +162,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
                 ErrorLog Error = await _pt.HandleCatchedException(ex, "RegisterPage", "SignUp");
+                popup.Close();
                 await Shell.Current.GoToAsync(nameof(ErrorPage),
                     new Dictionary<string, object>
                     {
@@ -162,7 +174,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void NavigateSignIn()
         {
-            await Shell.Current.GoToAsync(nameof(LogonPage));
+            await Shell.Current.GoToAsync($"../{nameof(LogonPage)}");
         }
     }
 }

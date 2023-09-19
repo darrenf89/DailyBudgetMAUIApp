@@ -61,7 +61,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void NavigateRegister()
         {
-            await Shell.Current.GoToAsync(nameof(RegisterPage));
+            await Shell.Current.GoToAsync($"../{nameof(RegisterPage)}");
         }
 
         [ICommand]

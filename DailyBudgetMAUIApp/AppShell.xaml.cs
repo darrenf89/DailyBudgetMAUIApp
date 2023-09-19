@@ -22,6 +22,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(AddIncome), typeof(AddIncome));
         Routing.RegisterRoute(nameof(AddSaving), typeof(AddSaving));
         Routing.RegisterRoute(nameof(LogoutPage), typeof(LogoutPage));
+        Routing.RegisterRoute(nameof(CreatNewBudget), typeof(CreatNewBudget));
 
         this.BindingContext = this;
     }

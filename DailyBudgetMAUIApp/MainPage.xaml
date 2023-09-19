@@ -2,47 +2,82 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyBudgetMAUIApp.MainPage"
-             Title="Dashboard">
-
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             Background="{StaticResource Primary}">
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*,40,40" ColumnSpacing="5">
+            <Label Text="{Binding Title}" 
+                   TextColor="White" 
+                   VerticalOptions="Center"
+                   FontSize="20" 
+                   FontFamily="OpenSansSemibold" 
+                   FontAttributes="Bold"
+                   HorizontalOptions="Start"
+                   Grid.Column="0"/>
+            <Button TextColor="White"
+                    Command="{Binding GoToAccountSettingsCommand}"
+                    HorizontalOptions="End"
+                    Grid.Column="1"
+                    Padding="10,0,0,0">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Settings_suggest}" Size="30"/>
+                </Button.ImageSource>
+            </Button>
+            <Button TextColor="White"
+                    Command="{Binding GoToAccountSettingsCommand}"
+                    HorizontalOptions="End"
+                    Grid.Column="2"
+                    Padding="0,0,10,0">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Manage_accounts}" Size="30"/>
+                </Button.ImageSource>
+            </Button>
+        </Grid>
+    </Shell.TitleView>
     <ScrollView>
         <VerticalStackLayout
-            Spacing="25"
-            Padding="30,0"
-            VerticalOptions="Center">
-            
-            <Image
-                Source="dotnet_bot.png"
-                SemanticProperties.Description="Cute dot net bot waving hi to you!"
-                HeightRequest="200"
+            VerticalOptions="Start">
+            <Border Style="{DynamicResource DashboardMainContent}"
+                    IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
+                <Label
+                Text="You haven't finished creating your budget, finalise your details before you continue"
+                FontSize="32"
                 HorizontalOptions="Center" />
-
-            <Label
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
+                </Border.GestureRecognizers>
+            </Border>
+            <Border Style="{DynamicResource DashboardMainContent}">
+                <Label
                 Text="Hello, World!"
                 SemanticProperties.HeadingLevel="Level1"
                 FontSize="32"
                 HorizontalOptions="Center" />
-
-            <Label
+            </Border>
+            <Border Style="{DynamicResource DashboardMainContent}">
+                <Label
                 Text="Welcome to .NET Multi-platform App UI"
                 SemanticProperties.HeadingLevel="Level2"
                 SemanticProperties.Description="Welcome to dot net Multi platform App U I"
                 FontSize="18"
                 HorizontalOptions="Center" />
-
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me"
-                SemanticProperties.Hint="Counts the number of times you click"
-                HorizontalOptions="Center" />
-
-            <Button
-                x:Name="SignOut"
-                Command="{Binding SignOutCommand}"
-                Text="Sign Out"
-                SemanticProperties.Hint="Signs Out of Account"
-                HorizontalOptions="Center" />
-
+            </Border>
+            <Border Style="{DynamicResource DashboardMainContent}">
+                <VerticalStackLayout>
+                    <Button
+                    x:Name="CounterBtn"
+                    Text="Click me"
+                    SemanticProperties.Hint="Counts the number of times you click"
+                    HorizontalOptions="Center" />
+                    <Button
+                    x:Name="SignOut"
+                    Command="{Binding SignOutCommand}"
+                    Text="Sign Out"
+                    SemanticProperties.Hint="Signs Out of Account"
+                    HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

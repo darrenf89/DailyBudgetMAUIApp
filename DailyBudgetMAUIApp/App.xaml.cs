@@ -10,6 +10,7 @@ public partial class App : Application
 	public static int DefaultBudgetID;
     public static Budgets DefaultBudget;
     public static DateTime SessionLastUpdate;
+    public static bool HasVisitedCreatePage;
 
     public static int SessionPeriod = 7;
 

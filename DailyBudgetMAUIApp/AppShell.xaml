@@ -5,33 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:DailyBudgetMAUIApp"
     xmlns:Pages="clr-namespace:DailyBudgetMAUIApp.Pages"
-    Shell.FlyoutBehavior="Flyout"
+    Shell.FlyoutBehavior="Disabled"
     Shell.TabBarIsVisible="True">
-    
-    <Shell.MenuItemTemplate>
-        <DataTemplate>
-            <VerticalStackLayout>
-                <Image Source="{Binding Icon}"/>
-                <Label Text="{Binding Text}"
-                       FontAttributes="Bold"/> 
-            </VerticalStackLayout>
-        </DataTemplate>
-    </Shell.MenuItemTemplate>
-
-    <Shell.TitleView>
-        <HorizontalStackLayout 
-                    HorizontalOptions="End"
-                    VerticalOptions="Center" >
-            <ImageButton Source="bill.svg"
-                    Command="{Binding UserSettingsCommand}"
-                    HorizontalOptions="End"
-                    VerticalOptions="Center" />        
-            <ImageButton Source="bill.svg"
-                    Command="{Binding UserSettingsCommand}"
-                    HorizontalOptions="End"
-                    VerticalOptions="Center" />
-        </HorizontalStackLayout>
-    </Shell.TitleView>
 
     <ShellItem Route="LoadUpPage" FlyoutItemIsVisible="False">
         <ShellContent ContentTemplate="{DataTemplate Pages:LoadUpPage}"/>
@@ -41,11 +16,10 @@
         <ShellContent  ContentTemplate="{DataTemplate Pages:ErrorPage}"/>
     </ShellItem>
 
-    <FlyoutItem Title="Dashboard" Route="MainPage">
-        <ShellContent ContentTemplate="{DataTemplate local:MainPage}"
-                      Title="Dashboard" 
-                      Route="MainPage"
-                      Icon="dashboard.svg"/>
+    <TabBar>
+        <Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}"/>
+        </Tab>
         <Tab Title="Bills" Route="AddBill" Icon="bill.svg">
             <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>
         </Tab>
@@ -58,7 +32,11 @@
         <Tab Route="AddSaving" Title="Savings" Icon="saving.svg">
             <ShellContent ContentTemplate="{DataTemplate Pages:AddSaving}"/>
         </Tab>
-    </FlyoutItem>
+    </TabBar>
+
+    <ShellItem Route="CreatNewBudget" FlyoutItemIsVisible="False">
+        <ShellContent  ContentTemplate="{DataTemplate Pages:CreatNewBudget}"/>
+    </ShellItem>
 
     <FlyoutItem Title="Add a Bill" Route="AddBill">
         <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>

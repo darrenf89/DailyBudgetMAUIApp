@@ -10,7 +10,7 @@
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>
         <Setter Property="FontSize" Value="Micro"/>
-        <Setter Property="Margin" Value="10,0,0,0"/>
+        <Setter Property="Margin" Value="10,5,0,0"/>
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="LineBreakMode" Value="WordWrap"/>
         <Setter Property="WidthRequest" Value="215"/>
@@ -24,6 +24,15 @@
         <Setter Property="Shadow">
             <Shadow Brush="{DynamicResource Tertiary}" Offset="0,0" Radius="40" Opacity="0.95" />
         </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="DashboardMainContent">
+        <Setter Property="Margin" Value="5,0,5,15"/>
+        <Setter Property="Padding" Value="10,10,10,10"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
+        <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource White}"/>
     </Style>
 
     <Style TargetType="Border" x:Key="FrameLogonStandardContent">
@@ -223,7 +232,7 @@
     </Style>
 
     <Style TargetType="CheckBox">
-        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+        <Setter Property="Color" Value="{StaticResource Primary}" />
         <Setter Property="MinimumHeightRequest" Value="44"/>
         <Setter Property="MinimumWidthRequest" Value="44"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
@@ -333,7 +342,7 @@
     </Style>
 
     <Style TargetType="Label">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+        <Setter Property="TextColor" Value="{StaticResource Gray900}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="14" />
@@ -552,16 +561,16 @@
     </Style>
 
     <Style TargetType="Shell" ApplyToDerivedTypes="True">
-        <Setter Property="Shell.BackgroundColor" Value="{StaticResource PrimaryDark}" />
+        <Setter Property="Shell.BackgroundColor" Value="{StaticResource Primary}" />
         <Setter Property="Shell.ForegroundColor" Value="{StaticResource White}" />
         <Setter Property="Shell.TitleColor" Value="{StaticResource White}" />
         <Setter Property="Shell.DisabledColor" Value="{StaticResource Secondary}" />
         <Setter Property="Shell.UnselectedColor" Value="{StaticResource Secondary}" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
-        <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource PrimaryDark}"/>
-        <Setter Property="Shell.TabBarForegroundColor" Value="{StaticResource Gray100}" />
-        <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource White}" />
-        <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource Gray100}" />
+        <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource White}"/>
+        <Setter Property="Shell.TabBarForegroundColor" Value="{StaticResource PrimaryDark}" />
+        <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource PrimaryDark}" />
+        <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource PrimaryLight}" />
     </Style>
 
     <Style TargetType="NavigationPage">
