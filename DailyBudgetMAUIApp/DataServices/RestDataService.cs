@@ -300,8 +300,8 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
 
-                HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/budgets/getbudgetsettings/{BudgetID}");
-                string content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getbudgetsettings/{BudgetID}").Result;
+                string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {

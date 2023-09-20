@@ -6,8 +6,14 @@
              Shell.TabBarIsVisible="False">
     <VerticalStackLayout>
         <Label 
-            Text="{Binding BudgetID}"
+            Text="{Binding BudgetID,StringFormat='The Deafault Budget ID is {0}'}"
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
+        <Label>
+            <MultiBinding StringFormat="'Testing how a multi binding works in a label with {0:c} and also {1:n} value'">
+                <Binding Path="BudgetID"/>
+                <Binding Path="BudgetID"/>
+            </MultiBinding>
+        </Label>
     </VerticalStackLayout>
 </ContentPage>

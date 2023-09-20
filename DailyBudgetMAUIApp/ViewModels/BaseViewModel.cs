@@ -23,35 +23,5 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private string _title;
 
-        public BaseViewModel()
-        {
-            RestDataService _ds = new RestDataService();
-
-            if(App.DefaultBudgetID != null && App.DefaultBudgetID != 0)
-            {
-                if(App.CurrentSettings == null)
-                {
-                    BudgetSettingValues Settings = _ds.GetBudgetSettings(App.DefaultBudgetID).Result;
-                    App.CurrentSettings = Settings;
-                }
-                
-                CultureInfo.DefaultThreadCurrentCulture.NumberFormat.CurrencySymbol = App.CurrentSettings.CurrencySymbol;
-                CultureInfo.DefaultThreadCurrentCulture.NumberFormat.CurrencyDecimalSeparator = App.CurrentSettings.CurrencyDecimalSeparator;
-                CultureInfo.DefaultThreadCurrentCulture.NumberFormat.CurrencyGroupSeparator = App.CurrentSettings.CurrencyGroupSeparator;
-                CultureInfo.DefaultThreadCurrentCulture.NumberFormat.CurrencyDecimalDigits = App.CurrentSettings.CurrencyDecimalDigits;
-                CultureInfo.DefaultThreadCurrentCulture.NumberFormat.CurrencyPositivePattern = App.CurrentSettings.CurrencyPositivePattern;
-                CultureInfo.DefaultThreadCurrentCulture.DateTimeFormat.ShortDatePattern = App.CurrentSettings.ShortDatePattern;
-                CultureInfo.DefaultThreadCurrentCulture.DateTimeFormat.DateSeparator = App.CurrentSettings.DateSeparator;
-            }
-            else
-            {
-                 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-gb");
-            }
-
-
-
-        }
-
-
     }
 }

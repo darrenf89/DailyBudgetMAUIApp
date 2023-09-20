@@ -5,6 +5,7 @@ using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
+using System.Globalization;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -40,7 +41,32 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID),1);
 
-            if(App.DefaultBudget == null)
+            if (App.DefaultBudgetID != 0)
+            {
+                if (App.CurrentSettings == null)
+                {
+                    BudgetSettingValues Settings = _ds.GetBudgetSettings(App.DefaultBudgetID).Result;
+                    App.CurrentSettings = Settings;
+                }
+
+                CultureInfo CultureSetting = new CultureInfo("en-gb");
+
+                CultureSetting.NumberFormat.CurrencySymbol = App.CurrentSettings.CurrencySymbol;
+                CultureSetting.NumberFormat.CurrencyDecimalSeparator = App.CurrentSettings.CurrencyDecimalSeparator;
+                CultureSetting.NumberFormat.CurrencyGroupSeparator = App.CurrentSettings.CurrencyGroupSeparator;
+                CultureSetting.NumberFormat.CurrencyDecimalDigits = App.CurrentSettings.CurrencyDecimalDigits;
+                CultureSetting.NumberFormat.CurrencyPositivePattern = App.CurrentSettings.CurrencyPositivePattern;
+                CultureSetting.DateTimeFormat.ShortDatePattern = App.CurrentSettings.ShortDatePattern;
+                CultureSetting.DateTimeFormat.DateSeparator = App.CurrentSettings.DateSeparator;
+
+                CultureInfo.CurrentCulture = CultureSetting;
+            }
+            else
+            {
+                CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-gb");
+            }
+
+            if (App.DefaultBudget == null)
             {
                 DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID).Result;
 
