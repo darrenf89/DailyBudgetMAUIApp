@@ -1,5 +1,6 @@
 ﻿using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
+using System.Globalization;
 using Microsoft.Maui.Platform;
 
 namespace DailyBudgetMAUIApp;
@@ -11,11 +12,13 @@ public partial class App : Application
     public static Budgets DefaultBudget;
     public static DateTime SessionLastUpdate;
     public static bool HasVisitedCreatePage;
+    public static BudgetSettingValues CurrentSettings;
 
     public static int SessionPeriod = 7;
 
     public App()
 	{
+
 		InitializeComponent();
 
         Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping(nameof(BorderlessEntry), (handler, view) =>
