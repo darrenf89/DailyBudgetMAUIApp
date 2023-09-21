@@ -15,6 +15,6 @@ namespace DailyBudgetMAUIApp.DataServices
         public RegisterModel CreateUserSecurityDetails(RegisterModel obj);
         public Task<ErrorLog> HandleCatchedException(Exception ex, string page, string Method);
         public DateTime GetBudgetLastUpdated(int BudgetID);
-        void ShowPopup(PopUpPage popup);
+        public void ShowPopup(PopUpPage popup);
     }
 }

@@ -36,7 +36,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AddTransaction>();
         builder.Services.AddTransient<AddIncome>();
         builder.Services.AddTransient<AddSaving>();
-        builder.Services.AddTransient<CreatNewBudget>();
+        builder.Services.AddTransient<CreateNewBudget>();
 
 
         //ViewModes
@@ -49,7 +49,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AddTransactionViewModel>();
         builder.Services.AddTransient<AddIncomeViewModel>();
         builder.Services.AddTransient<AddSavingViewModel>();
-        builder.Services.AddTransient<CreatNewBudgetViewModel>();
+        builder.Services.AddTransient<CreateNewBudgetViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();

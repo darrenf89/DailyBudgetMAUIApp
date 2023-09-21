@@ -32,7 +32,7 @@ public partial class MainPage : ContentPage
         if (!App.DefaultBudget.IsCreated && !App.HasVisitedCreatePage)
         {
             App.HasVisitedCreatePage = true;
-            Shell.Current.GoToAsync($"{nameof(CreatNewBudget)}?BudgetID={App.DefaultBudgetID}");
+            Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={App.DefaultBudgetID}");
 
             //TODO: Navigate to create Budget journey as no budget assinged!
         }

@@ -34,8 +34,8 @@
         </Tab>
     </TabBar>
 
-    <ShellItem Route="CreatNewBudget" FlyoutItemIsVisible="False">
-        <ShellContent  ContentTemplate="{DataTemplate Pages:CreatNewBudget}"/>
+    <ShellItem Route="CreateNewBudget" FlyoutItemIsVisible="False">
+        <ShellContent  ContentTemplate="{DataTemplate Pages:CreateNewBudget}"/>
     </ShellItem>
 
     <FlyoutItem Title="Add a Bill" Route="AddBill">

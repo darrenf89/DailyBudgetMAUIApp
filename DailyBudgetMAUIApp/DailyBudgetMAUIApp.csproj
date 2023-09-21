@@ -65,6 +65,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Pages\CreateNewBudget.xaml.cs">
+	    <DependentUpon>CreateNewBudget.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\LogonPage.xaml.cs">
 	    <DependentUpon>LogonPage.xaml</DependentUpon>
 	  </Compile>
@@ -89,7 +92,7 @@
 	  <MauiXaml Update="Pages\AddTransaction.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\CreatNewBudget.xaml">
+	  <MauiXaml Update="Pages\CreateNewBudget.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ErrorPage.xaml">

@@ -9,6 +9,7 @@ using System.Net.Mail;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using DailyBudgetMAUIApp.Handlers;
+using CommunityToolkit.Maui.Views;
 
 namespace DailyBudgetMAUIApp.DataServices
 {
@@ -92,7 +93,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public void ShowPopup(PopUpPage popup)
         {
-            Page page = Application.Current?.MainPage ?? throw new NullReferenceException();
+            Page page = Application.Current.MainPage ?? throw new NullReferenceException();
             page.ShowPopup(popup);
         }
 

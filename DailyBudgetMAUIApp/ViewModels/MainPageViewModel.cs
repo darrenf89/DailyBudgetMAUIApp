@@ -108,7 +108,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void NavigateCreateNewBudget()
         {
-            await Shell.Current.GoToAsync($"{nameof(CreatNewBudget)}?BudgetID={DefaultBudgetID}");
+            await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={DefaultBudgetID}");
         }
 
 
