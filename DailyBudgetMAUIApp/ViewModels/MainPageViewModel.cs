@@ -68,7 +68,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             if (App.DefaultBudget == null)
             {
-                DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID).Result;
+                DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Limited").Result;
 
                 App.DefaultBudget = DefaultBudget;
                 IsBudgetCreated = App.DefaultBudget.IsCreated;
@@ -79,7 +79,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 if (App.SessionLastUpdate == default(DateTime))
                 {
 
-                    DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID).Result;
+                    DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Limited").Result;
 
                     App.DefaultBudget = DefaultBudget;
                     IsBudgetCreated = App.DefaultBudget.IsCreated;
@@ -94,7 +94,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         if (App.SessionLastUpdate < LastUpdate)
                         {
-                            DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID).Result;
+                            DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Limited").Result;
                             App.DefaultBudget = DefaultBudget;
                             IsBudgetCreated = App.DefaultBudget.IsCreated;
                             App.SessionLastUpdate = DateTime.UtcNow;

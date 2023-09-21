@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Net.Mail;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using DailyBudgetMAUIApp.Handlers;
 
 namespace DailyBudgetMAUIApp.DataServices
 {
@@ -88,5 +89,12 @@ namespace DailyBudgetMAUIApp.DataServices
 
             return LastUpdated;
         }
+
+        public void ShowPopup(PopUpPage popup)
+        {
+            Page page = Application.Current?.MainPage ?? throw new NullReferenceException();
+            page.ShowPopup(popup);
+        }
+
     }
 }

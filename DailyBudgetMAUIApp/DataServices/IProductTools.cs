@@ -1,4 +1,5 @@
-﻿using DailyBudgetMAUIApp.Models;
+﻿using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,6 @@ namespace DailyBudgetMAUIApp.DataServices
         public RegisterModel CreateUserSecurityDetails(RegisterModel obj);
         public Task<ErrorLog> HandleCatchedException(Exception ex, string page, string Method);
         public DateTime GetBudgetLastUpdated(int BudgetID);
+        void ShowPopup(PopUpPage popup);
     }
 }

@@ -200,7 +200,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public async Task<Budgets> GetBudgetDetailsAsync(int BudgetID)
+        public async Task<Budgets> GetBudgetDetailsAsync(int BudgetID, string Mode)
         {
             Budgets Budget = new Budgets();
 
@@ -211,8 +211,17 @@ namespace DailyBudgetMAUIApp.DataServices
 
             try
             {
+                string ApiMethod = "";
+                if (Mode == "Full")
+                {
+                    ApiMethod = "getbudgetdetailsfull";
+                }
+                else if(Mode == "Limited")
+                {
+                    ApiMethod = "getbudgetdetailsonly";
+                }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getbudgetdetailsonly/{BudgetID}").Result;
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/{ApiMethod}/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
 
@@ -324,5 +333,43 @@ namespace DailyBudgetMAUIApp.DataServices
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<Budgets> CreateNewBudget(string UserEmail)
+        {
+            Budgets Budget = new Budgets();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/createnewbudget/{UserEmail}").Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
+
+                    return Budget;
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }
