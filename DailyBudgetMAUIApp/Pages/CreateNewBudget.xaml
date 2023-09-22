@@ -15,5 +15,11 @@
                 <Binding Path="BudgetID"/>
             </MultiBinding>
         </Label>
+        <Label Text="{Binding Budget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
+               VerticalOptions="Center" 
+               HorizontalOptions="Center" />
+        <Label Text="{Binding Budget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
+               VerticalOptions="Center" 
+               HorizontalOptions="Center" />
     </VerticalStackLayout>
 </ContentPage>

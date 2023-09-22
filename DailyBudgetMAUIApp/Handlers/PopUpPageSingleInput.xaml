@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+           x:Class="DailyBudgetMAUIApp.Handlers.PopUpPageSingleInput"
+           xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+           xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+            xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+           CanBeDismissedByTappingOutsideOfPopup="False"
+           Color="Transparent">
+    <border Style="DashboardMainContent" >
+        <VerticalStackLayout>
+            <Label 
+                Text="{Binding Title}"
+                FontAttributes="Bold"
+                FontSize="Medium"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                FontFamily="OpenSansSemibold"
+                TextColor="{DynamicResource Light}"
+                Margin="0,20,0,0"/>
+            <Label 
+                Text="{Binding Description}"
+                FontAttributes="Bold"
+                FontSize="Caption"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                TextColor="{DynamicResource Light}"
+                Margin="0,20,0,0"/>
+            <HorizontalStackLayout HorizontalOptions="Center">
+                <VerticalStackLayout Margin="0,0,0,15">
+                    <Border Style="{StaticResource FrameLogonStandardContent}">
+                        <handlers:BorderlessEntry Text="{Binding ReturnData}"
+                            Placeholder="{Binding Placeholder}"
+                            Keyboard="Text" 
+                            Style="{StaticResource LogonEntry}"
+                            MaxLength="20">
+                            <Entry.Behaviors>
+                                <xct:TextValidationBehavior
+                                MinimumLength="1"
+                                Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused"
+                                IsValid="{Binding ReturnDataRequired}" />
+                            </Entry.Behaviors>
+                        </handlers:BorderlessEntry>
+                    </Border>
+                    <HorizontalStackLayout 
+                    IsVisible="{Binding ReturnDataRequired, Converter={StaticResource BoolConverter}}"                                                 
+                    Margin="20,0,0,0">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource 
+                                FontFamily="MaterialDesignIcons"                                                         
+                                Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}"                                                         
+                                Size="15"                                                          
+                                Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="You MUST tell us what we need to know!"
+                        Style="{StaticResource ErrorMessage}"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
+            <Button Text="Save"
+                    Clicked="Close_Popup"
+                    Style="">
+            </Button>
+        </VerticalStackLayout>
+    </border>
+
+</xct:Popup>

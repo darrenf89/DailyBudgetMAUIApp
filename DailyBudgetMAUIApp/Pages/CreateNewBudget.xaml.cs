@@ -28,14 +28,12 @@ public partial class CreateNewBudget : ContentPage
     {       
 
         var popup = new PopUpPage();
-        _pt.ShowPopup(popup);
+        this.ShowPopup(popup);
 
         try
         {
-
             if (_vm.BudgetID == 0)
             {
-                //TODO: Create a new budget because a previous budget hasn't been passed.
                 _vm.BudgetID = _ds.CreateNewBudget(App.UserDetails.Email).Result.BudgetID;
 
                 if (_vm.BudgetID != 0)
@@ -49,10 +47,19 @@ public partial class CreateNewBudget : ContentPage
             }
             else
             {
-                //TODO: Get the current budgets details
-                _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+                if(_vm.Buget == null)
+                {
+                    _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+                }
 
             }
+            
+            //TODO: IF NO BUDGET NAME ASK FOR NAME ENETERED BY USING A POP UP.
+            if(_vm.Budget.BudgetName == "" || _vm.Budget.BudgetName == null)
+            {
+                
+            }
+
         }
         catch (Exception ex)
         {
