@@ -15,6 +15,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public LoadUpPageViewModel(IProductTools pt)
         {
+
             CheckUserLoginDetails();
             _pt = pt;
         }

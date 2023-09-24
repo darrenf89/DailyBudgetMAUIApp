@@ -2,24 +2,169 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyBudgetMAUIApp.Pages.CreateNewBudget"
-             Title="CreateNewBudget"
-             Shell.TabBarIsVisible="False">
-    <VerticalStackLayout>
-        <Label 
-            Text="{Binding BudgetID,StringFormat='The Deafault Budget ID is {0}'}"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-        <Label>
-            <MultiBinding StringFormat="'Testing how a multi binding works in a label with {0:c} and also {1:n} value'">
-                <Binding Path="BudgetID"/>
-                <Binding Path="BudgetID"/>
-            </MultiBinding>
-        </Label>
-        <Label Text="{Binding Budget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
-               VerticalOptions="Center" 
-               HorizontalOptions="Center" />
-        <Label Text="{Binding Budget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
-               VerticalOptions="Center" 
-               HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"             
+             Title="Create Your Budget"
+             Shell.TabBarIsVisible="False"
+             BackgroundColor="{DynamicResource White}">
+    <ScrollView>
+        <VerticalStackLayout Padding="20,5,20,5">
+            <VerticalStackLayout>
+                <HorizontalStackLayout Margin="0,0,0,2">
+                    <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Text="Create a Budget: " Padding="0"/>
+                    <Label FontSize="Caption" FontAttributes="Bold" TextColor="{DynamicResource Primary}" Padding="0" Text="{Binding Stage}"/>
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Margin="0" Padding="0">
+                    <BoxView HeightRequest="5"  Margin="0,0,3,0" WidthRequest="{Binding StageWidth}" x:Name="bvStage1"/>
+                    <BoxView HeightRequest="5"  Margin="0,0,3,0" WidthRequest="{Binding StageWidth}" x:Name="bvStage2"/>
+                    <BoxView HeightRequest="5"  Margin="0,0,3,0" WidthRequest="{Binding StageWidth}" x:Name="bvStage3"/>
+                    <BoxView HeightRequest="5"  Margin="0,0,3,0" WidthRequest="{Binding StageWidth}" x:Name="bvStage4"/>
+                    <BoxView HeightRequest="5"  Margin="0" WidthRequest="{Binding StageWidth}" x:Name="bvStage5"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+            <VerticalStackLayout Margin="20">
+                <Label 
+                    Text="{Binding Budget.BudgetName}"
+                    IsVisible="{Binding Budget.BudgetName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Center"
+                    FontSize="Large"
+                    FontFamily="OpenSansSemibold"
+                    TextColor="{DynamicResource Tertiary}"/>
+                <Label 
+                    Text="Give your Budget a name ..."
+                    IsVisible="{Binding Budget.BudgetName, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Center"
+                    FontSize="Large"
+                    FontFamily="OpenSansSemibold"                
+                    TextColor="{DynamicResource Secondary}"/>
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ChangeBudgetNameCommand}"/>
+                </VerticalStackLayout.GestureRecognizers>
+            </VerticalStackLayout>
+            <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
+            <VerticalStackLayout Margin="0">
+                <Grid ColumnDefinitions="3*,*" RowDefinitions="40">
+                    <Label x:Name="lblSettingsHeader" Text="Your Settings" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" Grid.Column="0" VerticalOptions="Center" Padding="5,0,0,0"/>
+                    <HorizontalStackLayout Margin="0" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
+                        <Image Background="{DynamicResource White}">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
+                    </HorizontalStackLayout>
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="GoToStageSettings_Tapped"/>
+                    </Grid.GestureRecognizers>
+                </Grid>
+            </VerticalStackLayout>
+            <VerticalStackLayout x:Name="SettingsDetails" IsVisible="true">
+            
+            </VerticalStackLayout>
+            <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
+            <VerticalStackLayout Margin="0">
+                <Grid ColumnDefinitions="3*,*" RowDefinitions="40">
+                    <Label x:Name="lblBudgetHeader" Text="Your Budget" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,0,0,0"/>
+                    <HorizontalStackLayout Margin="0" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
+                        <Image Background="{DynamicResource White}">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
+                    </HorizontalStackLayout>
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="GoToStageBudget_Tapped"/>
+                    </Grid.GestureRecognizers>
+                </Grid>
+            </VerticalStackLayout>
+            <VerticalStackLayout x:Name="BudgetDetails" IsVisible="false">
+
+            </VerticalStackLayout>
+            <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
+            <VerticalStackLayout Margin="0">
+                <Grid ColumnDefinitions="3*,*" RowDefinitions="40">
+                    <Label x:Name="lblBillsHeader" Text="Your Outgoings" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,0,0,0"/>
+                    <HorizontalStackLayout Margin="0" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
+                        <Image Background="{DynamicResource White}">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
+                    </HorizontalStackLayout>
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="GoToStageBills_Tapped"/>
+                    </Grid.GestureRecognizers>
+                </Grid>
+            </VerticalStackLayout>
+            <VerticalStackLayout x:Name="BillDetails" IsVisible="false">
+
+            </VerticalStackLayout>
+            <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
+            <VerticalStackLayout Margin="0">
+                <Grid ColumnDefinitions="3*,*" RowDefinitions="40">
+                    <Label x:Name="lblSavingsHeader" Text="Your Saving Goals" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,0,0,0"/>
+                    <HorizontalStackLayout Margin="0" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
+                        <Image Background="{DynamicResource White}">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
+                    </HorizontalStackLayout>
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="GoToStageSavings_Tapped"/>
+                    </Grid.GestureRecognizers>
+                </Grid>
+            </VerticalStackLayout>
+            <VerticalStackLayout x:Name="SavingsDetails" IsVisible="false">
+
+            </VerticalStackLayout>
+            <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
+            <VerticalStackLayout Margin="0">
+                <Grid ColumnDefinitions="3*,*" RowDefinitions="40">
+                    <Label x:Name="lblIncomesHeader" Text="Your Income" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,0,0,0"/>
+                    <HorizontalStackLayout Margin="0" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
+                        <Image Background="{DynamicResource White}">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
+                    </HorizontalStackLayout>
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="GoToStageIncomes_Tapped"/>
+                    </Grid.GestureRecognizers>
+                </Grid>
+            </VerticalStackLayout>
+            <VerticalStackLayout x:Name="IncomeDetails" IsVisible="false">
+
+            </VerticalStackLayout>
+            <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
+            <Label 
+                Text="{Binding BudgetID,StringFormat='The Deafault Budget ID is {0}'}"
+                Margin="0,100,0,0"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" />
+            <Label>
+                <MultiBinding StringFormat="'Testing how a multi binding works in a label with {0:c} and also {1:n} value'">
+                    <Binding Path="BudgetID"/>
+                    <Binding Path="BudgetID"/>
+                </MultiBinding>
+            </Label>
+            <Label Text="{Binding Budget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
+                   VerticalOptions="Center" 
+                   HorizontalOptions="Center" />
+            <Label Text="{Binding Budget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
+                   VerticalOptions="Center" 
+                   HorizontalOptions="Center" />
+            <Label Text="{Binding Budget.BudgetName, StringFormat='Your Budget Name is {0}'}"
+                   VerticalOptions="Center" 
+                   HorizontalOptions="Center"
+                   TextColor="Black"/>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

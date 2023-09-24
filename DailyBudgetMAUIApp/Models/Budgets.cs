@@ -1,43 +1,67 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+
 
 namespace DailyBudgetMAUIApp.Models
 {
-    public class Budgets
+    public partial class Budgets : ObservableObject
     {
-        [Key]
-        public int BudgetID { get; set; }
-        public string? BudgetName { get; set; }
-        public DateTime BudgetCreatedOn { get; set; } = DateTime.Now;
-        [DataType(DataType.Currency)]
-        public decimal? BankBalance { get; set; }
-        [DataType(DataType.Currency)]
-        public decimal? MoneyAvailableBalance { get; set; }
-        [DataType(DataType.Currency)]
-        public decimal? LeftToSpendBalance { get; set; }
-        public DateTime? NextIncomePayday { get; set; }
-        public DateTime? NextIncomePaydayCalculated { get; set; }
-        public decimal? PaydayAmount { get; set; }
-        public string? PaydayType { get; set; }
-        public int? PaydayValue { get; set; }
-        public string? PaydayDuration { get; set; }
-        public bool IsCreated { get; set; }
-        public DateTime LastUpdated { get; set; }
-        public List<IncomeEvents> IncomeEvents { get; set; } = new List<IncomeEvents>();
-        public List<Savings> Savings { get; set; } = new List<Savings>();
-        public List<Transactions> Transactions { get; set; } = new List<Transactions>();
-        public List<Categories> Categories { get; set; } = new List<Categories>();
-        public List<Bills> Bills { get; set; } = new List<Bills>();
-        public List<PayPeriodStats> PayPeriodStats { get; set; } = new List<PayPeriodStats>();
-        public List<BudgetHstoryLastPeriod> BudgetHistory { get; set; } = new List<BudgetHstoryLastPeriod>();
-        public string? CurrencyType { get; set; }
-        [DataType(DataType.Currency)]
-        public int? AproxDaysBetweenPay { get; set; } = 30;
-        public DateTime BudgetValuesLastUpdated { get; set; } = DateTime.UtcNow;
-        public decimal DailySavingOutgoing { get; set; }
-        public decimal DailyBillOutgoing { get; set; }
-        public decimal LeftToSpendDailyAmount { get; set; }
-        public decimal? StartDayDailyAmount { get; set; }
-        public ErrorClass? Error { get; set; } = null;
+        [ObservableProperty]
+        private int _budgetID;
+        [ObservableProperty]
+        private string? _budgetName;
+        [ObservableProperty]
+        private DateTime _budgetCreatedOn = DateTime.Now;
+        [ObservableProperty]
+        private decimal? _bankBalance ;
+        [ObservableProperty]
+        private decimal? _moneyAvailableBalance ;
+        [ObservableProperty]
+        private decimal? _leftToSpendBalance ;
+        [ObservableProperty]
+        private DateTime? _nextIncomePayday ;
+        [ObservableProperty]
+        private DateTime? _nextIncomePaydayCalculated ;
+        [ObservableProperty]
+        private decimal? _paydayAmount ;
+        [ObservableProperty]
+        private string? _paydayType ;
+        [ObservableProperty]
+        private int? _paydayValue ;
+        [ObservableProperty]
+        private string? _paydayDuration ;
+        [ObservableProperty]
+        private bool _isCreated ;
+        [ObservableProperty]
+        private DateTime _lastUpdated ;
+        [ObservableProperty]
+        private List<IncomeEvents> _incomeEvents  = new List<IncomeEvents>();
+        [ObservableProperty]
+        private List<Savings> _savings  = new List<Savings>();
+        [ObservableProperty]
+        private List<Transactions> _transactions  = new List<Transactions>();
+        [ObservableProperty]
+        private List<Categories> _categories  = new List<Categories>();
+        [ObservableProperty]
+        private List<Bills> _bills  = new List<Bills>();
+        [ObservableProperty]
+        private List<PayPeriodStats> _payPeriodStats  = new List<PayPeriodStats>();
+        [ObservableProperty]
+        private List<BudgetHstoryLastPeriod> _budgetHistory  = new List<BudgetHstoryLastPeriod>();
+        [ObservableProperty]
+        private string? _currencyType ;
+        [ObservableProperty]
+        private int? _aproxDaysBetweenPay  = 30;
+        [ObservableProperty]
+        private DateTime _budgetValuesLastUpdated  = DateTime.UtcNow;
+        [ObservableProperty]
+        private decimal _dailySavingOutgoing ;
+        [ObservableProperty]
+        private decimal _dailyBillOutgoing ;
+        [ObservableProperty]
+        private decimal _leftToSpendDailyAmount ;
+        [ObservableProperty]
+        private decimal? _startDayDailyAmount ;
+        [ObservableProperty]
+        private ErrorClass? _error  = null;
     }
 }

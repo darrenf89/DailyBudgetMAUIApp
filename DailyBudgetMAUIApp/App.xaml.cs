@@ -26,8 +26,10 @@ public partial class App : Application
             if (view is BorderlessEntry)
             {
 #if __ANDROID__
-                handler.PlatformView.SetBackgroundColor(Colors.Transparent.ToPlatform());
+                handler.PlatformView.Background = null;
+                handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
 #elif __IOS__
+                handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
                 handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
 #endif
             }
