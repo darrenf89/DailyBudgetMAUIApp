@@ -13,6 +13,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class CreateNewBudgetViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
+        private readonly IRestDataService _ds;
         [ObservableProperty]
         private int _budgetID;
         [ObservableProperty]
@@ -26,12 +27,13 @@ namespace DailyBudgetMAUIApp.ViewModels
         public double StageWidth { get; }
         [ObservableProperty]
         private List<lut_CurrencySymbol> _currencySearchResults;
-        [ObserableProperty]
+        [ObservableProperty]
         private lut_CurrencySymbol _selectedCurrencySymbol;
 
-        public CreateNewBudgetViewModel(IProductTools pt)
+        public CreateNewBudgetViewModel(IProductTools pt, IRestDataService ds)
         {
             _pt = pt;
+            _ds = ds;
             StageWidth = (((DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 52) / 5);
         }
 
@@ -66,11 +68,24 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void CurrencySearch(string query)
         {
-
+            try
+            {            
+                CurrencySearchResults = _ds.GetCurrencySymbols(query).Result;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($" --> {ex.Message}");
+                ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "CurrencySymbol").Result;
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });
+            }
         }
 
-        [RelayCommand]
-        private void CurrencySymbolSelected(object item)
+        [ICommand]
+        private void CurrencySymbolSelected(lut_CurrencySymbol item)
         {
 
         }

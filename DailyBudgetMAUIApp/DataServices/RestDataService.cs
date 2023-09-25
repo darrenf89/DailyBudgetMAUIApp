@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Net.Mail;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using CommunityToolkit.Maui.ApplicationModel;
 
 namespace DailyBudgetMAUIApp.DataServices
 {
@@ -297,7 +298,44 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public async Task<BudgetSettingValues> GetBudgetSettings(int BudgetID)
+        public async Task<BudgetSettings> GetBudgetSettings(int BudgetID)
+        {
+            BudgetSettings BudgetSettings = new BudgetSettings();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getbudgetsettingsvalues/{BudgetID}").Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    BudgetSettings = System.Text.Json.JsonSerializer.Deserialize<BudgetSettings>(content, _jsonSerialiserOptions);
+
+                    return BudgetSettings;
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Budget Settings in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<BudgetSettingValues> GetBudgetSettingsValues(int BudgetID)
         {
             BudgetSettingValues BudgetSettings = new BudgetSettingValues();
 
@@ -309,19 +347,33 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getbudgetsettings/{BudgetID}").Result;
-                string content = response.Content.ReadAsStringAsync().Result;
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getbudgetsettingsvalues/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
                 {
 
-                    BudgetSettings = System.Text.Json.JsonSerializer.Deserialize<BudgetSettingValues>(content, _jsonSerialiserOptions);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        BudgetSettings = serializer.Deserialize<BudgetSettingValues>(reader);
+                    }
 
                     return BudgetSettings;
                 }
                 else
                 {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
                     throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
                 }
 
@@ -371,5 +423,54 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<List<lut_CurrencySymbol>> GetCurrencySymbols(string SearchQuery)
+        {
+            List<lut_CurrencySymbol> Currencies = new List<lut_CurrencySymbol>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getcurrencysymbols/{SearchQuery}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        Currencies = serializer.Deserialize<List<lut_CurrencySymbol>>(reader);
+                    }
+
+                    return Currencies;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

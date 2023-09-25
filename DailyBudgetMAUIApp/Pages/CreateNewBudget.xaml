@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyBudgetMAUIApp.Pages.CreateNewBudget"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
-             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"             
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              Title="Create Your Budget"
              Shell.TabBarIsVisible="False"
              BackgroundColor="{DynamicResource White}">
@@ -63,15 +64,15 @@
             <VerticalStackLayout x:Name="SettingsDetails" IsVisible="true">
                 <Label Text="Currency"/>
                 <VerticalStackLayout x:Name="CurrencySearchBarLayout">
-                    <SearchBar x:Name="CurrencySearch" SearchCommand="{Binding CurrencySearchCommand}" SearchCommandParameters="{Binding Text, Source={x:Reference CurrencySearch}}"/>
-                    <ListView ItemSource="{Binding CurrencySearchResults}" SelectionMode="Single" SelectedItem="{Binding SelectedCurrencySymbol}">
-                        <ListView.Behaviours>
-                            <xct:EventToCommandBehaviour EventName="ItemSelected" Command="{Binding CurrencySymbolSelectedCommand}" EventArgsConverter="{StaticResource SelectedItemEventArgsConverter}"/>
-                        </ListView.Behaviours>
+                    <SearchBar x:Name="CurrencySearch" SearchCommand="{Binding CurrencySearchCommand}" SearchCommandParameter="{Binding Text, Source={x:Reference CurrencySearch}}"/>
+                    <ListView ItemsSource="{Binding CurrencySearchResults}" SelectionMode="Single" SelectedItem="{Binding SelectedCurrencySymbol}">
+                        <ListView.Behaviors>
+                            <xct:EventToCommandBehavior EventName="ItemSelected" Command="{Binding CurrencySymbolSelectedCommand}" EventArgsConverter="{StaticResource SelectedItemEventArgsConverter}"/>
+                        </ListView.Behaviors>
                     </ListView>
                 </VerticalStackLayout>
                 <VerticalStackLayout x:Name="CurrencySearchResultLayout">
-                    <label x:Name="lblSelectedCurrency" />
+                    <Label x:Name="lblSelectedCurrency" />
                 </VerticalStackLayout>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />

@@ -45,7 +45,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 if (App.CurrentSettings == null)
                 {
-                    BudgetSettingValues Settings = _ds.GetBudgetSettings(App.DefaultBudgetID).Result;
+                    BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
                     App.CurrentSettings = Settings;
                 }
 

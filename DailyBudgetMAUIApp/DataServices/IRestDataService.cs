@@ -16,8 +16,10 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog);
         public Task<Budgets> GetBudgetDetailsAsync(int BudgetID, string Mode);
         public Task<DateTime> GetBudgetLastUpdatedAsync(int BudgetID);
-        public Task<BudgetSettingValues> GetBudgetSettings(int BudgetID);
+        public Task<BudgetSettingValues> GetBudgetSettingsValues(int BudgetID);
+        public Task<BudgetSettings> GetBudgetSettings(int BudgetID);
         public Task<Budgets> CreateNewBudget(string UserEmail);
+        public Task<List<lut_CurrencySymbol>> GetCurrencySymbols(string SearchQuery);
 
     }
 }
