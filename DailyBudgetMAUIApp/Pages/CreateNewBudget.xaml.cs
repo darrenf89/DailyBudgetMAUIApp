@@ -37,6 +37,8 @@ public partial class CreateNewBudget : ContentPage
                 if (_vm.BudgetID != 0)
                 {
                     _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+                    _vm.BudgetSettings = _ds.GetBudgetSettings(_vm.BudgetID).Result;
+                    //TODO: SET THE BUDGET SETTINGS
                 }
                 else
                 {
@@ -48,6 +50,9 @@ public partial class CreateNewBudget : ContentPage
                 if(_vm.Budget == null)
                 {
                     _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+                    _vm.BudgetSettings = _ds.GetBudgetSettings(_vm.BudgetID).Result;
+                    //TODO: SET THE BUDGET SETTINGS
+                    
                 }
 
             }

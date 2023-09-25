@@ -61,7 +61,18 @@
                 </Grid>
             </VerticalStackLayout>
             <VerticalStackLayout x:Name="SettingsDetails" IsVisible="true">
-            
+                <Label Text="Currency"/>
+                <VerticalStackLayout x:Name="CurrencySearchBarLayout">
+                    <SearchBar x:Name="CurrencySearch" SearchCommand="{Binding CurrencySearchCommand}" SearchCommandParameters="{Binding Text, Source={x:Reference CurrencySearch}}"/>
+                    <ListView ItemSource="{Binding CurrencySearchResults}" SelectionMode="Single" SelectedItem="{Binding SelectedCurrencySymbol}">
+                        <ListView.Behaviours>
+                            <xct:EventToCommandBehaviour EventName="ItemSelected" Command="{Binding CurrencySymbolSelectedCommand}" EventArgsConverter="{StaticResource SelectedItemEventArgsConverter}"/>
+                        </ListView.Behaviours>
+                    </ListView>
+                </VerticalStackLayout>
+                <VerticalStackLayout x:Name="CurrencySearchResultLayout">
+                    <label x:Name="lblSelectedCurrency" />
+                </VerticalStackLayout>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0">

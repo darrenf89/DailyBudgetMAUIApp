@@ -10,6 +10,7 @@
     <xct:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
     <xct:IsStringNotNullOrWhiteSpaceConverter x:Key="IsStringNotNullOrWhiteSpaceConverter" />
     <xct:IsStringNullOrWhiteSpaceConverter x:Key="IsStringNullOrWhiteSpaceConverter" />
+    <xct:SelectedItemEventArgsConverter x:Key="SelectedItemEventArgsConverter" /
 
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>

@@ -13,23 +13,21 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class CreateNewBudgetViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
-
         [ObservableProperty]
         private int _budgetID;
-
         [ObservableProperty]
         private BudgetSettings _budgetSettings;
-
         [ObservableProperty]
         private Budgets _budget;
-
         [ObservableProperty]
         private string _budgetName;
-
         [ObservableProperty]
         private string _stage = "Budget Settings";
-
         public double StageWidth { get; }
+        [ObservableProperty]
+        private List<lut_CurrencySymbol> _currencySearchResults;
+        [ObserableProperty]
+        private lut_CurrencySymbol _selectedCurrencySymbol;
 
         public CreateNewBudgetViewModel(IProductTools pt)
         {
@@ -63,6 +61,18 @@ namespace DailyBudgetMAUIApp.ViewModels
                         ["Error"] = Error
                     });
             }
+        }
+
+        [ICommand]
+        async void CurrencySearch(string query)
+        {
+
+        }
+
+        [RelayCommand]
+        private void CurrencySymbolSelected(object item)
+        {
+
         }
 
     }
