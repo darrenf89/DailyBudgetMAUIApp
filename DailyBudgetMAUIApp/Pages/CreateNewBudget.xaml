@@ -61,19 +61,37 @@
                     </Grid.GestureRecognizers>
                 </Grid>
             </VerticalStackLayout>
-            <VerticalStackLayout x:Name="SettingsDetails" IsVisible="true">
-                <Label Text="Currency"/>
-                <VerticalStackLayout x:Name="CurrencySearchBarLayout">
+            <VerticalStackLayout x:Name="SettingsDetails" IsVisible="true" Margin="0,0,0,15">
+                <Label Text="Currency Symbol" FontSize="SubHeader" TextColor="{DynamicResource Gray400}"/>
+                <Label Text="Select your local or preferred currency, we will try and show all figures using your preferred currency symbol. If you want to change your choice click on your selection below" FontSize="Caption" TextColor="{DynamicResource Gray200}"/>
+                <VerticalStackLayout x:Name="CurrencySearchBarLayout" IsVisible="False">
                     <SearchBar x:Name="CurrencySearch" SearchCommand="{Binding CurrencySearchCommand}" SearchCommandParameter="{Binding Text, Source={x:Reference CurrencySearch}}"/>
                     <ListView ItemsSource="{Binding CurrencySearchResults}" SelectionMode="Single" SelectedItem="{Binding SelectedCurrencySymbol}">
+                        <ItemTemplate>
+                            <DataTemplate>
+                                <TextCell Detail="{Binding Code}" />
+                            </DataTemplate>
+                        </ItemTemplate>
                         <ListView.Behaviors>
                             <xct:EventToCommandBehavior EventName="ItemSelected" Command="{Binding CurrencySymbolSelectedCommand}" EventArgsConverter="{StaticResource SelectedItemEventArgsConverter}"/>
                         </ListView.Behaviors>
                     </ListView>
                 </VerticalStackLayout>
-                <VerticalStackLayout x:Name="CurrencySearchResultLayout">
-                    <Label x:Name="lblSelectedCurrency" />
-                </VerticalStackLayout>
+                <Border x:Name="CurrencySearchResultLayout" Style="{StaticResource FrameLogonStandardContent}" WidthRequest="150" Margin="0,0,0,15">
+                    <Label x:Name="lblSelectedCurrency" FontSize="Medium" >
+                        <MultiBinding StringFormat="'{0} - [{1}] {2}'">
+                            <Binding Path="SelectedCurrencySymbol.Symbol"/>
+                            <Binding Path="SelectedCurrencySymbol.Name"/>
+                            <Binding Path="SelectedCurrencySymbol.Code"/>
+                        </MultiBinding>
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="ChangeSelectedCurrency_Tapped"/>
+                        </Label.GestureRecognizers>                    
+                    </Label>
+                </Border>
+                <Label Text="Number Format" FontSize="SubHeader" TextColor="{DynamicResource Gray400}"/>
+                <Label Text="Date Format" FontSize="SubHeader" TextColor="{DynamicResource Gray400}"/>
+                <Label Text="Date Format" FontSize="SubHeader" TextColor="{DynamicResource Gray400}"/>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0">

@@ -87,7 +87,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         private void CurrencySymbolSelected(lut_CurrencySymbol item)
         {
-
+            _selectedCurrencySymbol = item;
+            CurrencySearchResultLayout.IsVisible = true;
+            CurrencySearchBarLayout.IsVisible = false;
         }
 
     }

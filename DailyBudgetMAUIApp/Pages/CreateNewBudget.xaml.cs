@@ -58,6 +58,8 @@ public partial class CreateNewBudget : ContentPage
             }
 
             UpdateStageDisplay();
+            
+            _vm.SelectedCurrencySymbol = _ds.GetCurrencySymbols(_vm.BudgetSettings.CurrencySymbol).Result;
 
             //TODO: IF NO BUDGET NAME ASK FOR NAME ENETERED BY USING A POP UP.
             if (_vm.Budget.BudgetName == "" || _vm.Budget.BudgetName == null)
@@ -152,5 +154,12 @@ public partial class CreateNewBudget : ContentPage
     {
         _vm.Stage = "Budget Extra Income";
         UpdateStageDisplay();
+    }
+
+    private void ChangeSelectedCurrency_Tapped(object sender, TappedEventArgs e)
+    {
+        CurrencySearchResultLayout.IsVisible = false;
+        CurrencySearchBarLayout.IsVisible = true;
+
     }
 }
