@@ -49,6 +49,15 @@
         <Setter Property="Stroke" Value="{DynamicResource Gray400}"/> 
     </Style>
 
+    <Style TargetType="Border" x:Key="StandardInputBorder">
+        <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
+        <Setter Property="Stroke" Value="{DynamicResource Gray900}"/>
+        <Setter Property="BackgroundColor" Value="{DynamicResource Light}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Padding" Value="20,10,0,10"/>
+        <Setter Property="Margin" Value="0,0,0,15"/>
+    </Style>
+
     <Style TargetType="Border" x:Key="PictureFrame150Circle">
         <Setter Property="StrokeShape" Value="RoundRectangle 75"/>
         <Setter Property="Stroke" Value="Transparent"/>

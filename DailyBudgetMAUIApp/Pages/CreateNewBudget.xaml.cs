@@ -52,14 +52,17 @@ public partial class CreateNewBudget : ContentPage
                     _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
                     _vm.BudgetSettings = _ds.GetBudgetSettings(_vm.BudgetID).Result;
                     //TODO: SET THE BUDGET SETTINGS IN FRONT END
-
                 }
 
             }
 
             UpdateStageDisplay();
             
-            _vm.SelectedCurrencySymbol = _ds.GetCurrencySymbols(_vm.BudgetSettings.CurrencySymbol).Result;
+            _vm.SelectedCurrencySymbol = _ds.GetCurrencySymbols(_vm.BudgetSettings.CurrencySymbol.ToString()).Result[0];
+            _vm.SelectedCurrencyPlacement = _ds.GetCurrencyPlacements(_vm.BudgetSettings.CurrencyPattern.ToString()).Result[0];
+            pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;
+            _vm.SelectedDateFormats = _ds.GetDateFormatsById(_vm.BudgetSettings.ShortDatePattern ?? 1, _vm.BudgetSettings.DateSeperator ?? 1).Result;
+            pckrDateFormat.SelectedIndex = _vm.SelectedDateFormats.Id - 1;
 
             //TODO: IF NO BUDGET NAME ASK FOR NAME ENETERED BY USING A POP UP.
             if (_vm.Budget.BudgetName == "" || _vm.Budget.BudgetName == null)
@@ -158,8 +161,9 @@ public partial class CreateNewBudget : ContentPage
 
     private void ChangeSelectedCurrency_Tapped(object sender, TappedEventArgs e)
     {
-        CurrencySearchResultLayout.IsVisible = false;
-        CurrencySearchBarLayout.IsVisible = true;
-
+        _vm.SearchVisible = true;
+        _vm.CurrencySearchResults = _ds.GetCurrencySymbols("").Result;
+        CurrencySearch.Text = "";
     }
+
 }

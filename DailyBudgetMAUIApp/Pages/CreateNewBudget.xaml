@@ -12,7 +12,7 @@
         <VerticalStackLayout Padding="20,5,20,5">
             <VerticalStackLayout>
                 <HorizontalStackLayout Margin="0,0,0,2">
-                    <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Text="Create a Budget: " Padding="0"/>
+                    <Label FontSize="Caption" TextColor="{DynamicResource Gray600}" Text="Create a Budget: " Padding="0"/>
                     <Label FontSize="Caption" FontAttributes="Bold" TextColor="{DynamicResource Primary}" Padding="0" Text="{Binding Stage}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout Margin="0" Padding="0">
@@ -46,8 +46,8 @@
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0">
-                <Grid ColumnDefinitions="3*,*" RowDefinitions="40">
-                    <Label x:Name="lblSettingsHeader" Text="Your Settings" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" Grid.Column="0" VerticalOptions="Center" Padding="5,0,0,0"/>
+                <Grid ColumnDefinitions="3*,*" RowDefinitions="*">
+                    <Label x:Name="lblSettingsHeader" Text="Your Settings" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Large" TextColor="{DynamicResource Primary}" Grid.Column="0" VerticalOptions="Center" Padding="5,10,0,10"/>
                     <HorizontalStackLayout Margin="0" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
                         <Image Background="{DynamicResource White}">
                             <Image.Source>
@@ -62,25 +62,31 @@
                 </Grid>
             </VerticalStackLayout>
             <VerticalStackLayout x:Name="SettingsDetails" IsVisible="true" Margin="0,0,0,15">
-                <Label Text="Currency Symbol" FontSize="SubHeader" TextColor="{DynamicResource Gray400}"/>
-                <Label Text="Select your local or preferred currency, we will try and show all figures using your preferred currency symbol. If you want to change your choice click on your selection below" FontSize="Caption" TextColor="{DynamicResource Gray200}"/>
-                <VerticalStackLayout x:Name="CurrencySearchBarLayout" IsVisible="False">
-                    <SearchBar x:Name="CurrencySearch" SearchCommand="{Binding CurrencySearchCommand}" SearchCommandParameter="{Binding Text, Source={x:Reference CurrencySearch}}"/>
-                    <ListView ItemsSource="{Binding CurrencySearchResults}" SelectionMode="Single" SelectedItem="{Binding SelectedCurrencySymbol}">
-                        <ItemTemplate>
+                <Label Text="Currency Symbol" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
+                <Label Text="Select your local or preferred currency, we will try and show all figures using your preferred currency symbol. If you want to change your choice click on your selection below" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                <VerticalStackLayout x:Name="CurrencySearchBarLayout" IsVisible="{Binding SearchVisible}">
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,0">
+                        <SearchBar x:Name="CurrencySearch" TextColor="{DynamicResource Gray900}" Margin="0" VerticalOptions="Center" HeightRequest="38">
+                            <SearchBar.Behaviors>
+                                <xct:EventToCommandBehavior Command="{Binding CurrencySearchCommand}" EventName="TextChanged" CommandParameter="{Binding Text, Source={x:Reference CurrencySearch}}"/>
+                            </SearchBar.Behaviors>
+                        </SearchBar>
+                    </Border>
+                    <ListView ItemsSource="{Binding CurrencySearchResults}" SelectionMode="Single" SelectedItem="{Binding SelectedCurrencySymbol}" HeightRequest="140" Margin="5,0,40,0" SeparatorColor="{DynamicResource Tertiary}">
+                        <ListView.ItemTemplate>
                             <DataTemplate>
-                                <TextCell Detail="{Binding Code}" />
+                                <TextCell Text="{Binding CurrencySymbol}" Detail="{Binding Code}" DetailColor="{DynamicResource Gray900}" TextColor="{DynamicResource PrimaryDark}"/>
                             </DataTemplate>
-                        </ItemTemplate>
+                        </ListView.ItemTemplate>
                         <ListView.Behaviors>
                             <xct:EventToCommandBehavior EventName="ItemSelected" Command="{Binding CurrencySymbolSelectedCommand}" EventArgsConverter="{StaticResource SelectedItemEventArgsConverter}"/>
                         </ListView.Behaviors>
                     </ListView>
                 </VerticalStackLayout>
-                <Border x:Name="CurrencySearchResultLayout" Style="{StaticResource FrameLogonStandardContent}" WidthRequest="150" Margin="0,0,0,15">
-                    <Label x:Name="lblSelectedCurrency" FontSize="Medium" >
-                        <MultiBinding StringFormat="'{0} - [{1}] {2}'">
-                            <Binding Path="SelectedCurrencySymbol.Symbol"/>
+                <Border x:Name="CurrencySearchResultLayout" Style="{StaticResource StandardInputBorder}" IsVisible="{Binding SearchVisible, Converter={StaticResource BoolConverter}}" Margin="5,0,40,20">
+                    <Label x:Name="lblSelectedCurrency" FontSize="Small" TextColor="{DynamicResource Gray900}">
+                        <MultiBinding StringFormat="{}{2}">
+                            <Binding Path="SelectedCurrencySymbol.CurrencySymbol"/>
                             <Binding Path="SelectedCurrencySymbol.Name"/>
                             <Binding Path="SelectedCurrencySymbol.Code"/>
                         </MultiBinding>
@@ -89,14 +95,23 @@
                         </Label.GestureRecognizers>                    
                     </Label>
                 </Border>
-                <Label Text="Number Format" FontSize="SubHeader" TextColor="{DynamicResource Gray400}"/>
-                <Label Text="Date Format" FontSize="SubHeader" TextColor="{DynamicResource Gray400}"/>
-                <Label Text="Date Format" FontSize="SubHeader" TextColor="{DynamicResource Gray400}"/>
+                <Label Text="Symbol Placement" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,10"/>
+                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                    <handlers:BorderlessPicker Margin="20,0,0,0" x:Name="pckrSymbolPlacement" Title="Select your currency symbol placement" ItemsSource="{Binding CurrencyPlacements}" ItemDisplayBinding="{Binding CurrencyPlacement}" SelectedItem="{Binding SelectedCurrencyPlacement}"/>
+                </Border>
+                <Label Text="Date Format" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,10"/>
+                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                    <handlers:BorderlessPicker Margin="20,0,0,0" x:Name="pckrDateFormat" Title="Select your currency symbol placement" ItemsSource="{Binding DateFormats}" ItemDisplayBinding="{Binding DateFormat}" SelectedItem="{Binding SelectedDateFormat}"/>
+                </Border>
+                <Label Text="Number Format" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,10"/>
+                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                    <handlers:BorderlessPicker Margin="20,0,0,0" x:Name="pckrNumberFormat" Title="Select your currency symbol placement" ItemsSource="{Binding CurrencyPlacements}" ItemDisplayBinding="{Binding CurrencyPlacement}" SelectedItem="{Binding SelectedCurrencyPlacement}"/>
+                </Border>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0">
-                <Grid ColumnDefinitions="3*,*" RowDefinitions="40">
-                    <Label x:Name="lblBudgetHeader" Text="Your Budget" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,0,0,0"/>
+                <Grid ColumnDefinitions="3*,*" RowDefinitions="*">
+                    <Label x:Name="lblBudgetHeader" Text="Your Budget" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Large" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,10,0,10"/>
                     <HorizontalStackLayout Margin="0" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
                         <Image Background="{DynamicResource White}">
                             <Image.Source>
@@ -115,8 +130,8 @@
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0">
-                <Grid ColumnDefinitions="3*,*" RowDefinitions="40">
-                    <Label x:Name="lblBillsHeader" Text="Your Outgoings" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,0,0,0"/>
+                <Grid ColumnDefinitions="3*,*" RowDefinitions="*">
+                    <Label x:Name="lblBillsHeader" Text="Your Outgoings" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Large" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,10,0,10"/>
                     <HorizontalStackLayout Margin="0" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
                         <Image Background="{DynamicResource White}">
                             <Image.Source>
@@ -135,8 +150,8 @@
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0">
-                <Grid ColumnDefinitions="3*,*" RowDefinitions="40">
-                    <Label x:Name="lblSavingsHeader" Text="Your Saving Goals" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,0,0,0"/>
+                <Grid ColumnDefinitions="3*,*" RowDefinitions="*">
+                    <Label x:Name="lblSavingsHeader" Text="Your Saving Goals" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Large" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,10,0,10"/>
                     <HorizontalStackLayout Margin="0" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
                         <Image Background="{DynamicResource White}">
                             <Image.Source>
@@ -155,8 +170,8 @@
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0">
-                <Grid ColumnDefinitions="3*,*" RowDefinitions="40">
-                    <Label x:Name="lblIncomesHeader" Text="Your Income" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,0,0,0"/>
+                <Grid ColumnDefinitions="3*,*" RowDefinitions="*">
+                    <Label x:Name="lblIncomesHeader" Text="Your Income" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Large" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,10,0,10"/>
                     <HorizontalStackLayout Margin="0" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
                         <Image Background="{DynamicResource White}">
                             <Image.Source>

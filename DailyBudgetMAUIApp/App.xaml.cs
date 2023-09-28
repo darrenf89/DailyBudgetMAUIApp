@@ -35,6 +35,22 @@ public partial class App : Application
             }
         });
 
+        Microsoft.Maui.Handlers.DatePickerHandler.Mapper.AppendToMapping(nameof(BorderlessPicker), (handler, view) =>
+        {
+
+            if (view is BorderlessPicker)
+            {
+#if ANDROID
+
+                handler.PlatformView.Background = null;
+                handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+#elif __IOS__
+                handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+                handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+#endif
+            }
+        });
+
         MainPage = new AppShell();
 	}
 }

@@ -15,7 +15,7 @@
     <Color x:Key="Danger">#df382c</Color>
     <Color x:Key="Warning">#efb73e</Color>
     <Color x:Key="Info">#004fb6</Color>
-    <Color x:Key="Light">#e9ecef</Color>
+    <Color x:Key="Light">#f9f9f9</Color>
     <Color x:Key="Gray100">#E1E1E1</Color>
     <Color x:Key="Gray200">#C8C8C8</Color>
     <Color x:Key="Gray300">#ACACAC</Color>

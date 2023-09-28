@@ -29,12 +29,24 @@ namespace DailyBudgetMAUIApp.ViewModels
         private List<lut_CurrencySymbol> _currencySearchResults;
         [ObservableProperty]
         private lut_CurrencySymbol _selectedCurrencySymbol;
+        [ObservableProperty]
+        private bool _searchVisible = false;
+        [ObservableProperty]
+        private List<lut_CurrencyPlacement> _currencyPlacements;
+        [ObservableProperty]
+        private lut_CurrencyPlacement _selectedCurrencyPlacement;
+        [ObservableProperty]
+        private List<lut_DateFormat> _dateFormats;
+        [ObservableProperty]
+        private lut_DateFormat _selectedDateFormats;
 
         public CreateNewBudgetViewModel(IProductTools pt, IRestDataService ds)
         {
             _pt = pt;
             _ds = ds;
             StageWidth = (((DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 52) / 5);
+            CurrencyPlacements = _ds.GetCurrencyPlacements("").Result;
+            DateFormats = _ds.GetDateFormatsByString("").Result;
         }
 
         [ICommand]
@@ -74,22 +86,32 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($" --> {ex.Message}");
-                ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "CurrencySymbol").Result;
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
-                    {
-                        ["Error"] = Error
-                    });
+                if(ex.Message == "One or more errors occurred. (No currencies found)")
+                {
+                    lut_CurrencySymbol cs = new lut_CurrencySymbol();
+                    cs._code = "No results please, try again!";
+                    CurrencySearchResults.Clear();
+                    CurrencySearchResults.Add(cs);
+                }
+                else
+                {
+                    Debug.WriteLine($" --> {ex.Message}");
+                    ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "CurrencySymbol").Result;
+                    await Shell.Current.GoToAsync(nameof(ErrorPage),
+                        new Dictionary<string, object>
+                        {
+                            ["Error"] = Error
+                        });
+                }
             }
         }
 
         [ICommand]
         private void CurrencySymbolSelected(lut_CurrencySymbol item)
         {
-            _selectedCurrencySymbol = item;
-            CurrencySearchResultLayout.IsVisible = true;
-            CurrencySearchBarLayout.IsVisible = false;
+            SelectedCurrencySymbol = item;
+            SearchVisible = false;
+            CurrencySearchResults = null;
         }
 
     }

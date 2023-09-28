@@ -310,7 +310,7 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getbudgetsettingsvalues/{BudgetID}").Result;
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getbudgetsettings/{BudgetID}").Result;
                 string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
@@ -461,8 +461,159 @@ namespace DailyBudgetMAUIApp.DataServices
                         error = serializer.Deserialize<ErrorClass>(reader);
                     }
 
-                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
+                    throw new Exception(error.ErrorMessage);
                 }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<List<lut_CurrencyPlacement>> GetCurrencyPlacements(string Query)
+        {
+            List<lut_CurrencyPlacement> Placements = new List<lut_CurrencyPlacement>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getcurrencyplcements/{Query}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            Placements = serializer.Deserialize<List<lut_CurrencyPlacement>>(reader);
+                        }
+
+                        return Placements;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+
+        }
+
+        public async Task<List<lut_DateFormat>> GetDateFormatsByString(string SearchQuery)
+        {
+            List<lut_DateFormat> DateFormats = new List<lut_DateFormat>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getdateformatsbystring/{SearchQuery}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            DateFormats = serializer.Deserialize<List<lut_DateFormat>>(reader);
+                        }
+
+                        return DateFormats;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<lut_DateFormat> GetDateFormatsById(int ShortDatePattern, int Seperator)
+        {
+            lut_DateFormat DateFormat = new lut_DateFormat();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getdateformatsbyid/{ShortDatePattern}/{Seperator}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            DateFormat = serializer.Deserialize<lut_DateFormat>(reader);
+                        }
+
+                        return DateFormat;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
 
             }
             catch (Exception ex)
