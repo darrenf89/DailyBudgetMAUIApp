@@ -23,6 +23,11 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<List<lut_CurrencyPlacement>> GetCurrencyPlacements(string SearchQuery);
         public Task<List<lut_DateFormat>> GetDateFormatsByString(string SearchQuery);
         public Task<lut_DateFormat> GetDateFormatsById(int ShortDatePattern, int Seperator);
+        public Task<lut_NumberFormat> GetNumberFormatsById(int CurrencyDecimalDigits, int CurrencyDecimalSeparator, int CurrencyGroupSeparator);
+        public Task<List<lut_NumberFormat>> GetNumberFormats();
+        public Task<string> PatchBudget(int BudgetID, List<PatchDoc> PatchDoc);
+        public Task<string> UpdateBudgetSettings(int BudgetID, BudgetSettings BS);
+
 
     }
 }

@@ -78,6 +78,30 @@
                     Text="Sign Out"
                     SemanticProperties.Hint="Signs Out of Account"
                     HorizontalOptions="Center" />
+                    <Label 
+                        Text="{Binding DefaultBudgetID,StringFormat='The Deafault Budget ID is {0}'}"
+                        Margin="0,100,0,0"
+                        VerticalOptions="Center" 
+                        HorizontalOptions="Center" 
+                        TextColor="Black"/>
+                    <Label TextColor="Black">
+                        <MultiBinding StringFormat="'Testing how a multi binding works in a label with {0:c} and also {1:n} value'">
+                            <Binding Path="DefaultBudgetID"/>
+                            <Binding Path="DefaultBudgetID"/>
+                        </MultiBinding>
+                    </Label>
+                    <Label Text="{Binding DefaultBudget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
+                           VerticalOptions="Center" 
+                           HorizontalOptions="Center" 
+                           TextColor="Black"/>
+                    <Label Text="{Binding DefaultBudget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
+                           VerticalOptions="Center" 
+                           HorizontalOptions="Center" 
+                           TextColor="Black"/>
+                    <Label Text="{Binding DefaultBudget.BudgetName, StringFormat='Your Budget Name is {0}'}"
+                           VerticalOptions="Center" 
+                           HorizontalOptions="Center"
+                           TextColor="Black"/>  
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>

@@ -46,7 +46,7 @@ public partial class App : Application
                 handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
 #elif __IOS__
                 handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
-                handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+                //handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
 #endif
             }
         });

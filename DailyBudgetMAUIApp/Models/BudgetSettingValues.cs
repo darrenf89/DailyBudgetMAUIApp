@@ -15,5 +15,6 @@ namespace DailyBudgetMAUIApp.Models
         public string DateSeparator { get; set; }
         public int CurrencyDecimalDigits { get; set; }
         public int CurrencyPositivePattern { get; set; }
+        public bool IsUpdatedFlag { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using DailyBudgetMAUIApp.ViewModels;
 using CommunityToolkit.Maui.Views;
 using System.Diagnostics;
 using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Maui.ApplicationModel;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -56,14 +57,6 @@ public partial class CreateNewBudget : ContentPage
 
             }
 
-            UpdateStageDisplay();
-            
-            _vm.SelectedCurrencySymbol = _ds.GetCurrencySymbols(_vm.BudgetSettings.CurrencySymbol.ToString()).Result[0];
-            _vm.SelectedCurrencyPlacement = _ds.GetCurrencyPlacements(_vm.BudgetSettings.CurrencyPattern.ToString()).Result[0];
-            pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;
-            _vm.SelectedDateFormats = _ds.GetDateFormatsById(_vm.BudgetSettings.ShortDatePattern ?? 1, _vm.BudgetSettings.DateSeperator ?? 1).Result;
-            pckrDateFormat.SelectedIndex = _vm.SelectedDateFormats.Id - 1;
-
             //TODO: IF NO BUDGET NAME ASK FOR NAME ENETERED BY USING A POP UP.
             if (_vm.Budget.BudgetName == "" || _vm.Budget.BudgetName == null)
             {
@@ -72,7 +65,7 @@ public partial class CreateNewBudget : ContentPage
                 {
                     string Description = "Every budget needs a name, let us know how you'd like your budget to be known so we can use this to identify it for you in the future.";
                     string DescriptionSub = "Call it something useful or call it something silly up to you really!";
-                    var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", _vm.Budget.BudgetName ,new PopUpPageSingleInputViewModel());
+                    var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", _vm.Budget.BudgetName, new PopUpPageSingleInputViewModel());
                     var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
                     if (result != null || (string)result != "")
@@ -80,13 +73,42 @@ public partial class CreateNewBudget : ContentPage
                         _vm.Budget.BudgetName = (string)result;
                     }
 
+                    List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+                    PatchDoc BudgetName = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/BudgetName",
+                        value = _vm.Budget.BudgetName
+                    };
+
+                    BudgetUpdate.Add(BudgetName);
+
+                    string ReturnString = _ds.PatchBudget(_vm.BudgetID, BudgetUpdate).Result;
+
                 }
                 catch (Exception ex)
                 {
                     ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "LoadingPopupBudgetName").Result;
+                    await Shell.Current.GoToAsync(nameof(ErrorPage),
+                        new Dictionary<string, object>
+                        {
+                            ["Error"] = Error
+                        });
                 }
 
             }
+
+            UpdateStageDisplay();
+            
+            _vm.SelectedCurrencySymbol = _ds.GetCurrencySymbols(_vm.BudgetSettings.CurrencySymbol.ToString()).Result[0];
+            _vm.SelectedCurrencyPlacement = _ds.GetCurrencyPlacements(_vm.BudgetSettings.CurrencyPattern.ToString()).Result[0];
+            pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;
+            _vm.SelectedDateFormats = _ds.GetDateFormatsById(_vm.BudgetSettings.ShortDatePattern ?? 1, _vm.BudgetSettings.DateSeperator ?? 1).Result;
+            pckrDateFormat.SelectedIndex = _vm.SelectedDateFormats.Id - 1;
+            _vm.SelectedNumberFormats = _ds.GetNumberFormatsById(_vm.BudgetSettings.CurrencyDecimalDigits ?? 2, _vm.BudgetSettings.CurrencyDecimalSeparator ?? 2, _vm.BudgetSettings.CurrencyGroupSeparator ?? 1).Result;
+            pckrNumberFormat.SelectedIndex = _vm.SelectedNumberFormats.Id - 1;
+
 
         }
         catch (Exception ex)
@@ -161,9 +183,21 @@ public partial class CreateNewBudget : ContentPage
 
     private void ChangeSelectedCurrency_Tapped(object sender, TappedEventArgs e)
     {
+
         _vm.SearchVisible = true;
         _vm.CurrencySearchResults = _ds.GetCurrencySymbols("").Result;
         CurrencySearch.Text = "";
     }
 
+    private void ContinueSettingsButton_Clicked(object sender, EventArgs e)
+    {
+        _vm.Stage = "Budget Details";
+        UpdateStageDisplay();
+    }
+
+    private async void BankBalanceInfo(object sender, EventArgs e)
+    {
+        var popup = new PopupInfo();
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+    }
 }

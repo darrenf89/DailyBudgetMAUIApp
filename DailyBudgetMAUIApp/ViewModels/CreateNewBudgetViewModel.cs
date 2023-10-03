@@ -6,6 +6,7 @@ using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -39,6 +40,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private List<lut_DateFormat> _dateFormats;
         [ObservableProperty]
         private lut_DateFormat _selectedDateFormats;
+        [ObservableProperty]
+        private List<lut_NumberFormat> _numberFormats;
+        [ObservableProperty]
+        private lut_NumberFormat _selectedNumberFormats;
 
         public CreateNewBudgetViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -47,6 +52,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             StageWidth = (((DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 52) / 5);
             CurrencyPlacements = _ds.GetCurrencyPlacements("").Result;
             DateFormats = _ds.GetDateFormatsByString("").Result;
+            NumberFormats = _ds.GetNumberFormats().Result;
         }
 
         [ICommand]
@@ -63,6 +69,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     Budget.BudgetName = (string)result;
                 }
+
+                SaveStage("Budget Name");
 
             }
             catch (Exception ex)
@@ -114,5 +122,72 @@ namespace DailyBudgetMAUIApp.ViewModels
             CurrencySearchResults = null;
         }
 
+        [ICommand]
+        async void ContinueSettings()
+        {
+            SaveStage("Budget Settings");
+        }
+
+        private async void SaveStage(string CurrentStage)
+        {
+            try
+            {
+                List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+                switch (CurrentStage)
+                {
+                case "Budget Name":
+
+                    PatchDoc BudgetName = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/BudgetName",
+                        value = Budget.BudgetName
+                    };
+
+                    BudgetUpdate.Add(BudgetName);
+                    await _ds.PatchBudget(BudgetID, BudgetUpdate);
+                    break;
+
+                case "Budget Settings":
+
+                    BudgetSettings.CurrencyPattern = SelectedCurrencyPlacement.Id;
+                    BudgetSettings.CurrencySymbol = SelectedCurrencySymbol.Id;
+                    BudgetSettings.CurrencyDecimalDigits = SelectedNumberFormats.CurrencyDecimalDigitsID;
+                    BudgetSettings.CurrencyDecimalSeparator = SelectedNumberFormats.CurrencyDecimalSeparatorID;
+                    BudgetSettings.CurrencyGroupSeparator = SelectedNumberFormats.CurrencyGroupSeparatorID;
+                    BudgetSettings.DateSeperator = SelectedDateFormats.DateSeperatorID;
+                    BudgetSettings.ShortDatePattern = SelectedDateFormats.ShortDatePatternID;
+
+                    await _ds.UpdateBudgetSettings(BudgetID, BudgetSettings);
+
+                    App.CurrentSettings.IsUpdatedFlag = true;
+
+                    break;
+                case "Budget Details":
+
+                    break;
+                case "Budget Outgoings":
+
+                    break;
+                case "Budget Savings":
+
+                    break;
+                case "Budget Extra Income":
+
+                    break;
+                }                
+            }
+            catch (Exception ex)
+            {
+                ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "UpdateBudget").Result;
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });
+            }
+
+        }
     }
 }

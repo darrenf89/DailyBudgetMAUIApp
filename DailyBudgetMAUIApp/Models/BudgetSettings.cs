@@ -12,8 +12,6 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public int? _budgetID; 
         [ObservableProperty]
-        public Budgets? _budget; 
-        [ObservableProperty]
         public int? _currencyPattern  = 1;
         [ObservableProperty]
         public int? _currencySymbol  = 1;
