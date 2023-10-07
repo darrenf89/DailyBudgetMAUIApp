@@ -139,7 +139,7 @@
             <VerticalStackLayout x:Name="BudgetDetails" IsVisible="false" Margin="0,0,0,15">
                 <HorizontalStackLayout Padding="5,0,0,2">
                     <Label Text="Whats in the Bank?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
-                    <ImageButton Clicked="BankBalanceInfo" WidthRequest="10" HeightRequest="10" CornerRadius="5" VerticalOptions="Center">
+                    <ImageButton Clicked="BankBalanceInfo" WidthRequest="14" HeightRequest="14" CornerRadius="5" VerticalOptions="Center" Margin="5,0,0,0">
                         <ImageButton.Source>
                             <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Info}" Color="{DynamicResource Info}"/>
                         </ImageButton.Source>
@@ -147,7 +147,7 @@
                 </HorizontalStackLayout>
                 <Label Text="If you want the money you currently have to be taken into account, let us know how much you got!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,20" HeightRequest="38">
-                    <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="10" Margin="20,0,0,0" x:Name="entBankBalance" TextChanged="BankBalance_Changed" ClearButtonVisibility="WhileEditing" Keyboard="Numeric"/>
+                    <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="4" Margin="20,0,0,0" x:Name="entBankBalance" TextChanged="BankBalance_Changed" Keyboard="Numeric" />
                 </Border>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />

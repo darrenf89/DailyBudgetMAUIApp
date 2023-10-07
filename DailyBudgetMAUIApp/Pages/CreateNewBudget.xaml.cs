@@ -215,6 +215,7 @@ public partial class CreateNewBudget : ContentPage
 
     void BankBalance_Changed(object sender, TextChangedEventArgs e)
     {
+
         double BankBalance = _pt.FormatCurrencyNumber(e.NewTextValue);
         entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
 

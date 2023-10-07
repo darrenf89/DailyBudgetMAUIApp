@@ -99,15 +99,15 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public double FormatCurrencyNumber(string input)
         {
-            input.Replace(App.CurrentSettings.CurrencySymbol,"").Replace(App.CurrentSettings.CurrencyGroupSeparator,"").Replace(App.CurrentSettings.CurrencyDecimalSeparator, "");
-            input.Trim();
+            input = input.Replace(App.CurrentSettings.CurrencySymbol,"").Replace(App.CurrentSettings.CurrencyGroupSeparator,"").Replace(App.CurrentSettings.CurrencyDecimalSeparator, "");
+            input = input.Trim();
 
             //TODO: GET THE NUMBER OF DIGITS - CHECK THAT IT IS GREATER THAN 2
             try
             {
                 double Number = Convert.ToDouble(input);
                 Number = Number / 100;
-
+                
                 return Number;
             }
             catch (Exception ex)
@@ -121,7 +121,7 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
                 int position = input.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-                position = position + 2;
+                position = position + 3;
 
                 return position;
             }

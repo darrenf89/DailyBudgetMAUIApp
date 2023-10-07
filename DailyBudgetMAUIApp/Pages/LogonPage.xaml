@@ -43,8 +43,7 @@
                                        Placeholder="Enter an Email address!"
                                        Keyboard="Text" 
                                        Style="{StaticResource LogonEntry}"
-                                       MaxLength="40"
-                                       ReturnType="Next">
+                                       MaxLength="40">
                                         <Entry.Behaviors>
                                             <xct:EmailValidationBehavior 
                                             Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused"
@@ -103,8 +102,7 @@
                                    Placeholder="Please enter a password!"
                                    Keyboard="Text"
                                    IsPassword="True"
-                                   Style="{StaticResource LogonEntry}"
-                                   ReturnType="Next">
+                                   Style="{StaticResource LogonEntry}">
                                         <Entry.Behaviors>
                                             <xct:TextValidationBehavior
                                             MinimumLength="1"
