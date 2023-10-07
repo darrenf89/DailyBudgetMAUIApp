@@ -8,7 +8,7 @@
            CanBeDismissedByTappingOutsideOfPopup="True"
            Color="Transparent">
     <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent">
-        <Border BackgroundColor="{DynamicResource White}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16">
+        <Border BackgroundColor="{DynamicResource White}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 4">
             <VerticalStackLayout>
                 <VerticalStackLayout x:Name="Parent">
                     <Label 
@@ -19,7 +19,7 @@
                         HorizontalOptions="Center"
                         FontFamily="OpenSansSemibold"
                         TextColor="{DynamicResource Primary}"
-                        Margin="0,10,0,40"/>
+                        Margin="0,5,0,40"/>
                 </VerticalStackLayout>
                 <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
                 <Button 

@@ -146,6 +146,9 @@
                     </ImageButton>
                 </HorizontalStackLayout>
                 <Label Text="If you want the money you currently have to be taken into account, let us know how much you got!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,20" HeightRequest="38">
+                    <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="10" Margin="20,0,0,0" x:Name="entBankBalance" TextChanged="BankBalance_Changed" ClearButtonVisibility="WhileEditing" Keyboard="Numeric"/>
+                </Border>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0,0,0,5">

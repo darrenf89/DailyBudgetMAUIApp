@@ -97,5 +97,40 @@ namespace DailyBudgetMAUIApp.DataServices
             page.ShowPopup(popup);
         }
 
+        public double FormatCurrencyNumber(string input)
+        {
+            input.Replace(App.CurrentSettings.CurrencySymbol,"").Replace(App.CurrentSettings.CurrencyGroupSeparator,"").Replace(App.CurrentSettings.CurrencyDecimalSeparator, "");
+            input.Trim();
+
+            //TODO: GET THE NUMBER OF DIGITS - CHECK THAT IT IS GREATER THAN 2
+            try
+            {
+                double Number = Convert.ToDouble(input);
+                Number = Number / 100;
+
+                return Number;
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+        }
+
+        public int FindCurrencyCursorPosition(string input)
+        {
+            try
+            {
+                int position = input.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+                position = position + 2;
+
+                return position;
+            }
+            catch (Exception ex)
+            {
+                return input.Length;
+            }
+        }
+
+
     }
 }

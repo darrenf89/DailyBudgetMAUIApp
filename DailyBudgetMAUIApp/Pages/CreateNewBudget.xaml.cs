@@ -6,6 +6,7 @@ using CommunityToolkit.Maui.Views;
 using System.Diagnostics;
 using Microsoft.Toolkit.Mvvm.Input;
 using CommunityToolkit.Maui.ApplicationModel;
+using System.Globalization;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -109,7 +110,6 @@ public partial class CreateNewBudget : ContentPage
             _vm.SelectedNumberFormats = _ds.GetNumberFormatsById(_vm.BudgetSettings.CurrencyDecimalDigits ?? 2, _vm.BudgetSettings.CurrencyDecimalSeparator ?? 2, _vm.BudgetSettings.CurrencyGroupSeparator ?? 1).Result;
             pckrNumberFormat.SelectedIndex = _vm.SelectedNumberFormats.Id - 1;
 
-
         }
         catch (Exception ex)
         {
@@ -197,7 +197,27 @@ public partial class CreateNewBudget : ContentPage
 
     private async void BankBalanceInfo(object sender, EventArgs e)
     {
-        var popup = new PopupInfo();
+        List<string> SubTitle = new List<string>{
+            "",
+            "",
+            ""
+        };
+
+        List<string> Info = new List<string>{
+            "The amount of money you currently have available is known in the app as your BankBalance. If all your money was in one place, it would be the amount of money you would see when you open your banking app. Fortunately though we don't care where all your money is, you can have it in multiple places in real life we use just one number to make it easier to manage.",
+            "When you are creating your budget it is advisable to figure out exaxtly how much money you have to your name and use this figure, however you don't have to .. if you know better use a different figure. Whatever you input will be used to work out how much you have to spend daily until your next pay day.",
+            "It is also worth knowing that your BankBalance is not always what you have to spend, you have to take into account savings, bills and any other income!, We will use other terms along with Bank Balance to describe your budgets state - MaB (Money available Balance) & LtSB (Left to Spend Balance)"
+        };
+
+        var popup = new PopupInfo("Bank Balance", SubTitle, Info);
         var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+    }
+
+    void BankBalance_Changed(object sender, TextChangedEventArgs e)
+    {
+        double BankBalance = _pt.FormatCurrencyNumber(e.NewTextValue);
+        entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+
+        entBankBalance.CursorPosition = _pt.FindCurrencyCursorPosition(entBankBalance.Text);
     }
 }

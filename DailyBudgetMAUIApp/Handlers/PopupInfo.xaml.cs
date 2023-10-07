@@ -13,19 +13,16 @@ public partial class PopupInfo : Popup
 
         ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
-        PopupWidth = ScreenWidth - 30;
+        PopupWidth = ScreenWidth -  0;
 
         lblTitle.Text = Title;
 
-        Application.Current.Resources.TryGetValue("Success", out var Success);
         Application.Current.Resources.TryGetValue("Gray700", out var Gray700);
         Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
 
         var VertLayout = new VerticalStackLayout
         {
-            Margin = new Thickness(0, 0, 0, 20)
+            Margin = new Thickness(0, 0, 0, 5)
         };
 
         int i = 0;
@@ -33,7 +30,7 @@ public partial class PopupInfo : Popup
         {
             var HorizontalLayout = new HorizontalStackLayout
             {
-                Margin = new Thickness(5, 0, 5, 10)
+                Margin = new Thickness(5, 0, 5, 5)
             };
 
             if (SubTitles[i] != "")
@@ -41,7 +38,7 @@ public partial class PopupInfo : Popup
                 var Subtitle = new Label
                 {
                     Text = SubTitles[i] + ":",
-                    FontSize = 12,
+                    FontSize = 8,
                     FontAttributes = FontAttributes.Bold,
                     TextColor = (Color)Gray900
                 };
@@ -52,7 +49,7 @@ public partial class PopupInfo : Popup
             var Para = new Label
             {
                 Text = details,
-                FontSize = 12,
+                FontSize = 8,
                 TextColor = (Color)Gray700
             };
 

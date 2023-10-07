@@ -16,5 +16,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<ErrorLog> HandleCatchedException(Exception ex, string page, string Method);
         public DateTime GetBudgetLastUpdated(int BudgetID);
         public void ShowPopup(PopUpPage popup);
+        public double FormatCurrencyNumber(string input);
+        public int FindCurrencyCursorPosition(string input);
     }
 }
