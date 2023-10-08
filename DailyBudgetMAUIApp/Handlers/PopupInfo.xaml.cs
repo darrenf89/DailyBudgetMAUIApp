@@ -13,7 +13,7 @@ public partial class PopupInfo : Popup
 
         ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
-        PopupWidth = ScreenWidth -  0;
+        PopupWidth = ScreenWidth -  30;
 
         lblTitle.Text = Title;
 
@@ -22,7 +22,9 @@ public partial class PopupInfo : Popup
 
         var VertLayout = new VerticalStackLayout
         {
-            Margin = new Thickness(0, 0, 0, 5)
+            Margin = new Thickness(0, 0, 0, 5),
+            WidthRequest = PopupWidth,
+            VerticalOptions = LayoutOptions.Center
         };
 
         int i = 0;
@@ -30,7 +32,9 @@ public partial class PopupInfo : Popup
         {
             var HorizontalLayout = new HorizontalStackLayout
             {
-                Margin = new Thickness(5, 0, 5, 5)
+                Padding = new Thickness(0, 0, 5, 10),
+                WidthRequest = (PopupWidth - 30),
+                VerticalOptions = LayoutOptions.Center
             };
 
             if (SubTitles[i] != "")
@@ -38,7 +42,7 @@ public partial class PopupInfo : Popup
                 var Subtitle = new Label
                 {
                     Text = SubTitles[i] + ":",
-                    FontSize = 8,
+                    FontSize = 10,
                     FontAttributes = FontAttributes.Bold,
                     TextColor = (Color)Gray900
                 };
@@ -49,8 +53,10 @@ public partial class PopupInfo : Popup
             var Para = new Label
             {
                 Text = details,
-                FontSize = 8,
-                TextColor = (Color)Gray700
+                FontSize = 10,
+                TextColor = (Color)Gray700,
+                LineBreakMode = LineBreakMode.WordWrap,
+                WidthRequest = (PopupWidth - 30)
             };
 
             i++;

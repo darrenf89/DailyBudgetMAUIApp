@@ -7,6 +7,7 @@ using System.Diagnostics;
 using Microsoft.Toolkit.Mvvm.Input;
 using CommunityToolkit.Maui.ApplicationModel;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -58,7 +59,6 @@ public partial class CreateNewBudget : ContentPage
 
             }
 
-            //TODO: IF NO BUDGET NAME ASK FOR NAME ENETERED BY USING A POP UP.
             if (_vm.Budget.BudgetName == "" || _vm.Budget.BudgetName == null)
             {
 
@@ -110,6 +110,15 @@ public partial class CreateNewBudget : ContentPage
             _vm.SelectedNumberFormats = _ds.GetNumberFormatsById(_vm.BudgetSettings.CurrencyDecimalDigits ?? 2, _vm.BudgetSettings.CurrencyDecimalSeparator ?? 2, _vm.BudgetSettings.CurrencyGroupSeparator ?? 1).Result;
             pckrNumberFormat.SelectedIndex = _vm.SelectedNumberFormats.Id - 1;
 
+
+            double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
+            entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+            double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
+            entPayAmount.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+
+            dtpckPayDay.MinimumDate = DateTime.Now;
+            UpdateSelectedOption(_vm.Budget.PaydayType);
+
         }
         catch (Exception ex)
         {
@@ -149,6 +158,7 @@ public partial class CreateNewBudget : ContentPage
         lblBillsHeader.TextColor = (_vm.Stage == "Budget Outgoings") ? (Color)Primary : (Color)Tertiary;
         lblSavingsHeader.TextColor = (_vm.Stage == "Budget Savings") ? (Color)Primary : (Color)Tertiary;
         lblIncomesHeader.TextColor = (_vm.Stage == "Budget Extra Income") ? (Color)Primary : (Color)Tertiary;
+
     }
 
     private void GoToStageSettings_Tapped(object sender, TappedEventArgs e)
@@ -195,6 +205,12 @@ public partial class CreateNewBudget : ContentPage
         UpdateStageDisplay();
     }
 
+    private void ContinueBudgetDetailsButton_Clicked(object sender, EventArgs e)
+    {
+        _vm.Stage = "Budget Outgoings";
+        UpdateStageDisplay();
+    }
+
     private async void BankBalanceInfo(object sender, EventArgs e)
     {
         List<string> SubTitle = new List<string>{
@@ -218,7 +234,246 @@ public partial class CreateNewBudget : ContentPage
 
         double BankBalance = _pt.FormatCurrencyNumber(e.NewTextValue);
         entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
-
         entBankBalance.CursorPosition = _pt.FindCurrencyCursorPosition(entBankBalance.Text);
+
+    }
+    void PayAmount_Changed(object sender, TextChangedEventArgs e)
+    {
+        double BankBalance = _pt.FormatCurrencyNumber(e.NewTextValue);
+        entPayAmount.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+        entPayAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entPayAmount.Text);
+    }
+    private async void PayDayInfo(object sender, EventArgs e)
+    {
+        List<string> SubTitle = new List<string>{
+            "",
+            "",
+            ""
+        };
+
+        List<string> Info = new List<string>{
+            "",
+            "",
+            ""
+        };
+
+        var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+    }
+
+    private async void PayDetailsInfo(object sender, EventArgs e)
+    {
+        List<string> SubTitle = new List<string>{
+            "",
+            "",
+            ""
+        };
+
+        List<string> Info = new List<string>{
+            "",
+            "",
+            ""
+        };
+
+        var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+    }
+
+    private void UpdateSelectedOption(string option) 
+    {
+        Application.Current.Resources.TryGetValue("Success", out var Success);
+        Application.Current.Resources.TryGetValue("Light", out var Light);
+        Application.Current.Resources.TryGetValue("White", out var White);
+        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+
+        if (option == "Everynth")
+        {
+            vslOption1Select.BackgroundColor = (Color)Success;
+            vslOption2Select.BackgroundColor = (Color)Light;
+            vslOption3Select.BackgroundColor = (Color)Light;
+            vslOption4Select.BackgroundColor = (Color)Light;
+
+            lblOption1.FontAttributes = FontAttributes.Bold;
+            lblOption2.FontAttributes = FontAttributes.None;
+            lblOption3.FontAttributes = FontAttributes.None;
+            lblOption4.FontAttributes = FontAttributes.None;
+
+            lblOption1.TextColor = (Color)White;
+            lblOption2.TextColor = (Color)Gray900;
+            lblOption3.TextColor = (Color)Gray900;
+            lblOption4.TextColor = (Color)Gray900;
+
+            vslOption1.IsVisible = true;
+            vslOption2.IsVisible = false;
+            vslOption3.IsVisible = false;
+            vslOption4.IsVisible = false;
+
+            pckrEverynthDuration.SelectedItem = _vm.Budget.PaydayDuration ?? "days";
+            entEverynthValue.Text = _vm.Budget.PaydayValue.ToString() ?? "1";
+
+            _vm.Budget.PaydayType = "Everynth";
+
+        }
+        else if (option == "WorkingDays")
+        {
+            vslOption1Select.BackgroundColor = (Color)Light;
+            vslOption2Select.BackgroundColor = (Color)Success;
+            vslOption3Select.BackgroundColor = (Color)Light;
+            vslOption4Select.BackgroundColor = (Color)Light;
+
+            lblOption1.FontAttributes = FontAttributes.None;
+            lblOption2.FontAttributes = FontAttributes.Bold;
+            lblOption3.FontAttributes = FontAttributes.None;
+            lblOption4.FontAttributes = FontAttributes.None;
+
+            lblOption1.TextColor = (Color)Gray900;
+            lblOption2.TextColor = (Color)White;
+            lblOption3.TextColor = (Color)Gray900;
+            lblOption4.TextColor = (Color)Gray900;
+
+            vslOption1.IsVisible = false;
+            vslOption2.IsVisible = true;
+            vslOption3.IsVisible = false;
+            vslOption4.IsVisible = false;
+
+            entWorkingDaysValue.Text = _vm.Budget.PaydayValue.ToString() ?? "1";
+
+            _vm.Budget.PaydayType = "WorkingDays";
+        }
+        else if (option == "OfEveryMonth")
+        {
+            vslOption1Select.BackgroundColor = (Color)Light;
+            vslOption2Select.BackgroundColor = (Color)Light;
+            vslOption3Select.BackgroundColor = (Color)Success;
+            vslOption4Select.BackgroundColor = (Color)Light;
+
+            lblOption1.FontAttributes = FontAttributes.None;
+            lblOption2.FontAttributes = FontAttributes.None;
+            lblOption3.FontAttributes = FontAttributes.Bold;
+            lblOption4.FontAttributes = FontAttributes.None;
+
+            lblOption1.TextColor = (Color)Gray900;
+            lblOption2.TextColor = (Color)Gray900;
+            lblOption3.TextColor = (Color)White;
+            lblOption4.TextColor = (Color)Gray900;
+
+            vslOption1.IsVisible = false;
+            vslOption2.IsVisible = false;
+            vslOption3.IsVisible = true;
+            vslOption4.IsVisible = false;
+
+            entOfEveryMonthValue.Text = _vm.Budget.PaydayValue.ToString() ?? "1";
+
+            _vm.Budget.PaydayType = "OfEveryMonth";
+        }
+        else if (option == "LastOfTheMonth")
+        {
+
+            vslOption1Select.BackgroundColor = (Color)Light;
+            vslOption2Select.BackgroundColor = (Color)Light;
+            vslOption3Select.BackgroundColor = (Color)Light;
+            vslOption4Select.BackgroundColor = (Color)Success;
+
+            lblOption1.FontAttributes = FontAttributes.None;
+            lblOption2.FontAttributes = FontAttributes.None;
+            lblOption3.FontAttributes = FontAttributes.None;
+            lblOption4.FontAttributes = FontAttributes.Bold;
+
+            lblOption1.TextColor = (Color)Gray900;
+            lblOption2.TextColor = (Color)Gray900;
+            lblOption3.TextColor = (Color)Gray900;
+            lblOption4.TextColor = (Color)White;
+
+            vslOption1.IsVisible = false;
+            vslOption2.IsVisible = false;
+            vslOption3.IsVisible = false;
+            vslOption4.IsVisible = true;
+
+            pckrLastOfTheMonthDuration.SelectedItem = _vm.Budget.PaydayDuration ?? "Monday";
+
+            _vm.Budget.PaydayType = "LastOfTheMonth";
+        }
+        else
+        {
+            vslOption1Select.BackgroundColor = (Color)Light;
+            vslOption2Select.BackgroundColor = (Color)Light;
+            vslOption3Select.BackgroundColor = (Color)Light;
+            vslOption4Select.BackgroundColor = (Color)Light;
+
+            lblOption1.FontAttributes = FontAttributes.None;
+            lblOption2.FontAttributes = FontAttributes.None;
+            lblOption3.FontAttributes = FontAttributes.None;
+            lblOption4.FontAttributes = FontAttributes.None;
+
+            lblOption1.TextColor = (Color)Gray900;
+            lblOption2.TextColor = (Color)Gray900;
+            lblOption3.TextColor = (Color)Gray900;
+            lblOption4.TextColor = (Color)Gray900;
+
+            vslOption1.IsVisible = false;
+            vslOption1.IsVisible = false;
+            vslOption1.IsVisible = false;
+            vslOption1.IsVisible = false;
+
+            _vm.Budget.PaydayType = "";
+        }
+    }
+
+    private void Option1Select_Tapped(object sender, TappedEventArgs e)
+    {
+        UpdateSelectedOption("Everynth");
+    }
+
+    private void Option2Select_Tapped(object sender, TappedEventArgs e)
+    {
+        UpdateSelectedOption("WorkingDays");
+    }
+
+    private void Option3Select_Tapped(object sender, TappedEventArgs e)
+    {
+        UpdateSelectedOption("OfEveryMonth");
+    }
+
+    private void Option4Select_Tapped(object sender, TappedEventArgs e)
+    {
+        UpdateSelectedOption("LastOfTheMonth");
+    }
+
+    void EveryNthValue_Changed(object sender, TextChangedEventArgs e)
+    {
+        Regex regex = new Regex(@"^\d+$");
+
+        if (e.NewTextValue != null && e.NewTextValue != "")
+        {
+            if (!regex.IsMatch(e.NewTextValue))
+            {
+                entEverynthValue.Text = e.OldTextValue;
+            }
+        }
+    }
+
+    void WorkingDaysValue_Changed(object sender, TextChangedEventArgs e)
+    {
+        Regex regex = new Regex(@"^\d+$");
+
+        if (e.NewTextValue != null && e.NewTextValue != "")
+        {
+            if (!regex.IsMatch(e.NewTextValue))
+            {
+                entEverynthValue.Text = e.OldTextValue;
+            }
+        }
+    }
+    void OfEveryMonthValue_Changed(object sender, TextChangedEventArgs e)
+    {
+        Regex regex = new Regex(@"^\d+$");
+
+        if (e.NewTextValue != null && e.NewTextValue != "")
+        {
+            if (!regex.IsMatch(e.NewTextValue))
+            {
+                entEverynthValue.Text = e.OldTextValue;
+            }
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
+
         [ObservableProperty]
         private int _budgetID;
         [ObservableProperty]
@@ -126,6 +127,12 @@ namespace DailyBudgetMAUIApp.ViewModels
         async void ContinueSettings()
         {
             SaveStage("Budget Settings");
+        }
+
+        [ICommand]
+        async void ContinueBudgetDetails()
+        {
+            SaveStage("Budget Details");
         }
 
         private async void SaveStage(string CurrentStage)
