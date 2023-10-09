@@ -8,7 +8,7 @@
              Title="Create Your Budget"
              Shell.TabBarIsVisible="False"
              BackgroundColor="{DynamicResource White}">
-    <ScrollView>
+    <ScrollView x:Name="MainScrollView">
         <VerticalStackLayout Padding="20,5,20,5">
             <VerticalStackLayout>
                 <HorizontalStackLayout Margin="0,0,0,2">
@@ -159,7 +159,7 @@
                 </HorizontalStackLayout>
                 <Label Text="Let us know the date of your next pay!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,20" HeightRequest="38">
-                    <DatePicker Date="{Binding Budget.NextIncomePayday}" Margin="20,0,0,0" x:Name="dtpckPayDay">
+                    <DatePicker Date="{Binding Budget.NextIncomePayday}" Margin="20,0,0,0" x:Name="dtpckPayDay" TextColor="{DynamicResource Gray900}">
                     </DatePicker>
                 </Border>
                 <HorizontalStackLayout Padding="5,0,0,20">
@@ -207,11 +207,11 @@
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
-                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed"/>
+                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed" TextColor="{DynamicResource Gray900}"/>
                         </Border>
                         <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="1" Grid.Row="1">
-                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration">
+                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration" TextColor="{DynamicResource Gray900}">
                                 <Picker.ItemsSource>
                                     <x:Array Type="{x:Type x:String}">
                                         <x:String>days</x:String>
@@ -228,7 +228,7 @@
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
-                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entWorkingDaysValue" Keyboard="Numeric" TextChanged="WorkingDaysValue_Changed"/>
+                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entWorkingDaysValue" Keyboard="Numeric" TextChanged="WorkingDaysValue_Changed" TextColor="{DynamicResource Gray900}"/>
                         </Border>
                     </Grid>
                 </VerticalStackLayout>
@@ -237,7 +237,7 @@
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
-                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entOfEveryMonthValue" Keyboard="Numeric" TextChanged="OfEveryMonthValue_Changed"/>
+                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entOfEveryMonthValue" Keyboard="Numeric" TextChanged="OfEveryMonthValue_Changed" TextColor="{DynamicResource Gray900}"/>
                         </Border>
                     </Grid>
                 </VerticalStackLayout>
@@ -246,7 +246,7 @@
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
-                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrLastOfTheMonthDuration" Title="Select a duration">
+                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrLastOfTheMonthDuration" Title="Select a duration" TextColor="{DynamicResource Gray900}">
                                 <Picker.ItemsSource>
                                     <x:Array Type="{x:Type x:String}">
                                         <x:String>Monday</x:String>

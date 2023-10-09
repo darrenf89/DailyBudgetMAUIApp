@@ -18,5 +18,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public void ShowPopup(PopUpPage popup);
         public double FormatCurrencyNumber(string input);
         public int FindCurrencyCursorPosition(string input);
+        public int GetNumberOfDaysLastWorkingDay(int? NumberOfDaysBefore);
+        public int GetNumberOfDaysLastDayOfWeek(int dayNumber);
     }
 }

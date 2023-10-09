@@ -131,6 +131,147 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public int GetNumberOfDaysLastWorkingDay(int? NumberOfDaysBefore)
+        {
+            if (NumberOfDaysBefore == null)
+            {
+                NumberOfDaysBefore = 1;
+            }
+
+            int year = DateTime.Now.Year;
+            int month = DateTime.Now.Month;
+
+            int NextYear = new int();
+            int NextMonth = new int();
+
+            if (month != 12)
+            {
+                NextYear = DateTime.Now.Year;
+                NextMonth = month + 1;
+            }
+            else
+            {
+                NextYear = year + 1;
+                NextMonth = 1;
+            }
+
+            DateTime CurrentDate = new DateTime();
+            var i = DateTime.DaysInMonth(year, month);
+            int j = 1;
+            while (i > 0)
+            {
+                var dtCurrent = new DateTime(year, month, i);
+                if (dtCurrent.DayOfWeek < DayOfWeek.Saturday && dtCurrent.DayOfWeek > DayOfWeek.Sunday)
+                {
+                    CurrentDate = dtCurrent;
+                    if (j == NumberOfDaysBefore)
+                    {
+                        i = 0;
+                    }
+                    else
+                    {
+                        i = i - 1;
+                        j = j + 1;
+                    }
+                }
+                else
+                {
+                    i = i - 1;
+                }
+            }
+
+            DateTime NextDate = new DateTime();
+            i = DateTime.DaysInMonth(NextYear, NextMonth);
+            j = 1;
+            while (i > 0)
+            {
+                var dtCurrent = new DateTime(NextYear, NextMonth, i);
+                if (dtCurrent.DayOfWeek < DayOfWeek.Saturday && dtCurrent.DayOfWeek > DayOfWeek.Sunday)
+                {
+                    NextDate = dtCurrent;
+                    if (j == NumberOfDaysBefore)
+                    {
+                        i = 0;
+                    }
+                    else
+                    {
+                        i = i - 1;
+                        j = j + 1;
+                    }
+                }
+                else
+                {
+                    i = i - 1;
+                }
+            }
+
+            int DaysBetweenPay = (NextDate.Date - CurrentDate.Date).Days;
+
+            return DaysBetweenPay;
+        }
+
+        public int GetNumberOfDaysLastDayOfWeek(int dayNumber)
+        {
+
+            int year = DateTime.Now.Year;
+            int month = DateTime.Now.Month;
+
+            int NextYear = new int();
+            int NextMonth = new int();
+
+            if (month != 12)
+            {
+                NextYear = DateTime.Now.Year;
+                NextMonth = month + 1;
+            }
+            else
+            {
+                NextYear = year + 1;
+                NextMonth = 1;
+            }
+
+            DateTime CurrentDate = new DateTime();
+
+            var i = DateTime.DaysInMonth(year, month);
+            while (i > 0)
+            {
+                var dtCurrent = new DateTime(year, month, i);
+                if ((int)dtCurrent.DayOfWeek == dayNumber)
+                {
+                    CurrentDate = dtCurrent;
+                    i = 0;
+                }
+                else
+                {
+                    i = i - 1;
+                }
+            }
+
+
+            DateTime NextDate = new DateTime();
+
+            i = DateTime.DaysInMonth(NextYear, NextMonth);
+            while (i > 0)
+            {
+                var dtCurrent = new DateTime(NextYear, NextMonth, i);
+                if ((int)dtCurrent.DayOfWeek == dayNumber)
+                {
+                    NextDate = dtCurrent;
+                    i = 0;
+                }
+                else
+                {
+                    i = i - 1;
+                }
+            }
+
+            int DaysBetweenPay = (NextDate.Date - CurrentDate.Date).Days;
+
+            return DaysBetweenPay;
+        }
+
 
     }
+
+    
 }

@@ -161,34 +161,48 @@ public partial class CreateNewBudget : ContentPage
 
     }
 
-    private void GoToStageSettings_Tapped(object sender, TappedEventArgs e)
+    private async void GoToStageSettings_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Budget Settings";
         UpdateStageDisplay();
+        await MainScrollView.ScrollToAsync(lblSettingsHeader,ScrollToPosition.Start,true);
     }
 
-    private void GoToStageBudget_Tapped(object sender, TappedEventArgs e)
+    private async void GoToStageBudget_Tapped(object sender, TappedEventArgs e)
     {
+
+        double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
+        entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+
+        double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
+        entPayAmount.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+
         _vm.Stage = "Budget Details";
         UpdateStageDisplay();
+        await MainScrollView.ScrollToAsync(lblBudgetHeader,ScrollToPosition.Start,true);
     }
 
-    private void GoToStageBills_Tapped(object sender, TappedEventArgs e)
+    private async void GoToStageBills_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Budget Outgoings";
         UpdateStageDisplay();
+        await MainScrollView.ScrollToAsync(lblBillsHeader,ScrollToPosition.Start,true);
     }
 
     private void GoToStageSavings_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Budget Savings";
         UpdateStageDisplay();
+        await MainScrollView.ScrollToAsync(lblSavingsHeader,ScrollToPosition.Start,true);
+
     }
 
-    private void GoToStageIncomes_Tapped(object sender, TappedEventArgs e)
+    private async void GoToStageIncomes_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Budget Extra Income";
         UpdateStageDisplay();
+        await MainScrollView.ScrollToAsync(lblIncomesHeader,ScrollToPosition.Start,true);
+
     }
 
     private void ChangeSelectedCurrency_Tapped(object sender, TappedEventArgs e)
@@ -199,16 +213,24 @@ public partial class CreateNewBudget : ContentPage
         CurrencySearch.Text = "";
     }
 
-    private void ContinueSettingsButton_Clicked(object sender, EventArgs e)
+    private async void ContinueSettingsButton_Clicked(object sender, EventArgs e)
     {
+        double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
+        entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+        
+        double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
+        entPayAmount.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+
         _vm.Stage = "Budget Details";
         UpdateStageDisplay();
+        await MainScrollView.ScrollToAsync(lblBudgetHeader,ScrollToPosition.Start,true);
     }
 
-    private void ContinueBudgetDetailsButton_Clicked(object sender, EventArgs e)
+    private async void ContinueBudgetDetailsButton_Clicked(object sender, EventArgs e)
     {
         _vm.Stage = "Budget Outgoings";
         UpdateStageDisplay();
+        await MainScrollView.ScrollToAsync(lblBillsHeader,ScrollToPosition.Start,true);
     }
 
     private async void BankBalanceInfo(object sender, EventArgs e)
