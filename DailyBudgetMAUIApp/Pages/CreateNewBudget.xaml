@@ -92,7 +92,7 @@
                         </MultiBinding>
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Tapped="ChangeSelectedCurrency_Tapped"/>
-                        </Label.GestureRecognizers>                    
+                        </Label.GestureRecognizers>
                     </Label>
                 </Border>
                 <Label Text="Symbol Placement" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
@@ -117,10 +117,11 @@
                     Command="{Binding ContinueSettingsCommand}"
                     Clicked="ContinueSettingsButton_Clicked"    
                     HorizontalOptions="Start"
-                    Style="{StaticResource PrimaryInfoButton}"/>
+                    Style="{StaticResource PrimaryInfoButton}"
+                    x:Name="btnContinueSettings"/>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
-            <VerticalStackLayout Margin="0,0,0,5">
+            <VerticalStackLayout Margin="0,0,0,5" x:Name="vslBudgetDetails">
                 <Grid ColumnDefinitions="3*,*" RowDefinitions="*">
                     <Label x:Name="lblBudgetHeader" Text="Your Budget" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Large" TextColor="{DynamicResource Tertiary}" Grid.Column="0" VerticalOptions="Center" Padding="5,10,0,10"/>
                     <HorizontalStackLayout Margin="0" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
@@ -159,7 +160,7 @@
                 </HorizontalStackLayout>
                 <Label Text="Let us know the date of your next pay!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,20" HeightRequest="38">
-                    <DatePicker Date="{Binding Budget.NextIncomePayday}" Margin="20,0,0,0" x:Name="dtpckPayDay" TextColor="{DynamicResource Gray900}">
+                    <DatePicker Margin="20,0,0,0" x:Name="dtpckPayDay" TextColor="{DynamicResource Gray900}">
                     </DatePicker>
                 </Border>
                 <HorizontalStackLayout Padding="5,0,0,20">
@@ -207,11 +208,11 @@
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
-                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed" TextColor="{DynamicResource Gray900}"/>
+                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed"/>
                         </Border>
                         <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="1" Grid.Row="1">
-                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration" TextColor="{DynamicResource Gray900}">
+                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration">
                                 <Picker.ItemsSource>
                                     <x:Array Type="{x:Type x:String}">
                                         <x:String>days</x:String>
@@ -246,7 +247,7 @@
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
-                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrLastOfTheMonthDuration" Title="Select a duration" TextColor="{DynamicResource Gray900}">
+                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrLastOfTheMonthDuration" Title="Select a duration" >
                                 <Picker.ItemsSource>
                                     <x:Array Type="{x:Type x:String}">
                                         <x:String>Monday</x:String>
@@ -273,8 +274,7 @@
                     Margin="5,0,0,0"
                     WidthRequest="100"
                     Text="Continue"
-                    Command="{Binding ContinueBudgetDetailsCommand}"
-                    Clicked="ContinueBudgetDetailsButton_Clicked"    
+                    Clicked="ContinueBudgetDetailsButton_Clicked"                       
                     HorizontalOptions="Start"
                     Style="{StaticResource PrimaryInfoButton}"/>
             </VerticalStackLayout>

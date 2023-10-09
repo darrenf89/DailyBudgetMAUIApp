@@ -46,6 +46,17 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private lut_NumberFormat _selectedNumberFormats;
 
+        public string PayDayTypeText { get; set; }
+        public string PayAmountText { get; set; }
+        public string BankBalanceText { get; set; }
+        public DateTime PayDayDateValue { get; set; }
+        public string EveryNthValue { get; set; }
+        public string EveryNthDuration { get; set; }
+        public string WorkingDaysValue { get; set; }
+        public string OfEveryMonthValue { get; set; }
+        public string LastOfTheMonthDuration {  get; set; }
+
+
         public CreateNewBudgetViewModel(IProductTools pt, IRestDataService ds)
         {
             _pt = pt;
@@ -129,13 +140,13 @@ namespace DailyBudgetMAUIApp.ViewModels
             SaveStage("Budget Settings");
         }
 
-        [ICommand]
-        async void ContinueBudgetDetails()
-        {
-            SaveStage("Budget Details");
-        }
+        //[ICommand]
+        //async void ContinueBudgetDetails()
+        //{
+        //    SaveStage("Budget Details");
+        //}
 
-        private async void SaveStage(string CurrentStage)
+        public async void SaveStage(string CurrentStage)
         {
             try
             {
@@ -173,7 +184,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     break;
                 case "Budget Details":
 
-                    decimal Balance = (decimal)_pt.FormatCurrencyNumber(entBankBalance.Text);
+                    decimal Balance = (decimal)_pt.FormatCurrencyNumber(BankBalanceText);
 
                     if(Balance != Budget.BankBalance)
                     {
@@ -216,10 +227,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                         BudgetUpdate.Add(LeftToSpendBalancePatch);
                     }
 
-                    NextIncomePayday = dtpckPayDay.Date;
-                    if(NextIncomePayday != Budget.NextIncomePayday)
+                    if(PayDayDateValue != Budget.NextIncomePayday)
                     {
-                        Budget.NextIncomePayday = NextIncomePayday;
+                        Budget.NextIncomePayday = PayDayDateValue;
                         PatchDoc NextIncomePaydayPatch = new PatchDoc
                         {
                             op = "replace",
@@ -228,7 +238,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         };
                         BudgetUpdate.Add(NextIncomePaydayPatch);
                     
-                        Budget.NextIncomePaydayCalculated = NextIncomePayday;
+                        Budget.NextIncomePaydayCalculated = PayDayDateValue;
                         PatchDoc NextIncomePaydayCalculatedPatch = new PatchDoc
                         {
                             op = "replace",
@@ -238,47 +248,53 @@ namespace DailyBudgetMAUIApp.ViewModels
                         BudgetUpdate.Add(NextIncomePaydayCalculatedPatch);
                     }
 
-
-                    PatchDoc PayDayType = new PatchDoc
+                    if(PayDayTypeText != Budget.PaydayType)
                     {
-                        op = "replace",
-                        path = "/PayDayType",
-                        value = Budget.PayDayType
-                    };
-                    BudgetUpdate.Add(PayDayType);
+                        Budget.PaydayType = PayDayTypeText;
+                        PatchDoc PayDayTypePatch = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/PayDayType",
+                            value = Budget.PaydayType
+                        };
+                        BudgetUpdate.Add(PayDayTypePatch);
+                    }
 
-                    string PayDayDuration;
-                    int PayDayValue;
-                    int AproxDaysBetweenPay;
 
-                    if(Budget.PayDayType == "Everynth")
+                    string PayDayDuration = "";
+                    int PayDayValue = 0;
+                    int AproxDaysBetweenPay = 0;
+
+                    if(PayDayTypeText == "Everynth")
                     {
-                        PayDayValue = (int)entEverynthValue.Text ?? 1;
-                        PayDayDuration = pckrEverynthDuration.SelectedItem ?? "days";
+                        PayDayValue = Convert.ToInt32(EveryNthValue ?? "1");
+                        PayDayDuration = EveryNthDuration ?? "days";
+
+
                         int Duration = new int();
-                        if (PaydayDuration == "days")
+                        if (PayDayDuration == "days")
                         {
                             Duration = 1;
                         }
-                        else if (PaydayDuration == "weeks")
+                        else if (PayDayDuration == "weeks")
                         {
                             Duration = 7;
                         }
-                        else if (PaydayDuration == "years")
+                        else if (PayDayDuration == "years")
                         {
                             Duration = 365;
                         }
-                        AproxDaysBetweenPay = Duration * PaydayValue;
+                        AproxDaysBetweenPay = Duration * PayDayValue;
                     }
-                    else if (Budget.PayDayType == "WorkingDays")
+                    else if (PayDayTypeText == "WorkingDays") 
                     {
-                        PayDayValue = (int)entWorkingDaysValue.Text ?? 1;
+                        PayDayValue = Convert.ToInt32(WorkingDaysValue ?? "1");
                         PayDayDuration = "";
                         AproxDaysBetweenPay = _pt.GetNumberOfDaysLastWorkingDay(PayDayValue);
                     }
-                    else if (Budget.PayDayType == "OfEveryMonth")
+                    else if (PayDayTypeText == "OfEveryMonth")
                     {
-                        PayDayValue = (int)entOfEveryMonthValue.Text ?? 1;
+                        PayDayValue = Convert.ToInt32(OfEveryMonthValue ?? "1"); 
                         PayDayDuration = "";
 
                         int year = DateTime.Now.Year;
@@ -286,10 +302,10 @@ namespace DailyBudgetMAUIApp.ViewModels
                         int days = DateTime.DaysInMonth(year, month);
                         AproxDaysBetweenPay = days;
                     }
-                    else if (Budget.PayDayType == "LastOfTheMonth")
+                    else if (PayDayTypeText == "LastOfTheMonth")
                     {
                         PayDayValue = 0;
-                        PayDayDuration = pckrLastOfTheMonthDuration.SelectedItem ?? "Monday";
+                        PayDayDuration = LastOfTheMonthDuration ?? "Monday";
 
                         int dayNumber = ((int)Enum.Parse(typeof(DayOfWeek), PayDayDuration));
                         AproxDaysBetweenPay = _pt.GetNumberOfDaysLastDayOfWeek(dayNumber);
@@ -297,7 +313,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     
                     if(AproxDaysBetweenPay != Budget.AproxDaysBetweenPay)
                     {
-                        Budtet.AproxDaysBetweenPay = AproxDaysBetweenPay;
+                        Budget.AproxDaysBetweenPay = AproxDaysBetweenPay;
                         PatchDoc AproxDaysBetweenPayPatch = new PatchDoc
                         {
                             op = "replace",
@@ -307,32 +323,32 @@ namespace DailyBudgetMAUIApp.ViewModels
                         BudgetUpdate.Add(AproxDaysBetweenPayPatch);
                     }
 
-                    if(PayDayDuration != Budget.PayDayDuration)
+                    if(PayDayDuration != Budget.PaydayDuration)
                     {
-                        Budget.PayDayDuration = PayDayDuration;
+                        Budget.PaydayDuration = PayDayDuration;
                         PatchDoc PayDayDurationPatch = new PatchDoc
                         {
                             op = "replace",
                             path = "/PayDayDuration",
-                            value = Budget.PayDayDuration
+                            value = Budget.PaydayDuration
                         };
                         BudgetUpdate.Add(PayDayDurationPatch);
                     }
 
-                    if(PayDayValue != Budget.PayDayValue)
+                    if(PayDayValue != Budget.PaydayValue)
                     {
-                        Budget.PayDayValue = PayDayValue;
+                        Budget.PaydayValue = PayDayValue;
                         PatchDoc PayDayValuePatch = new PatchDoc
                         {
                             op = "replace",
                             path = "/PayDayValue",
-                            value = Budget.PayDayValue
+                            value = Budget.PaydayValue
                         };
                         BudgetUpdate.Add(PayDayValuePatch); 
                     }
 
-                    decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(entPayAmount.Text);
-                    if(PaydayAmount != Budget.PaydayAmount)
+                    decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(PayAmountText);
+                    if(PayDayAmount != Budget.PaydayAmount)
                     {
                         Budget.PaydayAmount = PayDayAmount;
                         PatchDoc PaydayAmountPatch = new PatchDoc
@@ -346,22 +362,27 @@ namespace DailyBudgetMAUIApp.ViewModels
 
 
                     TimeSpan t = Budget.NextIncomePayday - DateTime.UtcNow ?? new TimeSpan();
-                    decimal LeftToSpendDailyAmount = Budget.BankBalance / t.Days;
-
-                    if(LeftToSpendDailyAmount != Budget.LeftToSpendDailyAmount)
+                    if(t.Days != 0 && t.Days != null)
                     {
-                        Budget.LeftToSpendDailyAmount = LeftToSpendDailyAmount;
-                        PatchDoc LeftToSpendDailyAmountPatch = new PatchDoc
+                        decimal? LeftToSpendDailyAmount = Budget.BankBalance / t.Days;
+
+                        if (LeftToSpendDailyAmount != Budget.LeftToSpendDailyAmount)
                         {
-                            op = "replace",
-                            path = "/LeftToSpendDailyAmount",
-                            value = Budget.LeftToSpendDailyAmount
-                        };
-                        BudgetUpdate.Add(LeftToSpendDailyAmountPatch);
+                            Budget.LeftToSpendDailyAmount = LeftToSpendDailyAmount ?? 0;
+                            PatchDoc LeftToSpendDailyAmountPatch = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/LeftToSpendDailyAmount",
+                                value = Budget.LeftToSpendDailyAmount
+                            };
+                            BudgetUpdate.Add(LeftToSpendDailyAmountPatch);
+                        }
                     }
 
-
-                    await _ds.PatchBudget(BudgetID, BudgetUpdate);
+                    if (BudgetUpdate.Count != 0)
+                    {
+                        await _ds.PatchBudget(BudgetID, BudgetUpdate);
+                    }
 
                     break;
                 case "Budget Outgoings":

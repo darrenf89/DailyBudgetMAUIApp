@@ -114,9 +114,11 @@ public partial class CreateNewBudget : ContentPage
             double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
             entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
             double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-            entPayAmount.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+            entPayAmount.Text = PayAmount.ToString("C", CultureInfo.CurrentCulture);
 
+            dtpckPayDay.Date = _vm.Budget.NextIncomePayday ?? default;
             dtpckPayDay.MinimumDate = DateTime.Now;
+
             UpdateSelectedOption(_vm.Budget.PaydayType);
 
         }
@@ -175,7 +177,7 @@ public partial class CreateNewBudget : ContentPage
         entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
 
         double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        entPayAmount.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+        entPayAmount.Text = PayAmount.ToString("C", CultureInfo.CurrentCulture);
 
         _vm.Stage = "Budget Details";
         UpdateStageDisplay();
@@ -189,7 +191,7 @@ public partial class CreateNewBudget : ContentPage
         await MainScrollView.ScrollToAsync(lblBillsHeader,ScrollToPosition.Start,true);
     }
 
-    private void GoToStageSavings_Tapped(object sender, TappedEventArgs e)
+    private async void GoToStageSavings_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Budget Savings";
         UpdateStageDisplay();
@@ -219,18 +221,45 @@ public partial class CreateNewBudget : ContentPage
         entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
         
         double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        entPayAmount.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+        entPayAmount.Text = PayAmount.ToString("C", CultureInfo.CurrentCulture);
+
+        dtpckPayDay.Date = _vm.Budget.NextIncomePayday ?? default;
 
         _vm.Stage = "Budget Details";
         UpdateStageDisplay();
-        await MainScrollView.ScrollToAsync(lblBudgetHeader,ScrollToPosition.Start,true);
+
+        await MainScrollView.ScrollToAsync(0, 155, true);
     }
 
     private async void ContinueBudgetDetailsButton_Clicked(object sender, EventArgs e)
     {
         _vm.Stage = "Budget Outgoings";
+
+        _vm.PayAmountText = entPayAmount.Text ?? "";
+        _vm.BankBalanceText = entBankBalance.Text ?? "";
+        _vm.PayDayDateValue = dtpckPayDay.Date;
+        if(_vm.PayDayTypeText == "Everynth")
+        {
+            _vm.EveryNthValue = entEverynthValue.Text ?? "0";
+            _vm.EveryNthDuration = pckrEverynthDuration.SelectedItem.ToString() ?? "";
+        }
+        else if(_vm.PayDayTypeText == "WorkingDays")
+        {
+            _vm.WorkingDaysValue = entWorkingDaysValue.Text ?? "0";
+        }
+        else if (_vm.PayDayTypeText == "OfEveryMonth")
+        {
+            _vm.OfEveryMonthValue = entOfEveryMonthValue.Text ?? "0";
+        }
+        else if (_vm.PayDayTypeText == "LastOfTheMonth")
+        {
+            _vm.LastOfTheMonthDuration = pckrLastOfTheMonthDuration.SelectedItem.ToString() ?? "";
+        }
+
+        _vm.SaveStage("Budget Details");
+
         UpdateStageDisplay();
-        await MainScrollView.ScrollToAsync(lblBillsHeader,ScrollToPosition.Start,true);
+        await MainScrollView.ScrollToAsync(0, 215, true);
     }
 
     private async void BankBalanceInfo(object sender, EventArgs e)
@@ -261,8 +290,8 @@ public partial class CreateNewBudget : ContentPage
     }
     void PayAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        double BankBalance = _pt.FormatCurrencyNumber(e.NewTextValue);
-        entPayAmount.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+        double PayAmount = _pt.FormatCurrencyNumber(e.NewTextValue);
+        entPayAmount.Text = PayAmount.ToString("C", CultureInfo.CurrentCulture);
         entPayAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entPayAmount.Text);
     }
     private async void PayDayInfo(object sender, EventArgs e)
@@ -333,7 +362,7 @@ public partial class CreateNewBudget : ContentPage
             pckrEverynthDuration.SelectedItem = _vm.Budget.PaydayDuration ?? "days";
             entEverynthValue.Text = _vm.Budget.PaydayValue.ToString() ?? "1";
 
-            _vm.Budget.PaydayType = "Everynth";
+            _vm.PayDayTypeText = "Everynth";
 
         }
         else if (option == "WorkingDays")
@@ -360,7 +389,7 @@ public partial class CreateNewBudget : ContentPage
 
             entWorkingDaysValue.Text = _vm.Budget.PaydayValue.ToString() ?? "1";
 
-            _vm.Budget.PaydayType = "WorkingDays";
+            _vm.PayDayTypeText = "WorkingDays";
         }
         else if (option == "OfEveryMonth")
         {
@@ -386,7 +415,7 @@ public partial class CreateNewBudget : ContentPage
 
             entOfEveryMonthValue.Text = _vm.Budget.PaydayValue.ToString() ?? "1";
 
-            _vm.Budget.PaydayType = "OfEveryMonth";
+            _vm.PayDayTypeText = "OfEveryMonth";
         }
         else if (option == "LastOfTheMonth")
         {
@@ -413,7 +442,7 @@ public partial class CreateNewBudget : ContentPage
 
             pckrLastOfTheMonthDuration.SelectedItem = _vm.Budget.PaydayDuration ?? "Monday";
 
-            _vm.Budget.PaydayType = "LastOfTheMonth";
+            _vm.PayDayTypeText = "LastOfTheMonth";
         }
         else
         {
@@ -437,7 +466,7 @@ public partial class CreateNewBudget : ContentPage
             vslOption1.IsVisible = false;
             vslOption1.IsVisible = false;
 
-            _vm.Budget.PaydayType = "";
+            _vm.PayDayTypeText = "";
         }
     }
 
