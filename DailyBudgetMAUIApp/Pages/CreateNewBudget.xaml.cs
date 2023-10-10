@@ -231,35 +231,121 @@ public partial class CreateNewBudget : ContentPage
         await MainScrollView.ScrollToAsync(0, 155, true);
     }
 
+    private async void BackBudgetDetailsButton_Clicked(object sender, EventArgs e)
+    {
+        _vm.Stage = "Budget Settings";
+        UpdateStageDisplay();
+
+        await MainScrollView.ScrollToAsync(0, 95, true);
+    }
+
     private async void ContinueBudgetDetailsButton_Clicked(object sender, EventArgs e)
     {
-        _vm.Stage = "Budget Outgoings";
+        if(ValidateBudgetDetails())
+        {
+            _vm.Stage = "Budget Outgoings";
 
-        _vm.PayAmountText = entPayAmount.Text ?? "";
-        _vm.BankBalanceText = entBankBalance.Text ?? "";
-        _vm.PayDayDateValue = dtpckPayDay.Date;
-        if(_vm.PayDayTypeText == "Everynth")
-        {
-            _vm.EveryNthValue = entEverynthValue.Text ?? "0";
-            _vm.EveryNthDuration = pckrEverynthDuration.SelectedItem.ToString() ?? "";
-        }
-        else if(_vm.PayDayTypeText == "WorkingDays")
-        {
-            _vm.WorkingDaysValue = entWorkingDaysValue.Text ?? "0";
-        }
-        else if (_vm.PayDayTypeText == "OfEveryMonth")
-        {
-            _vm.OfEveryMonthValue = entOfEveryMonthValue.Text ?? "0";
-        }
-        else if (_vm.PayDayTypeText == "LastOfTheMonth")
-        {
-            _vm.LastOfTheMonthDuration = pckrLastOfTheMonthDuration.SelectedItem.ToString() ?? "";
+            _vm.PayAmountText = entPayAmount.Text ?? "";
+            _vm.BankBalanceText = entBankBalance.Text ?? "";
+            _vm.PayDayDateValue = dtpckPayDay.Date;
+            if (_vm.PayDayTypeText == "Everynth")
+            {
+                _vm.EveryNthValue = entEverynthValue.Text ?? "0";
+                _vm.EveryNthDuration = pckrEverynthDuration.SelectedItem.ToString() ?? "Weeks";
+            }
+            else if (_vm.PayDayTypeText == "WorkingDays")
+            {
+                _vm.WorkingDaysValue = entWorkingDaysValue.Text ?? "0";
+            }
+            else if (_vm.PayDayTypeText == "OfEveryMonth")
+            {
+                _vm.OfEveryMonthValue = entOfEveryMonthValue.Text ?? "0";
+            }
+            else if (_vm.PayDayTypeText == "LastOfTheMonth")
+            {
+                _vm.LastOfTheMonthDuration = pckrLastOfTheMonthDuration.SelectedItem.ToString() ?? "Monday";
+            }
+
+            _vm.SaveStage("Budget Details");
+
+            UpdateStageDisplay();
+            await MainScrollView.ScrollToAsync(0, 215, true);
         }
 
-        _vm.SaveStage("Budget Details");
+    }
 
+    private bool ValidateBudgetDetails()
+    {
+        bool IsValid = true;
+
+        if (dtpckPayDay.Date <= DateTime.Now.Date)
+        {
+            IsValid = false;
+            validatorPayDay.IsVisible = true;
+        }
+        else
+        {
+            validatorPayDay.IsVisible = false;
+        }
+
+        if(_vm.PayDayTypeText == "" || _vm.PayDayTypeText == null)
+        {
+            IsValid = false;
+            validatorPayType.IsVisible = true;
+        }
+        else
+        {
+            validatorPayType.IsVisible = false;
+        }
+
+        if (_vm.PayDayTypeText == "Everynth" && entEverynthValue.Text == "")
+        {
+            IsValid = false;
+            validatorEveryNthDuration.IsVisible = true;
+        }
+        else
+        {
+            validatorEveryNthDuration.IsVisible = false;
+        }
+
+        if (_vm.PayDayTypeText == "WorkingDays" && entWorkingDaysValue.Text == "")
+        {
+            IsValid = false;
+            validatorEveryNthDuration.IsVisible = true;
+        }
+        else
+        {
+            validatorEveryNthDuration.IsVisible = false;
+        }
+
+        if (_vm.PayDayTypeText == "OfEveryMonth" && entOfEveryMonthValue.Text == "")
+        {
+            IsValid = false;
+            validatorEveryNthDuration.IsVisible = true;
+        }
+        else
+        {
+            validatorEveryNthDuration.IsVisible = false;
+        }
+
+        return IsValid;
+    }
+
+    private async void BackBudgetBillsButton_Clicked(object sender, EventArgs e)
+    {
+
+        _vm.Stage = "Budget Details";
         UpdateStageDisplay();
-        await MainScrollView.ScrollToAsync(0, 215, true);
+
+        await MainScrollView.ScrollToAsync(0, 155, true);
+    }
+
+    private async void ContinueBudgetBillsButton_Clicked(object sender, EventArgs e)
+    {
+        _vm.Stage = "Budget Savings";
+        UpdateStageDisplay();
+
+        await MainScrollView.ScrollToAsync(0, 275, true);
     }
 
     private async void BankBalanceInfo(object sender, EventArgs e)
@@ -573,4 +659,6 @@ public partial class CreateNewBudget : ContentPage
             _vm.BillsYesNoSelect = "No";
         }
     }
+
+
 }

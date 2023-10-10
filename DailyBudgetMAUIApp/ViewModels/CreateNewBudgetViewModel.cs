@@ -342,10 +342,12 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     if(UpdateBudgetFlag)
                     {
-                        decimal MoneyAvailableBalance = Budget.MoneyAvailableBalance;
-                        decimal LeftToSpendBalance = Budget.LeftToSpendBalance;
+                        decimal MoneyAvailableBalance = Budget.MoneyAvailableBalance ?? 0;
+                        decimal LeftToSpendBalance = Budget.LeftToSpendBalance ?? 0;
 
-                        _pt.UpdateBudget(Budget);
+                        Budgets BudgetRef = Budget;
+                        _pt.UpdateBudget(ref BudgetRef);
+                        Budget = BudgetRef;
 
                         if(MoneyAvailableBalance != Budget.MoneyAvailableBalance)
                         {

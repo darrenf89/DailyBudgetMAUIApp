@@ -159,10 +159,20 @@
                     </ImageButton>
                 </HorizontalStackLayout>
                 <Label Text="Let us know the date of your next pay!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
-                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,20" HeightRequest="38">
-                    <DatePicker Margin="20,0,0,0" x:Name="dtpckPayDay" TextColor="{DynamicResource Gray900}">
-                    </DatePicker>
-                </Border>
+                <VerticalStackLayout Margin="0,0,0,20">
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,0" HeightRequest="38">
+                        <DatePicker Margin="20,0,0,0" x:Name="dtpckPayDay" TextColor="{DynamicResource Gray900}">
+                        </DatePicker>
+                    </Border>
+                    <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validatorPayDay">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Select a pay day some time in the ... future" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
                 <HorizontalStackLayout Padding="5,0,0,20">
                     <Label Text="How do you get paid?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
                     <ImageButton Clicked="PayDetailsInfo" WidthRequest="14" HeightRequest="14" CornerRadius="5" VerticalOptions="Center" Margin="5,0,0,0">
@@ -171,47 +181,57 @@
                         </ImageButton.Source>
                     </ImageButton>
                 </HorizontalStackLayout>
-                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,5,10" HeightRequest="57">
-                    <Grid RowDefinitions="*" ColumnDefinitions="*,*,*,*" VerticalOptions="Center">
-                        <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="{DynamicResource Light}">
-                            <Label Margin="0,17,0,0" HeightRequest="55" x:Name="lblOption1" Text="Option 1" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
-                            </Label>
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="Option1Select_Tapped"/>
-                            </VerticalStackLayout.GestureRecognizers>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="{DynamicResource Light}">
-                            <Label Margin="0,17,0,0" HeightRequest="55" x:Name="lblOption2" Text="Option 2" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
-                            </Label>
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="Option2Select_Tapped"/>
-                            </VerticalStackLayout.GestureRecognizers>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout x:Name="vslOption3Select" Grid.Column="2" BackgroundColor="{DynamicResource Light}" >
-                            <Label Margin="0,17,0,0" HeightRequest="55" x:Name="lblOption3" Text="Option 3" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
-                            </Label>
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="Option3Select_Tapped"/>
-                            </VerticalStackLayout.GestureRecognizers>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout x:Name="vslOption4Select" Grid.Column="3" BackgroundColor="{DynamicResource Light}" >
-                            <Label Margin="0,17,0,0" HeightRequest="55" x:Name="lblOption4" Text="Option 4" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
-                            </Label>
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="Option4Select_Tapped"/>
-                            </VerticalStackLayout.GestureRecognizers>
-                        </VerticalStackLayout>
-                    </Grid>
-                </Border>
-                <VerticalStackLayout x:Name="vslOption1" IsVisible="false">
+                <VerticalStackLayout Margin="0,0,0,10">
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,5,0" HeightRequest="57">
+                        <Grid RowDefinitions="*" ColumnDefinitions="*,*,*,*" VerticalOptions="Center">
+                            <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="{DynamicResource Light}">
+                                <Label Margin="0,17,0,0" HeightRequest="55" x:Name="lblOption1" Text="Option 1" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                </Label>
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Option1Select_Tapped"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="{DynamicResource Light}">
+                                <Label Margin="0,17,0,0" HeightRequest="55" x:Name="lblOption2" Text="Option 2" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                </Label>
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Option2Select_Tapped"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout x:Name="vslOption3Select" Grid.Column="2" BackgroundColor="{DynamicResource Light}" >
+                                <Label Margin="0,17,0,0" HeightRequest="55" x:Name="lblOption3" Text="Option 3" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                </Label>
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Option3Select_Tapped"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout x:Name="vslOption4Select" Grid.Column="3" BackgroundColor="{DynamicResource Light}" >
+                                <Label Margin="0,17,0,0" HeightRequest="55" x:Name="lblOption4" Text="Option 4" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                </Label>
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Option4Select_Tapped"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                    <HorizontalStackLayout IsVisible="false" Margin="5,0,0,0" x:Name="validatorPayType">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="You have to select how you get paid" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>                
+                <VerticalStackLayout x:Name="vslOption1" IsVisible="false" Margin="0,0,0,20">
                     <Label Text="Every nth ..." FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
-                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="0" Grid.Row="1">
                             <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed"/>
                         </Border>
                         <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
-                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="1" Grid.Row="1">
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="1" Grid.Row="1">
                             <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration">
                                 <Picker.ItemsSource>
                                     <x:Array Type="{x:Type x:String}">
@@ -223,9 +243,17 @@
                             </handlers:BorderlessPicker>
                         </Border>
                     </Grid>
+                    <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validatorEveryNthDuration">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Please insert your value" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
                 </VerticalStackLayout>
                 <VerticalStackLayout x:Name="vslOption2" IsVisible="false">
-                    <Label Text=" ... Working days before the end of the month" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
+                    <Label Text=" ... Working days before the end of the month" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
@@ -234,7 +262,7 @@
                     </Grid>
                 </VerticalStackLayout>
                 <VerticalStackLayout x:Name="vslOption3" IsVisible="false">
-                    <Label Text="On the ... of every month" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
+                    <Label Text="On the ... of every month" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
@@ -243,7 +271,7 @@
                     </Grid>
                 </VerticalStackLayout>
                 <VerticalStackLayout x:Name="vslOption4" IsVisible="false">
-                    <Label Text="On the last ... of the month" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
+                    <Label Text="On the last ... of the month" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
@@ -271,22 +299,10 @@
                     <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entPayAmount" TextChanged="PayAmount_Changed" Keyboard="Numeric" />
                 </Border>
                 <HorizontalStackLayout>
-                    <Button 
-                        Margin="5,0,20,0"
-                        WidthRequest="100"
-                        Text="Continue"
-                        Clicked="ContinueBudgetDetailsButton_Clicked"                       
-                        HorizontalOptions="Start"
-                        Style="{StaticResource PrimaryInfoButton}"/>
-                    <Border Style="{StaticResource ClearInfoBorder}">
-                        <Button 
-                            Margin="5,0,0,0"
-                            WidthRequest="80"
-                            Text="Back"
-                            Clicked="BackBudgetDetailsButton_Clicked"                       
-                            HorizontalOptions="Start"
-                            Style="{StaticResource ClearInfoButton}"/>
+                    <Border Style="{StaticResource ClearInfoBorder}" Margin="5,0,20,0">
+                        <Button  Margin="0" WidthRequest="80" Text="Back" Clicked="BackBudgetDetailsButton_Clicked" HorizontalOptions="Start" Style="{StaticResource ClearInfoButton}"/>
                     </Border>
+                    <Button  Margin="5,0,0,0" WidthRequest="100" Text="Continue" Clicked="ContinueBudgetDetailsButton_Clicked"  HorizontalOptions="Start" Style="{StaticResource PrimaryInfoButton}"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
@@ -306,46 +322,34 @@
                     </Grid.GestureRecognizers>
                 </Grid>
             </VerticalStackLayout>
-            <VerticalStackLayout x:Name="BillDetails" IsVisible="false">
+            <VerticalStackLayout x:Name="BillDetails" IsVisible="false" Margin="0,0,0,15">
                 <HorizontalStackLayout Padding="5,0,0,2">
-                    <Label Text="Add Savings to Budget?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                    <Label Text="Add Outgoings to your Budget?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
                 </HorizontalStackLayout>
-                <Label Text="Dont worry if you don't want to add them now, you can add them at any time!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
-                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,5,10" HeightRequest="38" WidthRequest="200">
+                <Label Text="Dont worry if you don't want to add them now, you can add them at any time!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,25"/>
+                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,5,25" HeightRequest="38" WidthRequest="200" HorizontalOptions="Start">
                     <Grid RowDefinitions="*" ColumnDefinitions="*,*" VerticalOptions="Center">
                         <VerticalStackLayout x:Name="vslBillsYesSelect" Grid.Column="0" BackgroundColor="{DynamicResource Light}">
-                            <Label Margin="0,12,0,0" HeightRequest="38" x:Name="lblBillsYes" Text="Yes" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                            <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblBillsYes" Text="Yes" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                             </Label>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="BillsYesSelect_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
                         <VerticalStackLayout x:Name="vslBillsNoSelect" Grid.Column="1" BackgroundColor="{DynamicResource Light}">
-                            <Label Margin="0,12,0,0" HeightRequest="38" x:Name="lblBillsNo" Text="No" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                            <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblBillsNo" Text="No" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                             </Label>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="BillsNoSelect_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
                     </Grid>
-                </Border>                
-                <HorizontalStackLayout>
-                    <Button 
-                        Margin="5,0,20,0"
-                        WidthRequest="100"
-                        Text="Continue"
-                        Clicked="ContinueBudgetBillsButton_Clicked"                       
-                        HorizontalOptions="Start"
-                        Style="{StaticResource PrimaryInfoButton}"/>
+                </Border>
+                <HorizontalStackLayout Margin="5,0,20,0">
                     <Border Style="{StaticResource ClearInfoBorder}">
-                        <Button 
-                            Margin="5,0,0,0"
-                            WidthRequest="80"
-                            Text="Back"
-                            Clicked="BackBudgetBillsButton_Clicked"                       
-                            HorizontalOptions="Start"
-                            Style="{StaticResource ClearInfoButton}"/>
+                        <Button Margin="0" Padding="0" WidthRequest="80" Text="Back" Clicked="BackBudgetBillsButton_Clicked" HorizontalOptions="Start" Style="{StaticResource ClearInfoButton}"/>
                     </Border>
+                    <Button Margin="20,0,0,0" WidthRequest="100" Text="Continue" Clicked="ContinueBudgetBillsButton_Clicked" HorizontalOptions="Start" Style="{StaticResource PrimaryInfoButton}"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
