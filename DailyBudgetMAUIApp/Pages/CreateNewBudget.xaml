@@ -270,13 +270,24 @@
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,20" HeightRequest="38">
                     <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entPayAmount" TextChanged="PayAmount_Changed" Keyboard="Numeric" />
                 </Border>
-                <Button 
-                    Margin="5,0,0,0"
-                    WidthRequest="100"
-                    Text="Continue"
-                    Clicked="ContinueBudgetDetailsButton_Clicked"                       
-                    HorizontalOptions="Start"
-                    Style="{StaticResource PrimaryInfoButton}"/>
+                <HorizontalStackLayout>
+                    <Button 
+                        Margin="5,0,20,0"
+                        WidthRequest="100"
+                        Text="Continue"
+                        Clicked="ContinueBudgetDetailsButton_Clicked"                       
+                        HorizontalOptions="Start"
+                        Style="{StaticResource PrimaryInfoButton}"/>
+                    <Border Style="{StaticResource ClearInfoBorder}">
+                        <Button 
+                            Margin="5,0,0,0"
+                            WidthRequest="80"
+                            Text="Back"
+                            Clicked="BackBudgetDetailsButton_Clicked"                       
+                            HorizontalOptions="Start"
+                            Style="{StaticResource ClearInfoButton}"/>
+                    </Border>
+                </HorizontalStackLayout>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0,0,0,5">
@@ -296,7 +307,46 @@
                 </Grid>
             </VerticalStackLayout>
             <VerticalStackLayout x:Name="BillDetails" IsVisible="false">
-
+                <HorizontalStackLayout Padding="5,0,0,2">
+                    <Label Text="Add Savings to Budget?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                </HorizontalStackLayout>
+                <Label Text="Dont worry if you don't want to add them now, you can add them at any time!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,5,10" HeightRequest="38" WidthRequest="200">
+                    <Grid RowDefinitions="*" ColumnDefinitions="*,*" VerticalOptions="Center">
+                        <VerticalStackLayout x:Name="vslBillsYesSelect" Grid.Column="0" BackgroundColor="{DynamicResource Light}">
+                            <Label Margin="0,12,0,0" HeightRequest="38" x:Name="lblBillsYes" Text="Yes" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                            </Label>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="BillsYesSelect_Tapped"/>
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout x:Name="vslBillsNoSelect" Grid.Column="1" BackgroundColor="{DynamicResource Light}">
+                            <Label Margin="0,12,0,0" HeightRequest="38" x:Name="lblBillsNo" Text="No" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                            </Label>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="BillsNoSelect_Tapped"/>
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>                
+                <HorizontalStackLayout>
+                    <Button 
+                        Margin="5,0,20,0"
+                        WidthRequest="100"
+                        Text="Continue"
+                        Clicked="ContinueBudgetBillsButton_Clicked"                       
+                        HorizontalOptions="Start"
+                        Style="{StaticResource PrimaryInfoButton}"/>
+                    <Border Style="{StaticResource ClearInfoBorder}">
+                        <Button 
+                            Margin="5,0,0,0"
+                            WidthRequest="80"
+                            Text="Back"
+                            Clicked="BackBudgetBillsButton_Clicked"                       
+                            HorizontalOptions="Start"
+                            Style="{StaticResource ClearInfoButton}"/>
+                    </Border>
+                </HorizontalStackLayout>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0,0,0,5">

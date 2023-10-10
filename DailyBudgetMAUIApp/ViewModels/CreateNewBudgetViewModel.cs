@@ -56,6 +56,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         public string OfEveryMonthValue { get; set; }
         public string LastOfTheMonthDuration {  get; set; }
 
+        public string BillsYesNoSelect { get; set; } = "";
+        public string IncomesYesNoSelect { get; set; } = "";
+        public string SavingsYesNoSelect { get; set; } = "";
+
 
         public CreateNewBudgetViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -184,10 +188,13 @@ namespace DailyBudgetMAUIApp.ViewModels
                     break;
                 case "Budget Details":
 
+                    bool UpdateBudgetFlag = false;
+
                     decimal Balance = (decimal)_pt.FormatCurrencyNumber(BankBalanceText);
 
                     if(Balance != Budget.BankBalance)
                     {
+                        UpdateBudgetFlag = true;
                         Budget.BankBalance = Balance;
                         PatchDoc BankBalancePatch = new PatchDoc
                         {
@@ -198,37 +205,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                         BudgetUpdate.Add(BankBalancePatch);                      
                     }
 
-                    //TODO: Recalcualte MAB
-                    decimal MoneyAvailableBalance = 0;
-                    if(MoneyAvailableBalance != Budget.MoneyAvailableBalance)
-                    {
-                        Budget.MoneyAvailableBalance = MoneyAvailableBalance;
-                        PatchDoc MoneyAvailableBalancePatch = new PatchDoc
-                        {
-                            op = "replace",
-                            path = "/MoneyAvailableBalance",
-                            value = Budget.MoneyAvailableBalance
-                        };
-                        BudgetUpdate.Add(MoneyAvailableBalancePatch);
-                    }
-
-
-                    //TODO: RECACLCULATE LTSB
-                    decimal LeftToSpendBalance = 0;
-                    if(LeftToSpendBalance != Budget.LeftToSpendBalance)
-                    {
-                        Budget.LeftToSpendBalance = LeftToSpendBalance;
-                        PatchDoc LeftToSpendBalancePatch = new PatchDoc
-                        {
-                            op = "replace",
-                            path = "/LeftToSpendBalance",
-                            value = Budget.LeftToSpendBalance
-                        };
-                        BudgetUpdate.Add(LeftToSpendBalancePatch);
-                    }
-
                     if(PayDayDateValue != Budget.NextIncomePayday)
                     {
+                        UpdateBudgetFlag = true;
                         Budget.NextIncomePayday = PayDayDateValue;
                         PatchDoc NextIncomePaydayPatch = new PatchDoc
                         {
@@ -313,6 +292,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     
                     if(AproxDaysBetweenPay != Budget.AproxDaysBetweenPay)
                     {
+                        UpdateBudgetFlag= true;
                         Budget.AproxDaysBetweenPay = AproxDaysBetweenPay;
                         PatchDoc AproxDaysBetweenPayPatch = new PatchDoc
                         {
@@ -360,22 +340,35 @@ namespace DailyBudgetMAUIApp.ViewModels
                         BudgetUpdate.Add(PaydayAmountPatch);
                     }
 
-
-                    TimeSpan t = Budget.NextIncomePayday - DateTime.UtcNow ?? new TimeSpan();
-                    if(t.Days != 0 && t.Days != null)
+                    if(UpdateBudgetFlag)
                     {
-                        decimal? LeftToSpendDailyAmount = Budget.BankBalance / t.Days;
+                        decimal MoneyAvailableBalance = Budget.MoneyAvailableBalance;
+                        decimal LeftToSpendBalance = Budget.LeftToSpendBalance;
 
-                        if (LeftToSpendDailyAmount != Budget.LeftToSpendDailyAmount)
+                        _pt.UpdateBudget(Budget);
+
+                        if(MoneyAvailableBalance != Budget.MoneyAvailableBalance)
                         {
-                            Budget.LeftToSpendDailyAmount = LeftToSpendDailyAmount ?? 0;
-                            PatchDoc LeftToSpendDailyAmountPatch = new PatchDoc
+                            Budget.MoneyAvailableBalance = MoneyAvailableBalance;
+                            PatchDoc MoneyAvailableBalancePatch = new PatchDoc
                             {
                                 op = "replace",
-                                path = "/LeftToSpendDailyAmount",
-                                value = Budget.LeftToSpendDailyAmount
+                                path = "/MoneyAvailableBalance",
+                                value = Budget.MoneyAvailableBalance
                             };
-                            BudgetUpdate.Add(LeftToSpendDailyAmountPatch);
+                            BudgetUpdate.Add(MoneyAvailableBalancePatch);
+                        }
+
+                        if(LeftToSpendBalance != Budget.LeftToSpendBalance)
+                        {
+                            Budget.LeftToSpendBalance = LeftToSpendBalance;
+                            PatchDoc LeftToSpendBalancePatch = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/LeftToSpendBalance",
+                                value = Budget.LeftToSpendBalance
+                            };
+                            BudgetUpdate.Add(LeftToSpendBalancePatch);
                         }
                     }
 

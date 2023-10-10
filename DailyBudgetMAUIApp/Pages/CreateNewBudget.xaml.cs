@@ -527,4 +527,50 @@ public partial class CreateNewBudget : ContentPage
             }
         }
     }
+
+        private void BillsYesSelect_Tapped(object sender, TappedEventArgs e)
+    {
+        UpdateBillsYesNo("Yes");
+    }
+
+    private void BillsNoSelect_Tapped(object sender, TappedEventArgs e)
+    {
+        UpdateBillsYesNo("No");
+    }
+
+    private void UpdateBillsYesNo(string option) 
+    {
+        Application.Current.Resources.TryGetValue("Success", out var Success);
+        Application.Current.Resources.TryGetValue("Light", out var Light);
+        Application.Current.Resources.TryGetValue("White", out var White);
+        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+
+        if (option == "Yes")
+        {
+            vslBillsYesSelect.BackgroundColor = (Color)Success;
+            vslBillsNoSelect.BackgroundColor = (Color)Light;
+
+            lblBillsYes.FontAttributes = FontAttributes.Bold;
+            lblBillsNo.FontAttributes = FontAttributes.None;
+
+            lblBillsYes.TextColor = (Color)White;
+            lblBillsNo.TextColor = (Color)Gray900;
+
+            _vm.BillsYesNoSelect = "Yes";
+
+        }
+        else if (option == "No")
+        {
+            vslBillsYesSelect.BackgroundColor = (Color)Light;
+            vslBillsNoSelect.BackgroundColor = (Color)Success;
+
+            lblBillsYes.FontAttributes = FontAttributes.None;
+            lblBillsNo.FontAttributes = FontAttributes.Bold;
+
+            lblBillsYes.TextColor = (Color)Gray900;
+            lblBillsNo.TextColor = (Color)White;
+
+            _vm.BillsYesNoSelect = "No";
+        }
+    }
 }

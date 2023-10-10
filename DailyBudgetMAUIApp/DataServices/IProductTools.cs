@@ -20,5 +20,10 @@ namespace DailyBudgetMAUIApp.DataServices
         public int FindCurrencyCursorPosition(string input);
         public int GetNumberOfDaysLastWorkingDay(int? NumberOfDaysBefore);
         public int GetNumberOfDaysLastDayOfWeek(int dayNumber);
+        public void UpdateBudget(ref Budgets Budget);
+        public void UpdateBudgetRecalculateSavings(ref Budgets Budget);
+        public void UpdateBudgetIncomes(ref Budgets Budget);
+        public void UpdateBudgetSavings(ref Budgets Budget);  
+        public void UpdateBudgetBills(ref Budgets Budget);              
     }
 }
