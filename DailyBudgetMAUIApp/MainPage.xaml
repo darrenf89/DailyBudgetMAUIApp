@@ -38,8 +38,7 @@
         </Grid>
     </Shell.TitleView>
     <ScrollView>
-        <VerticalStackLayout
-            VerticalOptions="Start">
+        <VerticalStackLayout VerticalOptions="Start">
             <Border Style="{DynamicResource DashboardMainContent}"
                     IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
                 <Label

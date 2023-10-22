@@ -8,6 +8,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 using CommunityToolkit.Maui.ApplicationModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Microsoft.Maui.Controls.Internals;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -30,12 +31,16 @@ public partial class CreateNewBudget : ContentPage
     }
 
     async protected override void OnNavigatedTo(NavigatedToEventArgs args)
-    {    
+    {
+
         try
         {
+            _pt.SetCultureInfo(App.CurrentSettings);
+            base.OnNavigatedTo(args);
             if (_vm.BudgetID == 0)
             {
                 _vm.BudgetID = _ds.CreateNewBudget(App.UserDetails.Email).Result.BudgetID;
+
 
                 if (_vm.BudgetID != 0)
                 {
@@ -100,26 +105,40 @@ public partial class CreateNewBudget : ContentPage
 
             }
 
-            UpdateStageDisplay();
-            
-            _vm.SelectedCurrencySymbol = _ds.GetCurrencySymbols(_vm.BudgetSettings.CurrencySymbol.ToString()).Result[0];
-            _vm.SelectedCurrencyPlacement = _ds.GetCurrencyPlacements(_vm.BudgetSettings.CurrencyPattern.ToString()).Result[0];
-            pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;
-            _vm.SelectedDateFormats = _ds.GetDateFormatsById(_vm.BudgetSettings.ShortDatePattern ?? 1, _vm.BudgetSettings.DateSeperator ?? 1).Result;
+            if (_vm.NavigatedFrom != null)
+            {
+                _vm.Stage = _vm.NavigatedFrom;
+            }
+
+            UpdateStageDisplay();            
+
+            if (_vm.SelectedCurrencySymbol == null)
+            {
+                _vm.SelectedCurrencySymbol = _ds.GetCurrencySymbols(_vm.BudgetSettings.CurrencySymbol.ToString()).Result[0];
+                _vm.SelectedCurrencyPlacement = _ds.GetCurrencyPlacements(_vm.BudgetSettings.CurrencyPattern.ToString()).Result[0];
+                _vm.SelectedDateFormats = _ds.GetDateFormatsById(_vm.BudgetSettings.ShortDatePattern ?? 1, _vm.BudgetSettings.DateSeperator ?? 1).Result;
+                _vm.SelectedNumberFormats = _ds.GetNumberFormatsById(_vm.BudgetSettings.CurrencyDecimalDigits ?? 2, _vm.BudgetSettings.CurrencyDecimalSeparator ?? 2, _vm.BudgetSettings.CurrencyGroupSeparator ?? 1).Result;
+            }
+
+            pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;            
             pckrDateFormat.SelectedIndex = _vm.SelectedDateFormats.Id - 1;
-            _vm.SelectedNumberFormats = _ds.GetNumberFormatsById(_vm.BudgetSettings.CurrencyDecimalDigits ?? 2, _vm.BudgetSettings.CurrencyDecimalSeparator ?? 2, _vm.BudgetSettings.CurrencyGroupSeparator ?? 1).Result;
             pckrNumberFormat.SelectedIndex = _vm.SelectedNumberFormats.Id - 1;
 
 
             double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
-            entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+            entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
             double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-            entPayAmount.Text = PayAmount.ToString("C", CultureInfo.CurrentCulture);
+            entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
 
             dtpckPayDay.Date = _vm.Budget.NextIncomePayday ?? default;
             dtpckPayDay.MinimumDate = DateTime.Now;
 
             UpdateSelectedOption(_vm.Budget.PaydayType);
+
+            if(_vm.Budget.Bills.Count == 0)
+            {
+                vslOutgoingList.IsVisible = false;
+            }
 
         }
         catch (Exception ex)
@@ -133,10 +152,8 @@ public partial class CreateNewBudget : ContentPage
                 });
         }
 
-        base.OnNavigatedTo(args);
-
     }
-    private void UpdateStageDisplay()
+    private async void UpdateStageDisplay()
     {
         Application.Current.Resources.TryGetValue("Success", out var Success);
         Application.Current.Resources.TryGetValue("Gray300", out var Gray300);
@@ -161,49 +178,69 @@ public partial class CreateNewBudget : ContentPage
         lblSavingsHeader.TextColor = (_vm.Stage == "Budget Savings") ? (Color)Primary : (Color)Tertiary;
         lblIncomesHeader.TextColor = (_vm.Stage == "Budget Extra Income") ? (Color)Primary : (Color)Tertiary;
 
+        if (_vm.Stage == "Budget Settings")
+        {
+            await MainScrollView.ScrollToAsync(0, 95, true);
+        }
+        else if (_vm.Stage == "Budget Details")
+        {
+            await MainScrollView.ScrollToAsync(0, 155, true);
+        }
+        else if (_vm.Stage == "Budget Outgoings")
+        {
+            await MainScrollView.ScrollToAsync(0, 215, true);
+        }
+        else if (_vm.Stage == "Budget Savings")
+        {
+            await MainScrollView.ScrollToAsync(0, 275, true);
+        }
+        else if (_vm.Stage == "Budget Extra Income")
+        {
+            await MainScrollView.ScrollToAsync(0, 335, true);
+        }
     }
 
-    private async void GoToStageSettings_Tapped(object sender, TappedEventArgs e)
+    private void GoToStageSettings_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Budget Settings";
         UpdateStageDisplay();
-        await MainScrollView.ScrollToAsync(lblSettingsHeader,ScrollToPosition.Start,true);
+        //await MainScrollView.ScrollToAsync(0, 95, true);
     }
 
-    private async void GoToStageBudget_Tapped(object sender, TappedEventArgs e)
+    private void GoToStageBudget_Tapped(object sender, TappedEventArgs e)
     {
 
         double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
-        entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+        entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
 
         double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        entPayAmount.Text = PayAmount.ToString("C", CultureInfo.CurrentCulture);
+        entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
 
         _vm.Stage = "Budget Details";
         UpdateStageDisplay();
-        await MainScrollView.ScrollToAsync(lblBudgetHeader,ScrollToPosition.Start,true);
+        //await MainScrollView.ScrollToAsync(0, 155, true);
     }
 
-    private async void GoToStageBills_Tapped(object sender, TappedEventArgs e)
+    private void GoToStageBills_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Budget Outgoings";
         UpdateStageDisplay();
-        await MainScrollView.ScrollToAsync(lblBillsHeader,ScrollToPosition.Start,true);
+        //await MainScrollView.ScrollToAsync(0, 215, true);
     }
 
-    private async void GoToStageSavings_Tapped(object sender, TappedEventArgs e)
+    private void GoToStageSavings_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Budget Savings";
         UpdateStageDisplay();
-        await MainScrollView.ScrollToAsync(lblSavingsHeader,ScrollToPosition.Start,true);
+        //await MainScrollView.ScrollToAsync(0, 275, true);
 
     }
 
-    private async void GoToStageIncomes_Tapped(object sender, TappedEventArgs e)
+    private void GoToStageIncomes_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Budget Extra Income";
         UpdateStageDisplay();
-        await MainScrollView.ScrollToAsync(lblIncomesHeader,ScrollToPosition.Start,true);
+        //await MainScrollView.ScrollToAsync(0, 335, true);
 
     }
 
@@ -215,33 +252,35 @@ public partial class CreateNewBudget : ContentPage
         CurrencySearch.Text = "";
     }
 
-    private async void ContinueSettingsButton_Clicked(object sender, EventArgs e)
+    private void ContinueSettingsButton_Clicked(object sender, EventArgs e)
     {
         double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
-        entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+        entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
         
         double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        entPayAmount.Text = PayAmount.ToString("C", CultureInfo.CurrentCulture);
+        entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
 
         dtpckPayDay.Date = _vm.Budget.NextIncomePayday ?? default;
 
         _vm.Stage = "Budget Details";
         UpdateStageDisplay();
 
-        await MainScrollView.ScrollToAsync(0, 155, true);
+        _vm.SaveStage("Budget Settings");
+
+        //await MainScrollView.ScrollToAsync(0, 155, true);
     }
 
-    private async void BackBudgetDetailsButton_Clicked(object sender, EventArgs e)
+    private void BackBudgetDetailsButton_Clicked(object sender, EventArgs e)
     {
         _vm.Stage = "Budget Settings";
         UpdateStageDisplay();
 
-        await MainScrollView.ScrollToAsync(0, 95, true);
+        //await MainScrollView.ScrollToAsync(0, 95, true);
     }
 
-    private async void ContinueBudgetDetailsButton_Clicked(object sender, EventArgs e)
+    private void ContinueBudgetDetailsButton_Clicked(object sender, EventArgs e)
     {
-        if(ValidateBudgetDetails())
+        if (ValidateBudgetDetails())
         {
             _vm.Stage = "Budget Outgoings";
 
@@ -269,7 +308,8 @@ public partial class CreateNewBudget : ContentPage
             _vm.SaveStage("Budget Details");
 
             UpdateStageDisplay();
-            await MainScrollView.ScrollToAsync(0, 215, true);
+
+            //await MainScrollView.ScrollToAsync(0, 215, true);
         }
 
     }
@@ -311,41 +351,69 @@ public partial class CreateNewBudget : ContentPage
         if (_vm.PayDayTypeText == "WorkingDays" && entWorkingDaysValue.Text == "")
         {
             IsValid = false;
-            validatorEveryNthDuration.IsVisible = true;
+            validatorWorkingDayDuration.IsVisible = true;
         }
         else
         {
-            validatorEveryNthDuration.IsVisible = false;
+            validatorWorkingDayDuration.IsVisible = false;
         }
 
         if (_vm.PayDayTypeText == "OfEveryMonth" && entOfEveryMonthValue.Text == "")
         {
             IsValid = false;
-            validatorEveryNthDuration.IsVisible = true;
+            validatorOfEveryMonthDuration.IsVisible = true;
         }
         else
         {
-            validatorEveryNthDuration.IsVisible = false;
+            validatorOfEveryMonthDuration.IsVisible = false;
         }
 
         return IsValid;
     }
 
-    private async void BackBudgetBillsButton_Clicked(object sender, EventArgs e)
+    private void BackBudgetBillsButton_Clicked(object sender, EventArgs e)
     {
 
         _vm.Stage = "Budget Details";
         UpdateStageDisplay();
 
-        await MainScrollView.ScrollToAsync(0, 155, true);
+        //await MainScrollView.ScrollToAsync(0, 155, true);
     }
 
-    private async void ContinueBudgetBillsButton_Clicked(object sender, EventArgs e)
+    private void ContinueBudgetBillsButton_Clicked(object sender, EventArgs e)
     {
-        _vm.Stage = "Budget Savings";
-        UpdateStageDisplay();
+        if(ValidateBudgetOutgoings())
+        {
+            _vm.Stage = "Budget Savings";
+            UpdateStageDisplay();
 
-        await MainScrollView.ScrollToAsync(0, 275, true);
+            _vm.SaveStage("Budget Outgoings");
+
+            //await MainScrollView.ScrollToAsync(0, 275, true);
+        }
+
+    }
+
+    private bool ValidateBudgetOutgoings()
+    {
+        bool IsValid = true;
+
+        if (_vm.BillsYesNoSelect == "")
+        {
+            IsValid = false;
+            validatorOutgoingsYesNo.IsVisible = true;
+        }
+        else
+        {
+            validatorOutgoingsYesNo.IsVisible = false;
+        }
+
+        return IsValid;
+    }
+
+    private async void AddBillsNewBudget_Clicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync($"{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}");
     }
 
     private async void BankBalanceInfo(object sender, EventArgs e)
@@ -370,14 +438,14 @@ public partial class CreateNewBudget : ContentPage
     {
 
         double BankBalance = _pt.FormatCurrencyNumber(e.NewTextValue);
-        entBankBalance.Text = BankBalance.ToString("C", CultureInfo.CurrentCulture);
+        entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
         entBankBalance.CursorPosition = _pt.FindCurrencyCursorPosition(entBankBalance.Text);
 
     }
     void PayAmount_Changed(object sender, TextChangedEventArgs e)
     {
         double PayAmount = _pt.FormatCurrencyNumber(e.NewTextValue);
-        entPayAmount.Text = PayAmount.ToString("C", CultureInfo.CurrentCulture);
+        entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
         entPayAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entPayAmount.Text);
     }
     private async void PayDayInfo(object sender, EventArgs e)
@@ -548,9 +616,9 @@ public partial class CreateNewBudget : ContentPage
             lblOption4.TextColor = (Color)Gray900;
 
             vslOption1.IsVisible = false;
-            vslOption1.IsVisible = false;
-            vslOption1.IsVisible = false;
-            vslOption1.IsVisible = false;
+            vslOption2.IsVisible = false;
+            vslOption3.IsVisible = false;
+            vslOption4.IsVisible = false;
 
             _vm.PayDayTypeText = "";
         }
@@ -614,7 +682,7 @@ public partial class CreateNewBudget : ContentPage
         }
     }
 
-        private void BillsYesSelect_Tapped(object sender, TappedEventArgs e)
+    private void BillsYesSelect_Tapped(object sender, TappedEventArgs e)
     {
         UpdateBillsYesNo("Yes");
     }
@@ -642,6 +710,8 @@ public partial class CreateNewBudget : ContentPage
             lblBillsYes.TextColor = (Color)White;
             lblBillsNo.TextColor = (Color)Gray900;
 
+            btnAddBillsNewBudget.IsVisible = true;
+
             _vm.BillsYesNoSelect = "Yes";
 
         }
@@ -656,9 +726,72 @@ public partial class CreateNewBudget : ContentPage
             lblBillsYes.TextColor = (Color)Gray900;
             lblBillsNo.TextColor = (Color)White;
 
+            btnAddBillsNewBudget.IsVisible = false;
+
             _vm.BillsYesNoSelect = "No";
         }
     }
 
+    private async void DeleteBudgetOutgoings_Clicked(object sender, EventArgs e)
+    {
+        var Button = (Button)sender;
+        var Bill = (Bills)Button.CommandParameter;
+
+        bool result = await DisplayAlert("Bill", "Are you sure you want to delete Bill " + Bill.BillID.ToString(), "Yes, continue", "Cancel");
+        if (result)
+        {
+
+        }
+    }
+    private async void EditBudgetOutgoings_Clicked(object sender, EventArgs e)
+    {
+        var Button = (Button)sender;
+        var Bill = (Bills)Button.CommandParameter;
+    }
+
+    private async void DeleteBudgetOutgoings_Tapped(object sender, TappedEventArgs e)
+    {
+
+        var Bill = (Bills)e.Parameter;
+
+        bool result = await DisplayAlert("Bill", "Are you sure you want to delete Bill " + Bill.BillID.ToString(), "Yes, continue", "Cancel");
+        if (result)
+        {
+
+        }
+    }
+
+    private async void EditBudgetOutgoings_Tapped(object sender, TappedEventArgs e)
+    {
+
+        var Bill = (Bills)e.Parameter;
+
+        await Shell.Current.GoToAsync($"{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={Bill.BillID}");
+    }
+
+    private void ViewCell_Appearing(object sender, EventArgs e)
+    {
+        var vcBill = (ViewCell)sender;
+        var Bill = (Bills)vcBill.BindingContext;        
+        Label Header = (Label)vcBill.FindByName("lblOutgoingheader");
+        Label Values = (Label)vcBill.FindByName("lblBillValues");
+        Label lblBillCurrent = (Label)vcBill.FindByName("lblBillCurrent");
+
+        Values.Text = String.Format("/{0:c} {1:c} per day", Bill.BillAmount, Bill.RegularBillValue);
+        lblBillCurrent.Text = String.Format("{0:c}", Bill.BillCurrentBalance);
+
+        if (Bill.BillType == "OfEveryMonth")
+        {
+            Header.Text = "Monthly Outgoing Added";
+        }
+        else if(Bill.BillType == "Everynth")
+        {
+            Header.Text = "Every x " + Bill.BillDuration + " Outgoing Added";
+        }
+        else
+        {
+            Header.Text = "One-off Outgoing Added";
+        }
+    }
 
 }

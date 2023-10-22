@@ -1,15 +1,9 @@
 ﻿using DailyBudgetMAUIApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
-using System.Net.Mail;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
+using System.Globalization;
 
 namespace DailyBudgetMAUIApp.DataServices
 {
@@ -647,6 +641,24 @@ namespace DailyBudgetMAUIApp.DataServices
             }
 
             return "OK";
+        }
+
+        public void SetCultureInfo(BudgetSettingValues Settings)
+        {
+            CultureInfo CultureSetting = new CultureInfo("en-gb");
+
+            CultureSetting.NumberFormat.CurrencySymbol = Settings.CurrencySymbol;
+            CultureSetting.NumberFormat.CurrencyDecimalSeparator = Settings.CurrencyDecimalSeparator;
+            CultureSetting.NumberFormat.CurrencyGroupSeparator = Settings.CurrencyGroupSeparator;
+            CultureSetting.NumberFormat.CurrencyDecimalDigits = Settings.CurrencyDecimalDigits;
+            CultureSetting.NumberFormat.CurrencyPositivePattern = Settings.CurrencyPositivePattern;
+            CultureSetting.DateTimeFormat.ShortDatePattern = Settings.ShortDatePattern;
+            CultureSetting.DateTimeFormat.DateSeparator = Settings.DateSeparator;
+
+            Thread.CurrentThread.CurrentCulture = CultureSetting;
+            Thread.CurrentThread.CurrentUICulture = CultureSetting;
+            CultureInfo.DefaultThreadCurrentCulture = CultureSetting;
+            CultureInfo.DefaultThreadCurrentUICulture = CultureSetting;
         }
 
     }

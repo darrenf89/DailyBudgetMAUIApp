@@ -2,11 +2,155 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyBudgetMAUIApp.Pages.AddBill"
-             Title="AddBill">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             Title="{Binding Title}">
+    <ScrollView>
+        <VerticalStackLayout VerticalOptions="Start">
+            <VerticalStackLayout Margin="20,20,20,4">
+                <Label 
+                    Text="{Binding Bill.BillName}"
+                    IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Center"
+                    FontSize="Large"
+                    FontFamily="OpenSansSemibold"
+                    TextColor="{DynamicResource Tertiary}"/>
+                <Label 
+                    Text="Give your outgoing a name ..."
+                    IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Center"
+                    FontSize="Large"
+                    FontFamily="OpenSansSemibold"                
+                    TextColor="{DynamicResource Secondary}"/>
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ChangeBillNameCommand}"/>
+                </VerticalStackLayout.GestureRecognizers>
+            </VerticalStackLayout>
+            <BoxView HeightRequest="2" Margin="40,0,40,16" Color="{DynamicResource Gray200}" IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}"/>
+            <BoxView HeightRequest="2" Margin="40,0,40,16" Color="{DynamicResource Tertiary}" IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"/>
+            <Border Style="{DynamicResource AddEditTransContent}">
+                <VerticalStackLayout>
+                    <VerticalStackLayout x:Name="SelectBillType">
+                        <Label Text="Do you want to set up a One-off or a Recurring Outgoing?" HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                        <Label Margin="0,20,0,20" Text="Set up a Recurring Bill and we will make sure you are saving for it every day! Or a one-off if you are never going to have to pay for it again, sounds more like a Saving to me though!" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center"/>
+                        <Grid x:Name="grdBillTypeButtons" ColumnDefinitions="*,6*,2*,6*,*" RowDefinitions="*" Margin="0,0,0,20">
+                            <Button x:Name="btnOneoffBill" Style="{DynamicResource PrimaryInfoButton}" Text="One-off" TextColor="White" BackgroundColor="{StaticResource Primary}" Grid.Column="1" Grid.Row="0" Clicked="btnOneoffBill_Clicked"/>
+                            <Button x:Name="btnRecurringBill" Style="{DynamicResource PrimaryInfoButton}" Text="Recurring" TextColor="White" BackgroundColor="{StaticResource Tertiary}" Grid.Column="3" Grid.Row="0" Clicked="btnRecurringBill_Clicked"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="BillTypeSelected" IsVisible="False">
+                        <Label HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}" x:Name="lblSelectedBillTitle"/>
+                        <Label Margin="0,20,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedBillParaOne"/>
+                        <Label Margin="0,20,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedBillParaTwo"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            <Border Style="{DynamicResource AddEditTransContent}" Margin="20,20,20,20" x:Name="vslBillTypes" IsVisible="False">
+                <VerticalStackLayout>
+                    <Label Text="Recurring Outgoing Type" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
+                    <VerticalStackLayout Margin="0,10,0,10" x:Name="vslBillType">
+                        <Label Text="How does the outgoing get paid?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Margin="5,5,5,0"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,10,5,0" HeightRequest="39">
+                            <Grid RowDefinitions="*" ColumnDefinitions="*,*" VerticalOptions="Center">
+                                <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="{DynamicResource Light}">
+                                    <Label Margin="0,8,0,0" HeightRequest="55" x:Name="lblOption1" Text="Every nth" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                    </Label>
+                                    <VerticalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="Option1Select_Tapped"/>
+                                    </VerticalStackLayout.GestureRecognizers>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="{DynamicResource Light}">
+                                    <Label Margin="0,8,0,0" HeightRequest="55" x:Name="lblOption2" Text="... of the month" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                    </Label>
+                                    <VerticalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="Option2Select_Tapped"/>
+                                    </VerticalStackLayout.GestureRecognizers>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                        <HorizontalStackLayout IsVisible="false" Margin="5,0,0,0" x:Name="validatorBillType">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="You have to select the bill type" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="vslOption1" IsVisible="false" Margin="0,0,0,20">
+                        <Label Text="Every nth ..." FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                            <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="0" Grid.Row="1">
+                                <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed"/>
+                            </Border>
+                            <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="1" Grid.Row="1">
+                                <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>days</x:String>
+                                            <x:String>weeks</x:String>
+                                            <x:String>months</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </handlers:BorderlessPicker>
+                            </Border>
+                        </Grid>
+                        <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validatorEveryNthDuration">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Please insert your value" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="vslOption2" IsVisible="false">
+                        <Label Text="On the ... of every month" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                            <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
+                                <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entOfEveryMonthValue" Keyboard="Numeric" TextChanged="OfEveryMonthValue_Changed" TextColor="{DynamicResource Gray900}"/>
+                            </Border>
+                        </Grid>
+                        <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validatorOfEveryMonthDuration">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Please insert your value" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            <Border Style="{DynamicResource AddEditTransContent}" Margin="20,20,20,20" x:Name="brdBillDetails" IsVisible="False">
+                <VerticalStackLayout x:Name="vslBillDetails">
+                    <Label Text="Outgoing Details" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
+                    <Label Text="Total Amount Due" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,5,0,5"/>
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
+                        <handlers:BorderlessEntry TextColor="{DynamicResource Danger}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entAmountDue" TextChanged="AmountDue_Changed" Keyboard="Numeric" />
+                    </Border>
+                    <Label Text="Current Saved" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
+                        <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entCurrentSaved" TextChanged="CurrentSaved_Changed" Keyboard="Numeric" />
+                    </Border>
+                    <Label Text="Due Date" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
+                        <DatePicker CharacterSpacing="1" Margin="20,0,0,0" x:Name="dtpckBillDueDate" TextColor="{DynamicResource Gray900}" Date="{Binding Bill.BillDueDate}" MinimumDate="{Binding MinimumDate}" DateSelected="dtpckBillDueDate_DateSelected"/>
+                    </Border>
+                    <Label Text="Daily Amount Required" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
+                        <Label x:Name="lblRegularBillValue" Text="{Binding Bill.RegularBillValue, StringFormat='{0:c}'}" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"/>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+            <Button x:Name="btnAddBill" Text="Add New Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Command="{Binding AddBillCommand}" HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false"/>
+            <Button x:Name="btnUpdateBill" Text="Update Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Command="{Binding UpdateBillCommand}" HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

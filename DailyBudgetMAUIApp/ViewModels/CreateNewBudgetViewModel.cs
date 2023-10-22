@@ -6,16 +6,19 @@ using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using System.Diagnostics;
-using System.Xml.Linq;
+using System.Globalization;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
+    [QueryProperty(nameof(NavigatedFrom), nameof(NavigatedFrom))]
     public partial class CreateNewBudgetViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
 
+        [ObservableProperty]
+        private string? _navigatedFrom;
         [ObservableProperty]
         private int _budgetID;
         [ObservableProperty]
@@ -69,6 +72,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             CurrencyPlacements = _ds.GetCurrencyPlacements("").Result;
             DateFormats = _ds.GetDateFormatsByString("").Result;
             NumberFormats = _ds.GetNumberFormats().Result;
+
         }
 
         [ICommand]
@@ -143,12 +147,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             SaveStage("Budget Settings");
         }
-
-        //[ICommand]
-        //async void ContinueBudgetDetails()
-        //{
-        //    SaveStage("Budget Details");
-        //}
 
         public async void SaveStage(string CurrentStage)
         {

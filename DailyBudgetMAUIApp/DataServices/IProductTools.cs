@@ -30,5 +30,6 @@ namespace DailyBudgetMAUIApp.DataServices
         public string CalculateNextDateWorkingDays(ref DateTime NextDate, DateTime LastDate, int Value);
         public string CalculateNextDateOfEveryMonth(ref DateTime NextDate, DateTime LastDate, int Value);
         public string CalculateNextDateLastOfTheMonth(ref DateTime NextDate, DateTime LastDate, string? Duration);
+        public void SetCultureInfo(BudgetSettingValues Settings);
     }
 }

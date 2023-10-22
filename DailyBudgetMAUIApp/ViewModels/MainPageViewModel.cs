@@ -49,17 +49,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     App.CurrentSettings = Settings;
                 }
 
-                CultureInfo CultureSetting = new CultureInfo("en-gb");
-
-                CultureSetting.NumberFormat.CurrencySymbol = App.CurrentSettings.CurrencySymbol;
-                CultureSetting.NumberFormat.CurrencyDecimalSeparator = App.CurrentSettings.CurrencyDecimalSeparator;
-                CultureSetting.NumberFormat.CurrencyGroupSeparator = App.CurrentSettings.CurrencyGroupSeparator;
-                CultureSetting.NumberFormat.CurrencyDecimalDigits = App.CurrentSettings.CurrencyDecimalDigits;
-                CultureSetting.NumberFormat.CurrencyPositivePattern = App.CurrentSettings.CurrencyPositivePattern;
-                CultureSetting.DateTimeFormat.ShortDatePattern = App.CurrentSettings.ShortDatePattern;
-                CultureSetting.DateTimeFormat.DateSeparator = App.CurrentSettings.DateSeparator;
-
-                CultureInfo.CurrentCulture = CultureSetting;
+                _pt.SetCultureInfo(App.CurrentSettings);
             }
             else
             {
@@ -108,7 +98,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void NavigateCreateNewBudget()
         {
-            await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={DefaultBudgetID}");
+            await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
         }
 
 

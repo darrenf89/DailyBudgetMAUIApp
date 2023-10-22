@@ -38,7 +38,7 @@
         <ShellContent  ContentTemplate="{DataTemplate Pages:CreateNewBudget}"/>
     </ShellItem>
 
-    <FlyoutItem Title="Add a Bill" Route="AddBill">
+    <FlyoutItem Title="Add a Bill" Route="AddBill" FlyoutItemIsVisible="False">
         <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>
     </FlyoutItem>
 

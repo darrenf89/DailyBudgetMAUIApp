@@ -40,6 +40,18 @@
         <Setter Property="Background" Value="{DynamicResource White}"/>
     </Style>
 
+    <Style TargetType="Border" x:Key="AddEditTransContent">
+        <Setter Property="Margin" Value="20,20,20,20"/>
+        <Setter Property="Padding" Value="10,10,10,10"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 15"/>
+        <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="StrokeThickness" Value="1.5"/>
+        <Setter Property="Background" Value="{DynamicResource White}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Tertiary}" Offset="0,0" Radius="20" Opacity="0.95" />
+        </Setter>
+    </Style>
+
     <Style TargetType="Border" x:Key="FrameLogonStandardContent">
         <Setter Property="Margin" Value="0,0,0,0"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
@@ -69,6 +81,17 @@
         <Setter Property="Shadow">
             <Shadow Brush="{DynamicResource Tertiary}" Offset="0,0" Radius="80" Opacity="0.95" />
         </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="PictureFrame40">
+        <Setter Property="StrokeShape" Value="RoundRectangle 1"/>
+        <Setter Property="Stroke" Value="Transparent"/>
+        <Setter Property="StrokeThickness" Value="0"/>
+        <Setter Property="HeightRequest" Value="40"/>
+        <Setter Property="WidthRequest" Value="40"/>
+        <Setter Property="HorizontalOptions" Value="Center"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+        <Setter Property="BackgroundColor" Value="Transparent"/>
     </Style>
 
     <Style TargetType="Border" x:Key="PictureFrame300Rectangle">
@@ -222,8 +245,8 @@
         <Setter Property="Margin" Value="0"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
-        <Setter Property="StrokeThickness" Value="2"/>
+        <Setter Property="Stroke" Value="{StaticResource Black}"/>
+        <Setter Property="StrokeThickness" Value="0.5"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">

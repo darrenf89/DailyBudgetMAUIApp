@@ -62,7 +62,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         //TODO: Update User Session
 
-                        await Shell.Current.GoToAsync(nameof(MainPage));
+                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                     }
                     else
                     {
