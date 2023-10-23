@@ -6,6 +6,7 @@ using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -24,9 +25,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         private Bills _bill;
         [ObservableProperty]
         private bool _isPageValid;
+        [ObservableProperty]
+        private DateTime _minimumDate = DateTime.UtcNow.Date.AddDays(1);
 
 
-        public string BillTypeText { get; set; }
+        public string BillTypeText { get; set; } = "";
         public string BillRecurringText { get; set; } = "";
 
 
@@ -35,36 +38,28 @@ namespace DailyBudgetMAUIApp.ViewModels
             _pt = pt;
             _ds = ds;
 
-        }
+            Title = "Add a New Outgoing";
+            Bill = new Bills();
 
-        [ICommand]
-        async void SaveBill()
-        {
-            var stack = Application.Current.MainPage.Navigation.NavigationStack;
-            int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
-            if(stack[count - 2] == "")
-            {
-                await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
-            }
-            else
-            {
-
-            }
         }
 
         [ICommand]
         async void AddBill()
         {
-            var stack = Application.Current.MainPage.Navigation.NavigationStack;
-            int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
-            if(stack[count - 2] == "")
+            if(IsPageValid)
             {
-                await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
-            }
-            else
-            {
+                var stack = Application.Current.MainPage.Navigation.NavigationStack;
+                int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
+                string test = stack[count - 2].ToString(); if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                {
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                }
+                else
+                {
 
+                }
             }
+
         }
 
         [ICommand]
@@ -72,7 +67,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             var stack = Application.Current.MainPage.Navigation.NavigationStack;
             int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
-            if(stack[count - 2] == "")
+            if(stack[count - 2].ToString() == "")
             {
                 await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
                 //await Shell.Current.GoToAsync("..")
@@ -111,7 +106,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        private string CalculateRegualarBillValue()
+        public string CalculateRegularBillValue()
         {
             if(Bill.BillAmount == 0 || Bill.BillAmount == null || Bill.BillCurrentBalance >= Bill.BillCurrentBalance || Bill.BillDueDate == null || Bill.BillDueDate <= DateTime.Now)
             {
@@ -122,12 +117,11 @@ namespace DailyBudgetMAUIApp.ViewModels
                 decimal DailySavingValue = new();
                 TimeSpan Difference = (TimeSpan)(Bill.BillDueDate - DateTime.Now);
                 int NumberOfDays = Difference.Days;
-                decimal BillAmount = _Bill.BillAmount ?? 0;
-                decimal RemainingBillAmount = BillAmount.BillAmount - Bill.BillCurrentBalance;
+                decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
                 DailySavingValue = RemainingBillAmount / NumberOfDays;
                 DailySavingValue = Math.Round(DailySavingValue, 2);
 
-                Bill.DailySavingValue = DailySavingValue;
+                Bill.RegularBillValue = DailySavingValue;
 
                 return DailySavingValue.ToString("c", CultureInfo.CurrentCulture);
             }

@@ -25,6 +25,8 @@ public partial class AddBill : ContentPage
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
+
+        dtpckBillDueDate.MinimumDate = DateTime.UtcNow.AddDays(1);
     }
 
     async protected override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -91,27 +93,27 @@ public partial class AddBill : ContentPage
 
     void AmountDue_Changed(object sender, TextChangedEventArgs e)
     {
-        double AmountDue = _pt.FormatCurrencyNumber(e.NewTextValue);
+        decimal AmountDue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
         entAmountDue.CursorPosition = _pt.FindCurrencyCursorPosition(entAmountDue.Text);
         _vm.Bill.BillAmount = AmountDue;
 
-        lblRegularBillValue.Text = _vm.CalculateRegualarBillValue();
+        lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
     }
 
     void CurrentSaved_Changed(object sender, TextChangedEventArgs e)
     {
-        double CurrentSaved = _pt.FormatCurrencyNumber(e.NewTextValue);
+        decimal CurrentSaved = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
         entCurrentSaved.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrentSaved.Text);
         _vm.Bill.BillCurrentBalance = CurrentSaved;
 
-        lblRegularBillValue.Text = _vm.CalculateRegualarBillValue();
+        lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
     }
 
     private void dtpckBillDueDate_DateSelected(object sender, DateChangedEventArgs e)
     {
-        lblRegularBillValue.Text = _vm.CalculateRegualarBillValue();
+        lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
     }
 
     private void Option1Select_Tapped(object sender, TappedEventArgs e)
@@ -196,13 +198,13 @@ public partial class AddBill : ContentPage
     {
         if (_vm.Bill.BillType == "Everynth")
         {
-            _vm.Bill.BillDuration =  pckrEverynthDuration.SelectedItem;
-            _vm.Bill.BillValue =  entEverynthValue.Text;
+            _vm.Bill.BillDuration =  pckrEverynthDuration.SelectedItem.ToString();
+            _vm.Bill.BillValue =  Convert.ToInt32(entEverynthValue.Text);
         }
         else if (_vm.Bill.BillType == "OfEveryMonth")
         {
             _vm.Bill.BillDuration = null;
-            _vm.Bill.BillValue = entOfEveryMonthValue.Text;
+            _vm.Bill.BillValue = Convert.ToInt32(entOfEveryMonthValue.Text);
         }
         else
         {
@@ -276,10 +278,10 @@ public partial class AddBill : ContentPage
 
             UpdateSelectedOption("");
 
-            double AmountDue = (double?) 0;
+            double AmountDue = (double) 0;
             entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
 
-            double CurrentSaved = (double?)_0;
+            double CurrentSaved = (double) 0;
             entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
 
             _vm.Bill.RegularBillValue = 0;
@@ -350,7 +352,7 @@ public partial class AddBill : ContentPage
         }
         else
         {
-            validatorPayType.IsVisible = false;
+            validatorBillRecurring.IsVisible = false;
         }
 
         if (_vm.BillTypeText == "Everynth" && entEverynthValue.Text == "")
