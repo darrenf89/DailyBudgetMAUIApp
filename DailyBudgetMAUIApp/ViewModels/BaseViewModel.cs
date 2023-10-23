@@ -22,6 +22,8 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         private string _title;
+        [ObservableProperty]
+        private DateTime _minimumDate = DateTime.UtcNow.Date.AddDays(1);
 
     }
 }

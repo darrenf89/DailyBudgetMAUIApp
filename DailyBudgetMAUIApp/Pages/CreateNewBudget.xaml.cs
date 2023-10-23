@@ -368,6 +368,7 @@ public partial class CreateNewBudget : ContentPage
             validatorOfEveryMonthDuration.IsVisible = false;
         }
 
+
         return IsValid;
     }
 
@@ -754,7 +755,7 @@ public partial class CreateNewBudget : ContentPage
 
         var Bill = (Bills)e.Parameter;
 
-        bool result = await DisplayAlert("Bill", "Are you sure you want to delete Bill " + Bill.BillID.ToString(), "Yes, continue", "Cancel");
+        bool result = await DisplayAlert("Bill", "Are you sure you want to delete your Outgoing " + Bill.BillID.ToString(), "Yes, continue", "Cancel");
         if (result)
         {
 

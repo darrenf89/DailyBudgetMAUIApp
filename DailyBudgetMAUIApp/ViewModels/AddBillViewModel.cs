@@ -23,9 +23,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private Bills _bill;
         [ObservableProperty]
-        private DateTime _minimumDate = DateTime.UtcNow.Date.AddDays(1);
+        private bool _isPageValid;
+
 
         public string BillTypeText { get; set; }
+        public string BillRecurringText { get; set; } = "";
 
 
         public AddBillViewModel(IProductTools pt, IRestDataService ds)
@@ -36,15 +38,49 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ICommand]
+        async void SaveBill()
+        {
+            var stack = Application.Current.MainPage.Navigation.NavigationStack;
+            int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
+            if(stack[count - 2] == "")
+            {
+                await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+            }
+            else
+            {
+
+            }
+        }
+
+        [ICommand]
         async void AddBill()
         {
-            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+            var stack = Application.Current.MainPage.Navigation.NavigationStack;
+            int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
+            if(stack[count - 2] == "")
+            {
+                await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+            }
+            else
+            {
+
+            }
         }
 
         [ICommand]
         async void UpdateBill()
         {
-            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+            var stack = Application.Current.MainPage.Navigation.NavigationStack;
+            int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
+            if(stack[count - 2] == "")
+            {
+                await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                //await Shell.Current.GoToAsync("..")
+            }
+            else
+            {
+
+            }
         }
 
         [ICommand]
@@ -73,6 +109,29 @@ namespace DailyBudgetMAUIApp.ViewModels
                         ["Error"] = Error
                     });
             }
+        }
+
+        private string CalculateRegualarBillValue()
+        {
+            if(Bill.BillAmount == 0 || Bill.BillAmount == null || Bill.BillCurrentBalance >= Bill.BillCurrentBalance || Bill.BillDueDate == null || Bill.BillDueDate <= DateTime.Now)
+            {
+                return "Please update details!";
+            }
+            else
+            {
+                decimal DailySavingValue = new();
+                TimeSpan Difference = (TimeSpan)(Bill.BillDueDate - DateTime.Now);
+                int NumberOfDays = Difference.Days;
+                decimal BillAmount = _Bill.BillAmount ?? 0;
+                decimal RemainingBillAmount = BillAmount.BillAmount - Bill.BillCurrentBalance;
+                DailySavingValue = RemainingBillAmount / NumberOfDays;
+                DailySavingValue = Math.Round(DailySavingValue, 2);
+
+                Bill.DailySavingValue = DailySavingValue;
+
+                return DailySavingValue.ToString("c", CultureInfo.CurrentCulture);
+            }
+
         }
     }
 }

@@ -4,8 +4,40 @@
              x:Class="DailyBudgetMAUIApp.Pages.AddBill"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
-             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             Title="{Binding Title}">
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*,50,50">
+            <Label Text="{Binding Title}" 
+                   TextColor="White" 
+                   VerticalOptions="Center"
+                   FontSize="20" 
+                   FontFamily="OpenSansSemibold" 
+                   FontAttributes="Bold"
+                   HorizontalOptions="Start"
+                   Grid.Column="0"/>
+            <Button TextColor="White"
+                    BackgroundColor="{StaticResource Primary}"
+                    Clicked="SaveBill_Clicked"
+                    HorizontalOptions="End"
+                    Grid.Column="1"
+                    Padding="10,0,0,0">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Save}" Size="40" />
+                </Button.ImageSource>
+            </Button>
+            <Button TextColor="White"
+                    BackgroundColor="{StaticResource Primary}"
+                    Clicked="RestBill_Clicked"
+                    Command="{Binding ResetBillCommand}"
+                    HorizontalOptions="End"
+                    Grid.Column="2"
+                    Padding="0,0,10,0">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Reset_wrench}" Size="40"/>
+                </Button.ImageSource>
+            </Button>
+        </Grid>
+    </Shell.TitleView>
     <ScrollView>
         <VerticalStackLayout VerticalOptions="Start">
             <VerticalStackLayout Margin="20,20,20,4">
@@ -29,8 +61,18 @@
                     <TapGestureRecognizer Command="{Binding ChangeBillNameCommand}"/>
                 </VerticalStackLayout.GestureRecognizers>
             </VerticalStackLayout>
-            <BoxView HeightRequest="2" Margin="40,0,40,16" Color="{DynamicResource Gray200}" IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}"/>
-            <BoxView HeightRequest="2" Margin="40,0,40,16" Color="{DynamicResource Tertiary}" IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"/>
+            <VerticalStackLayout Margin="0,0,0,16">
+                <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Gray200}" IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}"/>
+                <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Tertiary}" IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"/>
+                <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorBillName">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="An outgoing must have a name." Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
             <Border Style="{DynamicResource AddEditTransContent}">
                 <VerticalStackLayout>
                     <VerticalStackLayout x:Name="SelectBillType">
@@ -40,6 +82,14 @@
                             <Button x:Name="btnOneoffBill" Style="{DynamicResource PrimaryInfoButton}" Text="One-off" TextColor="White" BackgroundColor="{StaticResource Primary}" Grid.Column="1" Grid.Row="0" Clicked="btnOneoffBill_Clicked"/>
                             <Button x:Name="btnRecurringBill" Style="{DynamicResource PrimaryInfoButton}" Text="Recurring" TextColor="White" BackgroundColor="{StaticResource Tertiary}" Grid.Column="3" Grid.Row="0" Clicked="btnRecurringBill_Clicked"/>
                         </Grid>
+                        <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorBillRecurring">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Select your type of buget to continue" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="BillTypeSelected" IsVisible="False">
                         <Label HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}" x:Name="lblSelectedBillTitle"/>
@@ -131,26 +181,56 @@
             <Border Style="{DynamicResource AddEditTransContent}" Margin="20,20,20,20" x:Name="brdBillDetails" IsVisible="False">
                 <VerticalStackLayout x:Name="vslBillDetails">
                     <Label Text="Outgoing Details" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
-                    <Label Text="Total Amount Due" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,5,0,5"/>
-                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
-                        <handlers:BorderlessEntry TextColor="{DynamicResource Danger}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entAmountDue" TextChanged="AmountDue_Changed" Keyboard="Numeric" />
-                    </Border>
-                    <Label Text="Current Saved" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
-                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
-                        <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entCurrentSaved" TextChanged="CurrentSaved_Changed" Keyboard="Numeric" />
-                    </Border>
-                    <Label Text="Due Date" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
-                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
-                        <DatePicker CharacterSpacing="1" Margin="20,0,0,0" x:Name="dtpckBillDueDate" TextColor="{DynamicResource Gray900}" Date="{Binding Bill.BillDueDate}" MinimumDate="{Binding MinimumDate}" DateSelected="dtpckBillDueDate_DateSelected"/>
-                    </Border>
+                    <VerticalStackLayout Margin="0,10,0,5">
+                        <Label Text="Total Amount Due" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White">
+                            <handlers:BorderlessEntry TextColor="{DynamicResource Danger}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entAmountDue" TextChanged="AmountDue_Changed" Keyboard="Numeric" />
+                        </Border>
+                        <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorBillAmount">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="To have an outgoing there has to be amount to out go!" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Margin="0,10,0,5">
+                        <Label Text="Current Saved" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White">
+                            <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entCurrentSaved" TextChanged="CurrentSaved_Changed" Keyboard="Numeric" />
+                        </Border>
+                        <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorBillBalance">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="You can't have more money for an outgoing than you owe on an outgoing, doesnt make sense" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Margin="0,10,0,5">
+                        <Label Text="Due Date" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White">
+                            <DatePicker CharacterSpacing="1" Margin="20,0,0,0" x:Name="dtpckBillDueDate" TextColor="{DynamicResource Gray900}" Date="{Binding Bill.BillDueDate}" MinimumDate="{Binding MinimumDate}" DateSelected="dtpckBillDueDate_DateSelected"/>
+                        </Border>
+                        <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorBillDue">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Select a day some time in the ... future" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
                     <Label Text="Daily Amount Required" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
                     <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
-                        <Label x:Name="lblRegularBillValue" Text="{Binding Bill.RegularBillValue, StringFormat='{0:c}'}" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"/>
+                        <Label x:Name="lblRegularBillValue" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"/>
                     </Border>
                 </VerticalStackLayout>
             </Border>
-            <Button x:Name="btnAddBill" Text="Add New Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Command="{Binding AddBillCommand}" HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false"/>
-            <Button x:Name="btnUpdateBill" Text="Update Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Command="{Binding UpdateBillCommand}" HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false" />
+            <Button x:Name="btnAddBill" Text="Add New Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Command="{Binding AddBillCommand}" Clicked="AddBill_Clicked" HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false"/>
+            <Button x:Name="btnUpdateBill" Text="Update Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Command="{Binding UpdateBillCommand}" Clicked="UpdateBill_Clicked" HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
