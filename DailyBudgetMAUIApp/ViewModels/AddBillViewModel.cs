@@ -43,38 +43,64 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
-        [ICommand]
         async void AddBill()
         {
-            if(IsPageValid)
+            try
             {
-                var stack = Application.Current.MainPage.Navigation.NavigationStack;
-                int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
-                string test = stack[count - 2].ToString(); if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                string SuccessCheck = _ds.SaveNewBill(Bill,BudgetID);
+                if(SuccessCheck == "OK")
                 {
-                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
-                }
-                else
-                {
-
+                    var stack = Application.Current.MainPage.Navigation.NavigationStack;
+                    int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
+                    if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                    {
+                        await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                    }
+                    else
+                    {
+                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                    }
                 }
             }
-
+            catch (Exception ex)
+            {
+                ErrorLog Error = _pt.HandleCatchedException(ex, "AddBill", "AddBill").Result;
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });
+            }
         }
 
-        [ICommand]
         async void UpdateBill()
         {
-            var stack = Application.Current.MainPage.Navigation.NavigationStack;
-            int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
-            if(stack[count - 2].ToString() == "")
+            try
             {
-                await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
-                //await Shell.Current.GoToAsync("..")
+                string SuccessCheck = _ds.UpdateBill(Bill);
+                if(SuccessCheck == "OK")
+                {
+                    //TODO: IMPLEMENT SAVE NEW BILL LOGIC
+                    var stack = Application.Current.MainPage.Navigation.NavigationStack;
+                    int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
+                    if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                    {
+                        await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                    }
+                    else
+                    {
+                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-
+                ErrorLog Error = _pt.HandleCatchedException(ex, "AddBill", "UpdateBill").Result;
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });
             }
         }
 

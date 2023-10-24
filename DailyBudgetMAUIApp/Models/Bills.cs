@@ -6,29 +6,29 @@ namespace DailyBudgetMAUIApp.Models
     public partial class Bills : ObservableObject
     {
         [ObservableProperty]
-        private int _billID = 0;
+        private int _billID;
         [ObservableProperty]
-        public string? _billName = "";
+        public string? _billName;
         [ObservableProperty]
-        public string? _billType = "";
+        public string? _billType;
         [ObservableProperty]
-        public int? _billValue = 0;
+        public int? _billValue;
         [ObservableProperty]
-        public string? _billDuration = "";
+        public string? _billDuration;
         [ObservableProperty]
-        public decimal? _billAmount = 0;
+        public decimal? _billAmount;
         [ObservableProperty]
-        public DateTime? _billDueDate = DateTime.Now;
+        public DateTime? _billDueDate;
         [ObservableProperty]
-        public decimal _billCurrentBalance = 0;
+        public decimal _billCurrentBalance;
         [ObservableProperty]
         public bool _isRecuring;
         [ObservableProperty]
-        public DateTime _lastUpdatedDate = DateTime.Now;
+        public DateTime _lastUpdatedDate;
         [ObservableProperty]
-        public bool _isClosed = false;
+        public bool _isClosed;
         [ObservableProperty]
-        public decimal? _regularBillValue = 0;
+        public decimal? _regularBillValue;
 
 
     }

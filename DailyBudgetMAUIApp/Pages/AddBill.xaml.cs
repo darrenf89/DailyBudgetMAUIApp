@@ -43,10 +43,43 @@ public partial class AddBill : ContentPage
         }
         else
         {
-            //TODO: GET THE BILL DETAILS
-            _vm.Bill = new Bills();
+            _vm.Bill =_ds.GetBillFromID(_vm.BillID);
             _vm.Title = $"Update Outgoing {_vm.Bill.BillName}";
             btnUpdateBill.IsVisible = true;
+
+            SelectBillType.IsVisible = false;
+            if(_vm.Bill.IsRecuring)
+            {
+                SelectBillType.IsVisible = false;
+                BillTypeSelected.IsVisible = true;
+                lblSelectedBillTitle.Text = "You are adding a recurring outgoing";
+                lblSelectedBillParaOne.Text = "For most of your bills! Phone, car, Netflix, the list goes on ...";
+                lblSelectedBillParaTwo.Text = "Tell us how much, when the next bill is due and how often it occurs";
+
+                brdBillDetails.IsVisible = true;
+                vslBillDetails.IsVisible = true;
+                vslBillTypes.IsVisible = true;
+
+                _vm.BillRecurringText = "Recurring";
+            }
+            else
+            {
+                SelectBillType.IsVisible = false;
+                BillTypeSelected.IsVisible = true;
+                lblSelectedBillTitle.Text = "You are adding a one off outgoing";
+                lblSelectedBillParaOne.Text = "For those one off bills, owe someone money?";
+                lblSelectedBillParaTwo.Text = "Tell us how much and when the bill is due";
+
+                brdBillDetails.IsVisible = true;
+                vslBillDetails.IsVisible = true;
+                vslBillTypes.IsVisible = false;
+
+                _vm.BillRecurringText = "OneOff";
+            }
+
+            UpdateSelectedOption(_vm.Bill.BillType);
+            _vm.BillTypeText = _vm.Bill.BillType;
+
         }
 
         double AmountDue = (double?)_vm.Bill.BillAmount ?? 0;
@@ -55,6 +88,8 @@ public partial class AddBill : ContentPage
         double CurrentSaved = (double?)_vm.Bill.BillCurrentBalance ?? 0;
         entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
 
+        double RegularValue = (double?) _vm.Bill.RegularBillValue ?? 0;
+        lblRegularBillValue.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);
 
     }
 
@@ -242,14 +277,18 @@ public partial class AddBill : ContentPage
     {
         if(ValidateBillDetails())
         {
-            
+            SaveBillTypeOptions();
+
+            _vm.AddBill();
         }
     }
     private async void UpdateBill_Clicked(object sender, EventArgs e)
     {
         if(ValidateBillDetails())
         {
-            
+            SaveBillTypeOptions();
+
+            _vm.UpdateBill();
         }
     }
 
@@ -257,7 +296,16 @@ public partial class AddBill : ContentPage
     {
         if(ValidateBillDetails())
         {
-            
+            SaveBillTypeOptions();
+
+            if(_vm.BillID == 0)
+            {
+                _vm.AddBill();
+            }
+            else
+            {
+                _vm.UpdateBill();
+            }
         }
     }
 
@@ -287,6 +335,9 @@ public partial class AddBill : ContentPage
             _vm.Bill.RegularBillValue = 0;
             _vm.Bill.BillDueDate = _vm.MinimumDate;
             _vm.BillRecurringText = "";
+
+            _vm.Bill.BillType = "";
+            SaveBillTypeOptions();
 
         }
     }

@@ -228,8 +228,8 @@
                     </Border>
                 </VerticalStackLayout>
             </Border>
-            <Button x:Name="btnAddBill" Text="Add New Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="AddBill_Clicked" Command="{Binding AddBillCommand}" HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false"/>
-            <Button x:Name="btnUpdateBill" Text="Update Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Command="{Binding UpdateBillCommand}" Clicked="UpdateBill_Clicked" HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false" />
+            <Button x:Name="btnAddBill" Text="Add New Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="AddBill_Clicked"  HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false"/>
+            <Button x:Name="btnUpdateBill" Text="Update Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="UpdateBill_Clicked" HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

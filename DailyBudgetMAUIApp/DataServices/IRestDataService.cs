@@ -27,6 +27,11 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<List<lut_NumberFormat>> GetNumberFormats();
         public Task<string> PatchBudget(int BudgetID, List<PatchDoc> PatchDoc);
         public Task<string> UpdateBudgetSettings(int BudgetID, BudgetSettings BS);
+        public Task<Bills> GetBillFromID(int BillID);
+        public Task<string>SaveNewBill(Bills Bill, int BudgetID);
+        public Task<string>UpdateBill(Bills Bill);
+        public Task<string> PatchBill(int BillID, List<PatchDoc> PatchDoc);
+
 
 
     }
