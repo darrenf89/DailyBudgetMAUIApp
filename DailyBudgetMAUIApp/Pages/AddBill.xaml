@@ -63,7 +63,7 @@
             <VerticalStackLayout Margin="0,0,0,16">
                 <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Gray200}" IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}"/>
                 <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Tertiary}" IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"/>
-                <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorBillName">
+                <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorBillName" HorizontalOptions="Center">
                         <Image>
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
@@ -81,7 +81,7 @@
                             <Button x:Name="btnOneoffBill" Style="{DynamicResource PrimaryInfoButton}" Text="One-off" TextColor="White" BackgroundColor="{StaticResource Primary}" Grid.Column="1" Grid.Row="0" Clicked="btnOneoffBill_Clicked"/>
                             <Button x:Name="btnRecurringBill" Style="{DynamicResource PrimaryInfoButton}" Text="Recurring" TextColor="White" BackgroundColor="{StaticResource Tertiary}" Grid.Column="3" Grid.Row="0" Clicked="btnRecurringBill_Clicked"/>
                         </Grid>
-                        <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorBillRecurring">
+                        <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorBillRecurring" HorizontalOptions="Center">
                             <Image>
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
@@ -228,8 +228,10 @@
                     </Border>
                 </VerticalStackLayout>
             </Border>
-            <Button x:Name="btnAddBill" Text="Add New Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="AddBill_Clicked"  HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false"/>
-            <Button x:Name="btnUpdateBill" Text="Update Outgoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="UpdateBill_Clicked" HorizontalOptions="Center" Padding="10,0,0,0" IsVisible="false" />
+            <Grid Margin="0,10,0,0" RowDefinitions="*,8*,*" ColumnDefinitions="*">
+                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource PrimaryInfoButton}" x:Name="btnAddBill" Text="Add New Outgoing" TextColor="White"  Clicked="AddBill_Clicked"  HorizontalTextAlignment="Center" IsVisible="false"/>
+                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource PrimaryInfoButton}" x:Name="btnUpdateBill" Text="Update Outgoing" TextColor="White"  Clicked="UpdateBill_Clicked" HorizontalTextAlignment="Center" IsVisible="false" />
+            </Grid>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

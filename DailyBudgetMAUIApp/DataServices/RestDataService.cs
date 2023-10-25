@@ -926,7 +926,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.PatchAsync($"{_url}/bills/patchbill/{BillID}", request);
+                HttpResponseMessage response = await _httpClient.PatchAsync($"{_url}/bills/updatebill/{BillID}", request);
                 string content = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
