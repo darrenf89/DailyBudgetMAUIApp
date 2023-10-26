@@ -342,7 +342,7 @@
                         <Label Text="Current Outgoings" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
                     </HorizontalStackLayout>
                     <Label Text="Edit or delete your previously saved outgoings" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
-                    <ListView ItemsSource="{Binding Budget.Bills}" Margin="10,0,40,0" SeparatorVisibility="None" x:Name="LVOutgoings" RowHeight="130" SelectionMode="None" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
+                    <ListView ItemsSource="{Binding Budget.Bills}" Margin="10,0,20,0" SeparatorVisibility="None" x:Name="LVOutgoings" RowHeight="130" SelectionMode="None" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell Appearing="ViewCell_Appearing">
@@ -353,15 +353,15 @@
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="5"/>
                                                     <RowDefinition Height="25"/>
-                                                    <RowDefinition Height="15"/>
+                                                    <RowDefinition Height="20"/>
                                                     <RowDefinition Height="25"/>
-                                                    <RowDefinition Height="30"/>
+                                                    <RowDefinition Height="25"/>
                                                     <RowDefinition Height="5"/>
                                                 </Grid.RowDefinitions>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="2*"/>
-                                                    <ColumnDefinition Width="5*"/>
-                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="7*"/>
+                                                    <ColumnDefinition Width="10"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Border Style="{StaticResource PictureFrame40}" Margin="0,5,0,0" Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" VerticalOptions="Start" HorizontalOptions="Center">
                                                     <Image Source="billsincome.png" Aspect="AspectFill" />
@@ -378,6 +378,7 @@
                                                 <HorizontalStackLayout Grid.Column="1" Grid.Row="3" VerticalOptions="End">
                                                     <Label TextColor="{DynamicResource Info}" x:Name="lblBillCurrent" FontSize="Caption"/>
                                                     <Label TextColor="{DynamicResource Gray300}" x:Name="lblBillValues" FontSize="Caption"/>
+                                                    <Label TextColor="{DynamicResource Gray600}" x:Name="lblBillRegValues" FontSize="Caption" FontAttributes="Bold"/>
                                                 </HorizontalStackLayout>
                                                 <HorizontalStackLayout Grid.Column="1" Grid.Row="4" VerticalOptions="Center">
                                                     <HorizontalStackLayout Margin="0,0,20,0" HorizontalOptions="End" VerticalOptions="Center">

@@ -41,7 +41,7 @@
     </Style>
 
     <Style TargetType="Border" x:Key="AddEditTransContent">
-        <Setter Property="Margin" Value="20,20,20,20"/>
+        <Setter Property="Margin" Value="20,25,20,25"/>
         <Setter Property="Padding" Value="10,10,10,10"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 15"/>
         <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
@@ -344,16 +344,22 @@
     </Style>
 
     <Style TargetType="Button" x:Key="TitleButtons">
-                <Setter Property="VisualStateManager.VisualStateGroups">
+        <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="TranslationY" Value="0"/>
+                            <Setter Property="Opacity" Value="1"/>
+                            <Setter Property="Scale" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
                     <VisualState x:Name="Pressed">
                         <VisualState.Setters>
                             <Setter Property="Scale" Value="0.9" />
                             <Setter Property="TranslationY" Value="0"/>
                             <Setter Property="Opacity" Value="0.8"/>
                             <Setter Property="TextColor" Value="{StaticResource Info}" />
-                            <Setter Property="BackgroundColor" Value="{StaticResource White}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>

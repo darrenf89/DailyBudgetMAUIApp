@@ -42,11 +42,10 @@ public partial class CreateNewBudget : ContentPage
                 _vm.BudgetID = _ds.CreateNewBudget(App.UserDetails.Email).Result.BudgetID;
 
 
-                if (_vm.BudgetID != 0)
+                if (_vm.BudgetID != 0 || _vm.NavigatedFrom != null)
                 {
                     _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
                     _vm.BudgetSettings = _ds.GetBudgetSettings(_vm.BudgetID).Result;
-                    //TODO: SET THE BUDGET SETTINGS IN FRONT END
                 }
                 else
                 {
@@ -55,11 +54,10 @@ public partial class CreateNewBudget : ContentPage
             }
             else
             {
-                if(_vm.Budget == null)
+                if(_vm.Budget == null || _vm.NavigatedFrom != null)
                 {
                     _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
                     _vm.BudgetSettings = _ds.GetBudgetSettings(_vm.BudgetID).Result;
-                    //TODO: SET THE BUDGET SETTINGS IN FRONT END
                 }
 
             }
@@ -108,6 +106,7 @@ public partial class CreateNewBudget : ContentPage
             if (_vm.NavigatedFrom != null)
             {
                 _vm.Stage = _vm.NavigatedFrom;
+
             }
 
             UpdateStageDisplay();            
@@ -188,6 +187,7 @@ public partial class CreateNewBudget : ContentPage
         }
         else if (_vm.Stage == "Budget Outgoings")
         {
+            UpdateBillsYesNo("");
             await MainScrollView.ScrollToAsync(0, 215, true);
         }
         else if (_vm.Stage == "Budget Savings")
@@ -655,6 +655,10 @@ public partial class CreateNewBudget : ContentPage
             {
                 entEverynthValue.Text = e.OldTextValue;
             }
+            else
+            {
+                entEverynthValue.Text = e.NewTextValue;
+            }
         }
     }
 
@@ -666,7 +670,11 @@ public partial class CreateNewBudget : ContentPage
         {
             if (!regex.IsMatch(e.NewTextValue))
             {
-                entEverynthValue.Text = e.OldTextValue;
+                entWorkingDaysValue.Text = e.OldTextValue;
+            }
+            else
+            {
+                entWorkingDaysValue.Text = e.NewTextValue;
             }
         }
     }
@@ -678,7 +686,11 @@ public partial class CreateNewBudget : ContentPage
         {
             if (!regex.IsMatch(e.NewTextValue))
             {
-                entEverynthValue.Text = e.OldTextValue;
+                entOfEveryMonthValue.Text = e.OldTextValue;
+            }
+            else
+            {
+                entOfEveryMonthValue.Text = e.NewTextValue;
             }
         }
     }
@@ -731,6 +743,21 @@ public partial class CreateNewBudget : ContentPage
 
             _vm.BillsYesNoSelect = "No";
         }
+        else
+        {
+            vslBillsYesSelect.BackgroundColor = (Color)Light;
+            vslBillsNoSelect.BackgroundColor = (Color)Light;
+
+            lblBillsYes.FontAttributes = FontAttributes.None;
+            lblBillsNo.FontAttributes = FontAttributes.None;
+
+            lblBillsYes.TextColor = (Color)Gray900;
+            lblBillsNo.TextColor = (Color)Gray900;
+
+            btnAddBillsNewBudget.IsVisible = false;
+
+            _vm.BillsYesNoSelect = "";
+        }
     }
 
     private async void DeleteBudgetOutgoings_Clicked(object sender, EventArgs e)
@@ -755,10 +782,14 @@ public partial class CreateNewBudget : ContentPage
 
         var Bill = (Bills)e.Parameter;
 
-        bool result = await DisplayAlert("Bill", "Are you sure you want to delete your Outgoing " + Bill.BillID.ToString(), "Yes, continue", "Cancel");
+        bool result = await DisplayAlert("Bill", "Are you sure you want to delete your Outgoing " + Bill.BillName.ToString(), "Yes, continue", "Cancel");
         if (result)
         {
-
+            string Result = _ds.DeleteBill(Bill.BillID).Result;
+            if(Result == "OK")
+            {
+                _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+            }            
         }
     }
 
@@ -776,9 +807,11 @@ public partial class CreateNewBudget : ContentPage
         var Bill = (Bills)vcBill.BindingContext;        
         Label Header = (Label)vcBill.FindByName("lblOutgoingheader");
         Label Values = (Label)vcBill.FindByName("lblBillValues");
+        Label lblBillRegValues = (Label)vcBill.FindByName("lblBillRegValues");
         Label lblBillCurrent = (Label)vcBill.FindByName("lblBillCurrent");
 
-        Values.Text = String.Format("/{0:c} {1:c} per day", Bill.BillAmount, Bill.RegularBillValue);
+        lblBillRegValues.Text = String.Format("   {0:c} per day", Bill.RegularBillValue);
+        Values.Text = String.Format("/{0:c} ", Bill.BillAmount, Bill.RegularBillValue);
         lblBillCurrent.Text = String.Format("{0:c}", Bill.BillCurrentBalance);
 
         if (Bill.BillType == "OfEveryMonth")

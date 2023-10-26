@@ -43,11 +43,11 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
-        async void AddBill()
+        public async void AddBill()
         {
             try
             {
-                string SuccessCheck = _ds.SaveNewBill(Bill,BudgetID);
+                string SuccessCheck = _ds.SaveNewBill(Bill,BudgetID).Result;
                 if(SuccessCheck == "OK")
                 {
                     var stack = Application.Current.MainPage.Navigation.NavigationStack;
@@ -73,14 +73,13 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        async void UpdateBill()
+        public async void UpdateBill()
         {
             try
             {
-                string SuccessCheck = _ds.UpdateBill(Bill);
+                string SuccessCheck = _ds.UpdateBill(Bill).Result;
                 if(SuccessCheck == "OK")
                 {
-                    //TODO: IMPLEMENT SAVE NEW BILL LOGIC
                     var stack = Application.Current.MainPage.Navigation.NavigationStack;
                     int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
                     if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
@@ -105,7 +104,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ICommand]
-        async void ChangeBillName()
+        public async void ChangeBillName()
         {
             try
             {
@@ -134,7 +133,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public string CalculateRegularBillValue()
         {
-            if(Bill.BillAmount == 0 || Bill.BillAmount == null || Bill.BillCurrentBalance >= Bill.BillCurrentBalance || Bill.BillDueDate == null || Bill.BillDueDate <= DateTime.Now)
+            if(Bill.BillAmount == 0 || Bill.BillAmount == null || Bill.BillCurrentBalance >= Bill.BillAmount || Bill.BillDueDate == null || Bill.BillDueDate <= DateTime.Now)
             {
                 return "Please update details!";
             }

@@ -9,6 +9,7 @@ using CommunityToolkit.Maui.ApplicationModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Maui.Controls.Internals;
+using Microsoft.Maui.Primitives;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -29,10 +30,8 @@ public partial class AddBill : ContentPage
         dtpckBillDueDate.MinimumDate = DateTime.UtcNow.AddDays(1);
     }
 
-    async protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    async protected override void OnAppearing()
     {
-        base.OnNavigatedTo(args);
-        _pt.SetCultureInfo(App.CurrentSettings);
 
         if (_vm.BillID == 0)
         {
@@ -43,43 +42,38 @@ public partial class AddBill : ContentPage
         }
         else
         {
-            _vm.Bill =_ds.GetBillFromID(_vm.BillID);
+            _vm.Bill = _ds.GetBillFromID(_vm.BillID).Result;
             _vm.Title = $"Update Outgoing {_vm.Bill.BillName}";
             btnUpdateBill.IsVisible = true;
 
             SelectBillType.IsVisible = false;
-            if(_vm.Bill.IsRecuring)
+            if (_vm.Bill.IsRecuring)
             {
-                SelectBillType.IsVisible = false;
                 BillTypeSelected.IsVisible = true;
                 lblSelectedBillTitle.Text = "You are adding a recurring outgoing";
                 lblSelectedBillParaOne.Text = "For most of your bills! Phone, car, Netflix, the list goes on ...";
                 lblSelectedBillParaTwo.Text = "Tell us how much, when the next bill is due and how often it occurs";
 
                 brdBillDetails.IsVisible = true;
-                vslBillDetails.IsVisible = true;
-                vslBillTypes.IsVisible = true;
+                brdBillTypes.IsVisible = true;
 
                 _vm.BillRecurringText = "Recurring";
+
+                UpdateSelectedOption(_vm.Bill.BillType);
+                _vm.BillTypeText = _vm.Bill.BillType;
             }
             else
             {
-                SelectBillType.IsVisible = false;
                 BillTypeSelected.IsVisible = true;
                 lblSelectedBillTitle.Text = "You are adding a one off outgoing";
                 lblSelectedBillParaOne.Text = "For those one off bills, owe someone money?";
                 lblSelectedBillParaTwo.Text = "Tell us how much and when the bill is due";
 
                 brdBillDetails.IsVisible = true;
-                vslBillDetails.IsVisible = true;
-                vslBillTypes.IsVisible = false;
+                brdBillTypes.IsVisible = false;
 
                 _vm.BillRecurringText = "OneOff";
             }
-
-            UpdateSelectedOption(_vm.Bill.BillType);
-            _vm.BillTypeText = _vm.Bill.BillType;
-
         }
 
         double AmountDue = (double?)_vm.Bill.BillAmount ?? 0;
@@ -88,8 +82,15 @@ public partial class AddBill : ContentPage
         double CurrentSaved = (double?)_vm.Bill.BillCurrentBalance ?? 0;
         entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
 
-        double RegularValue = (double?) _vm.Bill.RegularBillValue ?? 0;
+        double RegularValue = (double?)_vm.Bill.RegularBillValue ?? 0;
         lblRegularBillValue.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);
+
+        if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+        {
+            _vm.ChangeBillName();
+        }
+
+        base.OnAppearing();
 
     }
 
@@ -105,7 +106,7 @@ public partial class AddBill : ContentPage
 
         brdBillDetails.IsVisible = true;
         vslBillDetails.IsVisible = true;
-        vslBillTypes.IsVisible = true;
+        brdBillTypes.IsVisible = true;
 
         _vm.BillRecurringText = "Recurring";
     }
@@ -121,7 +122,7 @@ public partial class AddBill : ContentPage
 
         brdBillDetails.IsVisible = true;
         vslBillDetails.IsVisible = true;
-        vslBillTypes.IsVisible = false;
+        brdBillTypes.IsVisible = false;
 
         _vm.BillRecurringText = "OneOff";
     }
@@ -229,7 +230,7 @@ public partial class AddBill : ContentPage
         }
     }
 
-        private void SaveBillTypeOptions()
+    private void SaveBillTypeOptions()
     {
         if (_vm.Bill.BillType == "Everynth")
         {
@@ -256,7 +257,11 @@ public partial class AddBill : ContentPage
         {
             if (!regex.IsMatch(e.NewTextValue))
             {
-                entEverynthValue.Text = e.OldTextValue;
+                entOfEveryMonthValue.Text = e.OldTextValue;
+            }
+            else
+            {
+                entOfEveryMonthValue.Text = e.NewTextValue;
             }
         }
     }
@@ -270,6 +275,10 @@ public partial class AddBill : ContentPage
             if (!regex.IsMatch(e.NewTextValue))
             {
                 entEverynthValue.Text = e.OldTextValue;
+            }
+            else
+            {
+                entEverynthValue.Text = e.NewTextValue;
             }
         }
     }
@@ -322,7 +331,7 @@ public partial class AddBill : ContentPage
 
             brdBillDetails.IsVisible = false;
             vslBillDetails.IsVisible = false;
-            vslBillTypes.IsVisible = false;
+            brdBillTypes.IsVisible = false;
 
             UpdateSelectedOption("");
 
@@ -386,15 +395,7 @@ public partial class AddBill : ContentPage
             validatorBillBalance.IsVisible = false;
         }
 
-        if(_vm.BillTypeText == "" || _vm.BillTypeText == null)
-        {
-            IsValid = false;
-            validatorBillType.IsVisible = true;
-        }
-        else
-        {
-            validatorBillType.IsVisible = false;
-        }
+
 
         if(_vm.BillRecurringText == "" || _vm.BillRecurringText == null)
         {
@@ -406,24 +407,37 @@ public partial class AddBill : ContentPage
             validatorBillRecurring.IsVisible = false;
         }
 
-        if (_vm.BillTypeText == "Everynth" && entEverynthValue.Text == "")
+        if(_vm.BillRecurringText == "Recurring")
         {
-            IsValid = false;
-            validatorEveryNthDuration.IsVisible = true;
-        }
-        else
-        {
-            validatorEveryNthDuration.IsVisible = false;
-        }
+            if (_vm.BillTypeText == "" || _vm.BillTypeText == null)
+            {
+                IsValid = false;
+                validatorBillType.IsVisible = true;
+            }
+            else
+            {
+                validatorBillType.IsVisible = false;
+            }
 
-        if (_vm.BillTypeText == "OfEveryMonth" && entOfEveryMonthValue.Text == "")
-        {
-            IsValid = false;
-            validatorOfEveryMonthDuration.IsVisible = true;
-        }
-        else
-        {
-            validatorOfEveryMonthDuration.IsVisible = false;
+            if (_vm.BillTypeText == "Everynth" && entEverynthValue.Text == "")
+            {
+                IsValid = false;
+                validatorEveryNthDuration.IsVisible = true;
+            }
+            else
+            {
+                validatorEveryNthDuration.IsVisible = false;
+            }
+
+            if (_vm.BillTypeText == "OfEveryMonth" && entOfEveryMonthValue.Text == "")
+            {
+                IsValid = false;
+                validatorOfEveryMonthDuration.IsVisible = true;
+            }
+            else
+            {
+                validatorOfEveryMonthDuration.IsVisible = false;
+            }
         }
 
         _vm.IsPageValid = IsValid;

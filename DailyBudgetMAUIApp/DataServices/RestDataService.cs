@@ -26,7 +26,7 @@ namespace DailyBudgetMAUIApp.DataServices
             _httpClient = new HttpClient();
             //_baseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5074" : "https://localhost:7141";
             _baseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "https://dailybudgetwebapi.azurewebsites.net/" : "https://dailybudgetwebapi.azurewebsites.net/";
-            _url = $"{_baseAddress}/api/v1";
+            _url = $"{_baseAddress}api/v1";
 
             _jsonSerialiserOptions = new JsonSerializerOptions
             {
@@ -46,8 +46,8 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
 
-                HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/userAccounts/getsalt/{System.Web.HttpUtility.UrlEncode(UserEmail)}");
-                string content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getsalt/{System.Web.HttpUtility.UrlEncode(UserEmail)}").Result;
+                string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -91,8 +91,8 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<RegisterModel>(User, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.PostAsync($"{_url}/userAccounts/registeruser", request);
-                string content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/userAccounts/registeruser", request).Result;
+                string content =  response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -128,9 +128,9 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
 
-                HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/userAccounts/getLogonDetails/{System.Web.HttpUtility.UrlEncode(UserEmail)}");
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getLogonDetails/{System.Web.HttpUtility.UrlEncode(UserEmail)}").Result;
                 string content = "";
-                content = await response.Content.ReadAsStringAsync();
+                content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -171,8 +171,8 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<ErrorLog>(NewLog, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.PostAsync($"{_url}/error/adderrorlogentry", request);
-                string content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response =  _httpClient.PostAsync($"{_url}/error/adderrorlogentry", request).Result;
+                string content =  response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -273,8 +273,8 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
 
-                HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/budgets/getlastupdated/{BudgetID}");
-                string content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getlastupdated/{BudgetID}").Result;
+                string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -738,8 +738,8 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.PatchAsync($"{_url}/budgets/updatebudget/{BudgetID}", request);
-                string content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = _httpClient.PatchAsync($"{_url}/budgets/updatebudget/{BudgetID}", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -772,8 +772,8 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<BudgetSettings>(BS, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.PutAsync($"{_url}/budgetsettings/{BudgetID}", request);
-                string content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = _httpClient.PutAsync($"{_url}/budgetsettings/{BudgetID}", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -857,8 +857,8 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Bills>(Bill, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.PostAsync($"{_url}/bills/savenewbill/{BudgetID}", request);
-                string content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/bills/savenewbill/{BudgetID}", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -892,8 +892,8 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Bills>(Bill, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.PostAsync($"{_url}/bills/updatebill", request);
-                string content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/bills/updatebill", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -926,8 +926,8 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.PatchAsync($"{_url}/bills/updatebill/{BillID}", request);
-                string content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response =  _httpClient.PatchAsync($"{_url}/bills/updatebill/{BillID}", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -946,6 +946,52 @@ namespace DailyBudgetMAUIApp.DataServices
                 throw new Exception(ex.Message);
             }
 
+        }
+
+        public async Task<string> DeleteBill(int BillID)
+        {
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/bills/deletebill/{BillID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            return "OK";
+                        }
+                                                
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

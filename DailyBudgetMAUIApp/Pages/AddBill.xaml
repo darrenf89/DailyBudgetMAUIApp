@@ -6,11 +6,13 @@
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
     <Shell.TitleView>
-        <Grid ColumnDefinitions="*,60,60">
+        <Grid ColumnDefinitions="*,40,40,5">
             <Label Text="{Binding Title}" 
                    TextColor="White" 
                    VerticalOptions="Center"
-                   FontSize="20" 
+                   Margin="0"
+                   Padding="0"
+                   FontSize="14" 
                    FontFamily="OpenSansSemibold" 
                    FontAttributes="Bold"
                    HorizontalOptions="Start"
@@ -20,7 +22,8 @@
                     Clicked="SaveBill_Clicked"
                     HorizontalOptions="End"
                     Grid.Column="1"
-                    Padding="10,0,0,0">
+                    Padding="0,0,0,0"
+                    Style="{StaticResource TitleButtons}">
                 <Button.ImageSource>
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Save}" Size="30" />
                 </Button.ImageSource>
@@ -30,7 +33,8 @@
                     Clicked="ResetBill_Clicked"
                     HorizontalOptions="End"
                     Grid.Column="2"
-                    Padding="0,0,10,0">
+                    Padding="0,0,0,0"
+                    Style="{StaticResource TitleButtons}">
                 <Button.ImageSource>
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Backspace}" Size="30"/>
                 </Button.ImageSource>
@@ -72,7 +76,7 @@
                         <Label Text="An outgoing must have a name." Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>
-            <Border Style="{DynamicResource AddEditTransContent}">
+            <Border Style="{DynamicResource AddEditTransContent}" x:Name="brdBillSelection">
                 <VerticalStackLayout>
                     <VerticalStackLayout x:Name="SelectBillType">
                         <Label Text="Do you want to set up a One-off or a Recurring Outgoing?" HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
@@ -97,7 +101,7 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
-            <Border Style="{DynamicResource AddEditTransContent}" Margin="20,20,20,20" x:Name="vslBillTypes" IsVisible="False">
+            <Border Style="{DynamicResource AddEditTransContent}" Margin="20,30,20,20" x:Name="brdBillTypes" IsVisible="False">
                 <VerticalStackLayout>
                     <Label Text="Recurring Outgoing Type" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     <VerticalStackLayout Margin="0,10,0,10" x:Name="vslBillType">
@@ -224,13 +228,13 @@
                     </VerticalStackLayout>
                     <Label Text="Daily Amount Required" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
                     <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
-                        <Label x:Name="lblRegularBillValue" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"/>
+                        <Label x:Name="lblRegularBillValue" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"  VerticalOptions="Center"/>
                     </Border>
                 </VerticalStackLayout>
             </Border>
-            <Grid Margin="0,10,0,0" RowDefinitions="*,8*,*" ColumnDefinitions="*">
-                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource PrimaryInfoButton}" x:Name="btnAddBill" Text="Add New Outgoing" TextColor="White"  Clicked="AddBill_Clicked"  HorizontalTextAlignment="Center" IsVisible="false"/>
-                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource PrimaryInfoButton}" x:Name="btnUpdateBill" Text="Update Outgoing" TextColor="White"  Clicked="UpdateBill_Clicked" HorizontalTextAlignment="Center" IsVisible="false" />
+            <Grid ColumnDefinitions="30,*,30" RowDefinitions="10,*,40">
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryInfoButton}" x:Name="btnAddBill" Text="Add New Outgoing" TextColor="White"  Clicked="AddBill_Clicked" IsVisible="false" BackgroundColor="{DynamicResource Success}"/>
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryInfoButton}" x:Name="btnUpdateBill" Text="Update Outgoing" TextColor="White"  Clicked="UpdateBill_Clicked" IsVisible="false" BackgroundColor="{DynamicResource Success}"/>
             </Grid>
         </VerticalStackLayout>
     </ScrollView>
