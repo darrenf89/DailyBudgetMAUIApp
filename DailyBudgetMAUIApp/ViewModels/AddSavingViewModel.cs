@@ -1,13 +1,119 @@
-﻿
+﻿using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Pages;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
+using System.Diagnostics;
+using System.Globalization;
+
 namespace DailyBudgetMAUIApp.ViewModels
 {
+    [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
+    [QueryProperty(nameof(SavingID), nameof(SavingID))]
     public partial class AddSavingViewModel : BaseViewModel
     {
+        private readonly IProductTools _pt;
+        private readonly IRestDataService _ds;
 
-        public AddSavingViewModel()
+        [ObservableProperty]
+        private int _budgetID;
+        [ObservableProperty]
+        private int _savingID;
+        [ObservableProperty]
+        private Savings _saving;
+        [ObservableProperty]
+        private bool _isPageValid;
+        [ObservableProperty]
+        private DateTime _minimumDate = DateTime.UtcNow.Date.AddDays(1);
+
+        public string SavingTypeText { get; set; } = "";
+        public string SavingRecurringText { get; set; } = "";
+        public DateTime BudgetNextPayDate { get; set; }
+        public int BudgetDaysToNextPay { get; set; } = 0;
+        public List<PickerClass> DropDownSavingPeriod { get; set; } = new List<PickerClass>();
+
+        public AddSavingViewModel(IProductTools pt, IRestDataService ds)
         {
+            _pt = pt;
+            _ds = ds;
+
+            Saving = new Savings();
+
+            PickerClass PerPeriod = new PickerClass("Pay Day", "PerPeriod");
+            DropDownSavingPeriod.Add(PerPeriod);
+            PickerClass PerDay = new PickerClass("Every Day", "PerDay");
+            DropDownSavingPeriod.Add(PerDay);
 
         }
 
+        [ICommand]
+        public async void ChangeSavingsName()
+        {
+            try
+            {
+                string Description = "Every savings needs a name, we will refer to it by the name you give it and this will make it easier to identify!";
+                string DescriptionSub = "Call it something useful or call it something silly up to you really!";
+                var popup = new PopUpPageSingleInput("Saving Name", Description, DescriptionSub, "Enter an Saving name!", Saving.SavingsName, new PopUpPageSingleInputViewModel());
+                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+                if (result != null || (string)result != "")
+                {
+                    Saving.SavingsName = (string)result;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($" --> {ex.Message}");
+                ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "Constructor").Result;
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });
+            }
+        }
+
+        public string CalculateSavingRegularValues()
+        {
+            if (Saving.SavingsGoal != 0 && Saving.GoalDate > DateTime.Today.Date)
+            {
+                int DaysToSavingDate = (Saving.GoalDate.GetValueOrDefault().Date - DateTime.Today.Date).Days;
+                decimal? AmountOutstanding = Saving.SavingsGoal - Saving.CurrentBalance;
+
+                Saving.RegularSavingValue = AmountOutstanding / DaysToSavingDate;
+
+                return Saving.RegularSavingValue.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+            }
+
+            return "Please update values";
+        }
+
+        public DateTime CalculateSavingDate()
+        {
+            if(Saving.SavingsGoal != 0 && Saving.RegularSavingValue !=0)
+            {
+                decimal? BalanceLeft = Saving.SavingsGoal - (Saving.CurrentBalance ?? 0);
+                int NumberOfDays = (int)Math.Ceiling(BalanceLeft / Saving.RegularSavingValue ?? 0);
+
+                DateTime Today = DateTime.UtcNow;
+                Saving.GoalDate = Today.AddDays(NumberOfDays);
+            }
+
+            return Saving.GoalDate.GetValueOrDefault();
+        }
+
+    }
+    public class PickerClass
+    {        
+        public PickerClass(string name, string key) 
+        { 
+            this.Name = name;
+            this.Key = key;
+        }
+        public string Name { get; set; }
+        public string Key { get; set; }
     }
 }

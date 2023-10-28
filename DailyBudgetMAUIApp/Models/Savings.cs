@@ -1,37 +1,43 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+
 
 namespace DailyBudgetMAUIApp.Models
 {
-    public class Savings
+    public partial class Savings : ObservableObject
     {
-        [Key]
-        public int SavingID { get; set; }
-        public string? SavingsType { get; set; }
-        [Required]
-        [MaxLength(15)]
-        public string? SavingsName { get; set; }
-        [DataType(DataType.Currency)]
-        [DisplayName("Current Balance")]
-        public decimal? CurrentBalance { get; set; } = 0;
-        public DateTime LastUpdatedDate { get; set; } = DateTime.Now;
-        [DisplayName("When?")]
-        public DateTime? GoalDate { get; set; } = null;
-        [DataType(DataType.Currency)]
-        public decimal? LastUpdatedValue { get; set; }
-        public bool isSavingsClosed { get; set; } = false;
-        [DataType(DataType.Currency)]
-        [DisplayName("Saving Target")]
-        public decimal? SavingsGoal { get; set; } = 0;
-        public bool canExceedGoal { get; set; }
-        public bool isDailySaving { get; set; }
-        public bool isRegularSaving { get; set; }
-        [DisplayName("Savings Amount")]
-        public decimal? RegularSavingValue { get; set; }
-        public decimal? PeriodSavingValue { get; set; }
-        public bool isAutoComplete { get; set; }
-        public string? ddlSavingsPeriod { get; set; }
+        [ObservableProperty]
+        private int _savingID;
+        [ObservableProperty]
+        private string? _savingsType;
+        [ObservableProperty]
+        private string? _savingsName;
+        [ObservableProperty]
+        private decimal? _currentBalance  = 0;
+        [ObservableProperty]
+        private DateTime _lastUpdatedDate = DateTime.Now;
+        [ObservableProperty]
+        private DateTime? _goalDate = null;
+        [ObservableProperty]
+        private decimal? _lastUpdatedValue;
+        [ObservableProperty]
+        private bool _isSavingsClosed = false;
+        [ObservableProperty]
+        private decimal? _savingsGoal = 0;
+        [ObservableProperty]
+        private bool _canExceedGoal;
+        [ObservableProperty]
+        private bool _isDailySaving;
+        [ObservableProperty]
+        private bool _isRegularSaving;
+        [ObservableProperty]
+        private decimal? _regularSavingValue;
+        [ObservableProperty]
+        private decimal? _periodSavingValue;
+        [ObservableProperty]
+        private bool _isAutoComplete;
+        [ObservableProperty]
+        private string _ddlSavingsPeriod;
 
     }
 }

@@ -278,9 +278,9 @@ namespace DailyBudgetMAUIApp.DataServices
 
             foreach (Savings Saving in Budget.Savings)
             {
-                if (Saving.isRegularSaving)
+                if (Saving.IsRegularSaving)
                 {
-                    if (!Saving.isDailySaving)
+                    if (!Saving.IsDailySaving)
                     {
                         if (Saving.SavingsType == "TargetAmount")
                         {
@@ -396,17 +396,17 @@ namespace DailyBudgetMAUIApp.DataServices
 
             foreach (Savings Saving in Budget.Savings)
             {
-                if (Saving.isRegularSaving & Saving.SavingsType == "SavingsBuilder")
+                if (Saving.IsRegularSaving & Saving.SavingsType == "SavingsBuilder")
                 {
                     DailySavingOutgoing += Saving.RegularSavingValue ?? 0;
                     PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToPayDay);
                 }
-                else if (Saving.isRegularSaving)
+                else if (Saving.IsRegularSaving)
                 {
                     DailySavingOutgoing += Saving.RegularSavingValue ?? 0;
                     //check if goal date is before pay day
                     int DaysToSaving = (Saving.GoalDate.GetValueOrDefault().Date - DateTime.Today.Date).Days;
-                    if (DaysToSaving < DaysToPayDay & !Saving.canExceedGoal)
+                    if (DaysToSaving < DaysToPayDay & !Saving.CanExceedGoal)
                     {
                         PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToSaving);
                     }

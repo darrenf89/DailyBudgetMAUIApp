@@ -61,6 +61,32 @@
         <Setter Property="Stroke" Value="{DynamicResource Gray400}"/> 
     </Style>
 
+
+    <Style TargetType="Border" x:Key="StandardInputBorderOptionSelect">
+        <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
+        <Setter Property="Stroke" Value="{DynamicResource Gray900}"/>
+        <Setter Property="BackgroundColor" Value="{DynamicResource Light}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Padding" Value="20,10,0,10"/>
+        <Setter Property="Margin" Value="0,0,0,15"/>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource White}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource Gray200}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
     <Style TargetType="Border" x:Key="StandardInputBorder">
         <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
         <Setter Property="Stroke" Value="{DynamicResource Gray900}"/>
@@ -68,6 +94,22 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Padding" Value="20,10,0,10"/>
         <Setter Property="Margin" Value="0,0,0,15"/>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource White}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource Gray200}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
     </Style>
 
     <Style TargetType="Border" x:Key="PictureFrame150Circle">
@@ -497,7 +539,7 @@
     </Style>
 
     <Style TargetType="DatePicker">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+        <Setter Property="TextColor" Value="{StaticResource Gray900}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
         <Setter Property="FontSize" Value="14"/>
@@ -509,7 +551,7 @@
                     <VisualState x:Name="Normal" />
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+                            <Setter Property="TextColor" Value="{StaticResource White}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>

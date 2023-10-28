@@ -76,10 +76,10 @@
                         <Label Text="An outgoing must have a name." Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>
-            <Border Style="{DynamicResource AddEditTransContent}" x:Name="brdBillSelection">
+            <Border Style="{DynamicResource AddEditTransContent}" x:Name="brdBillSelection" Margin="20,5,20,25">
                 <VerticalStackLayout>
                     <VerticalStackLayout x:Name="SelectBillType">
-                        <Label Text="Do you want to set up a One-off or a Recurring Outgoing?" HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                        <Label Text="Do you want to set up a One-off or a Recurring Outgoing?" HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}"/>
                         <Label Margin="0,20,0,20" Text="Set up a Recurring Bill and we will make sure you are saving for it every day! Or a one-off if you are never going to have to pay for it again, sounds more like a Saving to me though!" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center"/>
                         <Grid x:Name="grdBillTypeButtons" ColumnDefinitions="*,6*,2*,6*,*" RowDefinitions="*" Margin="0,0,0,20">
                             <Button x:Name="btnOneoffBill" Style="{DynamicResource PrimaryInfoButton}" Text="One-off" TextColor="White" BackgroundColor="{StaticResource Primary}" Grid.Column="1" Grid.Row="0" Clicked="btnOneoffBill_Clicked"/>
@@ -91,7 +91,7 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
                                 </Image.Source>
                             </Image>
-                            <Label Text="Select your type of buget to continue" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            <Label Text="Select your type of outgoing you would like to add!" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="BillTypeSelected" IsVisible="False">

@@ -38,6 +38,10 @@ public partial class AddBill : ContentPage
             _vm.Bill = new Bills();
             _vm.Title = "Add a New Outgoing";
             btnAddBill.IsVisible = true;
+            if(_vm.BudgetID == 0)
+            {
+                _vm.BudgetID = App.DefaultBudgetID;
+            }
 
         }
         else

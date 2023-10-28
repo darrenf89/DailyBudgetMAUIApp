@@ -16,6 +16,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog);
         public Task<Budgets> GetBudgetDetailsAsync(int BudgetID, string Mode);
         public Task<DateTime> GetBudgetLastUpdatedAsync(int BudgetID);
+        public Task<DateTime> GetBudgetNextIncomePayDayAsync(int BudgetID);
         public Task<BudgetSettingValues> GetBudgetSettingsValues(int BudgetID);
         public Task<BudgetSettings> GetBudgetSettings(int BudgetID);
         public Task<Budgets> CreateNewBudget(string UserEmail);
@@ -32,7 +33,11 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string>UpdateBill(Bills Bill);
         public Task<string> PatchBill(int BillID, List<PatchDoc> PatchDoc);
         public Task<string> DeleteBill(int BillID);
-
+        public Task<Savings> GetSavingFromID(int SavingID);
+        public Task<string> SaveNewSaving(Savings Saving, int BudgetID);
+        public Task<string> UpdateSaving(Savings Saving);
+        public Task<string> PatchSaving(int SavingID, List<PatchDoc> PatchDoc);
+        public Task<string> DeleteSaving(int SavingID);
 
 
     }

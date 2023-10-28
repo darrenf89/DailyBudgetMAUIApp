@@ -260,6 +260,42 @@ namespace DailyBudgetMAUIApp.DataServices
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<DateTime> GetBudgetNextIncomePayDayAsync(int BudgetID)
+        {
+            Budgets Budget = new Budgets();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/nextincomepayday/{BudgetID}").Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
+
+                    return Budget.NextIncomePayday ?? DateTime.MinValue;
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Budget Details in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
 
         public async Task<DateTime> GetBudgetLastUpdatedAsync(int BudgetID)
         {
@@ -809,30 +845,30 @@ namespace DailyBudgetMAUIApp.DataServices
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
 
-                    if (response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
+                {
+
+                    using (JsonReader reader = new JsonTextReader(sr))
                     {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            Bill = serializer.Deserialize<Bills>(reader);
-                        }
-
-                        return Bill;
+                        Bill = serializer.Deserialize<Bills>(reader);
                     }
-                    else
+
+                    return Bill;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
                     {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
+                        error = serializer.Deserialize<ErrorClass>(reader);
                     }
+
+                    throw new Exception(error.ErrorMessage);
+                }
 
             }
             catch (Exception ex)
@@ -845,7 +881,6 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<string>SaveNewBill(Bills Bill, int BudgetID)
         {
-            UserDetailsModel UserModel = new();
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
@@ -880,7 +915,6 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<string>UpdateBill(Bills Bill)
         {
-            UserDetailsModel UserModel = new();
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
@@ -926,7 +960,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response =  _httpClient.PatchAsync($"{_url}/bills/updatebill/{BillID}", request).Result;
+                HttpResponseMessage response =  _httpClient.PatchAsync($"{_url}/bills/patchbill/{BillID}", request).Result;
                 string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
@@ -990,6 +1024,201 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<Savings> GetSavingFromID(int SavingID)
+        {
+            Savings Saving = new Savings();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/getsavingfromid/{SavingID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            Saving = serializer.Deserialize<Savings>(reader);
+                        }
+
+                        return Saving;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Saving in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> SaveNewSaving(Savings Saving, int BudgetID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Savings>(Saving, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/savings/savenewsaving/{BudgetID}", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to save a saving in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> UpdateSaving(Savings Saving)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Savings>(Saving, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/savings/updatesaving", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to update a Saving in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> PatchSaving(int SavingID, List<PatchDoc> PatchDoc)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PatchAsync($"{_url}/savings/patchsaving/{SavingID}", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to Patch Saving in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> DeleteSaving(int SavingID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/deletesaving/{SavingID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            return "OK";
+                        }
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Delete Saving in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
