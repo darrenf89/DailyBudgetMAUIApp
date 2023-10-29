@@ -33,7 +33,7 @@
             <VerticalStackLayout Margin="0,0,0,16">
                 <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Gray200}" IsVisible="{Binding Saving.SavingsName, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}"/>
                 <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Tertiary}" IsVisible="{Binding Saving.SavingsName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"/>
-                <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorSavingsName" HorizontalOptions="Center">
+                <HorizontalStackLayout IsVisible="false" Margin="10,2,0,0" x:Name="validatorSavingsName" HorizontalOptions="Center">
                     <Image>
                         <Image.Source>
                             <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
@@ -47,18 +47,20 @@
                     <VerticalStackLayout x:Name="SelectSavingType">
                         <Label Text="What type of saving?" HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}"/>
                         <Label Margin="0,20,0,20" Text="Let us do the work for you. Set up a Saving goal and we will figure everything else out, well apart from what you should wear!" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center"/>
-                        <Grid x:Name="grdSavingTypeButtons" ColumnDefinitions="*,6*,2*,6*,*" RowDefinitions="*" Margin="0,0,0,20">
-                            <Button x:Name="btnOneOffSaving" Style="{DynamicResource PrimaryInfoButton}" Text="Ongoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Grid.Column="1" Grid.Row="0" Clicked="btnOngoingSaving_Clicked"/>
-                            <Button x:Name="btnEnvelopeSaving" Style="{DynamicResource PrimaryInfoButton}" Text="Envelope" TextColor="White" BackgroundColor="{StaticResource Tertiary}" Grid.Column="3" Grid.Row="0" Clicked="btnEnvelopeSaving_Clicked"/>
-                        </Grid>
-                        <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorSavingRecurring" HorizontalOptions="Center">
-                            <Image>
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
-                                </Image.Source>
-                            </Image>
-                            <Label Text="Select your type of saving you would like to add" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
-                        </HorizontalStackLayout>
+                        <VerticalStackLayout Margin="0,0,0,20">
+                            <Grid x:Name="grdSavingTypeButtons" ColumnDefinitions="*,6*,2*,6*,*" RowDefinitions="*" >
+                                <Button x:Name="btnOneOffSaving" Style="{DynamicResource PrimaryInfoButton}" Text="Ongoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Grid.Column="1" Grid.Row="0" Clicked="btnOngoingSaving_Clicked"/>
+                                <Button x:Name="btnEnvelopeSaving" Style="{DynamicResource PrimaryInfoButton}" Text="Envelope" TextColor="White" BackgroundColor="{StaticResource Tertiary}" Grid.Column="3" Grid.Row="0" Clicked="btnEnvelopeSaving_Clicked"/>
+                            </Grid>
+                            <HorizontalStackLayout IsVisible="false" Margin="10,2,0,0" x:Name="validatorSavingRecurring" HorizontalOptions="Center">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="Select your type of saving you would like to add" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="SavingTypeSelected" IsVisible="False">
                         <Label HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}" x:Name="lblSelectedSavingTitle"/>
@@ -96,7 +98,7 @@
                                 </VerticalStackLayout>
                             </Grid>
                         </Border>
-                        <HorizontalStackLayout IsVisible="false" Margin="5,0,0,0" x:Name="validatorSavingType">
+                        <HorizontalStackLayout IsVisible="false" Margin="10,5,0,0" x:Name="validatorSavingType">
                             <Image>
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
@@ -115,7 +117,7 @@
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White" x:Name="brdSavingTarget">
                             <handlers:BorderlessEntry TextColor="{DynamicResource Danger}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entSavingTarget" TextChanged="SavingTarget_Changed" Keyboard="Numeric" />
                         </Border>
-                        <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorSavingTarget">
+                        <HorizontalStackLayout IsVisible="false" Margin="10,5,0,0" x:Name="validatorSavingTarget">
                             <Image>
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
@@ -129,7 +131,7 @@
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White" x:Name="brdCurrentBalance">
                             <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entCurrentBalance" TextChanged="CurrentBalance_Changed" Keyboard="Numeric" />
                         </Border>
-                        <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorCurrentBalance">
+                        <HorizontalStackLayout IsVisible="false" Margin="10,5,0,0" x:Name="validatorCurrentBalance">
                             <Image>
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
@@ -143,7 +145,7 @@
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White" x:Name="brdGoalDate">
                             <DatePicker CharacterSpacing="1" Margin="20,0,0,0" x:Name="dtpckGoalDate" Date="{Binding Saving.GoalDate}" DateSelected="dtpckGoalDate_DateSelected"/>
                         </Border>
-                        <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorGoalDate">
+                        <HorizontalStackLayout IsVisible="false" Margin="10,5,0,0" x:Name="validatorGoalDate">
                             <Image>
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
@@ -162,7 +164,7 @@
                                 <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrSavingPeriod"  Title="Select a Period" ItemsSource="{Binding DropDownSavingPeriod}" ItemDisplayBinding="{Binding Name}"  SelectedIndexChanged="pckrSavingPeriod_SelectedIndexChanged"/>
                             </Border>   
                         </Grid>
-                        <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorSavingAmount">
+                        <HorizontalStackLayout IsVisible="false" Margin="10,5,0,0" x:Name="validatorSavingAmount">
                             <Image>
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
@@ -172,12 +174,12 @@
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="5,10,0,5" x:Name="hslCanExceedGoal">
-                        <CheckBox x:Name="chbxCanExceedGoal" IsChecked="{Binding CanExceedGoal}" />
-                        <Label Text="Complete and close Savings when Goal Reached?" FontSize="Caption" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
+                        <CheckBox x:Name="chbxCanExceedGoal" IsChecked="{Binding Saving.CanExceedGoal}" />
+                        <Label Text="Don't allow Goal Value to be exceeded?" FontSize="Caption" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
                     </HorizontalStackLayout>
                     <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="5,10,0,5" x:Name="hslIsAutoComplete">
-                        <CheckBox x:Name="chbxIsAutoComplete" IsChecked="{Binding IsAutoComplete}" />
-                        <Label Text="Don't allow Goal Value to be exceeded?" FontSize="Caption" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
+                        <CheckBox x:Name="chbxIsAutoComplete" IsChecked="{Binding Saving.IsAutoComplete}" />
+                        <Label Text="Complete and close Savings when Goal Reached?" FontSize="Caption" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>

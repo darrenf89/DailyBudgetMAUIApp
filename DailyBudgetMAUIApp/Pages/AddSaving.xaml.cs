@@ -38,7 +38,6 @@ public partial class AddSaving : ContentPage
             _vm.Saving = new Savings();
             _vm.Title = "Add a New Saving";
             btnAddSaving.IsVisible = true;
-
         }
         else
         {
@@ -53,7 +52,7 @@ public partial class AddSaving : ContentPage
 
                 btnOngoingSaving_Clicked(new Object(), new EventArgs());
 
-                if(_vm.Saving.SavingsType == "TargetDate")
+                if (_vm.Saving.SavingsType == "TargetDate")
                 {
                     UpdateSelectedOption("TargetDate");
                 }
@@ -102,27 +101,39 @@ public partial class AddSaving : ContentPage
 
         _vm.BudgetNextPayDate = _ds.GetBudgetNextIncomePayDayAsync(_vm.BudgetID).Result;
         _vm.BudgetDaysToNextPay = (_vm.BudgetNextPayDate.Date - DateTime.Now.Date).Days;
-
-        if (_vm.SavingID == 0)
-        {
-            UpdateDisplaySelection("TargetAmount");
-            UpdateDisplaySelection("");
-        }
+        _vm.BudgetDaysBetweenPay = _ds.GetBudgetDaysBetweenPayDay(_vm.BudgetID).Result;
 
     }
 
     private async void SaveSaving_Clicked(object sender, EventArgs e)
     {
-
+        if (ValidateSavingDetails())
+        {
+            if(_vm.SavingID == 0)
+            {
+                _vm.AddSaving();
+            }
+            else
+            {
+                _vm.UpdateSaving();
+            }
+        }
     }
 
     private async void ResetSaving_Clicked(object sender, EventArgs e)
     {
-
+        bool result = await DisplayAlert("Savings Reset", "Are you sure you want to Reset " + _vm.Saving.SavingsName, "Yes, continue", "Cancel");
+        if (result)
+        {
+            UpdateDisplaySelection("");
+            UpdateSelectedOption("");
+        }
     }
 
     private void btnOngoingSaving_Clicked(object sender, EventArgs e)
     {
+        ClearAllValidators();
+
         _vm.SavingRecurringText = "Ongoing";
         _vm.Saving.IsRegularSaving = true;
 
@@ -136,6 +147,8 @@ public partial class AddSaving : ContentPage
     }
     private void btnEnvelopeSaving_Clicked(object sender, EventArgs e)
     {
+        ClearAllValidators();
+
         _vm.SavingRecurringText = "Envelope";
         _vm.Saving.IsRegularSaving = false;
         UpdateDisplaySelection("Envelope");
@@ -158,6 +171,8 @@ public partial class AddSaving : ContentPage
 
     private void UpdateSelectedOption(string option)
     {
+        ClearAllValidators();
+
         Application.Current.Resources.TryGetValue("Success", out var Success);
         Application.Current.Resources.TryGetValue("Light", out var Light);
         Application.Current.Resources.TryGetValue("White", out var White);
@@ -245,6 +260,8 @@ public partial class AddSaving : ContentPage
 
     private void UpdateDisplaySelection(string option)
     {
+        ClearAllValidators();
+
         if (option == "TargetDate")
         {           
 
@@ -264,10 +281,10 @@ public partial class AddSaving : ContentPage
             _vm.Saving.IsDailySaving = true;
             _vm.Saving.DdlSavingsPeriod = "PerDay";
             chbxIsAutoComplete.IsChecked = false;
-            pckrSavingPeriod.SelectedIndex = 1;
+            pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
 
-            hslIsAutoComplete.IsVisible = true;
-            hslCanExceedGoal.IsVisible = false;
+            hslIsAutoComplete.IsVisible = false;
+            hslCanExceedGoal.IsVisible = true;
 
             entSavingTarget.IsEnabled = true;
             entCurrentBalance.IsEnabled = true;
@@ -300,7 +317,7 @@ public partial class AddSaving : ContentPage
             hslIsAutoComplete.IsVisible = false;
             hslCanExceedGoal.IsVisible = false;
 
-            pckrSavingPeriod.SelectedIndex = 1;
+            pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
 
             entSavingTarget.IsEnabled = true;
             entCurrentBalance.IsEnabled = true;
@@ -340,12 +357,12 @@ public partial class AddSaving : ContentPage
 
             if(_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
             {
-                pckrSavingPeriod.SelectedIndex = 0;
+                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
             }
             else
             {
                 _vm.Saving.DdlSavingsPeriod = "PerDay";
-                pckrSavingPeriod.SelectedIndex = 1;
+                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
             }
             
 
@@ -379,7 +396,7 @@ public partial class AddSaving : ContentPage
             vslGoalDate.IsVisible = false;
             vslSavingAmount.IsVisible = true;
 
-            pckrSavingPeriod.SelectedIndex = 0;
+            pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
 
             hslIsAutoComplete.IsVisible = false;
             hslCanExceedGoal.IsVisible = false;
@@ -399,7 +416,7 @@ public partial class AddSaving : ContentPage
             _vm.Saving.GoalDate = _vm.BudgetNextPayDate;
             _vm.Saving.SavingsGoal = 0;
             chbxIsAutoComplete.IsChecked = false;
-            chbxCanExceedGoal.IsChecked = false;
+            chbxCanExceedGoal.IsChecked = true;
             _vm.Saving.IsDailySaving = false;
             _vm.Saving.DdlSavingsPeriod = "PerPayPeriod";
         }
@@ -408,6 +425,10 @@ public partial class AddSaving : ContentPage
             SelectSavingType.IsVisible = true;
             SavingTypeSelected.IsVisible = false;
             brdSavingDetails.IsVisible = false;
+            vslSavingRecurringTypeSelected.IsVisible = false;
+
+            _vm.SavingRecurringText = "";
+            _vm.SavingTypeText = "";
 
         }
     }
@@ -480,17 +501,24 @@ public partial class AddSaving : ContentPage
 
     private void btnUpdateSaving_Clicked(object sender, EventArgs e)
     {
-
+        if(ValidateSavingDetails())
+        {
+            _vm.UpdateSaving();
+        }
     }
 
     private void btnAddSaving_Clicked(object sender, EventArgs e)
     {
-
+        if (ValidateSavingDetails())
+        {
+            _vm.AddSaving();
+        }
     }
     private void RecalculateValues(string sender)
     {
+        ClearAllValidators();
 
-        if(_vm.Saving.SavingsType == "TargetDate")
+        if (_vm.Saving.SavingsType == "TargetDate")
         {
             if(sender != "entSavingAmount")
             {
@@ -504,5 +532,166 @@ public partial class AddSaving : ContentPage
                 dtpckGoalDate.Date = _vm.CalculateSavingDate();
             }
         }
+    }
+
+    private bool ValidateSavingDetails()
+    {
+        bool IsValid = true;
+
+        if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
+        {
+            IsValid = false;
+            validatorSavingsName.IsVisible = true;
+        }
+        else
+        {
+            validatorSavingsName.IsVisible = false;
+        }
+
+        if(_vm.SavingRecurringText == "")
+        {
+            IsValid = false;
+            validatorSavingRecurring.IsVisible = true;
+        }
+        else
+        {
+            validatorSavingRecurring.IsVisible = false;
+        }
+        
+        if(_vm.SavingRecurringText == "Ongoing")
+        {
+            if (_vm.SavingTypeText == "")
+            {
+                IsValid = false;
+                validatorSavingType.IsVisible = true;
+            }
+            else
+            {
+                validatorSavingType.IsVisible = false;
+            }
+
+            if (_vm.SavingTypeText == "TargetDate")
+            {
+                if (_vm.Saving.SavingsGoal == null || _vm.Saving.SavingsGoal == 0)
+                {
+                    IsValid = false;
+                    validatorSavingTarget.IsVisible = true;
+                }
+                else
+                {
+                    validatorSavingTarget.IsVisible = false;
+                }
+
+                if(_vm.Saving.CurrentBalance > _vm.Saving.SavingsGoal)
+                {
+                    IsValid = false;
+                    validatorCurrentBalance.IsVisible = true;
+                }
+                else
+                {
+                    validatorCurrentBalance.IsVisible = false;
+                }
+
+                if (DateTime.UtcNow.Date > _vm.Saving.GoalDate)
+                {
+                    IsValid = false;
+                    validatorGoalDate.IsVisible = true;
+                }
+                else
+                {
+                    validatorGoalDate.IsVisible = false;
+                }
+
+                if (_vm.Saving.PeriodSavingValue == 0 || _vm.Saving.RegularSavingValue == 0)
+                {
+                    IsValid = false;
+                    validatorSavingAmount.IsVisible = true;
+                }
+                else
+                {
+                    validatorSavingAmount.IsVisible = false;
+                }
+            }
+            else if (_vm.SavingTypeText == "SavingsBuilder")
+            {
+                if (_vm.Saving.PeriodSavingValue == 0 || _vm.Saving.RegularSavingValue == 0)
+                {
+                    IsValid = false;
+                    validatorSavingAmount.IsVisible = true;
+                }
+                else
+                {
+                    validatorSavingAmount.IsVisible = false;
+                }
+            }
+            else if (_vm.SavingTypeText == "TargetAmount")
+            {
+                if (_vm.Saving.SavingsGoal == null || _vm.Saving.SavingsGoal == 0)
+                {
+                    IsValid = false;
+                    validatorSavingTarget.IsVisible = true;
+                }
+                else
+                {
+                    validatorSavingTarget.IsVisible = false;
+                }
+
+                if (_vm.Saving.CurrentBalance > _vm.Saving.SavingsGoal)
+                {
+                    IsValid = false;
+                    validatorCurrentBalance.IsVisible = true;
+                }
+                else
+                {
+                    validatorCurrentBalance.IsVisible = false;
+                }
+
+                if (DateTime.UtcNow.Date > _vm.Saving.GoalDate)
+                {
+                    IsValid = false;
+                    validatorGoalDate.IsVisible = true;
+                }
+                else
+                {
+                    validatorGoalDate.IsVisible = false;
+                }
+
+                if (_vm.Saving.PeriodSavingValue == 0 || _vm.Saving.RegularSavingValue == 0)
+                {
+                    IsValid = false;
+                    validatorSavingAmount.IsVisible = true;
+                }
+                else
+                {
+                    validatorSavingAmount.IsVisible = false;
+                }
+            }
+        }
+        else
+        {
+            if (_vm.Saving.PeriodSavingValue == 0 || _vm.Saving.RegularSavingValue == 0)
+            {
+                IsValid = false;
+                validatorSavingAmount.IsVisible = true;
+            }
+            else
+            {
+                validatorSavingAmount.IsVisible = false;
+            }
+        }
+
+        _vm.IsPageValid = IsValid;
+        return IsValid;
+    }
+
+    private void ClearAllValidators()
+    {
+        validatorSavingsName.IsVisible = false;
+        validatorSavingRecurring.IsVisible = false;
+        validatorSavingType.IsVisible = false;
+        validatorSavingAmount.IsVisible = false;
+        validatorGoalDate.IsVisible = false;
+        validatorCurrentBalance.IsVisible = false;
+        validatorSavingTarget.IsVisible = false;
     }
 }

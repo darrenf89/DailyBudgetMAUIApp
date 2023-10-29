@@ -297,6 +297,43 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<int> GetBudgetDaysBetweenPayDay(int BudgetID)
+        {
+            Budgets Budget = new Budgets();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/daystopaydaynext/{BudgetID}").Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    
+                    Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
+
+                    return Budget.AproxDaysBetweenPay.GetValueOrDefault();
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Budget Details in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
         public async Task<DateTime> GetBudgetLastUpdatedAsync(int BudgetID)
         {
             Budgets Budget = new Budgets();

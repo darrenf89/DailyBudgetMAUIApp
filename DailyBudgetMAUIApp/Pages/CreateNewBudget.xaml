@@ -345,7 +345,7 @@
                     <ListView ItemsSource="{Binding Budget.Bills}" Margin="10,0,20,0" SeparatorVisibility="None" x:Name="LVOutgoings" RowHeight="130" SelectionMode="None" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <ViewCell Appearing="ViewCell_Appearing">
+                                <ViewCell Appearing="OutgoingViewCell_Appearing">
                                     <VerticalStackLayout Padding="5,10,5,15">
                                         <BoxView HeightRequest="4" Margin="0" Color="{DynamicResource Success}" />
                                         <Border BackgroundColor="Transparent">
@@ -472,7 +472,105 @@
                 </Grid>
             </VerticalStackLayout>
             <VerticalStackLayout x:Name="SavingsDetails" IsVisible="false">
-
+                <VerticalStackLayout x:Name="vslSavingList" Margin="0,0,0,10">
+                    <HorizontalStackLayout Padding="5,0,0,2">
+                        <Label Text="Current Savings" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                    </HorizontalStackLayout>
+                    <Label Text="Edit or delete your previously saved savings" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                    <ListView ItemsSource="{Binding Budget.Savings}" Margin="10,0,20,0" SeparatorVisibility="None" x:Name="LVSavings" RowHeight="130" SelectionMode="None" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell Appearing="SavingsViewCell_Appearing">
+                                    <VerticalStackLayout Padding="5,10,5,15">
+                                        <BoxView HeightRequest="4" Margin="0" Color="{DynamicResource Success}" />
+                                        <Border BackgroundColor="Transparent">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="5"/>
+                                                    <RowDefinition Height="25"/>
+                                                    <RowDefinition Height="20"/>
+                                                    <RowDefinition Height="25"/>
+                                                    <RowDefinition Height="25"/>
+                                                    <RowDefinition Height="5"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="2*"/>
+                                                    <ColumnDefinition Width="7*"/>
+                                                    <ColumnDefinition Width="10"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Border Style="{StaticResource PictureFrame40}" Margin="0,5,0,0" Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" VerticalOptions="Start" HorizontalOptions="Center">
+                                                    <Image Source="savingicon.png" Aspect="AspectFill" />
+                                                </Border>
+                                                <HorizontalStackLayout Grid.Column="1" Grid.Row="1" VerticalOptions="Center" >
+                                                    <Image Background="{DynamicResource White}" IsVisible="{Binding IsRegularSaving}" Margin="0,0,4,0" VerticalOptions="Center">
+                                                        <Image.Source VerticalOptions="Center">
+                                                            <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Refresh}" Size="16" Color="{DynamicResource Info}"/>
+                                                        </Image.Source>
+                                                    </Image>
+                                                    <Label TextColor="{DynamicResource Success}" x:Name="lblSavingsheader" VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+                                                <HorizontalStackLayout Grid.Column="1" Grid.Row="2">
+                                                    <Image Background="{DynamicResource White}" IsVisible="False" Margin="0,0,4,0" VerticalOptions="Center" x:Name="imgTargetDate">
+                                                        <Image.Source VerticalOptions="Center">
+                                                            <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Calendar_month}" Size="16" Color="{DynamicResource Info}"/>
+                                                        </Image.Source>
+                                                    </Image>
+                                                    <Image Background="{DynamicResource White}" IsVisible="False" Margin="0,0,4,0" VerticalOptions="Center" x:Name="imgTargetAmount">
+                                                        <Image.Source VerticalOptions="Center">
+                                                            <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Currency_exchange}" Size="16" Color="{DynamicResource Info}"/>
+                                                        </Image.Source>
+                                                    </Image>
+                                                    <Image Background="{DynamicResource White}" IsVisible="False" Margin="0,0,4,0" VerticalOptions="Center" x:Name="imgSavingsBuilder">
+                                                        <Image.Source VerticalOptions="Center">
+                                                            <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Construction}" Size="16" Color="{DynamicResource Info}"/>
+                                                        </Image.Source>
+                                                    </Image>
+                                                    <Image Background="{DynamicResource White}" IsVisible="False" Margin="0,0,4,0" VerticalOptions="Center" x:Name="imgEnvelope">
+                                                        <Image.Source VerticalOptions="Center">
+                                                            <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Email}" Size="16" Color="{DynamicResource Info}"/>
+                                                        </Image.Source>
+                                                    </Image>
+                                                    <Label Text="{Binding SavingsName}" x:Name="lblSavingsName"  VerticalOptions="Center" FontAttributes="Bold" TextColor="{DynamicResource Gray600}"/>
+                                                </HorizontalStackLayout>
+                                                <HorizontalStackLayout Grid.Column="1" Grid.Row="3" VerticalOptions="End">
+                                                    <Label TextColor="{DynamicResource Info}" x:Name="lblSavingCurrent" FontSize="Caption" IsVisible="False"/>
+                                                    <Label TextColor="{DynamicResource Gray300}" x:Name="lblSavingTarget" FontSize="Caption" IsVisible="False"/>
+                                                    <Label TextColor="{DynamicResource Gray600}" x:Name="lblSavingRegValues" FontSize="Caption" FontAttributes="Bold" IsVisible="False"/>
+                                                </HorizontalStackLayout>
+                                                <HorizontalStackLayout Grid.Column="1" Grid.Row="4" VerticalOptions="Center">
+                                                    <HorizontalStackLayout Margin="0,0,20,0" HorizontalOptions="End" VerticalOptions="Center">
+                                                        <Image Background="{DynamicResource White}">
+                                                            <Image.Source>
+                                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
+                                                            </Image.Source>
+                                                        </Image>
+                                                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                                        <HorizontalStackLayout.GestureRecognizers>
+                                                            <TapGestureRecognizer Tapped="EditBudgetSavings_Tapped" CommandParameter="{Binding .}"/>
+                                                        </HorizontalStackLayout.GestureRecognizers>
+                                                    </HorizontalStackLayout>
+                                                    <HorizontalStackLayout Margin="0" HorizontalOptions="End" VerticalOptions="Center">
+                                                        <Image Background="{DynamicResource White}">
+                                                            <Image.Source>
+                                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete}" Size="12" Color="{DynamicResource Info}"/>
+                                                            </Image.Source>
+                                                        </Image>
+                                                        <Label Text="Delete" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                                        <HorizontalStackLayout.GestureRecognizers>
+                                                            <TapGestureRecognizer Tapped="DeleteBudgetSavings_Tapped" CommandParameter="{Binding .}"/>
+                                                        </HorizontalStackLayout.GestureRecognizers>
+                                                    </HorizontalStackLayout>
+                                                </HorizontalStackLayout>
+                                            </Grid>
+                                        </Border>
+                                    </VerticalStackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </VerticalStackLayout>
+                
+                
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0,0,0,5">

@@ -32,6 +32,10 @@ public partial class AddBill : ContentPage
 
     async protected override void OnAppearing()
     {
+        if (_vm.BudgetID == 0)
+        {
+            _vm.BudgetID = App.DefaultBudgetID;
+        }
 
         if (_vm.BillID == 0)
         {
@@ -100,6 +104,8 @@ public partial class AddBill : ContentPage
 
     private void btnRecurringBill_Clicked(object sender, EventArgs e)
     {
+        ClearAllValidators();
+
         _vm.Bill.IsRecuring = true;
 
         SelectBillType.IsVisible = false;
@@ -116,6 +122,8 @@ public partial class AddBill : ContentPage
     }
     private void btnOneoffBill_Clicked(object sender, EventArgs e)
     {
+        ClearAllValidators();
+
         _vm.Bill.IsRecuring = false;
 
         SelectBillType.IsVisible = false;
@@ -133,6 +141,8 @@ public partial class AddBill : ContentPage
 
     void AmountDue_Changed(object sender, TextChangedEventArgs e)
     {
+        ClearAllValidators();
+
         decimal AmountDue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
         entAmountDue.CursorPosition = _pt.FindCurrencyCursorPosition(entAmountDue.Text);
@@ -143,6 +153,8 @@ public partial class AddBill : ContentPage
 
     void CurrentSaved_Changed(object sender, TextChangedEventArgs e)
     {
+        ClearAllValidators();
+
         decimal CurrentSaved = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
         entCurrentSaved.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrentSaved.Text);
@@ -153,6 +165,8 @@ public partial class AddBill : ContentPage
 
     private void dtpckBillDueDate_DateSelected(object sender, DateChangedEventArgs e)
     {
+        ClearAllValidators();
+
         lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
     }
 
@@ -168,6 +182,9 @@ public partial class AddBill : ContentPage
 
     private void UpdateSelectedOption(string option)
     {
+
+        ClearAllValidators();
+
         Application.Current.Resources.TryGetValue("Success", out var Success);
         Application.Current.Resources.TryGetValue("Light", out var Light);
         Application.Current.Resources.TryGetValue("White", out var White);
@@ -324,7 +341,7 @@ public partial class AddBill : ContentPage
 
     private async void ResetBill_Clicked(object sender, EventArgs e)
     {
-        bool result = await DisplayAlert("Bill", "Are you sure you want to Reset " + _vm.Bill.BillName , "Yes, continue", "Cancel");
+        bool result = await DisplayAlert("Outgoing Reset", "Are you sure you want to Reset " + _vm.Bill.BillName , "Yes, continue", "Cancel");
         if (result)
         {
             SelectBillType.IsVisible = true;
@@ -447,5 +464,17 @@ public partial class AddBill : ContentPage
         _vm.IsPageValid = IsValid;
         return IsValid;
     }
+    private void ClearAllValidators()
+    {
+        validatorOfEveryMonthDuration.IsVisible = false;
+        validatorEveryNthDuration.IsVisible = false;
+        validatorBillType.IsVisible = false;
+        validatorBillRecurring.IsVisible = false;
+        validatorBillBalance.IsVisible = false;
+        validatorBillAmount.IsVisible = false;
+        validatorBillDue.IsVisible = false;
+        validatorBillName.IsVisible = false;
 
+        _vm.IsPageValid = true;
+    }
 }

@@ -73,6 +73,7 @@
                         </Grid.RowDefinitions>
                         <handlers:BorderlessEntry 
                             Margin="0,15,0,0"
+                            Loaded="txtReturnData_Loaded"   
                             HorizontalOptions="Center"
                             WidthRequest="{Binding EntryWidth}"
                             Text="{Binding ReturnData}"

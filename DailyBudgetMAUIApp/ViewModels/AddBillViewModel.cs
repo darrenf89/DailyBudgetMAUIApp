@@ -50,11 +50,19 @@ namespace DailyBudgetMAUIApp.ViewModels
                 string SuccessCheck = _ds.SaveNewBill(Bill,BudgetID).Result;
                 if(SuccessCheck == "OK")
                 {
+  
                     var stack = Application.Current.MainPage.Navigation.NavigationStack;
                     int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
-                    if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                    if (count >= 2)
                     {
-                        await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                        if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                        {
+                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                        }
+                        else
+                        {
+                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        }
                     }
                     else
                     {
@@ -82,9 +90,16 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var stack = Application.Current.MainPage.Navigation.NavigationStack;
                     int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
-                    if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                    if (count >= 2)
                     {
-                        await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                        if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                        {
+                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                        }
+                        else
+                        {
+                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        }
                     }
                     else
                     {

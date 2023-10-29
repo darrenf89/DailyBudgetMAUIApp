@@ -801,7 +801,7 @@ public partial class CreateNewBudget : ContentPage
         await Shell.Current.GoToAsync($"{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={Bill.BillID}");
     }
 
-    private void ViewCell_Appearing(object sender, EventArgs e)
+    private void OutgoingViewCell_Appearing(object sender, EventArgs e)
     {
         var vcBill = (ViewCell)sender;
         var Bill = (Bills)vcBill.BindingContext;        
@@ -825,6 +825,100 @@ public partial class CreateNewBudget : ContentPage
         else
         {
             Header.Text = "One-off Outgoing Added";
+        }
+    }
+
+    private async void EditBudgetSavings_Tapped(object sender, TappedEventArgs e)
+    {
+        var Saving = (Savings)e.Parameter;
+
+        await Shell.Current.GoToAsync($"{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={Saving.SavingID}");
+    }
+
+    private async void DeleteBudgetSavings_Tapped(object sender, TappedEventArgs e)
+    {
+        var Saving = (Savings)e.Parameter;
+
+        bool result = await DisplayAlert("Savings", "Are you sure you want to delete your Saving " + Saving.SavingsName.ToString(), "Yes, continue", "Cancel");
+        if (result)
+        {
+            string Result = _ds.DeleteSaving(Saving.SavingID).Result;
+            if (Result == "OK")
+            {
+                _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+            }
+        }
+    }
+
+    private void SavingsViewCell_Appearing(object sender, EventArgs e)
+    {
+        var vcSaving = (ViewCell)sender;
+        var Saving = (Savings)vcSaving.BindingContext;
+
+        Label lblSavingsheader = (Label)vcSaving.FindByName("lblSavingsheader");
+        Label lblSavingCurrent = (Label)vcSaving.FindByName("lblSavingCurrent");
+        Label lblSavingTarget = (Label)vcSaving.FindByName("lblSavingTarget");
+        Label lblSavingRegValues = (Label)vcSaving.FindByName("lblSavingRegValues");
+
+        if(Saving.SavingsType == "TargetDate")
+        {
+            Image imgTargetDate = (Image)vcSaving.FindByName("imgTargetDate");
+            imgTargetDate.IsVisible = true;
+
+            lblSavingsheader.Text = Saving.GoalDate.GetValueOrDefault().ToString("dd MMM yy") + " Savings Goal Added";
+            lblSavingCurrent.Text = String.Format("{0:c} / ", Saving.CurrentBalance);
+            lblSavingTarget.Text = String.Format("{0:c}    ", Saving.SavingsGoal);
+            lblSavingRegValues.Text = String.Format("{0:c}", Saving.RegularSavingValue);
+
+            lblSavingCurrent.IsVisible = true;
+            lblSavingTarget.IsVisible = true;
+            lblSavingRegValues.IsVisible = true;
+
+        }
+        else if (Saving.SavingsType == "TargetAmount")
+        {
+            Image imgTargetAmount = (Image)vcSaving.FindByName("imgTargetAmount");
+            imgTargetAmount.IsVisible = true;
+
+            lblSavingsheader.Text = String.Format("{0:c}", Saving.SavingsGoal) + " Savings Goal Added";
+            lblSavingCurrent.Text = String.Format("{0:c} / ", Saving.CurrentBalance);
+            lblSavingTarget.Text = String.Format("{0:c}    ", Saving.SavingsGoal);
+            if(Saving.IsDailySaving)
+            {
+                lblSavingRegValues.Text = String.Format("{0:c}", Saving.RegularSavingValue);
+            }
+            else
+            {
+                lblSavingRegValues.Text = String.Format("{0:c}", Saving.PeriodSavingValue);
+            }
+
+            lblSavingCurrent.IsVisible = true;
+            lblSavingTarget.IsVisible = true;
+            lblSavingRegValues.IsVisible = true;
+
+        }
+        else if (Saving.SavingsType == "SavingsBuilder")
+        {
+            Image imgSavingsBuilder = (Image)vcSaving.FindByName("imgSavingsBuilder");
+            imgSavingsBuilder.IsVisible = true;
+
+            lblSavingsheader.Text = "Builder Savings Goal Added";
+            lblSavingCurrent.Text = String.Format("{0:c}    ", Saving.CurrentBalance);
+            lblSavingRegValues.Text = String.Format("{0:c}", Saving.RegularSavingValue);
+
+            lblSavingCurrent.IsVisible = true;
+            lblSavingRegValues.IsVisible = true;
+        }
+        else
+        {
+            Image imgEnvelope = (Image)vcSaving.FindByName("imgEnvelope");
+            imgEnvelope.IsVisible = true;
+            lblSavingsheader.Text = String.Format("{0:c}", Saving.PeriodSavingValue) + " Pay Period Saving Added";
+            lblSavingCurrent.Text = String.Format("{0:c}    ", Saving.CurrentBalance);
+            lblSavingRegValues.Text = String.Format("{0:c}", Saving.PeriodSavingValue);
+
+            lblSavingCurrent.IsVisible = true;
+            lblSavingRegValues.IsVisible = true;
         }
     }
 

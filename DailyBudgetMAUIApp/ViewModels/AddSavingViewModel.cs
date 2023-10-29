@@ -32,7 +32,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         public string SavingRecurringText { get; set; } = "";
         public DateTime BudgetNextPayDate { get; set; }
         public int BudgetDaysToNextPay { get; set; } = 0;
+        public int BudgetDaysBetweenPay { get; set; } = 30;
         public List<PickerClass> DropDownSavingPeriod { get; set; } = new List<PickerClass>();
+
 
         public AddSavingViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -41,11 +43,87 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             Saving = new Savings();
 
-            PickerClass PerPeriod = new PickerClass("Pay Day", "PerPeriod");
-            DropDownSavingPeriod.Add(PerPeriod);
+            PickerClass PerPayPeriod = new PickerClass("Pay Day", "PerPayPeriod");
+            DropDownSavingPeriod.Add(PerPayPeriod);
             PickerClass PerDay = new PickerClass("Every Day", "PerDay");
             DropDownSavingPeriod.Add(PerDay);
 
+        }
+
+        public async void AddSaving()
+        {
+            try
+            {
+                Saving.LastUpdatedValue = Saving.CurrentBalance;
+                string SuccessCheck = _ds.SaveNewSaving(Saving, BudgetID).Result;
+                if (SuccessCheck == "OK")
+                {
+                    var stack = Application.Current.MainPage.Navigation.NavigationStack;
+                    int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
+                    if (count >= 2)
+                    {
+                        if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                        {
+                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                        }
+                        else
+                        {
+                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        }
+                    }
+                    else
+                    {
+                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorLog Error = _pt.HandleCatchedException(ex, "AddSaving", "AddSaving").Result;
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });
+            }
+        }
+
+        public async void UpdateSaving()
+        {
+            try
+            {
+                string SuccessCheck = _ds.UpdateSaving(Saving).Result;
+                if (SuccessCheck == "OK")
+                {
+                    var stack = Application.Current.MainPage.Navigation.NavigationStack;
+                    int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
+                    if (count >= 2)
+                    {
+                        if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                        {
+                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                        }
+                        else
+                        {
+                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        }
+                    }
+                    else
+                    {
+                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorLog Error = _pt.HandleCatchedException(ex, "AddSaving", "UpdateSaving").Result;
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });
+            }
         }
 
         [ICommand]
@@ -95,11 +173,24 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             if(Saving.SavingsGoal != 0 && Saving.RegularSavingValue !=0)
             {
-                decimal? BalanceLeft = Saving.SavingsGoal - (Saving.CurrentBalance ?? 0);
-                int NumberOfDays = (int)Math.Ceiling(BalanceLeft / Saving.RegularSavingValue ?? 0);
+                if(Saving.DdlSavingsPeriod == "PerDay")
+                {
+                    decimal? BalanceLeft = Saving.SavingsGoal - (Saving.CurrentBalance ?? 0);
+                    int NumberOfDays = (int)Math.Ceiling(BalanceLeft / Saving.RegularSavingValue ?? 0);
 
-                DateTime Today = DateTime.UtcNow;
-                Saving.GoalDate = Today.AddDays(NumberOfDays);
+                    DateTime Today = DateTime.UtcNow;
+                    Saving.GoalDate = Today.AddDays(NumberOfDays);
+                }
+                else if (Saving.DdlSavingsPeriod == "PerPayPeriod")
+                {
+                    decimal? BalanceLeft = Saving.SavingsGoal - (Saving.CurrentBalance ?? 0);
+                    BalanceLeft = BalanceLeft - Saving.PeriodSavingValue;
+
+                    decimal NumberOfPeriods = BalanceLeft / Saving.PeriodSavingValue ?? 0;
+                    int NumberOfDays = (int)Math.Ceiling(NumberOfPeriods * BudgetDaysBetweenPay);
+
+                    Saving.GoalDate = BudgetNextPayDate.AddDays(NumberOfDays);
+                }
             }
 
             return Saving.GoalDate.GetValueOrDefault();

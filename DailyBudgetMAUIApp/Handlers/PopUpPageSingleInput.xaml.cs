@@ -41,9 +41,10 @@ public partial class PopUpPageSingleInput : Popup
 
         BindingContext = viewModel;
         _vm = viewModel;
-	}
+    }
 
-	private void Close_Popup(object sender, EventArgs e)
+
+    private void Close_Popup(object sender, EventArgs e)
 	{
 		if(_vm.ReturnData == "" || _vm.ReturnData == null)
 		{
@@ -59,5 +60,10 @@ public partial class PopUpPageSingleInput : Popup
     private void Close_Window(object sender, EventArgs e)
     { 
         this.Close(_vm.ReturnData);
+    }
+
+    private void txtReturnData_Loaded(object sender, EventArgs e)
+    {
+        txtReturnData.Focus();
     }
 }

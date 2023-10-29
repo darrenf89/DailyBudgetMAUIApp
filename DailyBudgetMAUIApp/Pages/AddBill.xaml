@@ -199,7 +199,7 @@
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout Margin="0,10,0,5">
-                        <Label Text="Current Saved" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
+                        <Label Text="Current Saved" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White">
                             <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entCurrentSaved" TextChanged="CurrentSaved_Changed" Keyboard="Numeric" />
                         </Border>
