@@ -192,6 +192,7 @@ public partial class CreateNewBudget : ContentPage
         }
         else if (_vm.Stage == "Budget Savings")
         {
+            UpdateSavingsYesNo("");
             await MainScrollView.ScrollToAsync(0, 275, true);
         }
         else if (_vm.Stage == "Budget Extra Income")
@@ -395,6 +396,46 @@ public partial class CreateNewBudget : ContentPage
 
     }
 
+    private void BackBudgetSavingsButton_Clicked(object sender, EventArgs e)
+    {
+
+        _vm.Stage = "Budget Outgoings";
+        UpdateStageDisplay();
+
+        //await MainScrollView.ScrollToAsync(0, 155, true);
+    }
+
+    private void ContinueBudgetSavingsButton_Clicked(object sender, EventArgs e)
+    {
+        if (ValidateBudgetSavings())
+        {
+            _vm.Stage = "Budget Extra Income";
+            UpdateStageDisplay();
+
+            _vm.SaveStage("Budget Outgoings");
+
+            //await MainScrollView.ScrollToAsync(0, 275, true);
+        }
+
+    }
+
+    private bool ValidateBudgetSavings()
+    {
+        bool IsValid = true;
+
+        if (_vm.SavingsYesNoSelect == "")
+        {
+            IsValid = false;
+            validatorSavingsYesNo.IsVisible = true;
+        }
+        else
+        {
+            validatorSavingsYesNo.IsVisible = false;
+        }
+
+        return IsValid;
+    }
+
     private bool ValidateBudgetOutgoings()
     {
         bool IsValid = true;
@@ -415,6 +456,11 @@ public partial class CreateNewBudget : ContentPage
     private async void AddBillsNewBudget_Clicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync($"{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}");
+    }
+
+    private async void AddSavingsNewBudget_Clicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync($"{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}");
     }
 
     private async void BankBalanceInfo(object sender, EventArgs e)
@@ -705,6 +751,16 @@ public partial class CreateNewBudget : ContentPage
         UpdateBillsYesNo("No");
     }
 
+    private void SavingsYesSelect_Tapped(object sender, TappedEventArgs e)
+    {
+        UpdateSavingsYesNo("Yes");
+    }
+
+    private void SavingsNoSelect_Tapped(object sender, TappedEventArgs e)
+    {
+        UpdateSavingsYesNo("No");
+    }
+
     private void UpdateBillsYesNo(string option) 
     {
         Application.Current.Resources.TryGetValue("Success", out var Success);
@@ -757,6 +813,61 @@ public partial class CreateNewBudget : ContentPage
             btnAddBillsNewBudget.IsVisible = false;
 
             _vm.BillsYesNoSelect = "";
+        }
+    }
+
+    private void UpdateSavingsYesNo(string option)
+    {
+        Application.Current.Resources.TryGetValue("Success", out var Success);
+        Application.Current.Resources.TryGetValue("Light", out var Light);
+        Application.Current.Resources.TryGetValue("White", out var White);
+        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+
+        if (option == "Yes")
+        {
+            vslSavingsYesSelect.BackgroundColor = (Color)Success;
+            vslSavingsNoSelect.BackgroundColor = (Color)Light;
+
+            lblSavingsYes.FontAttributes = FontAttributes.Bold;
+            lblSavingsNo.FontAttributes = FontAttributes.None;
+
+            lblSavingsYes.TextColor = (Color)White;
+            lblSavingsNo.TextColor = (Color)Gray900;
+
+            btnAddSavingsNewBudget.IsVisible = true;
+
+            _vm.SavingsYesNoSelect = "Yes";
+
+        }
+        else if (option == "No")
+        {
+            vslSavingsYesSelect.BackgroundColor = (Color)Light;
+            vslSavingsNoSelect.BackgroundColor = (Color)Success;
+
+            lblSavingsYes.FontAttributes = FontAttributes.None;
+            lblSavingsNo.FontAttributes = FontAttributes.Bold;
+
+            lblSavingsYes.TextColor = (Color)Gray900;
+            lblSavingsNo.TextColor = (Color)White;
+
+            btnAddSavingsNewBudget.IsVisible = false;
+
+            _vm.SavingsYesNoSelect = "No";
+        }
+        else
+        {
+            vslSavingsYesSelect.BackgroundColor = (Color)Light;
+            vslSavingsNoSelect.BackgroundColor = (Color)Light;
+
+            lblSavingsYes.FontAttributes = FontAttributes.None;
+            lblSavingsNo.FontAttributes = FontAttributes.None;
+
+            lblSavingsYes.TextColor = (Color)Gray900;
+            lblSavingsNo.TextColor = (Color)Gray900;
+
+            btnAddSavingsNewBudget.IsVisible = false;
+
+            _vm.SavingsYesNoSelect = "";
         }
     }
 

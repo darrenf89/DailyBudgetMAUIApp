@@ -161,7 +161,7 @@
                                 <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entSavingAmount" TextChanged="SavingAmount_Changed" Keyboard="Numeric" />
                             </Border>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,10,0" x:Name="brdSavingPeriod" HeightRequest="38" Grid.Column="1" Grid.Row="1" BackgroundColor="White">
-                                <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrSavingPeriod"  Title="Select a Period" ItemsSource="{Binding DropDownSavingPeriod}" ItemDisplayBinding="{Binding Name}"  SelectedIndexChanged="pckrSavingPeriod_SelectedIndexChanged"/>
+                                <handlers:BorderlessPicker Loaded="pckrSavingPeriod_Loaded" TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrSavingPeriod"  Title="Select a Period" ItemsSource="{Binding DropDownSavingPeriod}" ItemDisplayBinding="{Binding Name}"  SelectedIndexChanged="pckrSavingPeriod_SelectedIndexChanged"/>
                             </Border>   
                         </Grid>
                         <HorizontalStackLayout IsVisible="false" Margin="10,5,0,0" x:Name="validatorSavingAmount">

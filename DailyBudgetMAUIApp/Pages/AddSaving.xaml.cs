@@ -33,6 +33,10 @@ public partial class AddSaving : ContentPage
             _vm.BudgetID = App.DefaultBudgetID;
         }
 
+        _vm.BudgetNextPayDate = _ds.GetBudgetNextIncomePayDayAsync(_vm.BudgetID).Result;
+        _vm.BudgetDaysToNextPay = (_vm.BudgetNextPayDate.Date - DateTime.Now.Date).Days;
+        _vm.BudgetDaysBetweenPay = _ds.GetBudgetDaysBetweenPayDay(_vm.BudgetID).Result;
+
         if (_vm.SavingID == 0)
         {
             _vm.Saving = new Savings();
@@ -68,7 +72,8 @@ public partial class AddSaving : ContentPage
             else
             {
                 _vm.SavingRecurringText = "Envelope";
-                btnEnvelopeSaving_Clicked(new Object(), new EventArgs());
+                _vm.Saving.IsRegularSaving = false;
+                UpdateDisplaySelection("Envelope");
             }
         }
 
@@ -83,13 +88,11 @@ public partial class AddSaving : ContentPage
         if (_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
         {
             RegularValue = (double?)_vm.Saving.PeriodSavingValue ?? 0;
-            pckrSavingPeriod.SelectedIndex = 0;
 
         }
         else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
         {
             RegularValue = (double?)_vm.Saving.RegularSavingValue ?? 0;
-            pckrSavingPeriod.SelectedIndex = 1;
         }
         
         entSavingAmount.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);
@@ -98,10 +101,6 @@ public partial class AddSaving : ContentPage
         {
             _vm.ChangeSavingsName();
         }
-
-        _vm.BudgetNextPayDate = _ds.GetBudgetNextIncomePayDayAsync(_vm.BudgetID).Result;
-        _vm.BudgetDaysToNextPay = (_vm.BudgetNextPayDate.Date - DateTime.Now.Date).Days;
-        _vm.BudgetDaysBetweenPay = _ds.GetBudgetDaysBetweenPayDay(_vm.BudgetID).Result;
 
     }
 
@@ -147,11 +146,14 @@ public partial class AddSaving : ContentPage
     }
     private void btnEnvelopeSaving_Clicked(object sender, EventArgs e)
     {
-        ClearAllValidators();
+        ClearAllValidators();        
 
         _vm.SavingRecurringText = "Envelope";
-        _vm.Saving.IsRegularSaving = false;
+        _vm.Saving.IsRegularSaving = false;        
+
         UpdateDisplaySelection("Envelope");
+
+        pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
     }
 
     private void Option1Select_Tapped(object sender, TappedEventArgs e)
@@ -281,7 +283,6 @@ public partial class AddSaving : ContentPage
             _vm.Saving.IsDailySaving = true;
             _vm.Saving.DdlSavingsPeriod = "PerDay";
             chbxIsAutoComplete.IsChecked = false;
-            pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
 
             hslIsAutoComplete.IsVisible = false;
             hslCanExceedGoal.IsVisible = true;
@@ -317,8 +318,6 @@ public partial class AddSaving : ContentPage
             hslIsAutoComplete.IsVisible = false;
             hslCanExceedGoal.IsVisible = false;
 
-            pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
-
             entSavingTarget.IsEnabled = true;
             entCurrentBalance.IsEnabled = true;
             dtpckGoalDate.IsEnabled = true;
@@ -353,18 +352,7 @@ public partial class AddSaving : ContentPage
             vslGoalDate.IsVisible = true;
             vslSavingAmount.IsVisible = true;
             
-            _vm.Saving.IsDailySaving = true;            
-
-            if(_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
-            {
-                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
-            }
-            else
-            {
-                _vm.Saving.DdlSavingsPeriod = "PerDay";
-                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
-            }
-            
+            _vm.Saving.IsDailySaving = true; 
 
             hslIsAutoComplete.IsVisible = true;
             hslCanExceedGoal.IsVisible = true;
@@ -395,8 +383,6 @@ public partial class AddSaving : ContentPage
             vslCurrentBalance.IsVisible = true;
             vslGoalDate.IsVisible = false;
             vslSavingAmount.IsVisible = true;
-
-            pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
 
             hslIsAutoComplete.IsVisible = false;
             hslCanExceedGoal.IsVisible = false;
@@ -693,5 +679,36 @@ public partial class AddSaving : ContentPage
         validatorGoalDate.IsVisible = false;
         validatorCurrentBalance.IsVisible = false;
         validatorSavingTarget.IsVisible = false;
+    }
+
+    private void pckrSavingPeriod_Loaded(object sender, EventArgs e)
+    {
+        if (_vm.SavingID == 0)
+        {
+            pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
+        }
+        else
+        {
+            if (_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
+            {
+                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
+            }
+            else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
+            {
+                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
+            }
+            else
+            {
+                if (_vm.Saving.IsRegularSaving)
+                {
+                    pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
+                }
+                else
+                {
+                    pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
+                }
+            }
+        }
+        
     }
 }

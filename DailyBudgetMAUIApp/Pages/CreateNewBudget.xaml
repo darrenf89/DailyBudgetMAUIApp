@@ -471,7 +471,7 @@
                     </Grid.GestureRecognizers>
                 </Grid>
             </VerticalStackLayout>
-            <VerticalStackLayout x:Name="SavingsDetails" IsVisible="false">
+            <VerticalStackLayout x:Name="SavingsDetails" IsVisible="false" Margin="0,0,0,15">
                 <VerticalStackLayout x:Name="vslSavingList" Margin="0,0,0,10">
                     <HorizontalStackLayout Padding="5,0,0,2">
                         <Label Text="Current Savings" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
@@ -517,7 +517,7 @@
                                                     </Image>
                                                     <Image Background="{DynamicResource White}" IsVisible="False" Margin="0,0,4,0" VerticalOptions="Center" x:Name="imgTargetAmount">
                                                         <Image.Source VerticalOptions="Center">
-                                                            <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Currency_exchange}" Size="16" Color="{DynamicResource Info}"/>
+                                                            <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Attach_money}" Size="16" Color="{DynamicResource Info}"/>
                                                         </Image.Source>
                                                     </Image>
                                                     <Image Background="{DynamicResource White}" IsVisible="False" Margin="0,0,4,0" VerticalOptions="Center" x:Name="imgSavingsBuilder">
@@ -569,8 +569,47 @@
                         </ListView.ItemTemplate>
                     </ListView>
                 </VerticalStackLayout>
-                
-                
+                <HorizontalStackLayout Padding="5,0,0,2">
+                    <Label Text="Add Savings to your Budget?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                </HorizontalStackLayout>
+                <Label Text="Dont worry if you don't want to add them now, you can add them at any time!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,25"/>
+                <Border Style="{StaticResource ClearInfoBorder}" x:Name="btnAddSavingsNewBudget" IsVisible="false" WidthRequest="120" HorizontalOptions="Start" Margin="5,0,0,20">
+                    <Button Margin="0" Padding="0" Text="Add Saving" Clicked="AddSavingsNewBudget_Clicked" HorizontalOptions="Center" Style="{StaticResource ClearInfoButton}"  WidthRequest="120"/>
+                </Border>
+                <VerticalStackLayout Margin="5,0,5,20">
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="0,0,0,2" HeightRequest="38" WidthRequest="200" HorizontalOptions="Start">
+                        <Grid RowDefinitions="*" ColumnDefinitions="*,*" VerticalOptions="Center">
+                            <VerticalStackLayout x:Name="vslSavingsYesSelect" Grid.Column="0" BackgroundColor="{DynamicResource Light}">
+                                <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblSavingsYes" Text="Yes" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                </Label>
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="SavingsYesSelect_Tapped"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout x:Name="vslSavingsNoSelect" Grid.Column="1" BackgroundColor="{DynamicResource Light}">
+                                <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblSavingsNo" Text="No" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                </Label>
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="SavingsNoSelect_Tapped"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                    <HorizontalStackLayout IsVisible="false" Margin="5,0,0,0" x:Name="validatorSavingsYesNo">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Let us know if you want to add any savings or not." Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+                <HorizontalStackLayout Margin="5,0,20,0">
+                    <Border Style="{StaticResource ClearInfoBorder}">
+                        <Button Margin="0" Padding="0" WidthRequest="80" Text="Back" Clicked="BackBudgetSavingsButton_Clicked" HorizontalOptions="Start" Style="{StaticResource ClearInfoButton}"/>
+                    </Border>
+                    <Button Margin="20,0,0,0" WidthRequest="100" Text="Continue" Clicked="ContinueBudgetSavingsButton_Clicked" HorizontalOptions="Start" Style="{StaticResource PrimaryInfoButton}"/>
+                </HorizontalStackLayout>
             </VerticalStackLayout>
             <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
             <VerticalStackLayout Margin="0,0,0,5">
