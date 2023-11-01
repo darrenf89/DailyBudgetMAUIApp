@@ -73,7 +73,28 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
+                string SuccessCheck = "";
+                if (SuccessCheck == "OK")
+                {
 
+                    var stack = Application.Current.MainPage.Navigation.NavigationStack;
+                    int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
+                    if (count >= 2)
+                    {
+                        if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                        {
+                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                        }
+                        else
+                        {
+                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        }
+                    }
+                    else
+                    {
+                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -90,7 +111,27 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                
+                string SuccessCheck = "";
+                if (SuccessCheck == "OK")
+                {
+                    var stack = Application.Current.MainPage.Navigation.NavigationStack;
+                    int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
+                    if (count >= 2)
+                    {
+                        if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                        {
+                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                        }
+                        else
+                        {
+                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        }
+                    }
+                    else
+                    {
+                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                    }
+                }
             }
             catch (Exception ex)
             {

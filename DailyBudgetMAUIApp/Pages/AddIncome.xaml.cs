@@ -39,17 +39,50 @@ public partial class AddIncome : ContentPage
 
         if (_vm.IncomeID == 0)
         {
+            _vm.Title = "Add New Income";
+            _vm.Income = new IncomeEvents();
             btnAddIncome.IsVisible = true;
-            if (_vm.BudgetID == 0)
-            {
-                _vm.BudgetID = App.DefaultBudgetID;
-            }
 
         }
         else
         {
             btnUpdateIncome.IsVisible = true;
+            _vm.Title = $"Update Income {_vm.Income.IncomeName}";
+            SelectIncomeType.IsVisible = false;
+            IncomeTypeSelected.IsVisible = true;
+
+            if (_vm.Income.IsRecurringIncome)
+            {
+                btnOneOffIncome_Clicked(new object(), new EventArgs());
+                if(_vm.Income.IsInstantActive ?? false)
+                {
+                    UpdateIncomeActiveYesNo("Yes");
+                }
+                else
+                {
+                    UpdateIncomeActiveYesNo("No");
+                }
+
+            }
+            else
+            {
+                btnRecurringIncome_Clicked(new object(), new EventArgs());
+                if (_vm.Income.IsInstantActive ?? false)
+                {
+                    UpdateIncomeActiveYesNo("Yes");
+                }
+                else
+                {
+                    UpdateIncomeActiveYesNo("No");
+                }
+
+                UpdateSelectedOption(_vm.Income.RecurringIncomeType);
+            }
+
         }
+
+        double IncomeAmount = (double?)_vm.Income.IncomeAmount ?? 0;
+        entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
 
         if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
         {
@@ -61,13 +94,25 @@ public partial class AddIncome : ContentPage
 
     private void SaveIncome_Clicked(object sender, EventArgs e)
     {
-        SaveIncomeTypeOptions();
+        if (ValidateIncomeDetails())
+        {
+            SaveIncomeTypeOptions();
 
-        IncomeEvents Income = _vm.Income;
+            if(_vm.IncomeID == 0)
+            {
+                _vm.AddIncome();
+            }
+            else
+            {
+                _vm.UpdateIncome();
+            }
+        }
     }
 
     async private void ResetIncome_Clicked(object sender, EventArgs e)
     {
+        ClearAllValidators();
+
         bool result = await DisplayAlert("Income Reset", "Are you sure you want to Income " + _vm.Income.IncomeName, "Yes, continue", "Cancel");
         if (result)
         {
@@ -93,6 +138,8 @@ public partial class AddIncome : ContentPage
 
     private void btnOneOffIncome_Clicked(object sender, EventArgs e)
     {
+        ClearAllValidators();
+
         SelectIncomeType.IsVisible = false;
         IncomeTypeSelected.IsVisible = true;
 
@@ -112,6 +159,8 @@ public partial class AddIncome : ContentPage
 
     private void btnRecurringIncome_Clicked(object sender, EventArgs e)
     {
+        ClearAllValidators();
+
         SelectIncomeType.IsVisible = false;
         IncomeTypeSelected.IsVisible = true;
 
@@ -140,6 +189,7 @@ public partial class AddIncome : ContentPage
 
     private void UpdateIncomeActiveYesNo(string option)
     {
+        ClearAllValidators();
 
         Application.Current.Resources.TryGetValue("Success", out var Success);
         Application.Current.Resources.TryGetValue("Light", out var Light);
@@ -209,6 +259,7 @@ public partial class AddIncome : ContentPage
 
     private void UpdateSelectedOption(string option)
     {
+        ClearAllValidators();
 
         Application.Current.Resources.TryGetValue("Success", out var Success);
         Application.Current.Resources.TryGetValue("Light", out var Light);
@@ -278,6 +329,8 @@ public partial class AddIncome : ContentPage
 
     void OfEveryMonthValue_Changed(object sender, TextChangedEventArgs e)
     {
+        ClearAllValidators();
+
         Regex regex = new Regex(@"^\d+$");
 
         if (e.NewTextValue != null && e.NewTextValue != "")
@@ -295,6 +348,9 @@ public partial class AddIncome : ContentPage
 
     void EveryNthValue_Changed(object sender, TextChangedEventArgs e)
     {
+
+        ClearAllValidators();
+
         Regex regex = new Regex(@"^\d+$");
 
         if (e.NewTextValue != null && e.NewTextValue != "")
@@ -338,11 +394,22 @@ public partial class AddIncome : ContentPage
 
     private async void AddIncome_Clicked(object sender, EventArgs e)
     {
-        SaveIncomeTypeOptions();
+        if(ValidateIncomeDetails())
+        {
+            SaveIncomeTypeOptions();
+
+            _vm.AddIncome();
+        }
+        
     }
     private async void UpdateIncome_Clicked(object sender, EventArgs e)
     {
-        SaveIncomeTypeOptions();
+        if (ValidateIncomeDetails())
+        {
+            SaveIncomeTypeOptions();
+
+            _vm.UpdateIncome();
+        }
     }
 
     private void dtpckIncomeDate_DateSelected(object sender, DateChangedEventArgs e)
@@ -357,7 +424,7 @@ public partial class AddIncome : ContentPage
         }
     }
 
-    private bool ValidateBillDetails()
+    private bool ValidateIncomeDetails()
     {
         bool IsValid = true;
 
@@ -392,16 +459,6 @@ public partial class AddIncome : ContentPage
             validatorIncomeAmount.IsVisible = false;
         }
 
-        if (_vm.IncomeTypeText == "" || _vm.IncomeTypeText == null)
-        {
-            IsValid = false;
-            validatorIncomeRecurring.IsVisible = true;
-        }
-        else
-        {
-            validatorIncomeRecurring.IsVisible = false;
-        }
-
         if (_vm.IncomeActiveText == "" || _vm.IncomeActiveText == null)
         {
             IsValid = false;
@@ -412,19 +469,52 @@ public partial class AddIncome : ContentPage
             validatorIncomeActiveYesNo.IsVisible = false;
         }
 
-        if (_vm.RecurringIncomeTypeText == "" || _vm.RecurringIncomeTypeText == null)
+        if (_vm.IncomeTypeText == "" || _vm.IncomeTypeText == null)
         {
             IsValid = false;
-            validatorIncomeType.IsVisible = true;
+            validatorIncomeRecurring.IsVisible = true;
         }
-        else if (_vm.RecurringIncomeTypeText == "Everynth")
+        else if(_vm.IncomeTypeText == "Recurring")
         {
-            
-        }
-        else if(_vm.RecurringIncomeTypeText == "OfEveryMonth")
-        {
+            validatorIncomeRecurring.IsVisible = false;
 
+            if (_vm.RecurringIncomeTypeText == "" || _vm.RecurringIncomeTypeText == null)
+            {
+                IsValid = false;
+                validatorIncomeType.IsVisible = true;
+            }
+            else if (_vm.RecurringIncomeTypeText == "Everynth")
+            {
+                if (entEverynthValue.Text == "" || entEverynthValue.Text == null)
+                {
+                    IsValid = false;
+                    validatorEveryNthDuration.IsVisible = true;
+                }
+                else
+                {
+                    validatorEveryNthDuration.IsVisible = false;
+                }
+
+            }
+            else if (_vm.RecurringIncomeTypeText == "OfEveryMonth")
+            {
+                if (entOfEveryMonthValue.Text == "" || entOfEveryMonthValue.Text == "")
+                {
+                    IsValid = false;
+                    validatorOfEveryMonthDuration.IsVisible = true;
+                }
+                else
+                {
+                    validatorOfEveryMonthDuration.IsVisible = false;
+                }
+            }
+        } 
+        else
+        {
+            validatorIncomeRecurring.IsVisible = false;
         }
+
+        
 
         _vm.IsPageValid = IsValid;
         return IsValid;
@@ -433,12 +523,12 @@ public partial class AddIncome : ContentPage
     {
         validatorOfEveryMonthDuration.IsVisible = false;
         validatorEveryNthDuration.IsVisible = false;
-        validatorBillType.IsVisible = false;
-        validatorBillRecurring.IsVisible = false;
-        validatorBillBalance.IsVisible = false;
-        validatorBillAmount.IsVisible = false;
-        validatorBillDue.IsVisible = false;
-        validatorBillName.IsVisible = false;
+        validatorIncomeRecurring.IsVisible = false;
+        validatorIncomeType.IsVisible = false;
+        validatorIncomeActiveYesNo.IsVisible = false;
+        validatorIncomeAmount.IsVisible = false;
+        validatorIncomeDate.IsVisible = false;
+        validatorIncomeName.IsVisible = false;  
 
         _vm.IsPageValid = true;
     }
