@@ -444,7 +444,7 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
                             </Image.Source>
                         </Image>
-                        <Label Text="Let us know if you want to add any outgoings or not." Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        <Label x:Name="MessagevalidatorBillsYesNo" Text="Let us know if you want to add any outgoings or not." Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
                 <HorizontalStackLayout Margin="5,0,20,0">
@@ -601,7 +601,7 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
                             </Image.Source>
                         </Image>
-                        <Label Text="Let us know if you want to add any savings or not." Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        <Label x:Name="MessagevalidatorSavingsYesNo" Text="Let us know if you want to add any savings or not." Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
                 <HorizontalStackLayout Margin="5,0,20,0">

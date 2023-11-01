@@ -311,7 +311,7 @@ namespace DailyBudgetMAUIApp.DataServices
             foreach (IncomeEvents Income in Budget.IncomeEvents)
             {
                 DateTime NextPayDay = Budget.NextIncomePayday ?? default;
-                if (Income.isInstantActive ?? false)
+                if (Income.IsInstantActive ?? false)
                 {
                     DateTime PayDayAfterNext = CalculateNextDate(NextPayDay, Budget.PaydayType, Budget.PaydayValue ?? 1, Budget.PaydayDuration);
                     DateTime NextIncomeDate = CalculateNextDate(Income.DateOfIncomeEvent, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
@@ -345,7 +345,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         Budget.BankBalance = Budget.BankBalance + Income.IncomeAmount;
                         //TODO: Update Instant Active Income Transaction in transactions
                         Income.DateOfIncomeEvent = NextIncomeDate.Date;
-                        if (Income.isRecurringIncome)
+                        if (Income.IsRecurringIncome)
                         {
                             DateTime CalPayDate = new DateTime();
                             while (NextIncomeDate.Date > NextPayDay.Date)
@@ -357,8 +357,8 @@ namespace DailyBudgetMAUIApp.DataServices
                         }
                         else
                         {
-                            Income.isClosed = true;
-                            Income.isIncomeAddedToBalance = true;
+                            Income.IsClosed = true;
+                            Income.IsIncomeAddedToBalance = true;
                         }
                     }
                 }                    
@@ -370,7 +370,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance + Income.IncomeAmount;
                         Budget.LeftToSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
                         //TODO: Add a Transaction into transactions
-                        if (Income.isRecurringIncome)
+                        if (Income.IsRecurringIncome)
                         {
                             //Calculate the next DateOfIncomeEvent and set IncomeActiveDate To this as well!
                             DateTime NextDate = CalculateNextDate(Income.DateOfIncomeEvent, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
@@ -379,8 +379,8 @@ namespace DailyBudgetMAUIApp.DataServices
                         }
                         else
                         {
-                            Income.isClosed = true;
-                            Income.isIncomeAddedToBalance = true;
+                            Income.IsClosed = true;
+                            Income.IsIncomeAddedToBalance = true;
                         }
                     }
                 }

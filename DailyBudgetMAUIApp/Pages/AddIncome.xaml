@@ -2,11 +2,234 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyBudgetMAUIApp.Pages.AddIncome"
-             Title="AddIncome">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*,40,40,5">
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="0" Padding="0" FontSize="14"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Start" Grid.Column="0"/>
+            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="SaveIncome_Clicked" HorizontalOptions="End" Grid.Column="1" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Save}" Size="30" />
+                </Button.ImageSource>
+            </Button>
+            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="ResetIncome_Clicked" HorizontalOptions="End" Grid.Column="2" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Backspace}" Size="30"/>
+                </Button.ImageSource>
+            </Button>
+        </Grid>
+    </Shell.TitleView>
+    <ScrollView>
+        <VerticalStackLayout VerticalOptions="Start">
+            <VerticalStackLayout Margin="20,20,20,4">
+                <Label Text="{Binding Income.IncomeName}" IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Tertiary}"/>
+                <Label Text="Give your income a name ..." IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Secondary}"/>
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ChangeIncomeNameCommand}"/>
+                </VerticalStackLayout.GestureRecognizers>
+            </VerticalStackLayout>
+            <VerticalStackLayout Margin="0,0,0,16">
+                <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Gray200}" IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}"/>
+                <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Tertiary}" IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"/>
+                <HorizontalStackLayout IsVisible="false" Margin="10,2,0,0" x:Name="validatorIncomeName" HorizontalOptions="Center">
+                    <Image>
+                        <Image.Source>
+                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                        </Image.Source>
+                    </Image>
+                    <Label Text="You have to name your Income, it like a pet easier to call that way" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+            <Border Style="{DynamicResource AddEditTransContent}" x:Name="brdIncomeSelection" Margin="20,5,20,25">
+                <VerticalStackLayout>
+                    <VerticalStackLayout x:Name="SelectIncomeType">
+                        <Label Text="One-off or a Recurring Income?" HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}"/>
+                        <Label Margin="0,20,0,20" Text="Set up a Recurring Income, maybe pay from a second job or money from investments? Or did you get a gift or sell something big, set up a one-off income then!" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center"/>
+                        <VerticalStackLayout Margin="0,0,0,20">
+                            <Grid x:Name="grdIncomeTypeButtons" ColumnDefinitions="*,6*,2*,6*,*" RowDefinitions="*" >
+                                <Button x:Name="btnOneOffIncome" Style="{DynamicResource PrimaryInfoButton}" Text="One-off" TextColor="White" BackgroundColor="{StaticResource Primary}" Grid.Column="1" Grid.Row="0" Clicked="btnOneOffIncome_Clicked"/>
+                                <Button x:Name="btnRecurringIncome" Style="{DynamicResource PrimaryInfoButton}" Text="Recurring" TextColor="White" BackgroundColor="{StaticResource Tertiary}" Grid.Column="3" Grid.Row="0" Clicked="btnRecurringIncome_Clicked"/>
+                            </Grid>
+                            <HorizontalStackLayout IsVisible="false" Margin="10,2,0,0" x:Name="validatorIncomeRecurring" HorizontalOptions="Center">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="Select your type of income you would like to add" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="IncomeTypeSelected" IsVisible="False">
+                        <Label HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}" x:Name="lblSelectedIncomeTitle"/>
+                        <Label Margin="0,20,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedIncomeParaOne"/>
+                        <Label Margin="0,2,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedIncomeParaTwo"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            <Border Style="{DynamicResource AddEditTransContent}" x:Name="brdSavingRecurringTypeSelected" IsVisible="False" Margin="20,0,20,25">
+                <VerticalStackLayout>
+                    <Label Text="Income Details" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,15"/>
+                    <VerticalStackLayout Margin="0,0,0,10" x:Name="vslIncomeInstantActive">
+                        <HorizontalStackLayout Padding="5,0,0,5">
+                            <Label Text="Instant Active!" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="Do you want the income to be added to your allowed spending instantly rather than when it is due?" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5"/>
+                        <VerticalStackLayout Margin="5,0,5,5">
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="0,0,0,2" HeightRequest="38" WidthRequest="200" HorizontalOptions="Start">
+                                <Grid RowDefinitions="*" ColumnDefinitions="*,*" VerticalOptions="Center">
+                                    <VerticalStackLayout x:Name="vslIncomeActiveYesSelect" Grid.Column="0" BackgroundColor="{DynamicResource White}">
+                                        <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblIncomeActiveYes" Text="Yes" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                        </Label>
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="IncomeActiveYesSelect_Tapped"/>
+                                        </VerticalStackLayout.GestureRecognizers>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout x:Name="vslIncomeActiveNoSelect" Grid.Column="1" BackgroundColor="{DynamicResource White}">
+                                        <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblIncomeActiveNo" Text="No" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                        </Label>
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="IncomeActiveNoSelect_Tapped"/>
+                                        </VerticalStackLayout.GestureRecognizers>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                            <HorizontalStackLayout IsVisible="false" Margin="5,0,0,0" x:Name="validatorIncomeActiveYesNo">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label x:Name="MessagevalidatorIncomeActiveYesNo" Text="Let us know if you want your income to be active now or when you get the money!" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                            <VerticalStackLayout x:Name="hslInstanceActiveCaution" VerticalOptions="Center" HorizontalOptions="Start" IsVisible="False">
+                                <Label LineBreakMode="WordWrap" Margin="0" Padding="5,5,0,0" WidthRequest="315" HorizontalTextAlignment="Start">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="* Caution " FontAttributes="Bold" FontSize="Small" TextColor="{DynamicResource Danger}"/>
+                                            <Span Text="though you might end up spending money you don't have" FontSize="Small" TextColor="{DynamicResource Danger}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>                        
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="vslIncomeDetails" IsVisible="False">
+                        <HorizontalStackLayout Padding="5,0,0,5">
+                            <Label Text="Income Amount and Date!" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="Let us know how much you are getting and when!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,0"/>
+                        <VerticalStackLayout Margin="0,0,0,5" x:Name="vslIncomeAmount">
+                            <Label Text="Income Amount" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White" x:Name="brdIncomeAmount">
+                                <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entIncomeAmount" TextChanged="IncomeAmount_Changed" Keyboard="Numeric" />
+                            </Border>
+                            <HorizontalStackLayout IsVisible="false" Margin="10,5,0,0" x:Name="validatorIncomeAmount">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="For it to be an income there has to be some money" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Margin="0,10,0,5" x:Name="vslIncomeDate">
+                            <Label Text="Income Date" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White" x:Name="brdIncomeDate">
+                                <DatePicker CharacterSpacing="1" Margin="20,0,0,0" x:Name="dtpckIncomeDate" Date="{Binding Income.DateOfIncomeEvent}" DateSelected="dtpckIncomeDate_DateSelected"/>
+                            </Border>
+                            <HorizontalStackLayout IsVisible="false" Margin="10,5,0,0" x:Name="validatorIncomeDate">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="Select a day some time in the ... future" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Margin="0,10,0,10" x:Name="vslIncomeType" IsVisible="False">
+                        <Label Text="What type of Income?" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}" Margin="5,5,5,0"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,10,5,0" HeightRequest="38">
+                            <Grid RowDefinitions="*" ColumnDefinitions="*,*" VerticalOptions="Center">
+                                <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="{DynamicResource White}">
+                                    <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblOption1" Text="Every nth" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                    </Label>
+                                    <VerticalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="Option1Select_Tapped"/>
+                                    </VerticalStackLayout.GestureRecognizers>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="{DynamicResource White}">
+                                    <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblOption2" Text="... of the month" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                    </Label>
+                                    <VerticalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="Option2Select_Tapped"/>
+                                    </VerticalStackLayout.GestureRecognizers>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                        <HorizontalStackLayout IsVisible="false" Margin="5,0,0,0" x:Name="validatorIncomeType">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="You have to select an Income type" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="vslOption1" IsVisible="false" Margin="0,0,0,20">
+                        <Label Text="Every nth ..." FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                            <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="0" Grid.Row="1" BackgroundColor="White">
+                                <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed"/>
+                            </Border>
+                            <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="1" Grid.Row="1">
+                                <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration" BackgroundColor="White">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>days</x:String>
+                                            <x:String>weeks</x:String>
+                                            <x:String>months</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </handlers:BorderlessPicker>
+                            </Border>
+                        </Grid>
+                        <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validatorEveryNthDuration">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Please insert your value" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="vslOption2" IsVisible="false">
+                        <Label Text="On the ... of every month" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                            <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
+                                <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entOfEveryMonthValue" Keyboard="Numeric" TextChanged="OfEveryMonthValue_Changed" TextColor="{DynamicResource Gray900}"/>
+                            </Border>
+                        </Grid>
+                        <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validatorOfEveryMonthDuration">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Please insert your value" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            <Grid ColumnDefinitions="30,*,30" RowDefinitions="10,*,40">
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryInfoButton}" x:Name="btnAddIncome" Text="Add New Outgoing" TextColor="White"  Clicked="AddIncome_Clicked" IsVisible="false" BackgroundColor="{DynamicResource Success}"/>
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryInfoButton}" x:Name="btnUpdateIncome" Text="Update Outgoing" TextColor="White"  Clicked="UpdateIncome_Clicked" IsVisible="false" BackgroundColor="{DynamicResource Success}"/>
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

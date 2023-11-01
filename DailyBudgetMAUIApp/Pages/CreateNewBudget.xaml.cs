@@ -154,6 +154,8 @@ public partial class CreateNewBudget : ContentPage
     }
     private async void UpdateStageDisplay()
     {
+        ClearBudgetValidator();
+
         Application.Current.Resources.TryGetValue("Success", out var Success);
         Application.Current.Resources.TryGetValue("Gray300", out var Gray300);
         Application.Current.Resources.TryGetValue("Primary", out var Primary);
@@ -210,7 +212,6 @@ public partial class CreateNewBudget : ContentPage
 
     private void GoToStageBudget_Tapped(object sender, TappedEventArgs e)
     {
-
         double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
         entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
 
@@ -375,7 +376,6 @@ public partial class CreateNewBudget : ContentPage
 
     private void BackBudgetBillsButton_Clicked(object sender, EventArgs e)
     {
-
         _vm.Stage = "Budget Details";
         UpdateStageDisplay();
 
@@ -398,7 +398,6 @@ public partial class CreateNewBudget : ContentPage
 
     private void BackBudgetSavingsButton_Clicked(object sender, EventArgs e)
     {
-
         _vm.Stage = "Budget Outgoings";
         UpdateStageDisplay();
 
@@ -423,8 +422,16 @@ public partial class CreateNewBudget : ContentPage
     {
         bool IsValid = true;
 
-        if (_vm.SavingsYesNoSelect == "")
+        if (_vm.SavingsYesNoSelect != "No")
         {
+            if (_vm.SavingsYesNoSelect == "Yes")
+            {
+                MessagevalidatorSavingsYesNo.Text = "Please add a saving or select no to continue!";
+            }
+            else
+            {
+                MessagevalidatorSavingsYesNo.Text = "Let us know if you want to add any savings or not.";
+            }
             IsValid = false;
             validatorSavingsYesNo.IsVisible = true;
         }
@@ -436,12 +443,32 @@ public partial class CreateNewBudget : ContentPage
         return IsValid;
     }
 
+    public void ClearBudgetValidator()
+    {
+        validatorOutgoingsYesNo.IsVisible = false;
+        validatorPayDay.IsVisible = false;
+        validatorPayType.IsVisible = false;
+        validatorEveryNthDuration.IsVisible = false;
+        validatorWorkingDayDuration.IsVisible = false;
+        validatorOfEveryMonthDuration.IsVisible = false;
+        validatorOutgoingsYesNo.IsVisible = false;
+        validatorSavingsYesNo.IsVisible = false;
+    }  
+
     private bool ValidateBudgetOutgoings()
     {
         bool IsValid = true;
 
-        if (_vm.BillsYesNoSelect == "")
+        if (_vm.BillsYesNoSelect != "No")
         {
+            if (_vm.BillsYesNoSelect == "Yes")
+            {
+                MessagevalidatorBillsYesNo.Text = "Please add an outgoing or select no to continue!";
+            }
+            else
+            {
+                MessagevalidatorBillsYesNo.Text = "Let us know if you want to add any outgoing or not.";
+            }
             IsValid = false;
             validatorOutgoingsYesNo.IsVisible = true;
         }
@@ -533,6 +560,8 @@ public partial class CreateNewBudget : ContentPage
 
     private void UpdateSelectedOption(string option) 
     {
+        ClearBudgetValidator();
+
         Application.Current.Resources.TryGetValue("Success", out var Success);
         Application.Current.Resources.TryGetValue("Light", out var Light);
         Application.Current.Resources.TryGetValue("White", out var White);
@@ -763,6 +792,8 @@ public partial class CreateNewBudget : ContentPage
 
     private void UpdateBillsYesNo(string option) 
     {
+        ClearBudgetValidator();
+
         Application.Current.Resources.TryGetValue("Success", out var Success);
         Application.Current.Resources.TryGetValue("Light", out var Light);
         Application.Current.Resources.TryGetValue("White", out var White);
@@ -818,6 +849,8 @@ public partial class CreateNewBudget : ContentPage
 
     private void UpdateSavingsYesNo(string option)
     {
+        ClearBudgetValidator();
+
         Application.Current.Resources.TryGetValue("Success", out var Success);
         Application.Current.Resources.TryGetValue("Light", out var Light);
         Application.Current.Resources.TryGetValue("White", out var White);
@@ -869,23 +902,6 @@ public partial class CreateNewBudget : ContentPage
 
             _vm.SavingsYesNoSelect = "";
         }
-    }
-
-    private async void DeleteBudgetOutgoings_Clicked(object sender, EventArgs e)
-    {
-        var Button = (Button)sender;
-        var Bill = (Bills)Button.CommandParameter;
-
-        bool result = await DisplayAlert("Bill", "Are you sure you want to delete Bill " + Bill.BillID.ToString(), "Yes, continue", "Cancel");
-        if (result)
-        {
-
-        }
-    }
-    private async void EditBudgetOutgoings_Clicked(object sender, EventArgs e)
-    {
-        var Button = (Button)sender;
-        var Bill = (Bills)Button.CommandParameter;
     }
 
     private async void DeleteBudgetOutgoings_Tapped(object sender, TappedEventArgs e)
