@@ -73,7 +73,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                string SuccessCheck = _ds.SaveNewIncome(Income, BudgetID);
+                string SuccessCheck = _ds.SaveNewIncome(Income, BudgetID).Result;
                 if (SuccessCheck == "OK")
                 {
 
@@ -83,7 +83,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
                         {
-                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
                         }
                         else
                         {
@@ -120,7 +120,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
                         {
-                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
                         }
                         else
                         {

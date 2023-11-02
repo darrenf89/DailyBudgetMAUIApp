@@ -62,6 +62,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public string BillsYesNoSelect { get; set; } = "";
         public string IncomesYesNoSelect { get; set; } = "";
         public string SavingsYesNoSelect { get; set; } = "";
+        public string IncomeYesNoSelect { get; set; } = "";
 
 
         public CreateNewBudgetViewModel(IProductTools pt, IRestDataService ds)

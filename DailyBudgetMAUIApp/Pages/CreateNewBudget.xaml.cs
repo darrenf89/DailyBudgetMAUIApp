@@ -171,23 +171,25 @@ public partial class CreateNewBudget : ContentPage
         Application.Current.Resources.TryGetValue("Primary", out var Primary);
         Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
 
-        bvStage1.Color = (_vm.Stage == "Budget Settings" || _vm.Stage == "Budget Details" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income") ? (Color)Success : (Color)Gray300;
-        bvStage2.Color = (_vm.Stage == "Budget Details" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income") ? (Color)Success : (Color)Gray300;
-        bvStage3.Color = (_vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income") ? (Color)Success : (Color)Gray300;
-        bvStage4.Color = (_vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income") ? (Color)Success : (Color)Gray300;
-        bvStage5.Color = (_vm.Stage == "Budget Extra Income") ? (Color)Success : (Color)Gray300;
+        bvStage1.Color = (_vm.Stage == "Budget Settings" || _vm.Stage == "Budget Details" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
+        bvStage2.Color = (_vm.Stage == "Budget Details" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
+        bvStage3.Color = (_vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
+        bvStage4.Color = (_vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
+        bvStage5.Color = (_vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
 
         SettingsDetails.IsVisible = (_vm.Stage == "Budget Settings");
         BudgetDetails.IsVisible = (_vm.Stage == "Budget Details");
         BillDetails.IsVisible = (_vm.Stage == "Budget Outgoings");
         SavingsDetails.IsVisible = (_vm.Stage == "Budget Savings");
         IncomeDetails.IsVisible = (_vm.Stage == "Budget Extra Income");
+        FinalBudgetDetails.IsVisible = (_vm.Stage == "Finalise Budget");
 
         lblSettingsHeader.TextColor = (_vm.Stage == "Budget Settings") ? (Color)Primary : (Color)Tertiary;
         lblBudgetHeader.TextColor = (_vm.Stage == "Budget Details") ? (Color)Primary : (Color)Tertiary;
         lblBillsHeader.TextColor = (_vm.Stage == "Budget Outgoings") ? (Color)Primary : (Color)Tertiary;
         lblSavingsHeader.TextColor = (_vm.Stage == "Budget Savings") ? (Color)Primary : (Color)Tertiary;
         lblIncomesHeader.TextColor = (_vm.Stage == "Budget Extra Income") ? (Color)Primary : (Color)Tertiary;
+        lblFinalBudgetHeader.TextColor = (_vm.Stage == "Finalise Budget") ? (Color)Primary : (Color)Tertiary;
 
         if (_vm.Stage == "Budget Settings")
         {
@@ -212,8 +214,16 @@ public partial class CreateNewBudget : ContentPage
             UpdateIncomeYesNo("");
             await MainScrollView.ScrollToAsync(0, 335, true);
         }
+        else if (_vm.Stage == "Finalise Budget")
+        {
+            await MainScrollView.ScrollToAsync(0, 395, true);
+        }
     }
-
+    private void GoToStageFinalBudget_Tapped(object sender, TappedEventArgs e)
+    {
+        _vm.Stage = "Finalise Budget";
+        UpdateStageDisplay();
+    }
     private void GoToStageSettings_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Budget Settings";
@@ -433,7 +443,7 @@ public partial class CreateNewBudget : ContentPage
     {
         if (ValidateBudgetIncome())
         {
-            _vm.Stage = "Budget Extra Income";
+            _vm.Stage = "Finalise Budget";
             UpdateStageDisplay();
 
             _vm.SaveStage("Budget Extra Income");
@@ -455,22 +465,22 @@ public partial class CreateNewBudget : ContentPage
     {
         bool IsValid = true;
 
-        if (_vm.SavingsYesNoSelect != "No")
+        if (_vm.IncomeYesNoSelect != "No")
         {
-            if (_vm.SavingsYesNoSelect == "Yes")
+            if (_vm.IncomeYesNoSelect == "Yes")
             {
-                MessagevalidatorSavingsYesNo.Text = "Please add a saving or select no to continue!";
+                MessagevalidatorIncomeYesNo.Text = "Please add an income or select no to continue!";
             }
             else
             {
-                MessagevalidatorSavingsYesNo.Text = "Let us know if you want to add any savings or not.";
+                MessagevalidatorIncomeYesNo.Text = "Let us know if you want to add any incomes or not.";
             }
             IsValid = false;
-            validatorSavingsYesNo.IsVisible = true;
+            validatorIncomeYesNo.IsVisible = true;
         }
         else
         {
-            validatorSavingsYesNo.IsVisible = false;
+            validatorIncomeYesNo.IsVisible = false;
         }
 
         return IsValid;
@@ -511,6 +521,7 @@ public partial class CreateNewBudget : ContentPage
         validatorOfEveryMonthDuration.IsVisible = false;
         validatorOutgoingsYesNo.IsVisible = false;
         validatorSavingsYesNo.IsVisible = false;
+        validatorIncomeYesNo.IsVisible = false;
     }  
 
     private bool ValidateBudgetOutgoings()
@@ -546,6 +557,11 @@ public partial class CreateNewBudget : ContentPage
     private async void AddSavingsNewBudget_Clicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync($"{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}");
+    }
+
+    private async void AddIncomeNewBudget_Clicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync($"{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&SavingID={0}");
     }
 
     private async void BankBalanceInfo(object sender, EventArgs e)
@@ -1041,6 +1057,11 @@ public partial class CreateNewBudget : ContentPage
             if(Result == "OK")
             {
                 _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+
+                if (_vm.Budget.Bills.Count == 0)
+                {
+                    vslOutgoingList.IsVisible = false;
+                }
             }            
         }
     }
@@ -1098,6 +1119,11 @@ public partial class CreateNewBudget : ContentPage
             if (Result == "OK")
             {
                 _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+
+                if (_vm.Budget.Savings.Count == 0)
+                {
+                    vslSavingList.IsVisible = false;
+                }
             }
         }
     }
@@ -1179,9 +1205,9 @@ public partial class CreateNewBudget : ContentPage
         var vcIncome = (ViewCell)sender;
         var Income = (IncomeEvents)vcIncome.BindingContext;
 
-        Label lblIncomeheader = (Label)vcSaving.FindByName("lblIncomeheader");
-        Label lblIncomeAmount = (Label)vcSaving.FindByName("lblIncomeAmount");
-        Label lblIncomeDate = (Label)vcSaving.FindByName("lblIncomeDate");
+        Label lblIncomeheader = (Label)vcIncome.FindByName("lblIncomeheader");
+        Label lblIncomeAmount = (Label)vcIncome.FindByName("lblIncomeAmount");
+        Label lblIncomeDate = (Label)vcIncome.FindByName("lblIncomeDate");
 
         if (Income.RecurringIncomeType == "OfEveryMonth")
         {
@@ -1197,7 +1223,7 @@ public partial class CreateNewBudget : ContentPage
         }
 
         lblIncomeAmount.Text = string.Format("{0:c}     ",Income.IncomeAmount);
-        lblIncomeDate.Text = Income.DateOfIncomeEvent.ToStrng("dd MMM yy");
+        lblIncomeDate.Text = Income.DateOfIncomeEvent.ToString("dd MMM yy");
     }
 
     private async void EditBudgetIncome_Tapped(object sender, TappedEventArgs e)
@@ -1218,6 +1244,11 @@ public partial class CreateNewBudget : ContentPage
             if (Result == "OK")
             {
                 _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+
+                if (_vm.Budget.IncomeEvents.Count == 0)
+                {
+                    vslIncomeList.IsVisible = false;
+                }
             }
         }
     }

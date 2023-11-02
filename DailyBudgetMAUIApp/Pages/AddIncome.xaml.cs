@@ -55,19 +55,6 @@ public partial class AddIncome : ContentPage
 
             if (_vm.Income.IsRecurringIncome)
             {
-                btnOneOffIncome_Clicked(new object(), new EventArgs());
-                if(_vm.Income.IsInstantActive ?? false)
-                {
-                    UpdateIncomeActiveYesNo("Yes");
-                }
-                else
-                {
-                    UpdateIncomeActiveYesNo("No");
-                }
-
-            }
-            else
-            {
                 btnRecurringIncome_Clicked(new object(), new EventArgs());
                 if (_vm.Income.IsInstantActive ?? false)
                 {
@@ -77,8 +64,22 @@ public partial class AddIncome : ContentPage
                 {
                     UpdateIncomeActiveYesNo("No");
                 }
-
                 UpdateSelectedOption(_vm.Income.RecurringIncomeType);
+
+            }
+            else
+            {
+                btnOneOffIncome_Clicked(new object(), new EventArgs());
+                
+                if (_vm.Income.IsInstantActive ?? false)
+                {
+                    UpdateIncomeActiveYesNo("Yes");
+                }
+                else
+                {
+                    UpdateIncomeActiveYesNo("No");
+                }
+                
             }
 
         }
