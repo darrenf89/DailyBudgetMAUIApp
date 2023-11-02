@@ -209,6 +209,7 @@ public partial class CreateNewBudget : ContentPage
         }
         else if (_vm.Stage == "Budget Extra Income")
         {
+            UpdateIncomeYesNo("");
             await MainScrollView.ScrollToAsync(0, 335, true);
         }
     }
@@ -426,6 +427,53 @@ public partial class CreateNewBudget : ContentPage
             //await MainScrollView.ScrollToAsync(0, 275, true);
         }
 
+    }
+
+    private void ContinueBudgetIncomeButton_Clicked(object sender, EventArgs e)
+    {
+        if (ValidateBudgetIncome())
+        {
+            _vm.Stage = "Budget Extra Income";
+            UpdateStageDisplay();
+
+            _vm.SaveStage("Budget Extra Income");
+
+            //await MainScrollView.ScrollToAsync(0, 275, true);
+        }
+
+    }
+
+    private void BackBudgetIncomeButton_Clicked(object sender, EventArgs e)
+    {
+        _vm.Stage = "Budget Savings";
+        UpdateStageDisplay();
+
+        //await MainScrollView.ScrollToAsync(0, 155, true);
+    }
+
+    private bool ValidateBudgetIncome()
+    {
+        bool IsValid = true;
+
+        if (_vm.SavingsYesNoSelect != "No")
+        {
+            if (_vm.SavingsYesNoSelect == "Yes")
+            {
+                MessagevalidatorSavingsYesNo.Text = "Please add a saving or select no to continue!";
+            }
+            else
+            {
+                MessagevalidatorSavingsYesNo.Text = "Let us know if you want to add any savings or not.";
+            }
+            IsValid = false;
+            validatorSavingsYesNo.IsVisible = true;
+        }
+        else
+        {
+            validatorSavingsYesNo.IsVisible = false;
+        }
+
+        return IsValid;
     }
 
     private bool ValidateBudgetSavings()
@@ -800,6 +848,16 @@ public partial class CreateNewBudget : ContentPage
         UpdateSavingsYesNo("No");
     }
 
+    private void IncomeYesSelect_Tapped(object sender, TappedEventArgs e)
+    {
+        UpdateIncomeYesNo("Yes");
+    }
+
+    private void IncomeNoSelect_Tapped(object sender, TappedEventArgs e)
+    {
+        UpdateIncomeYesNo("No");
+    }
+
     private void UpdateBillsYesNo(string option) 
     {
         ClearBudgetValidator();
@@ -911,6 +969,63 @@ public partial class CreateNewBudget : ContentPage
             btnAddSavingsNewBudget.IsVisible = false;
 
             _vm.SavingsYesNoSelect = "";
+        }
+    }
+
+    private void UpdateIncomeYesNo(string option)
+    {
+        ClearBudgetValidator();
+
+        Application.Current.Resources.TryGetValue("Success", out var Success);
+        Application.Current.Resources.TryGetValue("Light", out var Light);
+        Application.Current.Resources.TryGetValue("White", out var White);
+        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+
+        if (option == "Yes")
+        {
+            vslIncomeYesSelect.BackgroundColor = (Color)Success;
+            vslIncomeNoSelect.BackgroundColor = (Color)Light;
+
+            lblIncomeYes.FontAttributes = FontAttributes.Bold;
+            lblIncomeNo.FontAttributes = FontAttributes.None;
+
+            lblIncomeYes.TextColor = (Color)White;
+            lblIncomeNo.TextColor = (Color)Gray900;
+
+            btnAddIncomeNewBudget.IsVisible = true;
+
+            _vm.IncomeYesNoSelect = "Yes";
+
+        }
+        else if (option == "No")
+        {
+            vslIncomeYesSelect.BackgroundColor = (Color)Light;
+            vslIncomeNoSelect.BackgroundColor = (Color)Success;
+
+            lblIncomeYes.FontAttributes = FontAttributes.None;
+            lblIncomeNo.FontAttributes = FontAttributes.Bold;
+
+            lblIncomeYes.TextColor = (Color)Gray900;
+            lblIncomeNo.TextColor = (Color)White;
+
+            btnAddIncomeNewBudget.IsVisible = false;
+
+            _vm.IncomeYesNoSelect = "No";
+        }
+        else
+        {
+            vslIncomeYesSelect.BackgroundColor = (Color)Light;
+            vslIncomeNoSelect.BackgroundColor = (Color)Light;
+
+            lblIncomeYes.FontAttributes = FontAttributes.None;
+            lblIncomeNo.FontAttributes = FontAttributes.None;
+
+            lblIncomeYes.TextColor = (Color)Gray900;
+            lblIncomeNo.TextColor = (Color)Gray900;
+
+            btnAddIncomeNewBudget.IsVisible = false;
+
+            _vm.IncomeYesNoSelect = "";
         }
     }
 
@@ -1056,6 +1171,54 @@ public partial class CreateNewBudget : ContentPage
 
             lblSavingCurrent.IsVisible = true;
             lblSavingRegValues.IsVisible = true;
+        }
+    }
+
+    private void IncomesViewCell_Appearing(object sender, EventArgs e)
+    {
+        var vcIncome = (ViewCell)sender;
+        var Income = (IncomeEvents)vcIncome.BindingContext;
+
+        Label lblIncomeheader = (Label)vcSaving.FindByName("lblIncomeheader");
+        Label lblIncomeAmount = (Label)vcSaving.FindByName("lblIncomeAmount");
+        Label lblIncomeDate = (Label)vcSaving.FindByName("lblIncomeDate");
+
+        if (Income.RecurringIncomeType == "OfEveryMonth")
+        {
+            lblIncomeheader.Text = "Monthly Outgoing Added";
+        }
+        else if(Income.RecurringIncomeType == "Everynth")
+        {
+            lblIncomeheader.Text = "Every x " + Income.RecurringIncomeDuration + " Outgoing Added";
+        }
+        else
+        {
+            lblIncomeheader.Text = "One-off Income Added";
+        }
+
+        lblIncomeAmount.Text = string.Format("{0:c}     ",Income.IncomeAmount);
+        lblIncomeDate.Text = Income.DateOfIncomeEvent.ToStrng("dd MMM yy");
+    }
+
+    private async void EditBudgetIncome_Tapped(object sender, TappedEventArgs e)
+    {
+        var Income = (IncomeEvents)e.Parameter;
+
+        await Shell.Current.GoToAsync($"{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={Income.IncomeEventID}");
+    }
+
+    private async void DeleteBudgetIncome_Tapped(object sender, TappedEventArgs e)
+    {
+        var Income = (IncomeEvents)e.Parameter;
+
+        bool result = await DisplayAlert("Income", "Are you sure you want to delete your Income " + Income.IncomeName.ToString(), "Yes, continue", "Cancel");
+        if (result)
+        {
+            string Result = _ds.DeleteIncome(Income.IncomeEventID).Result;
+            if (Result == "OK")
+            {
+                _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+            }
         }
     }
 
