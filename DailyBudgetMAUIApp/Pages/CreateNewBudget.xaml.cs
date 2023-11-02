@@ -139,6 +139,16 @@ public partial class CreateNewBudget : ContentPage
                 vslOutgoingList.IsVisible = false;
             }
 
+            if(_vm.Budget.Savings.Count == 0)
+            {
+                vslSavingList.IsVisible = false;
+            }
+
+            if(_vm.Budget.IncomeEvents.Count == 0)
+            {
+                vslIncomeList.IsVisible = false;
+            }
+
         }
         catch (Exception ex)
         {

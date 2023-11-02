@@ -66,7 +66,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get User salt in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -111,7 +111,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to register user in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -292,7 +292,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Budget Details in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get Budget next income pay day in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -329,7 +329,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Budget Details in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get Budget day between pay in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -366,7 +366,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Budget Details in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get Budget last updated date in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -454,7 +454,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Budget Settings in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get Budget Settings values in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -491,7 +491,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to  Create new Budget in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -541,7 +541,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get currency symbols in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -591,7 +591,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get curreny placements in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
 
@@ -642,7 +642,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get date format by string in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -692,7 +692,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get date format by id in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -743,7 +743,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get get number format by id in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -793,7 +793,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get get number format in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -827,7 +827,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get patch budget in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
 
@@ -861,7 +861,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to update budget settings in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -911,7 +911,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get bill by id in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -945,7 +945,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to save new bill in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -979,7 +979,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to update bill in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -1013,7 +1013,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to patch bill in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
 
@@ -1060,7 +1060,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Create new Budget in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to delete bill in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -1110,7 +1110,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Saving in DataRestServices --> {ex.Message}");
+                Debug.WriteLine($"Error Trying to get Saving by id in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -1256,6 +1256,205 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to get Delete Saving in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<IncomeEvents> GetIncomeFromID(int IncomeID)
+        {
+            IncomeEvents Income = new IncomeEvents();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/incomes/getincomefromid/{IncomeID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        Income = serializer.Deserialize<IncomeEvents>(reader);
+                    }
+
+                    return Income;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Income Event by ID in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string>SaveNewIncome(IncomeEvents Income, int BudgetID)
+        {
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<IncomeEvents>(Income, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/incomes/savenewincome/{BudgetID}", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }       
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to save new income in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string>UpdateIncome(IncomeEvents Income)
+        {
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<IncomeEvents>(Income, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/incomes/updateincome", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }       
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying update income in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> PatchIncome(int IncomeID, List<PatchDoc> PatchDoc)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response =  _httpClient.PatchAsync($"{_url}/incomes/patchincome/{IncomeID}", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying patch income in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+
+        }
+
+        public async Task<string> DeleteIncome(int IncomeID)
+        {
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/incomes/deleteincome/{IncomeID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            return "OK";
+                        }
+                                                
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get delete income in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }

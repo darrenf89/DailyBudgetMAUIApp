@@ -73,7 +73,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                string SuccessCheck = "";
+                string SuccessCheck = _ds.SaveNewIncome(Income, BudgetID);
                 if (SuccessCheck == "OK")
                 {
 
@@ -111,7 +111,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                string SuccessCheck = "";
+                string SuccessCheck = _ds.UpdateIncome(Income).Result;
                 if (SuccessCheck == "OK")
                 {
                     var stack = Application.Current.MainPage.Navigation.NavigationStack;

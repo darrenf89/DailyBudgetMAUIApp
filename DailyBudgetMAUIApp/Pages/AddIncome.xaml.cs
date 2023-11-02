@@ -39,6 +39,7 @@ public partial class AddIncome : ContentPage
 
         if (_vm.IncomeID == 0)
         {
+
             _vm.Title = "Add New Income";
             _vm.Income = new IncomeEvents();
             btnAddIncome.IsVisible = true;
@@ -46,6 +47,7 @@ public partial class AddIncome : ContentPage
         }
         else
         {
+            _vm.Income = _ds.GetIncomeFromID(_vm.IncomeID).Result;
             btnUpdateIncome.IsVisible = true;
             _vm.Title = $"Update Income {_vm.Income.IncomeName}";
             SelectIncomeType.IsVisible = false;
