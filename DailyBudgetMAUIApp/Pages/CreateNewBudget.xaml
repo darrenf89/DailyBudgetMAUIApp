@@ -182,28 +182,28 @@
                 <VerticalStackLayout Margin="0,0,0,10">
                     <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,5,0" HeightRequest="45">
                         <Grid RowDefinitions="*" ColumnDefinitions="*,*,*,*" VerticalOptions="Center">
-                            <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="{DynamicResource Light}">
+                            <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="{DynamicResource White}">
                                 <Label Margin="0,11,0,0" HeightRequest="55" x:Name="lblOption1" Text="Option 1" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                 </Label>
                                 <VerticalStackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="Option1Select_Tapped"/>
                                 </VerticalStackLayout.GestureRecognizers>
                             </VerticalStackLayout>
-                            <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="{DynamicResource Light}">
+                            <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="{DynamicResource White}">
                                 <Label Margin="0,11,0,0" HeightRequest="55" x:Name="lblOption2" Text="Option 2" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                 </Label>
                                 <VerticalStackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="Option2Select_Tapped"/>
                                 </VerticalStackLayout.GestureRecognizers>
                             </VerticalStackLayout>
-                            <VerticalStackLayout x:Name="vslOption3Select" Grid.Column="2" BackgroundColor="{DynamicResource Light}" >
+                            <VerticalStackLayout x:Name="vslOption3Select" Grid.Column="2" BackgroundColor="{DynamicResource White}" >
                                 <Label Margin="0,11,0,0" HeightRequest="55" x:Name="lblOption3" Text="Option 3" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                 </Label>
                                 <VerticalStackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="Option3Select_Tapped"/>
                                 </VerticalStackLayout.GestureRecognizers>
                             </VerticalStackLayout>
-                            <VerticalStackLayout x:Name="vslOption4Select" Grid.Column="3" BackgroundColor="{DynamicResource Light}" >
+                            <VerticalStackLayout x:Name="vslOption4Select" Grid.Column="3" BackgroundColor="{DynamicResource White}" >
                                 <Label Margin="0,11,0,0" HeightRequest="55" x:Name="lblOption4" Text="Option 4" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                 </Label>
                                 <VerticalStackLayout.GestureRecognizers>

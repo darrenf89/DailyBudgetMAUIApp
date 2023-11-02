@@ -644,9 +644,9 @@ public partial class CreateNewBudget : ContentPage
         if (option == "Everynth")
         {
             vslOption1Select.BackgroundColor = (Color)Success;
-            vslOption2Select.BackgroundColor = (Color)Light;
-            vslOption3Select.BackgroundColor = (Color)Light;
-            vslOption4Select.BackgroundColor = (Color)Light;
+            vslOption2Select.BackgroundColor = (Color)White;
+            vslOption3Select.BackgroundColor = (Color)White;
+            vslOption4Select.BackgroundColor = (Color)White;
 
             lblOption1.FontAttributes = FontAttributes.Bold;
             lblOption2.FontAttributes = FontAttributes.None;
@@ -671,10 +671,10 @@ public partial class CreateNewBudget : ContentPage
         }
         else if (option == "WorkingDays")
         {
-            vslOption1Select.BackgroundColor = (Color)Light;
+            vslOption1Select.BackgroundColor = (Color)White;
             vslOption2Select.BackgroundColor = (Color)Success;
-            vslOption3Select.BackgroundColor = (Color)Light;
-            vslOption4Select.BackgroundColor = (Color)Light;
+            vslOption3Select.BackgroundColor = (Color)White;
+            vslOption4Select.BackgroundColor = (Color)White;
 
             lblOption1.FontAttributes = FontAttributes.None;
             lblOption2.FontAttributes = FontAttributes.Bold;
@@ -697,10 +697,10 @@ public partial class CreateNewBudget : ContentPage
         }
         else if (option == "OfEveryMonth")
         {
-            vslOption1Select.BackgroundColor = (Color)Light;
-            vslOption2Select.BackgroundColor = (Color)Light;
+            vslOption1Select.BackgroundColor = (Color)White;
+            vslOption2Select.BackgroundColor = (Color)White;
             vslOption3Select.BackgroundColor = (Color)Success;
-            vslOption4Select.BackgroundColor = (Color)Light;
+            vslOption4Select.BackgroundColor = (Color)White;
 
             lblOption1.FontAttributes = FontAttributes.None;
             lblOption2.FontAttributes = FontAttributes.None;
@@ -724,9 +724,9 @@ public partial class CreateNewBudget : ContentPage
         else if (option == "LastOfTheMonth")
         {
 
-            vslOption1Select.BackgroundColor = (Color)Light;
-            vslOption2Select.BackgroundColor = (Color)Light;
-            vslOption3Select.BackgroundColor = (Color)Light;
+            vslOption1Select.BackgroundColor = (Color)White;
+            vslOption2Select.BackgroundColor = (Color)White;
+            vslOption3Select.BackgroundColor = (Color)White;
             vslOption4Select.BackgroundColor = (Color)Success;
 
             lblOption1.FontAttributes = FontAttributes.None;
@@ -750,10 +750,10 @@ public partial class CreateNewBudget : ContentPage
         }
         else
         {
-            vslOption1Select.BackgroundColor = (Color)Light;
-            vslOption2Select.BackgroundColor = (Color)Light;
-            vslOption3Select.BackgroundColor = (Color)Light;
-            vslOption4Select.BackgroundColor = (Color)Light;
+            vslOption1Select.BackgroundColor = (Color)White;
+            vslOption2Select.BackgroundColor = (Color)White;
+            vslOption3Select.BackgroundColor = (Color)White;
+            vslOption4Select.BackgroundColor = (Color)White;
 
             lblOption1.FontAttributes = FontAttributes.None;
             lblOption2.FontAttributes = FontAttributes.None;
