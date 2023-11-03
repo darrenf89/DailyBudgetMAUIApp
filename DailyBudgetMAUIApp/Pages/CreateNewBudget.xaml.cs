@@ -170,6 +170,7 @@ public partial class CreateNewBudget : ContentPage
         Application.Current.Resources.TryGetValue("Gray300", out var Gray300);
         Application.Current.Resources.TryGetValue("Primary", out var Primary);
         Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+        Application.Current.Resources.TryGetValue("Info", out var Info);
 
         bvStage1.Color = (_vm.Stage == "Budget Settings" || _vm.Stage == "Budget Details" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
         bvStage2.Color = (_vm.Stage == "Budget Details" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
@@ -193,31 +194,97 @@ public partial class CreateNewBudget : ContentPage
 
         if (_vm.Stage == "Budget Settings")
         {
+            if(_vm.Budget.Stage < 1)
+            {
+                _vm.Budget.Stage = 1;
+            }
             await MainScrollView.ScrollToAsync(0, 95, true);
         }
         else if (_vm.Stage == "Budget Details")
         {
+            if(_vm.Budget.Stage < 2)
+            {
+                _vm.Budget.Stage = 2;
+            }
             await MainScrollView.ScrollToAsync(0, 155, true);
         }
         else if (_vm.Stage == "Budget Outgoings")
         {
-            UpdateBillsYesNo("");
+            if(_vm.Budget.Stage < 3)
+            {
+                _vm.Budget.Stage = 3;
+            }
+
+            if(_vm.Budget.Stage > 3)
+            {
+                UpdateBillsYesNo("No");
+            }
+            else
+            {
+                UpdateBillsYesNo("");
+            }
+            
             await MainScrollView.ScrollToAsync(0, 215, true);
         }
         else if (_vm.Stage == "Budget Savings")
         {
-            UpdateSavingsYesNo("");
+            if(_vm.Budget.Stage < 4)
+            {
+                _vm.Budget.Stage = 4;
+            }
+
+            if(_vm.Budget.Stage > 4)
+            {
+                UpdateSavingsYesNo("No");
+            }
+            else
+            {
+                UpdateSavingsYesNo("");
+            }
+
             await MainScrollView.ScrollToAsync(0, 275, true);
         }
         else if (_vm.Stage == "Budget Extra Income")
         {
-            UpdateIncomeYesNo("");
+            if(_vm.Budget.Stage < 5)
+            {
+                _vm.Budget.Stage = 5;
+            }
+
+            if(_vm.Budget.Stage > 5)
+            {
+                UpdateIncomeYesNo("No");
+            }
+            else
+            {
+                UpdateIncomeYesNo("");
+            }
+
             await MainScrollView.ScrollToAsync(0, 335, true);
         }
         else if (_vm.Stage == "Finalise Budget")
         {
+            if(_vm.Budget.Stage < 6)
+            {
+                _vm.Budget.Stage = 6;
+            }
+
             await MainScrollView.ScrollToAsync(0, 395, true);
         }
+
+        grdSettingsHeader.IsEnabled =_vm.Budget.Stage > 0;
+        grdDetailsHeader.IsEnabled =_vm.Budget.Stage > 1;
+        grdBillsHeader.IsEnabled =_vm.Budget.Stage > 2;
+        grdSavingsHeader.IsEnabled =_vm.Budget.Stage > 3;
+        grdIncomeHeader.IsEnabled =_vm.Budget.Stage > 4;
+        grdFinalHeader.IsEnabled =_vm.Budget.Stage > 5;
+
+        lblSettingsEdit.TextColor = (_vm.Budget.Stage > 0) ? (Color)Info : (Color)Gray300;
+        lblDetailsEdit.TextColor = (_vm.Budget.Stage > 1) ? (Color)Info : (Color)Gray300;
+        lblBillsEdit.TextColor = (_vm.Budget.Stage > 2) ? (Color)Info : (Color)Gray300;
+        lblSavingsEdit.TextColor = (_vm.Budget.Stage > 3) ? (Color)Info : (Color)Gray300;
+        lblIncomeEdit.TextColor = (_vm.Budget.Stage > 4) ? (Color)Info : (Color)Gray300;
+        lblFinalEdit.TextColor = (_vm.Budget.Stage > 5) ? (Color)Info : (Color)Gray300;
     }
     private void GoToStageFinalBudget_Tapped(object sender, TappedEventArgs e)
     {
@@ -328,9 +395,10 @@ public partial class CreateNewBudget : ContentPage
                 _vm.LastOfTheMonthDuration = pckrLastOfTheMonthDuration.SelectedItem.ToString() ?? "Monday";
             }
 
+            UpdateStageDisplay();
+
             _vm.SaveStage("Budget Details");
 
-            UpdateStageDisplay();
 
             //await MainScrollView.ScrollToAsync(0, 215, true);
         }

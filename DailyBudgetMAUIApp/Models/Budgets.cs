@@ -63,5 +63,7 @@ namespace DailyBudgetMAUIApp.Models
         private decimal? _startDayDailyAmount ;
         [ObservableProperty]
         private ErrorClass? _error  = null;
+        [ObservableProperty]
+        private int _stage = 1;
     }
 }

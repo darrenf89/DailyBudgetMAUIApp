@@ -168,6 +168,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     BudgetUpdate.Add(BudgetName);
                     await _ds.PatchBudget(BudgetID, BudgetUpdate);
+
                     break;
 
                 case "Budget Settings":
@@ -183,6 +184,20 @@ namespace DailyBudgetMAUIApp.ViewModels
                     await _ds.UpdateBudgetSettings(BudgetID, BudgetSettings);
 
                     App.CurrentSettings.IsUpdatedFlag = true;
+
+                    if(Budget.Stage == 2)
+                    {
+                        PatchDoc BudgetStage = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/Stage",
+                            value = Budget.Stage
+                        };
+
+                        BudgetUpdate.Add(BudgetStage);
+                        await _ds.PatchBudget(BudgetID, BudgetUpdate);
+                    }
+
 
                     break;
                 case "Budget Details":
@@ -373,6 +388,18 @@ namespace DailyBudgetMAUIApp.ViewModels
                         }
                     }
 
+                    if(Budget.Stage == 3)
+                    {
+                        PatchDoc BudgetStage = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/Stage",
+                            value = Budget.Stage
+                        };
+
+                        BudgetUpdate.Add(BudgetStage);
+                    }
+
                     if (BudgetUpdate.Count != 0)
                     {
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
@@ -381,11 +408,48 @@ namespace DailyBudgetMAUIApp.ViewModels
                     break;
                 case "Budget Outgoings":
 
+                    if(Budget.Stage == 4)
+                    {
+                        PatchDoc BudgetStage = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/Stage",
+                            value = Budget.Stage
+                        };
+
+                        BudgetUpdate.Add(BudgetStage);
+                        await _ds.PatchBudget(BudgetID, BudgetUpdate);
+                    }
                     break;
                 case "Budget Savings":
 
+                    if(Budget.Stage == 5)
+                    {
+                        PatchDoc BudgetStage = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/Stage",
+                            value = Budget.Stage
+                        };
+
+                        BudgetUpdate.Add(BudgetStage);
+                        await _ds.PatchBudget(BudgetID, BudgetUpdate);
+                    }
                     break;
                 case "Budget Extra Income":
+                
+                    if(Budget.Stage == 6)
+                    {
+                        PatchDoc BudgetStage = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/Stage",
+                            value = Budget.Stage
+                        };
+
+                        BudgetUpdate.Add(BudgetStage);
+                        await _ds.PatchBudget(BudgetID, BudgetUpdate);
+                    }
 
                     break;
                 }                
