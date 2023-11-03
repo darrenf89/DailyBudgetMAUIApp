@@ -356,36 +356,36 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     if(UpdateBudgetFlag)
                     {
-                        decimal MoneyAvailableBalance = Budget.MoneyAvailableBalance ?? 0;
-                        decimal LeftToSpendBalance = Budget.LeftToSpendBalance ?? 0;
+                        // decimal MoneyAvailableBalance = Budget.MoneyAvailableBalance ?? 0;
+                        // decimal LeftToSpendBalance = Budget.LeftToSpendBalance ?? 0;
 
-                        Budgets BudgetRef = Budget;
-                        _pt.UpdateBudget(ref BudgetRef);
-                        Budget = BudgetRef;
+                        // Budgets BudgetRef = Budget;
+                        // _pt.UpdateBudget(ref BudgetRef);
+                        // Budget = BudgetRef;
 
-                        if(MoneyAvailableBalance != Budget.MoneyAvailableBalance)
-                        {
-                            Budget.MoneyAvailableBalance = MoneyAvailableBalance;
-                            PatchDoc MoneyAvailableBalancePatch = new PatchDoc
-                            {
-                                op = "replace",
-                                path = "/MoneyAvailableBalance",
-                                value = Budget.MoneyAvailableBalance
-                            };
-                            BudgetUpdate.Add(MoneyAvailableBalancePatch);
-                        }
+                        // if(MoneyAvailableBalance != Budget.MoneyAvailableBalance)
+                        // {
+                        //     Budget.MoneyAvailableBalance = MoneyAvailableBalance;
+                        //     PatchDoc MoneyAvailableBalancePatch = new PatchDoc
+                        //     {
+                        //         op = "replace",
+                        //         path = "/MoneyAvailableBalance",
+                        //         value = Budget.MoneyAvailableBalance
+                        //     };
+                        //     BudgetUpdate.Add(MoneyAvailableBalancePatch);
+                        // }
 
-                        if(LeftToSpendBalance != Budget.LeftToSpendBalance)
-                        {
-                            Budget.LeftToSpendBalance = LeftToSpendBalance;
-                            PatchDoc LeftToSpendBalancePatch = new PatchDoc
-                            {
-                                op = "replace",
-                                path = "/LeftToSpendBalance",
-                                value = Budget.LeftToSpendBalance
-                            };
-                            BudgetUpdate.Add(LeftToSpendBalancePatch);
-                        }
+                        // if(LeftToSpendBalance != Budget.LeftToSpendBalance)
+                        // {
+                        //     Budget.LeftToSpendBalance = LeftToSpendBalance;
+                        //     PatchDoc LeftToSpendBalancePatch = new PatchDoc
+                        //     {
+                        //         op = "replace",
+                        //         path = "/LeftToSpendBalance",
+                        //         value = Budget.LeftToSpendBalance
+                        //     };
+                        //     BudgetUpdate.Add(LeftToSpendBalancePatch);
+                        // }
                     }
 
                     if(Budget.Stage == 3)
@@ -437,7 +437,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     break;
                 case "Budget Extra Income":
-                
+
                     if(Budget.Stage == 6)
                     {
                         PatchDoc BudgetStage = new PatchDoc
