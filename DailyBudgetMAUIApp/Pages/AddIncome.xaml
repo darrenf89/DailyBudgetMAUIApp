@@ -21,25 +21,15 @@
         </Grid>
     </Shell.TitleView>
     <ScrollView>
-        <VerticalStackLayout VerticalOptions="Start">
-            <VerticalStackLayout Margin="20,20,20,4">
+        <VerticalStackLayout VerticalOptions="Start" >
+            <VerticalStackLayout Margin="20,20,20,4" IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}">
                 <Label Text="{Binding Income.IncomeName}" IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Tertiary}"/>
-                <Label Text="Give your income a name ..." IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Secondary}"/>
                 <VerticalStackLayout.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding ChangeIncomeNameCommand}"/>
                 </VerticalStackLayout.GestureRecognizers>
             </VerticalStackLayout>
             <VerticalStackLayout Margin="0,0,0,16">
-                <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Gray200}" IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}"/>
                 <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Tertiary}" IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"/>
-                <HorizontalStackLayout IsVisible="false" Margin="10,2,0,0" x:Name="validatorIncomeName" HorizontalOptions="Center">
-                    <Image>
-                        <Image.Source>
-                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
-                        </Image.Source>
-                    </Image>
-                    <Label Text="You have to name your Income, it like a pet easier to call that way" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
-                </HorizontalStackLayout>
             </VerticalStackLayout>
             <Border Style="{DynamicResource AddEditTransContent}" x:Name="brdIncomeSelection" Margin="20,5,20,25">
                 <VerticalStackLayout>
@@ -230,6 +220,14 @@
                 <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryInfoButton}" x:Name="btnAddIncome" Text="Add New Outgoing" TextColor="White"  Clicked="AddIncome_Clicked" IsVisible="false" BackgroundColor="{DynamicResource Success}"/>
                 <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryInfoButton}" x:Name="btnUpdateIncome" Text="Update Outgoing" TextColor="White"  Clicked="UpdateIncome_Clicked" IsVisible="false" BackgroundColor="{DynamicResource Success}"/>
             </Grid>
+            <HorizontalStackLayout IsVisible="false" Margin="10,5,0,0" x:Name="validatorIncomeName" HorizontalOptions="Center">
+                <Image>
+                    <Image.Source>
+                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                    </Image.Source>
+                </Image>
+                <Label Text="Give your income a name before continuing!" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+            </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

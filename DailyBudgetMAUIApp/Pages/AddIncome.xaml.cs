@@ -87,16 +87,17 @@ public partial class AddIncome : ContentPage
         double IncomeAmount = (double?)_vm.Income.IncomeAmount ?? 0;
         entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
 
-        if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
-        {
-            _vm.ChangeIncomeName();
-        }
-
         base.OnAppearing();
     }
 
     private void SaveIncome_Clicked(object sender, EventArgs e)
     {
+        
+        if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
+        {
+            _vm.ChangeIncomeName();
+        }
+
         if (ValidateIncomeDetails())
         {
             SaveIncomeTypeOptions();
@@ -397,6 +398,11 @@ public partial class AddIncome : ContentPage
 
     private async void AddIncome_Clicked(object sender, EventArgs e)
     {
+        if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
+        {
+            _vm.ChangeIncomeName();
+        }
+
         if(ValidateIncomeDetails())
         {
             SaveIncomeTypeOptions();
@@ -407,6 +413,11 @@ public partial class AddIncome : ContentPage
     }
     private async void UpdateIncome_Clicked(object sender, EventArgs e)
     {
+        if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
+        {
+            _vm.ChangeIncomeName();
+        }
+
         if (ValidateIncomeDetails())
         {
             SaveIncomeTypeOptions();

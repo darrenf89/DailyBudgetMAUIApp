@@ -97,15 +97,15 @@ public partial class AddSaving : ContentPage
         
         entSavingAmount.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);
 
+    }
+
+    private async void SaveSaving_Clicked(object sender, EventArgs e)
+    {
         if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
         {
             _vm.ChangeSavingsName();
         }
 
-    }
-
-    private async void SaveSaving_Clicked(object sender, EventArgs e)
-    {
         if (ValidateSavingDetails())
         {
             if(_vm.SavingID == 0)
@@ -487,6 +487,11 @@ public partial class AddSaving : ContentPage
 
     private void btnUpdateSaving_Clicked(object sender, EventArgs e)
     {
+        if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
+        {
+            _vm.ChangeSavingsName();
+        }
+
         if(ValidateSavingDetails())
         {
             _vm.UpdateSaving();
@@ -495,6 +500,11 @@ public partial class AddSaving : ContentPage
 
     private void btnAddSaving_Clicked(object sender, EventArgs e)
     {
+        if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
+        {
+            _vm.ChangeSavingsName();
+        }
+
         if (ValidateSavingDetails())
         {
             _vm.AddSaving();

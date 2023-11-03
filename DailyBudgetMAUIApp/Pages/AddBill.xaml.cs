@@ -89,11 +89,6 @@ public partial class AddBill : ContentPage
         double RegularValue = (double?)_vm.Bill.RegularBillValue ?? 0;
         lblRegularBillValue.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);
 
-        if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
-        {
-            _vm.ChangeBillName();
-        }
-
         base.OnAppearing();
 
     }
@@ -301,6 +296,11 @@ public partial class AddBill : ContentPage
     }
     private async void AddBill_Clicked(object sender, EventArgs e)
     {
+        if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+        {
+            _vm.ChangeBillName();
+        }
+
         if(ValidateBillDetails())
         {
             SaveBillTypeOptions();
@@ -310,6 +310,11 @@ public partial class AddBill : ContentPage
     }
     private async void UpdateBill_Clicked(object sender, EventArgs e)
     {
+        if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+        {
+            _vm.ChangeBillName();
+        }
+
         if(ValidateBillDetails())
         {
             SaveBillTypeOptions();
@@ -320,6 +325,12 @@ public partial class AddBill : ContentPage
 
     private async void SaveBill_Clicked(object sender, EventArgs e)
     {
+
+        if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+        {
+            _vm.ChangeBillName();
+        }
+
         if(ValidateBillDetails())
         {
             SaveBillTypeOptions();
