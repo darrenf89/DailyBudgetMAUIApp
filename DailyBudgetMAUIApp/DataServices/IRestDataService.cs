@@ -44,7 +44,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> UpdateIncome(IncomeEvents Income);
         public Task<string> PatchIncome(int IncomeID, List<PatchDoc> PatchDoc);
         public Task<string> DeleteIncome(int IncomeID);
-       
+        public Task<string> UpdateBudgetValues(int budgetID);
 
 
     }

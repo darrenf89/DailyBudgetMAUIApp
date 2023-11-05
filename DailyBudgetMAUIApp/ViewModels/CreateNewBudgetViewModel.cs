@@ -263,7 +263,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                         PayDayValue = Convert.ToInt32(EveryNthValue ?? "1");
                         PayDayDuration = EveryNthDuration ?? "days";
 
-
                         int Duration = new int();
                         if (PayDayDuration == "days")
                         {
@@ -276,35 +275,27 @@ namespace DailyBudgetMAUIApp.ViewModels
                         else if (PayDayDuration == "years")
                         {
                             Duration = 365;
-                        }
-                        AproxDaysBetweenPay = Duration * PayDayValue;
+                        }                        
                     }
                     else if (PayDayTypeText == "WorkingDays") 
                     {
                         PayDayValue = Convert.ToInt32(WorkingDaysValue ?? "1");
                         PayDayDuration = "";
-                        AproxDaysBetweenPay = _pt.GetNumberOfDaysLastWorkingDay(PayDayValue);
                     }
                     else if (PayDayTypeText == "OfEveryMonth")
                     {
                         PayDayValue = Convert.ToInt32(OfEveryMonthValue ?? "1"); 
                         PayDayDuration = "";
-
-                        int year = DateTime.Now.Year;
-                        int month = DateTime.Now.Month;
-                        int days = DateTime.DaysInMonth(year, month);
-                        AproxDaysBetweenPay = days;
                     }
                     else if (PayDayTypeText == "LastOfTheMonth")
                     {
                         PayDayValue = 0;
                         PayDayDuration = LastOfTheMonthDuration ?? "Monday";
-
-                        int dayNumber = ((int)Enum.Parse(typeof(DayOfWeek), PayDayDuration));
-                        AproxDaysBetweenPay = _pt.GetNumberOfDaysLastDayOfWeek(dayNumber);
                     }
-                    
-                    if(AproxDaysBetweenPay != Budget.AproxDaysBetweenPay)
+
+                    AproxDaysBetweenPay = (Budget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Now.Date).Days;
+
+                    if (AproxDaysBetweenPay != Budget.AproxDaysBetweenPay)
                     {
                         UpdateBudgetFlag= true;
                         Budget.AproxDaysBetweenPay = AproxDaysBetweenPay;
@@ -354,40 +345,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                         BudgetUpdate.Add(PaydayAmountPatch);
                     }
 
-                    if(UpdateBudgetFlag)
-                    {
-                        // decimal MoneyAvailableBalance = Budget.MoneyAvailableBalance ?? 0;
-                        // decimal LeftToSpendBalance = Budget.LeftToSpendBalance ?? 0;
-
-                        // Budgets BudgetRef = Budget;
-                        // _pt.UpdateBudget(ref BudgetRef);
-                        // Budget = BudgetRef;
-
-                        // if(MoneyAvailableBalance != Budget.MoneyAvailableBalance)
-                        // {
-                        //     Budget.MoneyAvailableBalance = MoneyAvailableBalance;
-                        //     PatchDoc MoneyAvailableBalancePatch = new PatchDoc
-                        //     {
-                        //         op = "replace",
-                        //         path = "/MoneyAvailableBalance",
-                        //         value = Budget.MoneyAvailableBalance
-                        //     };
-                        //     BudgetUpdate.Add(MoneyAvailableBalancePatch);
-                        // }
-
-                        // if(LeftToSpendBalance != Budget.LeftToSpendBalance)
-                        // {
-                        //     Budget.LeftToSpendBalance = LeftToSpendBalance;
-                        //     PatchDoc LeftToSpendBalancePatch = new PatchDoc
-                        //     {
-                        //         op = "replace",
-                        //         path = "/LeftToSpendBalance",
-                        //         value = Budget.LeftToSpendBalance
-                        //     };
-                        //     BudgetUpdate.Add(LeftToSpendBalancePatch);
-                        // }
-                    }
-
                     if(Budget.Stage == 3)
                     {
                         PatchDoc BudgetStage = new PatchDoc
@@ -403,6 +360,11 @@ namespace DailyBudgetMAUIApp.ViewModels
                     if (BudgetUpdate.Count != 0)
                     {
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
+                    }
+
+                    if (UpdateBudgetFlag)
+                    {
+                        await _ds.UpdateBudgetValues(BudgetID);
                     }
 
                     break;
@@ -451,6 +413,10 @@ namespace DailyBudgetMAUIApp.ViewModels
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
                     }
 
+                    break;
+                case "Finalise Budget":
+
+                    await _ds.UpdateBudgetValues(BudgetID);
                     break;
                 }                
             }

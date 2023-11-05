@@ -94,7 +94,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
                         {
-                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
                         }
                         else
                         {
@@ -155,11 +155,18 @@ namespace DailyBudgetMAUIApp.ViewModels
             else
             {
                 decimal DailySavingValue = new();
-                TimeSpan Difference = (TimeSpan)(Bill.BillDueDate - DateTime.Now);
+                TimeSpan Difference = (TimeSpan)(Bill.BillDueDate - DateTime.Now.AddDays(-1));
                 int NumberOfDays = Difference.Days;
                 decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
-                DailySavingValue = RemainingBillAmount / NumberOfDays;
-                DailySavingValue = Math.Round(DailySavingValue, 2);
+                if(NumberOfDays != 0)
+                {
+                    DailySavingValue = RemainingBillAmount / NumberOfDays;
+                    DailySavingValue = Math.Round(DailySavingValue, 2);
+                }
+                else
+                {
+                    DailySavingValue = 0;
+                }
 
                 Bill.RegularBillValue = DailySavingValue;
 

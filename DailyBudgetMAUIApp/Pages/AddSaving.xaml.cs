@@ -1,4 +1,6 @@
+using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using System.Globalization;
@@ -99,11 +101,26 @@ public partial class AddSaving : ContentPage
 
     }
 
+    private async Task<string> ChangeSavingsName()
+    {
+        string Description = "Every savings needs a name, we will refer to it by the name you give it and this will make it easier to identify!";
+        string DescriptionSub = "Call it something useful or call it something silly up to you really!";
+        var popup = new PopUpPageSingleInput("Saving Name", Description, DescriptionSub, "Enter an Saving name!", _vm.Saving.SavingsName, new PopUpPageSingleInputViewModel());
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+        if (result != null || (string)result != "")
+        {
+            _vm.Saving.SavingsName = (string)result;
+        }
+
+        return (string)result;
+    }
+
     private async void SaveSaving_Clicked(object sender, EventArgs e)
     {
         if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
         {
-            _vm.ChangeSavingsName();
+            string status = await ChangeSavingsName();
         }
 
         if (ValidateSavingDetails())
@@ -394,7 +411,7 @@ public partial class AddSaving : ContentPage
             pckrSavingPeriod.IsEnabled = false;
 
             brdSavingTarget.IsEnabled = true;
-            brdCurrentBalance.IsEnabled = true;
+            brdCurrentBalance.IsEnabled = false;
             brdGoalDate.IsEnabled = true;
             brdSavingAmount.IsEnabled = true;
             brdSavingPeriod.IsEnabled = false;
@@ -449,14 +466,20 @@ public partial class AddSaving : ContentPage
         entSavingAmount.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
         entSavingAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingAmount.Text);
 
+        if(!_vm.Saving.IsRegularSaving)
+        {
+            entCurrentBalance.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
+            _vm.Saving.CurrentBalance = SavingValue;
+        }
+
         if(_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
         {
             _vm.Saving.PeriodSavingValue = SavingValue;
-            _vm.Saving.RegularSavingValue = SavingValue / _vm.BudgetDaysToNextPay;
+            _vm.Saving.RegularSavingValue = SavingValue / _vm.BudgetDaysBetweenPay;
         }
         else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
         {
-            _vm.Saving.PeriodSavingValue = SavingValue * _vm.BudgetDaysToNextPay;
+            _vm.Saving.PeriodSavingValue = SavingValue * _vm.BudgetDaysBetweenPay;
             _vm.Saving.RegularSavingValue = SavingValue;
         }
 
@@ -472,12 +495,12 @@ public partial class AddSaving : ContentPage
         if (_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
         {
             _vm.Saving.PeriodSavingValue = SavingValue;
-            _vm.Saving.RegularSavingValue = SavingValue / _vm.BudgetDaysToNextPay;
+            _vm.Saving.RegularSavingValue = SavingValue / _vm.BudgetDaysBetweenPay;
             _vm.Saving.IsDailySaving = false;
         }
         else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
         {
-            _vm.Saving.PeriodSavingValue = SavingValue * _vm.BudgetDaysToNextPay;
+            _vm.Saving.PeriodSavingValue = SavingValue * _vm.BudgetDaysBetweenPay;
             _vm.Saving.RegularSavingValue = SavingValue;
             _vm.Saving.IsDailySaving = true;
         }
@@ -485,11 +508,11 @@ public partial class AddSaving : ContentPage
         RecalculateValues("pckrSavingPeriod");
     }
 
-    private void btnUpdateSaving_Clicked(object sender, EventArgs e)
+    private async void btnUpdateSaving_Clicked(object sender, EventArgs e)
     {
         if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
         {
-            _vm.ChangeSavingsName();
+            string status = await ChangeSavingsName();
         }
 
         if(ValidateSavingDetails())
@@ -498,11 +521,11 @@ public partial class AddSaving : ContentPage
         }
     }
 
-    private void btnAddSaving_Clicked(object sender, EventArgs e)
+    private async void btnAddSaving_Clicked(object sender, EventArgs e)
     {
         if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
         {
-            _vm.ChangeSavingsName();
+            string status = await ChangeSavingsName();
         }
 
         if (ValidateSavingDetails())

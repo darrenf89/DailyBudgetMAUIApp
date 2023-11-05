@@ -182,7 +182,7 @@
                                         <x:Array Type="{x:Type x:String}">
                                             <x:String>days</x:String>
                                             <x:String>weeks</x:String>
-                                            <x:String>months</x:String>
+                                            <x:String>years</x:String>
                                         </x:Array>
                                     </Picker.ItemsSource>
                                 </handlers:BorderlessPicker>

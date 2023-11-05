@@ -3,13 +3,9 @@ using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using CommunityToolkit.Maui.Views;
-using System.Diagnostics;
-using Microsoft.Toolkit.Mvvm.Input;
-using CommunityToolkit.Maui.ApplicationModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Microsoft.Maui.Controls.Internals;
-using Microsoft.Maui.Primitives;
+
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -294,28 +290,44 @@ public partial class AddBill : ContentPage
             }
         }
     }
-    private async void AddBill_Clicked(object sender, EventArgs e)
+    private async Task<string> ChangeBillName()
     {
-        if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+        string Description = "Every outgoing needs a name, we will refer to it by the name you give it and will make it easier to identify!";
+        string DescriptionSub = "Call it something useful or call it something silly up to you really!";
+        var popup = new PopUpPageSingleInput("Outgoing Name", Description, DescriptionSub, "Enter an outgoing name!", _vm.Bill.BillName, new PopUpPageSingleInputViewModel());
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+        if (result != null || (string)result != "")
         {
-            _vm.ChangeBillName();
+            _vm.Bill.BillName = (string)result;
         }
 
-        if(ValidateBillDetails())
+        return (string)result;
+    }
+    private async void AddBill_Clicked(object sender, EventArgs e)
+    {
+
+        if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+        {
+            string status = await ChangeBillName();
+        }
+
+        if (ValidateBillDetails())
         {
             SaveBillTypeOptions();
 
             _vm.AddBill();
         }
+
     }
     private async void UpdateBill_Clicked(object sender, EventArgs e)
     {
         if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
         {
-            _vm.ChangeBillName();
+            string status = await ChangeBillName();
         }
 
-        if(ValidateBillDetails())
+        if (ValidateBillDetails())
         {
             SaveBillTypeOptions();
 
@@ -328,10 +340,10 @@ public partial class AddBill : ContentPage
 
         if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
         {
-            _vm.ChangeBillName();
+            string status = await ChangeBillName();
         }
 
-        if(ValidateBillDetails())
+        if (ValidateBillDetails())
         {
             SaveBillTypeOptions();
 

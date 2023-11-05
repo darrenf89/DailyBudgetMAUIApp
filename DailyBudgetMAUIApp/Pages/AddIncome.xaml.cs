@@ -90,12 +90,12 @@ public partial class AddIncome : ContentPage
         base.OnAppearing();
     }
 
-    private void SaveIncome_Clicked(object sender, EventArgs e)
+    private async void SaveIncome_Clicked(object sender, EventArgs e)
     {
         
         if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
         {
-            _vm.ChangeIncomeName();
+            string status = await ChangeIncomeName();
         }
 
         if (ValidateIncomeDetails())
@@ -396,11 +396,26 @@ public partial class AddIncome : ContentPage
         _vm.Income.IncomeAmount = IncomeAmount;
     }
 
+    private async Task<string> ChangeIncomeName()
+    {
+        string Description = "Every income needs a name, we will refer to it by the name you give it and this will make it easier to identify!";
+        string DescriptionSub = "Call it something useful or call it something silly up to you really!";
+        var popup = new PopUpPageSingleInput("Income Name", Description, DescriptionSub, "Enter an Income name!", _vm.Income.IncomeName, new PopUpPageSingleInputViewModel());
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+        if (result != null || (string)result != "")
+        {
+            _vm.Income.IncomeName = (string)result;
+        }
+
+        return (string)result;
+    }
+
     private async void AddIncome_Clicked(object sender, EventArgs e)
     {
         if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
         {
-            _vm.ChangeIncomeName();
+            string status = await ChangeIncomeName();
         }
 
         if(ValidateIncomeDetails())
@@ -415,7 +430,7 @@ public partial class AddIncome : ContentPage
     {
         if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
         {
-            _vm.ChangeIncomeName();
+            string status = await ChangeIncomeName();
         }
 
         if (ValidateIncomeDetails())

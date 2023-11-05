@@ -161,7 +161,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                 int DaysToSavingDate = (Saving.GoalDate.GetValueOrDefault().Date - DateTime.Today.Date).Days;
                 decimal? AmountOutstanding = Saving.SavingsGoal - Saving.CurrentBalance;
 
-                Saving.RegularSavingValue = AmountOutstanding / DaysToSavingDate;
+                if(DaysToSavingDate != 0)
+                {
+                    Saving.RegularSavingValue = AmountOutstanding / DaysToSavingDate;
+                }
+                else
+                {
+                    Saving.RegularSavingValue = 0;
+                }                
 
                 return Saving.RegularSavingValue.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
             }

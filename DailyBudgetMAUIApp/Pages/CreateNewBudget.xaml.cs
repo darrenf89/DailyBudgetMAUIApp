@@ -138,15 +138,27 @@ public partial class CreateNewBudget : ContentPage
             {
                 vslOutgoingList.IsVisible = false;
             }
+            else
+            {
+                vslOutgoingList.IsVisible = true;
+            }
 
             if(_vm.Budget.Savings.Count == 0)
             {
                 vslSavingList.IsVisible = false;
             }
+            else
+            {
+                vslSavingList.IsVisible = true;
+            }
 
-            if(_vm.Budget.IncomeEvents.Count == 0)
+            if (_vm.Budget.IncomeEvents.Count == 0)
             {
                 vslIncomeList.IsVisible = false;
+            }
+            else
+            {
+                vslIncomeList.IsVisible = true;
             }
 
         }
@@ -268,27 +280,32 @@ public partial class CreateNewBudget : ContentPage
             {
                 _vm.Budget.Stage = 6;
             }
-
             await MainScrollView.ScrollToAsync(0, 395, true);
         }
 
-        grdSettingsHeader.IsEnabled =_vm.Budget.Stage > 0;
-        grdDetailsHeader.IsEnabled =_vm.Budget.Stage > 1;
-        grdBillsHeader.IsEnabled =_vm.Budget.Stage > 2;
-        grdSavingsHeader.IsEnabled =_vm.Budget.Stage > 3;
-        grdIncomeHeader.IsEnabled =_vm.Budget.Stage > 4;
-        grdFinalHeader.IsEnabled =_vm.Budget.Stage > 5;
+        grdDetailsHeader.IsEnabled = _vm.Budget.Stage > 1;
+        grdBillsHeader.IsEnabled = _vm.Budget.Stage > 2;
+        grdSavingsHeader.IsEnabled = _vm.Budget.Stage > 3;
+        grdIncomeHeader.IsEnabled = _vm.Budget.Stage > 4;
+        grdFinalHeader.IsEnabled = _vm.Budget.Stage > 5;
 
-        lblSettingsEdit.TextColor = (_vm.Budget.Stage > 0) ? (Color)Info : (Color)Gray300;
         lblDetailsEdit.TextColor = (_vm.Budget.Stage > 1) ? (Color)Info : (Color)Gray300;
         lblBillsEdit.TextColor = (_vm.Budget.Stage > 2) ? (Color)Info : (Color)Gray300;
         lblSavingsEdit.TextColor = (_vm.Budget.Stage > 3) ? (Color)Info : (Color)Gray300;
         lblIncomeEdit.TextColor = (_vm.Budget.Stage > 4) ? (Color)Info : (Color)Gray300;
         lblFinalEdit.TextColor = (_vm.Budget.Stage > 5) ? (Color)Info : (Color)Gray300;
+
+        lblBudgetHeader.TextColor = (_vm.Budget.Stage < 2) ? (Color)Gray300 : lblBudgetHeader.TextColor;
+        lblBillsHeader.TextColor = (_vm.Budget.Stage < 3) ? (Color)Gray300 : lblBillsHeader.TextColor;
+        lblSavingsHeader.TextColor = (_vm.Budget.Stage < 4) ? (Color)Gray300 : lblSavingsHeader.TextColor;
+        lblIncomesHeader.TextColor = (_vm.Budget.Stage < 5) ? (Color)Gray300 : lblIncomesHeader.TextColor;
+        lblFinalBudgetHeader.TextColor = (_vm.Budget.Stage < 6) ? (Color)Gray300 : lblFinalBudgetHeader.TextColor;
     }
+
     private void GoToStageFinalBudget_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Finalise Budget";
+        _vm.SaveStage("Finalise Budget");
         UpdateStageDisplay();
     }
     private void GoToStageSettings_Tapped(object sender, TappedEventArgs e)
@@ -515,6 +532,7 @@ public partial class CreateNewBudget : ContentPage
             UpdateStageDisplay();
 
             _vm.SaveStage("Budget Extra Income");
+            _vm.SaveStage("Finalise Budget");
 
             //await MainScrollView.ScrollToAsync(0, 275, true);
         }

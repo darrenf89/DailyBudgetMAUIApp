@@ -57,7 +57,7 @@
                         <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0" x:Name="lblSettingsEdit"/>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="GoToStageSettings_Tapped"/>
+                        <TapGestureRecognizer Tapped="GoToStageSettings_Tapped" />
                     </Grid.GestureRecognizers>
                 </Grid>
             </VerticalStackLayout>
@@ -226,7 +226,7 @@
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="0" Grid.Row="1">
-                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed"/>
+                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed" TextColor="{DynamicResource Gray900}"/>
                         </Border>
                         <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="1" Grid.Row="1">
@@ -621,7 +621,7 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
                             </Image.Source>
                         </Image>
-                        <Label x:Name="lblIncomeEdit" Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
+                        <Label x:Name="lblIncomeEdit" Text="Edit" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Tapped="GoToStageIncomes_Tapped"/>
