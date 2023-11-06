@@ -547,6 +547,23 @@ public partial class CreateNewBudget : ContentPage
         //await MainScrollView.ScrollToAsync(0, 155, true);
     }
 
+    private void FinaliseBudgetButton_Clicked(object sender, EventArgs e)
+    {
+        if(ValidateFinaliseBudget())
+        {
+            _vm.SaveStage("Finalise Budget");
+            _vm.SaveStage("Create Budget");
+
+            await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Budget Created&SnackID={_vm.BudgetID}");
+        }
+    }
+
+    private void BackFinalBudgetButton_Clicked(object sender, EventArgs e)
+    {
+        _vm.StageWidth = "Budget Extra Income";
+        UpdateStageDisplay();
+    }
+
     private bool ValidateBudgetIncome()
     {
         bool IsValid = true;
@@ -608,7 +625,51 @@ public partial class CreateNewBudget : ContentPage
         validatorOutgoingsYesNo.IsVisible = false;
         validatorSavingsYesNo.IsVisible = false;
         validatorIncomeYesNo.IsVisible = false;
+        validatorAcceptTerms.IsVisible = false;
     }  
+
+    private bool ValidateFinaliseBudget()
+    {
+        bool IsValid = true;
+
+        if(!chbxIsAcceptTerms.IsChecked)
+        {
+            validatorAcceptTerms.IsVisible = true;
+            IsValid = false;
+        }
+        else
+        {
+            validatorAcceptTerms.IsVisible = false;
+            if(!ValidateBudgetIncome())
+            {
+                _vm.Stage = "Budget Extra Income";
+                IsValid = false;
+            }
+
+            if(!ValidateBudgetSavings())
+            {
+                _vm.Stage = "Budget Savings";
+                IsValid = false;
+            }
+
+            if(!ValidateBudgetOutgoings())
+            {
+                _vm.Stage = "Budget Outgoings";
+                IsValid = false;
+            }
+
+            if(!ValidateBudgetDetails())
+            {
+                _vm.Stage = "Budget Details";
+                IsValid = false;
+            }
+
+            UpdateStageDisplay();
+
+        }
+
+        return IsValid;
+    }
 
     private bool ValidateBudgetOutgoings()
     {

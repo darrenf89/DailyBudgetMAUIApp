@@ -418,6 +418,18 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     await _ds.UpdateBudgetValues(BudgetID);
                     break;
+
+                case "Create Budget":
+                        PatchDoc BudgetStage = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/IsCreated",
+                            value = true
+                        };
+
+                        BudgetUpdate.Add(BudgetStage);
+                        await _ds.PatchBudget(BudgetID, BudgetUpdate);
+                    break;
                 }                
             }
             catch (Exception ex)
