@@ -30,6 +30,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private string _stage = "Budget Settings";
         public double StageWidth { get; }
+        public double AcceptTermsWidth { get; }
         [ObservableProperty]
         private List<lut_CurrencySymbol> _currencySearchResults;
         [ObservableProperty]
@@ -70,6 +71,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             _pt = pt;
             _ds = ds;
             StageWidth = (((DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 52) / 5);
+            AcceptTermsWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 80;
             CurrencyPlacements = _ds.GetCurrencyPlacements("").Result;
             DateFormats = _ds.GetDateFormatsByString("").Result;
             NumberFormats = _ds.GetNumberFormats().Result;
@@ -187,14 +189,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     if(Budget.Stage == 2)
                     {
-                        PatchDoc BudgetStage = new PatchDoc
+                        PatchDoc BudgetStage2 = new PatchDoc
                         {
                             op = "replace",
                             path = "/Stage",
                             value = Budget.Stage
                         };
 
-                        BudgetUpdate.Add(BudgetStage);
+                        BudgetUpdate.Add(BudgetStage2);
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
                     }
 
@@ -347,14 +349,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     if(Budget.Stage == 3)
                     {
-                        PatchDoc BudgetStage = new PatchDoc
+                        PatchDoc BudgetStage3 = new PatchDoc
                         {
                             op = "replace",
                             path = "/Stage",
                             value = Budget.Stage
                         };
 
-                        BudgetUpdate.Add(BudgetStage);
+                        BudgetUpdate.Add(BudgetStage3);
                     }
 
                     if (BudgetUpdate.Count != 0)
@@ -372,14 +374,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     if(Budget.Stage == 4)
                     {
-                        PatchDoc BudgetStage = new PatchDoc
+                        PatchDoc BudgetIsCreated = new PatchDoc
                         {
                             op = "replace",
                             path = "/Stage",
                             value = Budget.Stage
                         };
 
-                        BudgetUpdate.Add(BudgetStage);
+                        BudgetUpdate.Add(BudgetIsCreated);
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
                     }
                     break;
@@ -387,14 +389,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     if(Budget.Stage == 5)
                     {
-                        PatchDoc BudgetStage = new PatchDoc
+                        PatchDoc BudgetStage5 = new PatchDoc
                         {
                             op = "replace",
                             path = "/Stage",
                             value = Budget.Stage
                         };
 
-                        BudgetUpdate.Add(BudgetStage);
+                        BudgetUpdate.Add(BudgetStage5);
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
                     }
                     break;
@@ -402,14 +404,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     if(Budget.Stage == 6)
                     {
-                        PatchDoc BudgetStage = new PatchDoc
+                        PatchDoc BudgetStage6 = new PatchDoc
                         {
                             op = "replace",
                             path = "/Stage",
                             value = Budget.Stage
                         };
 
-                        BudgetUpdate.Add(BudgetStage);
+                        BudgetUpdate.Add(BudgetStage6);
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
                     }
 

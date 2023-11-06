@@ -145,7 +145,7 @@
                         </ImageButton.Source>
                     </ImageButton>
                 </HorizontalStackLayout>
-                <Label Text="If you want the money you currently have to be taken into account, let us know how much you got!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                <Label LineBreakMode="WordWrap" Text="If you want the money you currently have to be taken into account, let us know how much you got!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,20" HeightRequest="38">
                     <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entBankBalance" TextChanged="BankBalance_Changed" Keyboard="Numeric" />
                 </Border>
@@ -157,7 +157,7 @@
                         </ImageButton.Source>
                     </ImageButton>
                 </HorizontalStackLayout>
-                <Label Text="Let us know the date of your next pay!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                <Label  Text="Let us know the date of your next pay!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <VerticalStackLayout Margin="0,0,0,20">
                     <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,0" HeightRequest="38">
                         <DatePicker Margin="20,0,0,0" x:Name="dtpckPayDay" TextColor="{DynamicResource Gray900}" />
@@ -770,25 +770,25 @@
                 </Grid>
             </VerticalStackLayout>
             <VerticalStackLayout x:Name="FinalBudgetDetails" IsVisible="false" Margin="0,0,0,15">
-                <HorizontalStackLayout Padding="5,0,0,2">
-                    <Label Text="Your New Budget's Stats" FontSize="Subtitle" TextColor="{DynamicResource Primary}"/>
+                <HorizontalStackLayout Padding="5,0,0,20">
+                    <Label Text="Your New Budget's Stats" FontSize="Medium" TextColor="{DynamicResource Tertiary}"/>
                 </HorizontalStackLayout>
-                <Label Text="Bank Balance (BB)" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
-                <Label Text="Your Bank Balance is what it says, its the amount of money you currently hold in your bank account or accounts ... or under the mattress if thats the way you are inclined" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
-                <Label Padding="15,0,0,5" Text="{Binding Budget.BankBalance, StringFormat='{0:c}'}"/>
-                <Label Text="Money Available Balance (MaB)" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
-                <Label Text="Your Money available Balance is the amount of money you have at your disposal that hasn't already been committed to one of your finanical liabilities ... your budget's outgoings." FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
-                <Label Padding="15,0,0,5" Text="{Binding Budget.MoneyAvailableBalance, StringFormat='{0:c}'}"/>
-                <Label Text="Left To Spend Balance (LtSB)" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
-                <Label Text="Your Left to Spend Balance is what we think you have left to spend in your budget between now and pay day. So your Bank Balance minus any savings goals and outgoing liabilities." FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
-                <Label Padding="15,0,0,5" Text="{Binding Budget.LeftToSpendBalance, StringFormat='{0:c}'}"/>
-                <Label Text="Daily Budget" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
-                <Label Text="We used all the information you provided and have calculated that you have this amount to spend each day between now and your next pay day!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
-                <Label Padding="15,0,0,25" Text="{Binding Budget.LeftToSpendDailyAmount, StringFormat='{0:c}'}"/>
-                <VerticalStackLayout Margin="5,10,0,5">
-                    <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20">
-                        <CheckBox x:Name="chbxIsAcceptTerms" IsChecked="False" />
-                        <Label Text="It is important to us, that you understand that this budget is just one tool you should use to manage your finances. It should not be followed blindly but should help lead in the right direction, we recommend that you use other analyse, scrutinize & fact check our numbers to ensure that the information we are provding you is correct and leading you in the right finanical direction. Please confirm that you understand before continuing to create your budget!" FontSize="Caption" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
+                <Label Text="Bank Balance (BB)" FontSize="Subtitle" TextColor="{DynamicResource PrimaryLight}" Padding="5,0,0,2"/>
+                <Label Text="Your Bank Balance is what it says, its the amount of money you currently hold in your bank account or accounts ... or under the mattress if thats the way you are inclined" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,2"/>
+                <Label Padding="15,0,0,15" Text="{Binding Budget.BankBalance, StringFormat='{0:c}'}" FontSize="Medium" TextColor="{DynamicResource Success}"/>
+                <Label Text="Money Available Balance (MaB)" FontSize="Subtitle" TextColor="{DynamicResource PrimaryLight}" Padding="5,0,0,2"/>
+                <Label Text="Your Money available Balance is the amount of money you have at your disposal that hasn't already been committed to one of your finanical liabilities ... your budget's outgoings." FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,2"/>
+                <Label Padding="15,0,0,15" Text="{Binding Budget.MoneyAvailableBalance, StringFormat='{0:c}'}" FontSize="Medium" TextColor="{DynamicResource Success}"/>
+                <Label Text="Left To Spend Balance (LtSB)" FontSize="Subtitle" TextColor="{DynamicResource PrimaryLight}" Padding="5,0,0,2"/>
+                <Label Text="Your Left to Spend Balance is what we think you have left to spend in your budget between now and pay day. So your Bank Balance minus any savings goals and outgoing liabilities." FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,2"/>
+                <Label Padding="15,0,0,15" Text="{Binding Budget.LeftToSpendBalance, StringFormat='{0:c}'}" FontSize="Medium" TextColor="{DynamicResource Success}"/>
+                <Label Text="Daily Budget" FontSize="Subtitle" TextColor="{DynamicResource PrimaryLight}" Padding="5,0,0,2"/>
+                <Label Text="We used all the information you provided and have calculated that you have this amount to spend each day between now and your next pay day!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,2"/>
+                <Label Padding="15,0,0,5" Text="{Binding Budget.LeftToSpendDailyAmount, StringFormat='{0:c}'}" FontSize="Medium" TextColor="{DynamicResource Success}"/>
+                <VerticalStackLayout Margin="0">
+                    <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" Margin="0,10,0,25">
+                        <CheckBox x:Name="chbxIsAcceptTerms" IsChecked="False" Scale="1.5" Margin="0,0,10,0"/>
+                        <Label LineBreakMode="CharacterWrap" WidthRequest="{Binding AcceptTermsWidth}" Text="It is important to us, that you understand that this budget is just one tool you should use to manage your finances." FontSize="Small" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
                     </HorizontalStackLayout>
                     <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorAcceptTerms">
                         <Image>

@@ -547,7 +547,7 @@ public partial class CreateNewBudget : ContentPage
         //await MainScrollView.ScrollToAsync(0, 155, true);
     }
 
-    private void FinaliseBudgetButton_Clicked(object sender, EventArgs e)
+    private async void FinaliseBudgetButton_Clicked(object sender, EventArgs e)
     {
         if(ValidateFinaliseBudget())
         {
@@ -560,7 +560,7 @@ public partial class CreateNewBudget : ContentPage
 
     private void BackFinalBudgetButton_Clicked(object sender, EventArgs e)
     {
-        _vm.StageWidth = "Budget Extra Income";
+        _vm.Stage = "Budget Extra Income";
         UpdateStageDisplay();
     }
 
