@@ -1400,4 +1400,24 @@ public partial class CreateNewBudget : ContentPage
         }
     }
 
+    private void IsAcceptTerms_CheckChanged(object sender, CheckedChangedEventArgs e)
+    {
+        Application.Current.Resources.TryGetValue("Success", out var Success);
+        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+        Application.Current.Resources.TryGetValue("White", out var White);
+
+        if(chbxIsAcceptTerms.IsChecked)
+        {
+            brdIsAcceptTerms.BackgroundColor = (Color)Success;
+            hslIsAcceptTerms.BackgroundColor = (Color)Success;
+            lblIsAcceptTerms.TextColor = (Color)White;
+        }
+        else
+        {
+            brdIsAcceptTerms.BackgroundColor = (Color)White;
+            hslIsAcceptTerms.BackgroundColor = (Color)White;
+            lblIsAcceptTerms.TextColor = (Color)Gray900;
+        }
+    }
+
 }
