@@ -37,72 +37,74 @@
             </Button>
         </Grid>
     </Shell.TitleView>
-    <ScrollView>
-        <VerticalStackLayout VerticalOptions="Start">
-            <Border Style="{DynamicResource DashboardMainContent}"
-                    IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
-                <Label
-                Text="You haven't finished creating your budget, finalise your details before you continue"
-                FontSize="32"
-                HorizontalOptions="Center" />
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
-                </Border.GestureRecognizers>
-            </Border>
-            <Border Style="{DynamicResource DashboardMainContent}">
-                <Label
-                Text="Hello, World!"
-                SemanticProperties.HeadingLevel="Level1"
-                FontSize="32"
-                HorizontalOptions="Center" />
-            </Border>
-            <Border Style="{DynamicResource DashboardMainContent}">
-                <Label
-                Text="Welcome to .NET Multi-platform App UI"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                FontSize="18"
-                HorizontalOptions="Center" />
-            </Border>
-            <Border Style="{DynamicResource DashboardMainContent}">
-                <VerticalStackLayout>
-                    <Button
-                    x:Name="CounterBtn"
-                    Text="Click me"
-                    SemanticProperties.Hint="Counts the number of times you click"
+    <RefreshView Command="{Binding RefreshPageCommand}" IsRefreshing="{Binding IsRefreshing}">
+        <ScrollView>
+            <VerticalStackLayout VerticalOptions="Start">
+                <Border Style="{DynamicResource DashboardMainContent}"
+                        IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
+                    <Label
+                    Text="You haven't finished creating your budget, finalise your details before you continue"
+                    FontSize="32"
                     HorizontalOptions="Center" />
-                    <Button
-                    x:Name="SignOut"
-                    Command="{Binding SignOutCommand}"
-                    Text="Sign Out"
-                    SemanticProperties.Hint="Signs Out of Account"
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
+                    </Border.GestureRecognizers>
+                </Border>
+                <Border Style="{DynamicResource DashboardMainContent}">
+                    <Label
+                    Text="Hello, World!"
+                    SemanticProperties.HeadingLevel="Level1"
+                    FontSize="32"
                     HorizontalOptions="Center" />
-                    <Label 
-                        Text="{Binding DefaultBudgetID,StringFormat='The Deafault Budget ID is {0}'}"
-                        Margin="0,100,0,0"
-                        VerticalOptions="Center" 
-                        HorizontalOptions="Center" 
-                        TextColor="Black"/>
-                    <Label TextColor="Black">
-                        <MultiBinding StringFormat="'Testing how a multi binding works in a label with {0:c} and also {1:n} value'">
-                            <Binding Path="DefaultBudgetID"/>
-                            <Binding Path="DefaultBudgetID"/>
-                        </MultiBinding>
-                    </Label>
-                    <Label Text="{Binding DefaultBudget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
-                           VerticalOptions="Center" 
-                           HorizontalOptions="Center" 
-                           TextColor="Black"/>
-                    <Label Text="{Binding DefaultBudget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
-                           VerticalOptions="Center" 
-                           HorizontalOptions="Center" 
-                           TextColor="Black"/>
-                    <Label Text="{Binding DefaultBudget.BudgetName, StringFormat='Your Budget Name is {0}'}"
-                           VerticalOptions="Center" 
-                           HorizontalOptions="Center"
-                           TextColor="Black"/>  
-                </VerticalStackLayout>
-            </Border>
-        </VerticalStackLayout>
-    </ScrollView>
+                </Border>
+                <Border Style="{DynamicResource DashboardMainContent}">
+                    <Label
+                    Text="Welcome to .NET Multi-platform App UI"
+                    SemanticProperties.HeadingLevel="Level2"
+                    SemanticProperties.Description="Welcome to dot net Multi platform App U I"
+                    FontSize="18"
+                    HorizontalOptions="Center" />
+                </Border>
+                <Border Style="{DynamicResource DashboardMainContent}">
+                    <VerticalStackLayout>
+                        <Button
+                        x:Name="CounterBtn"
+                        Text="Click me"
+                        SemanticProperties.Hint="Counts the number of times you click"
+                        HorizontalOptions="Center" />
+                        <Button
+                        x:Name="SignOut"
+                        Command="{Binding SignOutCommand}"
+                        Text="Sign Out"
+                        SemanticProperties.Hint="Signs Out of Account"
+                        HorizontalOptions="Center" />
+                        <Label 
+                            Text="{Binding DefaultBudgetID,StringFormat='The Deafault Budget ID is {0}'}"
+                            Margin="0,100,0,0"
+                            VerticalOptions="Center" 
+                            HorizontalOptions="Center" 
+                            TextColor="Black"/>
+                        <Label TextColor="Black">
+                            <MultiBinding StringFormat="'Testing how a multi binding works in a label with {0:c} and also {1:n} value'">
+                                <Binding Path="DefaultBudgetID"/>
+                                <Binding Path="DefaultBudgetID"/>
+                            </MultiBinding>
+                        </Label>
+                        <Label Text="{Binding DefaultBudget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
+                            VerticalOptions="Center" 
+                            HorizontalOptions="Center" 
+                            TextColor="Black"/>
+                        <Label Text="{Binding DefaultBudget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
+                            VerticalOptions="Center" 
+                            HorizontalOptions="Center" 
+                            TextColor="Black"/>
+                        <Label Text="{Binding DefaultBudget.BudgetName, StringFormat='Your Budget Name is {0}'}"
+                            VerticalOptions="Center" 
+                            HorizontalOptions="Center"
+                            TextColor="Black"/>  
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
 </ContentPage>

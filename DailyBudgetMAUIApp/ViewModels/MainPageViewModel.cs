@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Maui.Alerts;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
@@ -10,6 +11,8 @@ using System.Globalization;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
+    [QueryProperty(nameof(SnackBar), nameof(SnackBar))]
+    [QueryProperty(nameof(SnackID), nameof(SnackID))]
     public partial class MainPageViewModel : BaseViewModel  
     {
         private readonly IRestDataService _ds;
@@ -23,6 +26,12 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         private bool _isBudgetCreated;
+        [ObservableProperty]
+        private bool _isRefreshing;
+        [ObservableProperty]
+        public string _snackBar = "";
+        [ObservableProperty]
+        public string _snackID = "";
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {
@@ -116,6 +125,23 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
 
             await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
+        }
+
+        [ICommand]
+        async void RefreshPage()
+        {
+            DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Limited").Result;
+
+            App.DefaultBudget = DefaultBudget;
+            IsBudgetCreated = App.DefaultBudget.IsCreated;
+            App.SessionLastUpdate = DateTime.UtcNow;
+
+            BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+            App.CurrentSettings = Settings;
+
+            _isRefreshing = false;
+
+            //await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
         }
 
     }
