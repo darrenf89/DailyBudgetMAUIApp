@@ -7,72 +7,168 @@ using Newtonsoft.Json;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using System.Globalization;
 
 namespace DailyBudgetMAUIApp;
 
 public partial class MainPage : ContentPage
 {
     private readonly MainPageViewModel _vm;
-    public MainPage(MainPageViewModel viewModel)
+    private readonly IRestDataService _ds;
+    private readonly IProductTools _pt;
+
+    public MainPage(MainPageViewModel viewModel, IRestDataService ds, IProductTools pt)
 	{
-        var popup = new PopUpPage();
-        Application.Current.MainPage.ShowPopup(popup);
-        
+        _ds = ds;
+        _pt = pt;
+
         InitializeComponent();
         this.BindingContext = viewModel;
-        _vm = viewModel;
-
-        popup.Close();
-        
+        _vm = viewModel;        
     }
 
-    protected override void OnAppearing()
-    {        
-        //TODO: Implement some kind of check that its the first time the page has loaded and only navigate if it is.
-        //TODO: Show on the main page a warning that the budget set up isnt finished with a button to navigate to new budget journey
+    protected async override void OnAppearing()
+    {
+
+        if (DateTime.Now.Hour > 12)
+        {
+            _vm.Title = $"Good afternoon {App.UserDetails.NickName}!";
+        }
+        else
+        {
+            _vm.Title = $"Good morning {App.UserDetails.NickName}!";
+        }
+
+        _vm.DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID), 1);
+        if (_vm.DefaultBudgetID != 0)
+        {
+            App.DefaultBudgetID = _vm.DefaultBudgetID;
+        }
+
+        if (App.DefaultBudgetID != 0)
+        {
+            if (App.CurrentSettings == null || App.CurrentSettings.IsUpdatedFlag)
+            {
+                BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+                App.CurrentSettings = Settings;
+            }
+
+            _pt.SetCultureInfo(App.CurrentSettings);
+        }
+        else
+        {
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-gb");
+        }
+
+        if (App.DefaultBudget == null)
+        {
+            _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Limited").Result;
+
+            App.DefaultBudget = _vm.DefaultBudget;
+            _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+            App.SessionLastUpdate = DateTime.UtcNow;
+        }
+        else
+        {
+            if (App.SessionLastUpdate == default(DateTime))
+            {
+
+                _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Limited").Result;
+
+                App.DefaultBudget = _vm.DefaultBudget;
+                _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+                App.SessionLastUpdate = DateTime.UtcNow;
+
+            }
+            else
+            {
+                if (DateTime.UtcNow.Subtract(App.SessionLastUpdate) > new TimeSpan(0, 0, 3, 0))
+                {
+                    DateTime LastUpdate = _ds.GetBudgetLastUpdatedAsync(_vm.DefaultBudgetID).Result;
+
+                    if (App.SessionLastUpdate < LastUpdate)
+                    {
+                        _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Limited").Result;
+                        App.DefaultBudget = _vm.DefaultBudget;
+                        _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+                        App.SessionLastUpdate = DateTime.UtcNow;
+                    }
+                }
+            }
+        }
+
         if (!App.DefaultBudget.IsCreated && !App.HasVisitedCreatePage)
         {
             App.HasVisitedCreatePage = true;
-            Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={App.DefaultBudgetID}&NavigatedFrom=Budget Settings");
-
-            //TODO: Navigate to create Budget journey as no budget assinged!
+            await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={App.DefaultBudgetID}&NavigatedFrom=Budget Settings");
         }
 
         ProcessSnackBar();
 
         base.OnAppearing();
+
     }
 
     private async void ProcessSnackBar()
     {
-        var snackbarSuccessOptions = new SnackbarOptions
-        {
-            BackgroundColor = Colors.Red,
-            TextColor = Colors.Green,
-            ActionButtonTextColor = Colors.Yellow,
-            CornerRadius = new CornerRadius(10),
-            Font = Font.SystemFontOfSize(14),
-            ActionButtonFont = Font.SystemFontOfSize(14),
-            CharacterSpacing = 0.5
-        };
-
-        var snackbarWarningOptions = new SnackbarOptions
-        {
-            BackgroundColor = Colors.Red,
-            TextColor = Colors.Green,
-            ActionButtonTextColor = Colors.Yellow,
-            CornerRadius = new CornerRadius(10),
-            Font = Font.SystemFontOfSize(14),
-            ActionButtonFont = Font.SystemFontOfSize(14),
-            CharacterSpacing = 0.5
-        };
-
         string text;
         string actionButtonText;
         Action action;
         TimeSpan duration;
 
-        if(_vm.SnackBar == null || _vm.SnackBar == "")
+        Application.Current.Resources.TryGetValue("Success", out var Success);
+        Application.Current.Resources.TryGetValue("Warning", out var Warning);
+        Application.Current.Resources.TryGetValue("Primary", out var Primary);
+        Application.Current.Resources.TryGetValue("Danger", out var Danger);
+        Application.Current.Resources.TryGetValue("Info", out var Info);
+        Application.Current.Resources.TryGetValue("White", out var White);
+
+        var snackbarSuccessOptions = new SnackbarOptions
+        {
+            BackgroundColor = (Color)Success,
+            TextColor = (Color)White,
+            ActionButtonTextColor = (Color)White,
+            CornerRadius = new CornerRadius(2),
+            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
+            ActionButtonFont = Microsoft.Maui.Font.SystemFontOfSize(22),
+            CharacterSpacing = 0.1
+        };
+
+        var snackbarInfoOptions = new SnackbarOptions
+        {
+            BackgroundColor = (Color)Info,
+            TextColor = (Color)White,
+            ActionButtonTextColor = (Color)White,
+            CornerRadius = new CornerRadius(2),
+            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
+            ActionButtonFont = Microsoft.Maui.Font.SystemFontOfSize(22),
+            CharacterSpacing = 0.1
+        };
+
+        var snackbarWarningOptions = new SnackbarOptions
+        {
+            BackgroundColor = (Color)Warning,
+            TextColor = (Color)White,
+            ActionButtonTextColor = (Color)White,
+            CornerRadius = new CornerRadius(2),
+            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
+            ActionButtonFont = Microsoft.Maui.Font.SystemFontOfSize(22),
+            CharacterSpacing = 0.1
+        };
+
+        var snackbarDangerOptions = new SnackbarOptions
+        {
+            BackgroundColor = (Color)Danger,
+            TextColor = (Color)White,
+            ActionButtonTextColor = (Color)White,
+            CornerRadius = new CornerRadius(2),
+            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
+            ActionButtonFont = Microsoft.Maui.Font.SystemFontOfSize(22),
+            CharacterSpacing = 0.1
+        };
+
+        if (_vm.SnackBar == null || _vm.SnackBar == "")
         {
 
         }
@@ -80,14 +176,43 @@ public partial class MainPage : ContentPage
         {
             if(_vm.SnackBar == "Budget Created")
             {
-                text=$"Horrrrah, you have created budget {App.DefaultBudget.BudgetName}!";
+                text=$"Hurrrrah, you have created a budget!";
                 actionButtonText="Undo";
-                action = async () => await DisplayAlert("Snackbar ActionButton Tapped", "The user has tapped the Snackbar ActionButton", "OK");
+                action = async () => await UndoCreateBudget(_vm.SnackID);
                 duration = TimeSpan.FromSeconds(10);
 
                 await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
             }
         }
+    }
+
+    private async Task UndoCreateBudget(int BudgetID)
+    {
+        //var popup = new PopUpPage();
+        //Application.Current.MainPage.ShowPopup(popup);
+
+        var page = new LoadingPage();
+        await Application.Current.MainPage.Navigation.PushModalAsync(page);
+
+        List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+        PatchDoc BudgetStage = new PatchDoc
+        {
+            op = "replace",
+            path = "/IsCreated",
+            value = false
+        };
+
+        BudgetUpdate.Add(BudgetStage);
+        var PatchBudgetResult = await _ds.PatchBudget(BudgetID, BudgetUpdate);
+
+        if(PatchBudgetResult == "OK")
+        {
+            await Application.Current.MainPage.Navigation.PopModalAsync();
+            await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Finalise Budget");
+            return;
+        }
+
     }
 
 }

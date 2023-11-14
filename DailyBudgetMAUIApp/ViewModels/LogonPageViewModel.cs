@@ -67,15 +67,16 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void Login()
         {
-            var popup = new PopUpPage();
-            Application.Current.MainPage.ShowPopup(popup);
+
             try
             {
                 if (!PageIsValid())
                 {
-                    popup.Close();
                     return;
-                }                
+                }
+
+                var page = new LoadingPage();
+                await Application.Current.MainPage.Navigation.PushModalAsync(page);
 
                 if (!string.IsNullOrEmpty(Email))
                 {
@@ -88,7 +89,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         switch (salt)
                         {
                             case "User not found":
-                                popup.Close();
+                                await Application.Current.MainPage.Navigation.PopModalAsync();
                                 await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 break;
                             case not "":
@@ -97,7 +98,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                 if (userDetails == null)
                                 {
-                                    popup.Close();
+                                    await Application.Current.MainPage.Navigation.PopModalAsync();
                                     await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 }
                                 else
@@ -105,14 +106,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     string HashPassword = _pt.GenerateHashedPassword(Password, salt);
                                     if(userDetails.Password != HashPassword)
                                     {
-                                        popup.Close();
+                                        await Application.Current.MainPage.Navigation.PopModalAsync();
                                         await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                     }
                                     else
                                     {
                                         if (!userDetails.isEmailVerified)
                                         {
-                                            popup.Close();
+                                            await Application.Current.MainPage.Navigation.PopModalAsync();
                                             await Application.Current.MainPage.DisplayAlert("Opps", "You haven't validated your email .. do that and come back!", "OK");
                                         }
                                         else
@@ -142,9 +143,10 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                             App.UserDetails = userDetails;
                                             App.DefaultBudgetID = userDetails.DefaultBudgetID;
+                                            App.HasVisitedCreatePage = false;
 
                                             //TODO: Sign in or update User Session and save to DB
-                                            popup.Close();
+                                            await Application.Current.MainPage.Navigation.PopModalAsync();
                                             await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                                         }
                                     }
@@ -157,7 +159,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     else
                     {
-                        popup.Close();
+                        await Application.Current.MainPage.Navigation.PopModalAsync();
                         await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                     }
                 }

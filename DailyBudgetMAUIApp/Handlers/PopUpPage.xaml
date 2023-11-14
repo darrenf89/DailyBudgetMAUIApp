@@ -6,32 +6,8 @@
            CanBeDismissedByTappingOutsideOfPopup="False"
            Color="Transparent">
     <VerticalStackLayout HeightRequest="300" WidthRequest="200">
-            <!--<Label 
-                Text="We are doing something!"
-                FontAttributes="Bold"
-                FontSize="Small"
-                VerticalOptions="Center" 
-                HorizontalOptions="Center" 
-                TextColor="{DynamicResource Tertiary}"
-                Margin="15,30,15,30"/>-->
-            <ActivityIndicator 
-                IsRunning="True" 
-                IsVisible="True"
-                VerticalOptions="StartAndExpand" 
-                HorizontalOptions="Center"
-                BackgroundColor="Transparent"
-                Margin="0,100,0,0"
-                Color="{DynamicResource Primary}"
-                Scale="1">
+        <ActivityIndicator IsRunning="True" IsVisible="True" VerticalOptions="StartAndExpand" HorizontalOptions="Center" BackgroundColor="Transparent"  Margin="0,100,0,0" Color="{DynamicResource Primary}" Scale="1">
             </ActivityIndicator>
-            <Label 
-                Text="Loading ..."
-                FontAttributes="Bold"
-                FontSize="Medium"
-                VerticalOptions="Center" 
-                HorizontalOptions="Center"
-                FontFamily="OpenSansSemibold"
-                TextColor="{DynamicResource Light}"
-                Margin="0,20,0,0"/>
+            <Label Text="Loading ..." FontAttributes="Bold" FontSize="Medium" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Light}" Margin="0,20,0,0"/>
         </VerticalStackLayout>
 </xct:Popup>

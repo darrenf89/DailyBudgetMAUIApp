@@ -15,7 +15,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class BaseViewModel : ObservableObject
     {
         [ObservableProperty]
-        private bool _isPageBusy;
+        private bool _isPageBusy = false;
 
         [ObservableProperty]
         private bool _isButtonBusy;

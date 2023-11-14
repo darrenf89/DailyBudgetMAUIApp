@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyBudgetMAUIApp.MainPage"
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              Background="{StaticResource Primary}">
@@ -40,8 +41,7 @@
     <RefreshView Command="{Binding RefreshPageCommand}" IsRefreshing="{Binding IsRefreshing}">
         <ScrollView>
             <VerticalStackLayout VerticalOptions="Start">
-                <Border Style="{DynamicResource DashboardMainContent}"
-                        IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
+                <Border Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
                     <Label
                     Text="You haven't finished creating your budget, finalise your details before you continue"
                     FontSize="32"

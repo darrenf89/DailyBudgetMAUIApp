@@ -31,82 +31,21 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         public string _snackBar = "";
         [ObservableProperty]
-        public string _snackID = "";
+        public int _snackID = 0;
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {
-
-            if (DateTime.Now.Hour > 12)
-            {
-                Title = $"Good afternoon {App.UserDetails.NickName}!";
-            }
-            else
-            {
-                Title = $"Good morning {App.UserDetails.NickName}!";
-            }
-
             _ds = ds;
             _pt = pt;
-
-            DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID),1);
-
-            if (App.DefaultBudgetID != 0)
-            {
-                if (App.CurrentSettings == null || App.CurrentSettings.IsUpdatedFlag)
-                {
-                    BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
-                    App.CurrentSettings = Settings;
-                }
-
-                _pt.SetCultureInfo(App.CurrentSettings);
-            }
-            else
-            {
-                CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-gb");
-            }
-
-            if (App.DefaultBudget == null)
-            {
-                DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Limited").Result;
-
-                App.DefaultBudget = DefaultBudget;
-                IsBudgetCreated = App.DefaultBudget.IsCreated;
-                App.SessionLastUpdate = DateTime.UtcNow;
-            }      
-            else
-            {
-                if (App.SessionLastUpdate == default(DateTime))
-                {
-
-                    DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Limited").Result;
-
-                    App.DefaultBudget = DefaultBudget;
-                    IsBudgetCreated = App.DefaultBudget.IsCreated;
-                    App.SessionLastUpdate = DateTime.UtcNow;
-
-                }
-                else
-                {
-                    if(DateTime.UtcNow.Subtract(App.SessionLastUpdate) > new TimeSpan(0,0,3,0))
-                    {
-                        DateTime LastUpdate = _ds.GetBudgetLastUpdatedAsync(DefaultBudgetID).Result;
-
-                        if (App.SessionLastUpdate < LastUpdate)
-                        {
-                            DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Limited").Result;
-                            App.DefaultBudget = DefaultBudget;
-                            IsBudgetCreated = App.DefaultBudget.IsCreated;
-                            App.SessionLastUpdate = DateTime.UtcNow;
-                        }
-                    }
-                }
-            }
-
         }
 
         [ICommand]
         async void NavigateCreateNewBudget()
         {
+            var page = new LoadingPage();
+            await Application.Current.MainPage.Navigation.PushModalAsync(page);
+
+            await Application.Current.MainPage.Navigation.PopModalAsync();
             await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
         }
 
@@ -114,6 +53,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void SignOut()
         {
+            var page = new LoadingPage();
+            await Application.Current.MainPage.Navigation.PushModalAsync(page);
+
             if (Preferences.ContainsKey(nameof(App.UserDetails)))
             {
                 Preferences.Remove(nameof(App.UserDetails));
@@ -124,6 +66,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 Preferences.Remove(nameof(App.DefaultBudgetID));
             }
 
+            await Application.Current.MainPage.Navigation.PopModalAsync();
             await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
         }
 
@@ -139,9 +82,8 @@ namespace DailyBudgetMAUIApp.ViewModels
             BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
             App.CurrentSettings = Settings;
 
-            _isRefreshing = false;
+            IsRefreshing = false;
 
-            //await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
         }
 
     }

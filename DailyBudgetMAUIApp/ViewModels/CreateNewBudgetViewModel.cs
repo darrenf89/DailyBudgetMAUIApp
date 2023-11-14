@@ -148,10 +148,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void ContinueSettings()
         {
-            SaveStage("Budget Settings");
+            await SaveStage("Budget Settings");
         }
 
-        public async void SaveStage(string CurrentStage)
+        public async Task SaveStage(string CurrentStage)
         {
             try
             {
@@ -431,6 +431,18 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         BudgetUpdate.Add(BudgetStage);
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
+                        App.DefaultBudgetID = BudgetID;
+
+                        if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                        {
+                            Preferences.Remove(nameof(App.DefaultBudgetID));
+                        }
+
+                        Preferences.Set(nameof(App.DefaultBudgetID), BudgetID);
+
+                        App.DefaultBudget = null;
+                        App.CurrentSettings = null;
+
                     break;
                 }                
             }

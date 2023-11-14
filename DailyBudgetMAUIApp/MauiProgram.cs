@@ -2,6 +2,8 @@
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.ViewModels;
+using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Helpers;
 using Microsoft.Extensions.Logging;
 
 namespace DailyBudgetMAUIApp;
@@ -14,20 +16,25 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
 
         builder			
-			. UseMauiApp<App>()
+			.UseMauiApp<App>()
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialDesignIcons");
+            })
+            .ConfigureMauiHandlers(handlers => {
+#if __ANDROID__
+                handlers.AddHandler(typeof(RefreshView), typeof(Handlers.CustomRefreshViewHandler));
+#endif 
             });
 
-		builder.Services.AddSingleton<IRestDataService, RestDataService>();
+        builder.Services.AddSingleton<IRestDataService, RestDataService>();
         builder.Services.AddSingleton<IProductTools, ProductTools>();
 
         //Pages
-        builder.Services.AddSingleton<MainPage>();
+        builder.Services.AddTransient<MainPage>();
 		builder.Services.AddTransient<LogonPage>();
         builder.Services.AddTransient<LoadUpPage>();
 		builder.Services.AddTransient<RegisterPage>();
@@ -40,7 +47,7 @@ public static class MauiProgram
 
 
         //ViewModes
-        builder.Services.AddSingleton<MainPageViewModel>();
+        builder.Services.AddTransient<MainPageViewModel>();
         builder.Services.AddTransient<LogonPageViewModel>();
         builder.Services.AddTransient<LoadUpPageViewModel>();
         builder.Services.AddTransient<ErrorPageViewModel>();
@@ -50,6 +57,11 @@ public static class MauiProgram
         builder.Services.AddTransient<AddIncomeViewModel>();
         builder.Services.AddTransient<AddSavingViewModel>();
         builder.Services.AddTransient<CreateNewBudgetViewModel>();
+
+        //Popups
+        builder.Services.AddTransient<PopUpPage>();
+        builder.Services.AddTransient<PopUpPageSingleInput, PopUpPageSingleInputViewModel>();
+        builder.Services.AddTransient<PopupInfo>();
 
 #if DEBUG
         builder.Logging.AddDebug();

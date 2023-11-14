@@ -789,7 +789,7 @@
                     <Label Grid.Row = "0" Grid.Column="0" LineBreakMode="WordWrap" Text="By creating your new budget you are agreeing to our terms of service, and a fully conscious autonomous being are still wholey responsible for your finanices. Daily budget is a tool, an amazing one, to help you do that but please do still budget responsible!" FontSize="Caption" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
                     <Border x:Name="brdIsAcceptTerms" Grid.Row="1" Grid.Column="0" Margin="0,20,0,0" Style="{StaticResource StandardInputBorder}" BackgroundColor="White" Padding="0">
                         <HorizontalStackLayout VerticalOptions="Center" x:Name="hslIsAcceptTerms">
-                            <CheckBox CheckedChanged="IsAcceptTerms_CheckChanged" x:Name="chbxIsAcceptTerms" IsChecked="False" Scale="1.5" Margin="0,0,15,0" />
+                            <CheckBox CheckedChanged="IsAcceptTerms_CheckChanged" x:Name="chbxIsAcceptTerms" IsChecked="False" Scale="1.3" Margin="0,0,15,0" Color="{StaticResource PrimaryLight}"/>
                             <Label Padding="0" Margin="0" FontSize="Medium" Text="I Agree" x:Name="lblIsAcceptTerms" TextColor="{DynamicResource Gray300}" VerticalOptions="Center" VerticalTextAlignment="Center"/>
                         </HorizontalStackLayout>
                     </Border>

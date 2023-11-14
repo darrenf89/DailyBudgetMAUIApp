@@ -28,6 +28,7 @@ public partial class CreateNewBudget : ContentPage
         _pt = pt;
         _ds = ds;
 
+
     }
 
     async protected override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -161,6 +162,7 @@ public partial class CreateNewBudget : ContentPage
                 vslIncomeList.IsVisible = true;
             }
 
+
         }
         catch (Exception ex)
         {
@@ -248,6 +250,7 @@ public partial class CreateNewBudget : ContentPage
             if(_vm.Budget.Stage > 4)
             {
                 UpdateSavingsYesNo("No");
+                UpdateBillsYesNo("No");
             }
             else
             {
@@ -266,6 +269,8 @@ public partial class CreateNewBudget : ContentPage
             if(_vm.Budget.Stage > 5)
             {
                 UpdateIncomeYesNo("No");
+                UpdateSavingsYesNo("No");
+                UpdateBillsYesNo("No");
             }
             else
             {
@@ -280,7 +285,19 @@ public partial class CreateNewBudget : ContentPage
             {
                 _vm.Budget.Stage = 6;
             }
+
             await MainScrollView.ScrollToAsync(0, 395, true);
+        }
+
+        if (_vm.Budget.Stage > 5)
+        {
+            UpdateIncomeYesNo("No");
+            UpdateSavingsYesNo("No");
+            UpdateBillsYesNo("No");
+        }
+        else
+        {
+            UpdateIncomeYesNo("");
         }
 
         grdDetailsHeader.IsEnabled = _vm.Budget.Stage > 1;
@@ -302,10 +319,10 @@ public partial class CreateNewBudget : ContentPage
         lblFinalBudgetHeader.TextColor = (_vm.Budget.Stage < 6) ? (Color)Gray300 : lblFinalBudgetHeader.TextColor;
     }
 
-    private void GoToStageFinalBudget_Tapped(object sender, TappedEventArgs e)
+    private async void GoToStageFinalBudget_Tapped(object sender, TappedEventArgs e)
     {
         _vm.Stage = "Finalise Budget";
-        _vm.SaveStage("Finalise Budget");
+        await _vm.SaveStage("Finalise Budget");
         UpdateStageDisplay();
     }
     private void GoToStageSettings_Tapped(object sender, TappedEventArgs e)
@@ -359,7 +376,7 @@ public partial class CreateNewBudget : ContentPage
         CurrencySearch.Text = "";
     }
 
-    private void ContinueSettingsButton_Clicked(object sender, EventArgs e)
+    private async void ContinueSettingsButton_Clicked(object sender, EventArgs e)
     {
         double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
         entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
@@ -372,7 +389,7 @@ public partial class CreateNewBudget : ContentPage
         _vm.Stage = "Budget Details";
         UpdateStageDisplay();
 
-        _vm.SaveStage("Budget Settings");
+        await _vm.SaveStage("Budget Settings");
 
         //await MainScrollView.ScrollToAsync(0, 155, true);
     }
@@ -385,7 +402,7 @@ public partial class CreateNewBudget : ContentPage
         //await MainScrollView.ScrollToAsync(0, 95, true);
     }
 
-    private void ContinueBudgetDetailsButton_Clicked(object sender, EventArgs e)
+    private async void ContinueBudgetDetailsButton_Clicked(object sender, EventArgs e)
     {
         if (ValidateBudgetDetails())
         {
@@ -414,7 +431,7 @@ public partial class CreateNewBudget : ContentPage
 
             UpdateStageDisplay();
 
-            _vm.SaveStage("Budget Details");
+            await _vm.SaveStage("Budget Details");
 
 
             //await MainScrollView.ScrollToAsync(0, 215, true);
@@ -488,14 +505,14 @@ public partial class CreateNewBudget : ContentPage
         //await MainScrollView.ScrollToAsync(0, 155, true);
     }
 
-    private void ContinueBudgetBillsButton_Clicked(object sender, EventArgs e)
+    private async void ContinueBudgetBillsButton_Clicked(object sender, EventArgs e)
     {
         if(ValidateBudgetOutgoings())
         {
             _vm.Stage = "Budget Savings";
             UpdateStageDisplay();
 
-            _vm.SaveStage("Budget Outgoings");
+            await _vm.SaveStage("Budget Outgoings");
 
             //await MainScrollView.ScrollToAsync(0, 275, true);
         }
@@ -510,29 +527,29 @@ public partial class CreateNewBudget : ContentPage
         //await MainScrollView.ScrollToAsync(0, 155, true);
     }
 
-    private void ContinueBudgetSavingsButton_Clicked(object sender, EventArgs e)
+    private async void ContinueBudgetSavingsButton_Clicked(object sender, EventArgs e)
     {
         if (ValidateBudgetSavings())
         {
             _vm.Stage = "Budget Extra Income";
             UpdateStageDisplay();
 
-            _vm.SaveStage("Budget Outgoings");
+            await _vm.SaveStage("Budget Outgoings");
 
             //await MainScrollView.ScrollToAsync(0, 275, true);
         }
 
     }
 
-    private void ContinueBudgetIncomeButton_Clicked(object sender, EventArgs e)
+    private async void ContinueBudgetIncomeButton_Clicked(object sender, EventArgs e)
     {
         if (ValidateBudgetIncome())
         {
             _vm.Stage = "Finalise Budget";
             UpdateStageDisplay();
 
-            _vm.SaveStage("Budget Extra Income");
-            _vm.SaveStage("Finalise Budget");
+            await _vm.SaveStage("Budget Extra Income");
+            await _vm.SaveStage("Finalise Budget");
 
             //await MainScrollView.ScrollToAsync(0, 275, true);
         }
@@ -549,13 +566,22 @@ public partial class CreateNewBudget : ContentPage
 
     private async void FinaliseBudgetButton_Clicked(object sender, EventArgs e)
     {
-        if(ValidateFinaliseBudget())
-        {
-            _vm.SaveStage("Finalise Budget");
-            _vm.SaveStage("Create Budget");
+        //var popup = new PopUpPage();
+        //Application.Current.MainPage.ShowPopup(popup);
 
+        if (ValidateFinaliseBudget())
+        {
+            var page = new LoadingPage();
+            await Application.Current.MainPage.Navigation.PushModalAsync(page);
+
+            await _vm.SaveStage("Finalise Budget");
+            await _vm.SaveStage("Create Budget");
+
+            await Application.Current.MainPage.Navigation.PopModalAsync();
             await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Budget Created&SnackID={_vm.BudgetID}");
         }
+
+        //popup.Close();
     }
 
     private void BackFinalBudgetButton_Clicked(object sender, EventArgs e)
