@@ -24,6 +24,7 @@ public partial class MainPage : ContentPage
         _pt = pt;
 
         InitializeComponent();
+
         this.BindingContext = viewModel;
         _vm = viewModel;        
     }
@@ -101,12 +102,15 @@ public partial class MainPage : ContentPage
         if (!App.DefaultBudget.IsCreated && !App.HasVisitedCreatePage)
         {
             App.HasVisitedCreatePage = true;
+
             await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={App.DefaultBudgetID}&NavigatedFrom=Budget Settings");
         }
 
         ProcessSnackBar();
 
         base.OnAppearing();
+
+        
 
     }
 
@@ -188,11 +192,8 @@ public partial class MainPage : ContentPage
 
     private async Task UndoCreateBudget(int BudgetID)
     {
-        //var popup = new PopUpPage();
-        //Application.Current.MainPage.ShowPopup(popup);
-
-        var page = new LoadingPage();
-        await Application.Current.MainPage.Navigation.PushModalAsync(page);
+        var popup = new PopUpPage();
+        Application.Current.MainPage.ShowPopup(popup);
 
         List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
 
@@ -208,9 +209,7 @@ public partial class MainPage : ContentPage
 
         if(PatchBudgetResult == "OK")
         {
-            await Application.Current.MainPage.Navigation.PopModalAsync();
             await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Finalise Budget");
-            return;
         }
 
     }

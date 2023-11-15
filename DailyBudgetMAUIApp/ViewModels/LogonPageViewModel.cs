@@ -165,7 +165,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                 }
                 else 
                 {
-                    IsButtonBusy = false; 
+                    IsButtonBusy = false;
+                    await Application.Current.MainPage.Navigation.PopModalAsync();
                     await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                 }
 
