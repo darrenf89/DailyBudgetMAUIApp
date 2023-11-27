@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            x:Class="MauiApp1.PopupDailySaving"
+            xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+            xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+            xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+            CanBeDismissedByTappingOutsideOfPopup="False"
+            Color="Transparent">
+ <AbsoluteLayout x:Name="AbsLayout">
+        <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0">
+            <Border BackgroundColor="{DynamicResource White}" Margin="15,120,15,0" HorizontalOptions="Start" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16">
+                <VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </AbsoluteLayout>
+</ContentPage>

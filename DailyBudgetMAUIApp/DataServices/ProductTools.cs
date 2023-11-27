@@ -661,6 +661,83 @@ namespace DailyBudgetMAUIApp.DataServices
             CultureInfo.DefaultThreadCurrentUICulture = CultureSetting;
         }
 
+        private void CloseSaving(ref Savings Saving)
+        {
+            Saving.CurrentBalance = Saving.TargetAmount;
+            Saving.TargetAmount = null;
+            Saving.TargetDate = null;
+            Saving.RegularSavingValue = null;
+            Saving.PeriodSavingValue = null;
+            Saving.IsClosed = true;
+        }
+
+        private void CloseBill(ref Bills Bill)
+        {
+
+        }
+
+        private void CloseIncomeEvent(ref IncomeEvents Income)
+        {
+            
+        }
+        public void BudgetDailyLoadCheck(Budgets budget)
+        {
+            if(budget.LastUpdatedDate.Date == budget.NextIncomePayday.Date)
+            {
+                //TODO: Confirm pay amount and date!
+                var popup = new PopupDailySaving(ref Saving);
+                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+                if(result == "OK")
+                {
+                    //TODO: Add next payamount
+                    //TODO: Update the next pay date
+                    //TODO: Reset any envelope savings 
+                }
+            }
+
+            foreach (Savings Saving in budget.Savings)
+            {
+                if(Saving.SavingsType == "TargetAmount" || Saving.SavingsType == "TargetDate")
+                {
+                    if(Saving.GoalDate == budget.LastUpdatedDate.Date)
+                    {
+                        if(Saving.IsAutoComplete)
+                        {
+                            CloseSaving(ref Saving);
+                        }
+                        else
+                        {
+                            //TODO: Ask if they want to complete the saving
+                            var popup = new PopupDailySaving(ref Saving);
+                            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+                            if(result == "OK")
+                            {
+                                CloseSaving(ref Saving);
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (Bills Bill in budget.Bills)
+            {
+                if(Bill.BillDueDate.Date == budget.LastUpdatedDate.Date)
+                {
+                    
+                }
+            }
+
+            foreach (IncomeEvents Income in budget.IncomeEvents)
+            {
+
+            }
+
+            budget.LastUpdatedDate = budget.LastUpdatedDate.AddDays(1);
+
+        }
+
     }
  
 }
