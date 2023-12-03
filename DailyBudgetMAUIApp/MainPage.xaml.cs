@@ -31,7 +31,6 @@ public partial class MainPage : ContentPage
 
     protected async override void OnAppearing()
     {
-
         if (DateTime.Now.Hour > 12)
         {
             _vm.Title = $"Good afternoon {App.UserDetails.NickName}!";

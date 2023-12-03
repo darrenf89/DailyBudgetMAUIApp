@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
 using System.Globalization;
+using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.DataServices
 {
@@ -663,12 +664,12 @@ namespace DailyBudgetMAUIApp.DataServices
 
         private void CloseSaving(ref Savings Saving)
         {
-            Saving.CurrentBalance = Saving.TargetAmount;
-            Saving.TargetAmount = null;
-            Saving.TargetDate = null;
+            Saving.CurrentBalance = Saving.SavingsGoal;
+            Saving.SavingsGoal = null;
+            Saving.GoalDate = null;
             Saving.RegularSavingValue = null;
             Saving.PeriodSavingValue = null;
-            Saving.IsClosed = true;
+            Saving.IsSavingsClosed = true;
         }
 
         private void CloseBill(ref Bills Bill)
@@ -680,15 +681,28 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             
         }
-        public void BudgetDailyLoadCheck(Budgets budget)
+
+        public async void BudgetDailyCycle(Budgets budget)
         {
-            if(budget.LastUpdatedDate.Date == budget.NextIncomePayday.Date)
+            while(budget.LastUpdated.Date < DateTime.UtcNow.Date)
+            {
+                budget = await BudgetDailyTransactionCheck(budget);
+
+                budget.LastUpdated = budget.LastUpdated.AddDays(1);
+            }
+            
+        }
+
+        private async Task<Budgets> BudgetDailyTransactionCheck(Budgets budget)
+        {            
+
+            if (budget.NextIncomePayday.GetValueOrDefault().Date == budget.LastUpdated.Date)
             {
                 //TODO: Confirm pay amount and date!
-                var popup = new PopupDailySaving(ref Saving);
+                var popup = new PopUpPage();
                 var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
-                if(result == "OK")
+                if((string)result == "OK")
                 {
                     //TODO: Add next payamount
                     //TODO: Update the next pay date
@@ -696,48 +710,63 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
             }
 
-            foreach (Savings Saving in budget.Savings)
+            for(int i = 0; i < budget.Savings.Count; i++) 
             {
-                if(Saving.SavingsType == "TargetAmount" || Saving.SavingsType == "TargetDate")
+                Savings Saving = budget.Savings[i];
+                if (Saving.SavingsType == "TargetAmount" || Saving.SavingsType == "TargetDate")
                 {
-                    if(Saving.GoalDate == budget.LastUpdatedDate.Date)
+                    if (Saving.GoalDate == budget.LastUpdated.Date)
                     {
-                        if(Saving.IsAutoComplete)
+                        if (Saving.IsAutoComplete)
                         {
                             CloseSaving(ref Saving);
                         }
                         else
                         {
-                            //TODO: Ask if they want to complete the saving
-                            var popup = new PopupDailySaving(ref Saving);
+                            var popup = new PopupDailySaving(Saving, new PopupDailySavingViewModel(), new ProductTools(new RestDataService()));
                             var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
-                            if(result == "OK")
+                            if ((string)result.ToString() == "OK")
                             {
                                 CloseSaving(ref Saving);
+                            }
+                            else
+                            {
+                                Saving = (Savings)result;
+
+                                if (Saving.GoalDate.GetValueOrDefault().Date <= budget.LastUpdated.Date)
+                                {
+                                    CloseSaving(ref Saving);
+                                }
                             }
                         }
                     }
                 }
+                budget.Savings[i] = Saving;
             }
 
-            foreach (Bills Bill in budget.Bills)
+            for (int i = 0; i < budget.Bills.Count; i++)
             {
-                if(Bill.BillDueDate.Date == budget.LastUpdatedDate.Date)
+                Bills Bill = budget.Bills[i];
+                if (Bill.BillDueDate.GetValueOrDefault().Date == budget.LastUpdated.Date)
                 {
-                    
+
                 }
+                budget.Bills[i] = Bill;
             }
 
-            foreach (IncomeEvents Income in budget.IncomeEvents)
+            for (int i = 0; i < budget.Bills.Count; i++)
             {
+                IncomeEvents Income = budget.IncomeEvents[i];
+                if (Income.DateOfIncomeEvent.Date == budget.LastUpdated.Date)
+                {
 
+                }
+                budget.IncomeEvents[i] = Income;
             }
 
-            budget.LastUpdatedDate = budget.LastUpdatedDate.AddDays(1);
-
+            return budget;
+            
         }
-
-    }
- 
+    } 
 }

@@ -1,0 +1,44 @@
+using CommunityToolkit.Maui.Views;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
+using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Pages;
+using Newtonsoft.Json;
+using System.Diagnostics;
+
+
+namespace DailyBudgetMAUIApp.ViewModels
+{
+    public partial class PopupDailySavingViewModel : BaseViewModel
+    {
+        public double ScreenWidth { get; }
+        public double ScreenHeight { get; }
+        public double PopupWidth { get; }
+        public double EntryWidth { get; }
+        public double ButtonWidth { get; }
+
+        public decimal OriginalTarget { get; set; }
+        public decimal OriginalDaily { get; set; }
+        public DateTime OriginalDate { get; set; }
+
+        [ObservableProperty]
+        public Savings _saving;
+
+        public PopupDailySavingViewModel()
+        {
+            ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
+            ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
+            PopupWidth = ScreenWidth - 30;
+            EntryWidth = PopupWidth * 0.6;
+            ButtonWidth = ((PopupWidth - 60) / 2);            
+
+        }
+
+
+
+
+
+    }
+}
