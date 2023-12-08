@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <xct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-            x:Class="DailyBudgetMAUIApp.Handlers.PopupDailySaving"
+            x:Class="DailyBudgetMAUIApp.Handlers.PopupDailyBill"
             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
@@ -18,45 +18,45 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Celebration}" Size="24"  Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
-                            <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Saving Goal Achieved!"/>
+                            <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Bill, Paid, On, Time!"/>
                             <Image Margin="0,20,0,0">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Celebration}" Size="24"  Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Congrats! you have completed a Saving goal you set for yourself."/>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,2,20,5" Text="Are you happy with how much you have saved? Would you like to close it and stop saving or do you want to update the goal?"/>
+                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Congrats! you have put enough aside each day to pay your bill in full and on time, feels good!"/>
+                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,2,20,5" Text="Or do these details not seem right? You forget you had this Outgoing and not owe it anymore or do you owe a different amount ... or is it not even due today?"/>
                         <VerticalStackLayout Margin="40,0,20,0">
-                            <HorizontalStackLayout x:Name="hslTargetAmount" Margin="0" IsVisible="False" HeightRequest="45">
+                            <HorizontalStackLayout x:Name="hslBillAmount" Margin="0" IsVisible="False" HeightRequest="45">
                                 <Image Margin="0,0,5,0" VerticalOptions="Center">
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Monetization_on}" Size="24"  Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>
-                                <Label x:Name="lblSavingTarget" CharacterSpacing="2" TextColor="{DynamicResource Danger}" FontSize="Medium" VerticalOptions="Center"/>
-                                <handlers:BorderlessEntry Margin="0" VerticalOptions="Center" IsVisible="False" TextColor="{DynamicResource Danger}" FontSize="Medium" CharacterSpacing="2" x:Name="entSavingTarget" TextChanged="SavingTarget_Changed" Keyboard="Numeric" />
+                                <Label x:Name="lblBillAmount" CharacterSpacing="2" TextColor="{DynamicResource Danger}" FontSize="Medium" VerticalOptions="Center"/>
+                                <handlers:BorderlessEntry Margin="0" VerticalOptions="Center" IsVisible="False" TextColor="{DynamicResource Danger}" FontSize="Medium" CharacterSpacing="2" x:Name="entBillAmount" TextChanged="BillAmount_Changed" Keyboard="Numeric" />
                             </HorizontalStackLayout>
-                            <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorSavingsGoal">
+                            <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorBillAmount">
                                 <Image>
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
                                     </Image.Source>
                                 </Image>
-                                <Label Text="You can't reduct your saving goal at this point!" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                                <Label Text="You can't reduct the amount to Zero!" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
                         <VerticalStackLayout Margin="40,0,20,0">
-                            <HorizontalStackLayout x:Name="hslTargetDate" IsVisible="False" HeightRequest="45" Margin="0">
+                            <HorizontalStackLayout x:Name="hslTargetDate" Margin="0" IsVisible="False" HeightRequest="45">
                                 <Image Margin="0,0,5,0" VerticalOptions="Center">
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Calendar_month}" Size="24"  Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>
-                                <Label x:Name="lblTargetDate" CharacterSpacing="1" FontSize="Medium" VerticalOptions="Center" />
-                                <DatePicker CharacterSpacing="1" x:Name="entTargetDate" Date="{Binding Saving.GoalDate}" IsVisible="False" VerticalOptions="Center" FontSize="Medium" Margin="0"/>
+                                <Label VerticalOptions="Center" x:Name="lblTargetDate" CharacterSpacing="1" FontSize="Medium" />
+                                <DatePicker CharacterSpacing="1" x:Name="entTargetDate" Date="{Binding Bill.BillDueDate}" IsVisible="False" VerticalOptions="Center" FontSize="Medium" Margin="0"/>
                             </HorizontalStackLayout>
-                            <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorSavingsDate">
+                            <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorBillDate">
                                 <Image>
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
@@ -64,43 +64,24 @@
                                 </Image>
                                 <Label Text="Select a date in the future" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
                             </HorizontalStackLayout>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Margin="40,0,20,0">
-                            <HorizontalStackLayout x:Name="hslDailyAmount" Margin="0" IsVisible="False" HeightRequest="45">
-                                <Image Margin="0,0,5,0" VerticalOptions="Center">
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Refresh}" Size="24"  Color="{DynamicResource Primary}"/>
-                                    </Image.Source>
-                                </Image>
-                                <Label VerticalOptions="Center" x:Name="lblSavingAmount" CharacterSpacing="1" TextColor="{DynamicResource Success}" FontSize="Medium"/>
-                                <handlers:BorderlessEntry Margin="0" FontSize="Medium" VerticalOptions="Center" IsVisible="False" TextColor="{DynamicResource Success}" CharacterSpacing="2" x:Name="entSavingAmount" TextChanged="SavingAmount_Changed" Keyboard="Numeric" />
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorSavingsDailyAmount">
-                                <Image>
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
-                                    </Image.Source>
-                                </Image>
-                                <Label Text="You can't have a zero saving amount, doesn't make sense!" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
-                            </HorizontalStackLayout>
-                        </VerticalStackLayout>
+                        </VerticalStackLayout>                        
                     </VerticalStackLayout>
-                    <VerticalStackLayout x:Name="vslDeleteSaving" IsVisible="False">
+                    <VerticalStackLayout x:Name="vslDeleteBill" IsVisible="False">
                         <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
                             <Image Margin="0,20,0,0">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="24"  Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
-                            <Label FontAttributes="Bold" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Delete Saving Goal?"/>
+                            <Label FontAttributes="Bold" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Delete Outgoing?"/>
                             <Image Margin="0,20,0,0">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="24"  Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Uh oh, Did you forget about the saving goal?"/>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,5,20,5" Text="Or did you just change your mind last minute? It's ok you can still delete the saving, good news is you will be able to spend it on something else."/>
+                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Uh oh, Did you forget about this outoing?"/>
+                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,5,20,5" Text="Or did you just change your mind last minute? It's ok you can still delete the outgoing, good news is you will be able to spend it on something else."/>
                     </VerticalStackLayout>
                     <Grid Margin="20,5,20,20" RowDefinitions="*" ColumnDefinitions="*,20,*" x:Name="grdFirstBtns">
                         <Button WidthRequest="{Binding ButtonOneWidth}" Grid.Row="0" Grid.Column="0" Margin="0" x:Name="btnUpdate" Text="That's not right!" FontSize="Caption" Clicked="Update_Saving" HorizontalOptions="Center" BackgroundColor="{StaticResource Tertiary}" TextColor="White" Padding="15,0"/>

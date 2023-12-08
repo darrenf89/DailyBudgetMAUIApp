@@ -5,6 +5,7 @@ using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
 using System.Globalization;
 using DailyBudgetMAUIApp.ViewModels;
+using CommunityToolkit.Maui.ApplicationModel;
 
 namespace DailyBudgetMAUIApp.DataServices
 {
@@ -265,28 +266,129 @@ namespace DailyBudgetMAUIApp.DataServices
             return DaysBetweenPay;
         }
 
-        public void UpdateBudget(ref Budgets Budget)
+        public string UpdatePayPeriodStats(int? BudgetID)
         {
-            UpdateBudgetRecalculateSavings(ref Budget);
-            UpdateBudgetIncomes(ref Budget);
-            UpdateBudgetSavings(ref Budget);
-            UpdateBudgetBills(ref Budget);
+            //TODO: IMPLEMENT CALLING UpdatePayPeriodStats in API
+            return "OK";
         }
 
-        public void UpdateBudgetRecalculateSavings(ref Budgets Budget)
+        public string UpdateBudget(ref Budgets Budget)
         {
-            int? DaysBetweenPay = Budget.AproxDaysBetweenPay;
+            string status = "OK";
 
-            foreach (Savings Saving in Budget.Savings)
+            status = status == "OK" ? UpdateApproxDaysBetweenPay(ref Budget) : status;
+            status = status == "OK" ? UpdateBudgetCreateSavings(ref Budget) : status;
+            status = status == "OK" ? UpdateBudgetCreateBills(ref Budget) : status;
+            status = status == "OK" ? UpdateBudgetCreateIncome(ref Budget) : status;
+            status = status == "OK" ? UpdateBudgetCreateSavingsSpend(ref Budget) : status;
+            status = status == "OK" ? UpdateBudgetCreateBillsSpend(ref Budget) : status;
+
+            Budget.BudgetValuesLastUpdated = DateTime.UtcNow;
+            int DaysToPayDay = (Budget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).Days;
+            Budget.LeftToSpendDailyAmount = (Budget.LeftToSpendBalance ?? 0) / DaysToPayDay;
+            Budget.StartDayDailyAmount = Budget.LeftToSpendDailyAmount;
+
+            status = status == "OK" ? UpdatePayPeriodStats(Budget.BudgetID) : status;
+
+            return status;
+        }
+
+        public string UpdateApproxDaysBetweenPay(ref Budgets Budget)
+        {
+
+            if (Budget != null)
             {
-                if (Saving.IsRegularSaving)
+                int DaysBetweenPayDay = CalculateBudgetDaysBetweenPay(Budget);
+
+                Budget.AproxDaysBetweenPay = DaysBetweenPayDay;
+
+                return "OK";
+            }
+            else
+            {
+                return "Budget not found";
+            }
+
+        }
+
+        public int CalculateBudgetDaysBetweenPay(Budgets Budget)
+        {
+            int NumberOfDays = 30;
+
+            if (Budget.PaydayType == "Everynth")
+            {
+                int Duration = new int();
+                if (Budget.PaydayDuration == "days")
                 {
-                    if (!Saving.IsDailySaving)
-                    {
+                    Duration = 1;
+                }
+                else if (Budget.PaydayDuration == "weeks")
+                {
+                    Duration = 7;
+                }
+                else if (Budget.PaydayDuration == "years")
+                {
+                    Duration = 365;
+                }
+
+                NumberOfDays = Duration * Budget.PaydayValue ?? 30;
+            }
+            else if (Budget.PaydayType == "WorkingDays")
+            {
+                int? NumberOfDaysBefore = Budget.PaydayValue;
+                NumberOfDays = GetNumberOfDaysLastWorkingDay(NumberOfDaysBefore);
+            }
+            else if (Budget.PaydayType == "OfEveryMonth")
+            {
+                int year = DateTime.Now.Year;
+                int month = DateTime.Now.Month;
+                int days = DateTime.DaysInMonth(year, month);
+                NumberOfDays = days;
+            }
+            else if (Budget.PaydayType == "LastOfTheMonth")
+            {
+                int dayNumber = ((int)Enum.Parse(typeof(DayOfWeek), Budget.PaydayDuration));
+                NumberOfDays = GetNumberOfDaysLastDayOfWeek(dayNumber);
+            }
+
+            return NumberOfDays;
+        }
+        public string UpdateBudgetCreateBills(ref Budgets Budget)
+        {
+            if (Budget != null)
+            {
+                foreach (Bills Bill in Budget.Bills)
+                {                    
+                    decimal? BalanceLeft = Bill.BillAmount - Bill.BillCurrentBalance;
+
+                    TimeSpan TimeToGoal = (Bill.BillDueDate - DateTime.Now).GetValueOrDefault();
+                    int? DaysToGoal = TimeToGoal.Days;
+
+                    Bill.RegularBillValue = BalanceLeft / DaysToGoal;    
+                }
+
+                return "OK";
+            }
+            else
+            {
+                return "No Budget Detected";
+            }
+        }
+
+        public string UpdateBudgetCreateSavings(ref Budgets Budget)
+        {
+            if (Budget != null)
+            {
+                foreach (Savings Saving in Budget.Savings)
+                {
+                    if (Saving.IsRegularSaving)
+                    {                        
                         if (Saving.SavingsType == "TargetAmount")
                         {
-                            //Recalculate Date and daily amount
-                            Saving.RegularSavingValue = Saving.PeriodSavingValue / DaysBetweenPay;
+                            if (!Saving.IsDailySaving)
+                            {
+                                Saving.RegularSavingValue = Saving.PeriodSavingValue / Budget.AproxDaysBetweenPay;
+                            }
 
                             decimal? BalanceLeft = Saving.SavingsGoal - (Saving.CurrentBalance ?? 0);
                             int NumberOfDays = (int)Math.Ceiling(BalanceLeft / Saving.RegularSavingValue ?? 0);
@@ -295,100 +397,84 @@ namespace DailyBudgetMAUIApp.DataServices
                             Saving.GoalDate = Today.AddDays(NumberOfDays);
 
                         }
+                        else if (Saving.SavingsType == "TargetDate")
+                        {
+                            decimal? BalanceLeft = Saving.SavingsGoal - (Saving.CurrentBalance ?? 0);
+
+                            TimeSpan TimeToGoal = (Saving.GoalDate - DateTime.Now).GetValueOrDefault();
+                            int? DaysToGoal = TimeToGoal.Days;
+
+                            Saving.RegularSavingValue = BalanceLeft / DaysToGoal;
+                        }
                         else if (Saving.SavingsType == "SavingsBuilder")
                         {
-                            //Recalculate daily amount.
-                            Saving.RegularSavingValue = Saving.PeriodSavingValue / DaysBetweenPay;
-                        }
+                            if (!Saving.IsDailySaving)
+                            {                                
+                                Saving.RegularSavingValue = Saving.PeriodSavingValue / Budget.AproxDaysBetweenPay;
+                            }                                
+                        }                        
                     }
                 }
+
+                return "OK";
+            }
+            else
+            {
+                return "No Budget Detected";
             }
         }
 
-        public void UpdateBudgetIncomes(ref Budgets Budget)
+        public string UpdateBudgetCreateIncome(ref Budgets Budget)
         {
-            DateTime Today = DateTime.Now;
-
-            foreach (IncomeEvents Income in Budget.IncomeEvents)
+            if (Budget != null)
             {
-                DateTime NextPayDay = Budget.NextIncomePayday ?? default;
-                if (Income.IsInstantActive ?? false)
+                DateTime Today = DateTime.Now;
+
+                foreach (IncomeEvents Income in Budget.IncomeEvents)
                 {
-                    DateTime PayDayAfterNext = CalculateNextDate(NextPayDay, Budget.PaydayType, Budget.PaydayValue ?? 1, Budget.PaydayDuration);
-                    DateTime NextIncomeDate = CalculateNextDate(Income.DateOfIncomeEvent, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
-                    //Next Income Date happens in this Pay window so process
-                    if(Income.DateOfIncomeEvent.Date < NextPayDay.Date)
+                    DateTime NextPayDay = Budget.NextIncomePayday ?? default;
+                    if (Income.IsInstantActive ?? false)
                     {
-                        Income.IncomeActiveDate = DateTime.UtcNow;
-                        Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance + Income.IncomeAmount;
-                        Budget.LeftToSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
-                        while (NextIncomeDate.Date < NextPayDay.Date)
+                        DateTime PayDayAfterNext = CalculateNextDate(NextPayDay, Budget.PaydayType, Budget.PaydayValue ?? 1, Budget.PaydayDuration);
+                        DateTime NextIncomeDate = CalculateNextDate(Income.DateOfIncomeEvent, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
+                        //Next Income Date happens in this Pay window so process
+                        if (Income.DateOfIncomeEvent.Date < NextPayDay.Date)
                         {
+                            Income.IncomeActiveDate = DateTime.UtcNow;
                             Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance + Income.IncomeAmount;
                             Budget.LeftToSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
-                            //TODO: Add a Transaction into transactions
-                            NextIncomeDate = CalculateNextDate(NextIncomeDate, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
-                        }                       
-                    }
-                    else
-                    {
-                        DateTime CalPayDate = NextPayDay.Date;
-                        while (Income.DateOfIncomeEvent.Date >= NextPayDay.Date)
-                        {
-                            CalPayDate = NextPayDay;
-                            NextPayDay = CalculateNextDate(NextPayDay, Budget.PaydayType, Budget.PaydayValue ?? 1, Budget.PaydayDuration);
+                            while (NextIncomeDate.Date < NextPayDay.Date)
+                            {
+                                Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance + Income.IncomeAmount;
+                                Budget.LeftToSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
+                                //TODO: Add a Transaction into transactions
+                                NextIncomeDate = CalculateNextDate(NextIncomeDate, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
+                            }
                         }
-                        Income.IncomeActiveDate = CalPayDate.Date;
-                    }
-
-                    if(Income.DateOfIncomeEvent <= Today.Date)
-                    {
-                        Budget.BankBalance = Budget.BankBalance + Income.IncomeAmount;
-                        //TODO: Update Instant Active Income Transaction in transactions
-                        Income.DateOfIncomeEvent = NextIncomeDate.Date;
-                        if (Income.IsRecurringIncome)
+                        else
                         {
-                            DateTime CalPayDate = new DateTime();
-                            while (NextIncomeDate.Date > NextPayDay.Date)
+                            DateTime CalPayDate = NextPayDay.Date;
+                            while (Income.DateOfIncomeEvent.Date >= NextPayDay.Date)
                             {
                                 CalPayDate = NextPayDay;
                                 NextPayDay = CalculateNextDate(NextPayDay, Budget.PaydayType, Budget.PaydayValue ?? 1, Budget.PaydayDuration);
                             }
                             Income.IncomeActiveDate = CalPayDate.Date;
                         }
-                        else
-                        {
-                            Income.IsClosed = true;
-                            Income.IsIncomeAddedToBalance = true;
-                        }
-                    }
-                }                    
-                else
-                {
-                    if(Income.DateOfIncomeEvent.Date <= Today.Date)
-                    {
-                        Budget.BankBalance = Budget.BankBalance + Income.IncomeAmount;
-                        Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance + Income.IncomeAmount;
-                        Budget.LeftToSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
-                        //TODO: Add a Transaction into transactions
-                        if (Income.IsRecurringIncome)
-                        {
-                            //Calculate the next DateOfIncomeEvent and set IncomeActiveDate To this as well!
-                            DateTime NextDate = CalculateNextDate(Income.DateOfIncomeEvent, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
-                            Income.DateOfIncomeEvent = NextDate;
-                            Income.IncomeActiveDate = NextDate;
-                        }
-                        else
-                        {
-                            Income.IsClosed = true;
-                            Income.IsIncomeAddedToBalance = true;
-                        }
                     }
                 }
             }
-        }
+            else
+            {
+                return "No Budget Detected";
+            }
 
-        public void UpdateBudgetSavings(ref Budgets Budget)
+            return "OK";
+
+        }
+    
+
+        public string UpdateBudgetCreateSavingsSpend(ref Budgets Budget)
         {
             decimal DailySavingOutgoing = new();
             decimal PeriodTotalSavingOutgoing = new();
@@ -397,25 +483,28 @@ namespace DailyBudgetMAUIApp.DataServices
 
             foreach (Savings Saving in Budget.Savings)
             {
-                if (Saving.IsRegularSaving & Saving.SavingsType == "SavingsBuilder")
+                if (!Saving.IsSavingsClosed)
                 {
-                    DailySavingOutgoing += Saving.RegularSavingValue ?? 0;
-                    PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToPayDay);
-                }
-                else if (Saving.IsRegularSaving)
-                {
-                    DailySavingOutgoing += Saving.RegularSavingValue ?? 0;
-                    //check if goal date is before pay day
-                    int DaysToSaving = (Saving.GoalDate.GetValueOrDefault().Date - DateTime.Today.Date).Days;
-                    if (DaysToSaving < DaysToPayDay & !Saving.CanExceedGoal)
+                    if (Saving.IsRegularSaving & Saving.SavingsType == "SavingsBuilder")
                     {
-                        PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToSaving);
-                    }
-                    else
-                    {
+                        DailySavingOutgoing += Saving.RegularSavingValue ?? 0;
                         PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToPayDay);
                     }
+                    else if (Saving.IsRegularSaving)
+                    {
+                        DailySavingOutgoing += Saving.RegularSavingValue ?? 0;
+                        //check if goal date is before pay day
+                        int DaysToSaving = (Saving.GoalDate.GetValueOrDefault().Date - DateTime.Today.Date).Days;
+                        if (DaysToSaving < DaysToPayDay)
+                        {
+                            PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToSaving);
+                        }
+                        else
+                        {
+                            PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToPayDay);
+                        }
 
+                    }
                 }
 
                 PeriodTotalSavingOutgoing += Saving.CurrentBalance ?? 0;
@@ -423,9 +512,11 @@ namespace DailyBudgetMAUIApp.DataServices
 
             Budget.DailySavingOutgoing = DailySavingOutgoing;
             Budget.LeftToSpendBalance = Budget.LeftToSpendBalance - PeriodTotalSavingOutgoing;
+
+            return "OK";
         }
 
-        public void UpdateBudgetBills(ref Budgets Budget)
+        public string UpdateBudgetCreateBillsSpend(ref Budgets Budget)
         {
             decimal DailyBillOutgoing = new();
             decimal PeriodTotalBillOutgoing = new();
@@ -437,24 +528,47 @@ namespace DailyBudgetMAUIApp.DataServices
                 DailyBillOutgoing += Bill.RegularBillValue ?? 0;
                 //Check if Due Date is before Pay Dat
                 int DaysToBill = (Bill.BillDueDate.GetValueOrDefault().Date - DateTime.Today.Date).Days;
-                if (DaysToBill < DaysToPayDay)
+                if (Bill.IsRecuring)
                 {
-                    PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
+                    if (DaysToBill < DaysToPayDay)
+                    {
+                        PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
+
+                        DateTime BillDueAfterNext = CalculateNextDate(Bill.BillDueDate.GetValueOrDefault(), Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
+                        int NumberOfDaysBill = (BillDueAfterNext - Bill.BillDueDate.GetValueOrDefault()).Days;
+                        decimal? BillRegularValue = Bill.BillAmount / NumberOfDaysBill;
+
+                        PeriodTotalBillOutgoing += BillRegularValue.GetValueOrDefault() * (DaysToPayDay - DaysToBill);
+
+                    }
+                    else
+                    {
+                        PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToPayDay;
+                    }
                 }
                 else
                 {
-                    PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToPayDay;
+                    if (DaysToBill < DaysToPayDay)
+                    {
+                        PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
+                    }
+                    else
+                    {
+                        PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToPayDay;
+                    }
                 }
 
                 PeriodTotalBillOutgoing += Bill.BillCurrentBalance;
-
             }
 
             Budget.DailyBillOutgoing = DailyBillOutgoing;
             Budget.LeftToSpendBalance = Budget.LeftToSpendBalance - PeriodTotalBillOutgoing;
-            Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance - PeriodTotalBillOutgoing;
+            Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance - PeriodTotalBillOutgoing;        
+        
+            return "OK";
            
         }
+
         public DateTime CalculateNextDate(DateTime LastDate, string Type, int Value, string? Duration)
         {
             DateTime NextDate = new DateTime();
@@ -504,6 +618,10 @@ namespace DailyBudgetMAUIApp.DataServices
                 else if (Duration == "years")
                 {
                     IntDuration = 365;
+                }
+                else if (Duration == "months")
+                {
+                    IntDuration = 30;
                 }
                 else
                 {
@@ -672,28 +790,80 @@ namespace DailyBudgetMAUIApp.DataServices
             Saving.IsSavingsClosed = true;
         }
 
-        private void CloseBill(ref Bills Bill)
+        private void TransactBill(ref Bills Bill, int BudgetID)
         {
+            Transactions BillTransaction = new Transactions();
+            BillTransaction.TransactionAmount = Bill.BillAmount;
+            BillTransaction.EventType = "Bill";
+            BillTransaction.TransactionDate = Bill.BillDueDate;
+            BillTransaction.Notes = $"Transaction added for bill, {Bill.BillName}";
+            BillTransaction.IsTransacted = true;
 
+            BillTransaction = _ds.SaveNewTransaction(BillTransaction, BudgetID).Result;
+
+            if (BillTransaction.TransactionID != 0)
+            {
+                Bill.BillCurrentBalance = 0;
+            }            
+
+            if (Bill.IsRecuring)
+            {
+
+                Bill.BillDueDate = CalculateNextDate(Bill.BillDueDate.GetValueOrDefault(), Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
+                TimeSpan Difference = (TimeSpan)(Bill.BillDueDate - DateTime.Now.AddDays(-1));
+                int NumberOfDays = Difference.Days;
+                decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
+
+                if (NumberOfDays != 0)
+                {
+                    Bill.RegularBillValue = RemainingBillAmount / NumberOfDays;
+                    Bill.RegularBillValue = Math.Round(Bill.RegularBillValue.GetValueOrDefault(), 2);
+                }
+                else
+                {
+                    Bill.RegularBillValue = RemainingBillAmount;
+                }
+
+                Bill.LastUpdatedDate = DateTime.Now;
+            }
+            else
+            {
+                Bill.RegularBillValue = 0;
+                Bill.IsClosed = true;
+                Bill.LastUpdatedDate = DateTime.Now;
+            }
         }
 
-        private void CloseIncomeEvent(ref IncomeEvents Income)
+        private void TransactIncomeEvent(ref IncomeEvents Income)
         {
             
         }
 
-        public async void BudgetDailyCycle(Budgets budget)
+        public async Task<Budgets> BudgetDailyCycle(Budgets budget)
         {
             while(budget.LastUpdated.Date < DateTime.UtcNow.Date)
             {
-                budget = await BudgetDailyTransactionCheck(budget);
-
                 budget.LastUpdated = budget.LastUpdated.AddDays(1);
+
+                budget = await BudgetDailyEventsCheck(budget);
+
+                //TODO: ADD REGULAR VALUES TO ALL SAVINGS AND BILLS
+
+                string Status = UpdateBudget(ref budget);
+                if(Status == "OK")
+                {
+
+                }
+
+                //TODO:SAVE BUDGET
+                
+
             }
-            
+
+            return budget;
         }
 
-        private async Task<Budgets> BudgetDailyTransactionCheck(Budgets budget)
+        private async Task<Budgets> BudgetDailyEventsCheck(Budgets budget)
         {            
 
             if (budget.NextIncomePayday.GetValueOrDefault().Date == budget.LastUpdated.Date)
@@ -704,15 +874,16 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if((string)result == "OK")
                 {
-                    //TODO: Add next payamount
+                    //TODO: Add next pay amount
                     //TODO: Update the next pay date
                     //TODO: Reset any envelope savings 
                 }
             }
 
-            for(int i = 0; i < budget.Savings.Count; i++) 
+            for(int i = budget.Savings.Count - 1; i >= 0 ; i--) 
             {
                 Savings Saving = budget.Savings[i];
+
                 if (Saving.SavingsType == "TargetAmount" || Saving.SavingsType == "TargetDate")
                 {
                     if (Saving.GoalDate == budget.LastUpdated.Date)
@@ -720,6 +891,8 @@ namespace DailyBudgetMAUIApp.DataServices
                         if (Saving.IsAutoComplete)
                         {
                             CloseSaving(ref Saving);
+                            budget.Savings[i] = Saving;
+                            await _ds.UpdateSaving(budget.Savings[i]);
                         }
                         else
                         {
@@ -729,6 +902,13 @@ namespace DailyBudgetMAUIApp.DataServices
                             if ((string)result.ToString() == "OK")
                             {
                                 CloseSaving(ref Saving);
+                                budget.Savings[i] = Saving;
+                                await _ds.UpdateSaving(budget.Savings[i]);
+                            }
+                            else if ((string)result.ToString() == "Delete")
+                            {
+                                await _ds.DeleteSaving(Saving.SavingID);
+                                budget.Savings.RemoveAt(i);
                             }
                             else
                             {
@@ -736,26 +916,55 @@ namespace DailyBudgetMAUIApp.DataServices
 
                                 if (Saving.GoalDate.GetValueOrDefault().Date <= budget.LastUpdated.Date)
                                 {
-                                    CloseSaving(ref Saving);
+                                    CloseSaving(ref Saving);                                    
                                 }
+
+                                budget.Savings[i] = Saving;
+                                await _ds.UpdateSaving(budget.Savings[i]);
                             }
                         }
                     }
-                }
-                budget.Savings[i] = Saving;
+                }               
             }
 
-            for (int i = 0; i < budget.Bills.Count; i++)
+            for (int i = budget.Bills.Count - 1; i >= 0 ; i--)
             {
                 Bills Bill = budget.Bills[i];
+
                 if (Bill.BillDueDate.GetValueOrDefault().Date == budget.LastUpdated.Date)
                 {
+                    var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), new ProductTools(new RestDataService()));
+                    var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
+                    if ((string)result.ToString() == "OK")
+                    {
+                        TransactBill(ref Bill, budget.BudgetID);
+                        budget.BankBalance = budget.BankBalance - Bill.BillAmount;
+                        budget.Bills[i] = Bill;
+                        await _ds.UpdateBill(budget.Bills[i]);
+                    }
+                    else if ((string)result.ToString() == "Delete")
+                    {
+                        await _ds.DeleteBill(Bill.BillID);                        
+                        budget.Bills.RemoveAt(i);
+                    }
+                    else
+                    {
+                        Bill = (Bills)result;
+
+                        if (Bill.BillDueDate.GetValueOrDefault().Date <= budget.LastUpdated.Date)
+                        {
+                            TransactBill(ref Bill, budget.BudgetID);
+                            budget.BankBalance = budget.BankBalance - Bill.BillAmount;
+                        }
+                        budget.Bills[i] = Bill;
+                        await _ds.UpdateBill(budget.Bills[i]);
+                    }
                 }
-                budget.Bills[i] = Bill;
+
             }
 
-            for (int i = 0; i < budget.Bills.Count; i++)
+            for (int i = budget.IncomeEvents.Count - 1; i >=0 ; i--)
             {
                 IncomeEvents Income = budget.IncomeEvents[i];
                 if (Income.DateOfIncomeEvent.Date == budget.LastUpdated.Date)
@@ -763,6 +972,17 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 }
                 budget.IncomeEvents[i] = Income;
+            }
+
+            //TODO: PROCESS FUTURE TRANSACTIONS
+            for (int i = budget.Transactions.Count - 1; i >= 0; i--)
+            {
+                Transactions Transaction = budget.Transactions[i];
+                if (Transaction.TransactionDate.GetValueOrDefault().Date == budget.LastUpdated.Date)
+                {
+
+                }
+                budget.Transactions[i] = Transaction;
             }
 
             return budget;

@@ -1,29 +1,40 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.Models
 {
-    public class Transactions
+    public partial class Transactions : ObservableObject
     {
-        [Key]
-        public int TransactionID { get; set; }
-        public bool isSpendFromSavings { get; set; } = false;
-        [ForeignKey("Savings")]
-        public int? SavingID { get; set; }
-        public string? SavingName { get; set; } = "";
-        public DateTime? TransactionDate { get; set; }
-        public DateTime? WhenAdded { get; set; } = DateTime.UtcNow;
-        public bool isIncome { get; set; } = false;
-        public decimal? TransactionAmount { get; set; }
-        public string? Category { get; set; } = "";
-        public string? Payee { get; set; } = "";
-        public string? Notes { get; set; }
-        [ForeignKey("Categories")]
-        public int? CategoryID { get; set; }
-        public bool isTransacted { get; set; } = false;
-        public string? SavingsSpendType { get; set; }
-        [NotMapped]
-        public List<string> PayeeList { get; set; } = new List<string>();
-        public string stage { get; set; } = "Create";
+        [ObservableProperty]
+        public int _transactionID;
+        [ObservableProperty]
+        public bool _isSpendFromSavings;
+        [ObservableProperty]
+        public int? _savingID;
+        [ObservableProperty]
+        public string? _savingName;
+        [ObservableProperty]
+        public DateTime? _transactionDate;
+        [ObservableProperty]
+        public DateTime? _whenAdded  = DateTime.UtcNow;
+        public bool _isIncome;
+        [ObservableProperty]
+        public decimal? _transactionAmount;
+        [ObservableProperty]
+        public string? _category;
+        [ObservableProperty]
+        public string? _payee;
+        [ObservableProperty]
+        public string? _notes;
+        [ObservableProperty]
+        public int? _categoryID;
+        [ObservableProperty]
+        public bool _isTransacted;
+        [ObservableProperty]
+        public string? _savingsSpendType;
+        [ObservableProperty]
+        public string _stage;
+        [ObservableProperty]
+        public string _eventType;
     }
 }

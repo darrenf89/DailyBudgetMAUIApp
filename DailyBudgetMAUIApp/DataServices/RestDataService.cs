@@ -10,6 +10,7 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using CommunityToolkit.Maui.ApplicationModel;
 
+
 namespace DailyBudgetMAUIApp.DataServices
 {
     //TODO: UPDATE ALL CALLS TO USE USING STREAM
@@ -1500,6 +1501,217 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to get delete income in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<Transactions> SaveNewTransaction(Transactions Transaction, int BudgetID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Transactions>(Transaction, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/transactions/savenewtransaction/{BudgetID}", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Transactions ReturnTransactions = System.Text.Json.JsonSerializer.Deserialize<Transactions>(content, _jsonSerialiserOptions);
+                    return ReturnTransactions;
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying update income in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> UpdateTransaction(Transactions Transaction)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Transactions>(Transaction, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/transactions/updatetransaction", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying update transaction in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> DeleteTransaction(int TransactionID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/deletetransaction/{TransactionID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            return "OK";
+                        }
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Delete Transaction in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<Transactions> GetTransactionFromID(int TransactionID)
+        {
+            Transactions Transaction = new Transactions();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/gettransactionfromid/{TransactionID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+                if (response.IsSuccessStatusCode)
+                {
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        Transaction = serializer.Deserialize<Transactions>(reader);
+                    }
+
+                    return Transaction;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Transaction by ID in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<Budgets> GetAllBudgetTransactions(int BudgetID)
+        {
+            Budgets Budget = new Budgets();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getallbudgettransactions/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        Budget = serializer.Deserialize<Budgets>(reader);
+                    }
+
+                    return Budget;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get All Transactions by ID in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }

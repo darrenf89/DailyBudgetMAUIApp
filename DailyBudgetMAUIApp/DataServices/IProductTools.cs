@@ -20,18 +20,22 @@ namespace DailyBudgetMAUIApp.DataServices
         public int FindCurrencyCursorPosition(string input);
         public int GetNumberOfDaysLastWorkingDay(int? NumberOfDaysBefore);
         public int GetNumberOfDaysLastDayOfWeek(int dayNumber);
-        public void UpdateBudget(ref Budgets Budget);
-        public void UpdateBudgetRecalculateSavings(ref Budgets Budget);
-        public void UpdateBudgetIncomes(ref Budgets Budget);
-        public void UpdateBudgetSavings(ref Budgets Budget);  
-        public void UpdateBudgetBills(ref Budgets Budget);
+        public string UpdateBudget(ref Budgets Budget);
+        public string UpdateApproxDaysBetweenPay(ref Budgets Budget);
+        public int CalculateBudgetDaysBetweenPay(Budgets Budget);
+        public string UpdateBudgetCreateSavings(ref Budgets Budget);
+        public string UpdateBudgetCreateBills(ref Budgets Budget);
+        public string UpdateBudgetCreateIncome(ref Budgets Budget);
+        public string UpdateBudgetCreateSavingsSpend(ref Budgets Budget);
+        public string UpdateBudgetCreateBillsSpend(ref Budgets Budget);
         public DateTime CalculateNextDate(DateTime LastDate, string Type, int Value, string? Duration);
         public string CalculateNextDateEverynth(ref DateTime NextDate, DateTime LastDate, int Value, string? Duration);
         public string CalculateNextDateWorkingDays(ref DateTime NextDate, DateTime LastDate, int Value);
         public string CalculateNextDateOfEveryMonth(ref DateTime NextDate, DateTime LastDate, int Value);
         public string CalculateNextDateLastOfTheMonth(ref DateTime NextDate, DateTime LastDate, string? Duration);
         public void SetCultureInfo(BudgetSettingValues Settings);
-        public void BudgetDailyCycle(Budgets budget);
-        
+        public Task<Budgets> BudgetDailyCycle(Budgets budget);
+        public string UpdatePayPeriodStats(int? BudgetID);
+
     }
 }

@@ -47,7 +47,7 @@ public partial class PopupDailySaving : Popup
             double SavingTarget = (double?)_vm.Saving.SavingsGoal ?? 0;
             lblSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
 
-            string GoalDate = _vm.Saving.GoalDate.ToString();
+            string GoalDate = _vm.Saving.GoalDate.GetValueOrDefault().ToShortDateString();
             lblTargetDate.Text = GoalDate;
         }
     }
@@ -75,12 +75,19 @@ public partial class PopupDailySaving : Popup
         this.Close("OK");
     }
 
-    private void Update_Saving(object sender, EventArgs e)
+    private void DeleteYes_Saving(object sender, EventArgs e)
     {
-        btnUpdate.IsVisible = false;
-        btnReset.IsVisible = true;
-        btnFinsih.IsVisible = false;
-        btnAccept.IsVisible = true;
+        this.Close("Delete");
+    }
+
+    private void DeleteNo_Saving(object sender, EventArgs e)
+    {
+        grdFirstBtns.IsVisible = false;
+        grdUpdateBtns.IsVisible = true;
+        grdDeleteBtns.IsVisible = false;
+
+        vslDeleteSaving.IsVisible = false;
+        vslSavingComplete.IsVisible = true;
 
         if (_vm.Saving.SavingsType == "TargetAmount")
         {
@@ -108,10 +115,54 @@ public partial class PopupDailySaving : Popup
             entTargetDate.MinimumDate = DateTime.UtcNow.Date;
 
             double SavingTarget = (double?)_vm.Saving.SavingsGoal ?? 0;
-            lblSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
+            entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
 
-            string GoalDate = _vm.Saving.GoalDate.ToString();
-            lblTargetDate.Text = GoalDate;
+        }
+    }
+
+    private void Delete_Saving(object sender, EventArgs e)
+    {
+        grdFirstBtns.IsVisible = false;
+        grdUpdateBtns.IsVisible = false;
+        grdDeleteBtns.IsVisible = true;
+
+        vslDeleteSaving.IsVisible = true;
+        vslSavingComplete.IsVisible = false;
+    }
+
+    private void Update_Saving(object sender, EventArgs e)
+    {
+        grdFirstBtns.IsVisible = false;
+        grdUpdateBtns.IsVisible = true;
+        grdDeleteBtns.IsVisible = false;
+
+        if (_vm.Saving.SavingsType == "TargetAmount")
+        {
+            lblSavingAmount.IsVisible = false;
+            lblSavingTarget.IsVisible = false;
+
+            entSavingAmount.IsVisible = true;
+            entSavingTarget.IsVisible = true;
+
+            double RegularSavingValue = (double?)_vm.Saving.RegularSavingValue ?? 0;
+            entSavingAmount.Text = RegularSavingValue.ToString("c", CultureInfo.CurrentCulture);
+
+            double SavingTarget = (double?)_vm.Saving.SavingsGoal ?? 0;
+            entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
+
+        }
+        else if (_vm.Saving.SavingsType == "TargetDate")
+        {
+            lblSavingTarget.IsVisible = false;
+            lblTargetDate.IsVisible = false;
+
+            entSavingTarget.IsVisible = true;
+            entTargetDate.IsVisible = true;
+
+            entTargetDate.MinimumDate = DateTime.UtcNow.Date;
+
+            double SavingTarget = (double?)_vm.Saving.SavingsGoal ?? 0;
+            entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
 
         }
     }
@@ -186,10 +237,9 @@ public partial class PopupDailySaving : Popup
 
     private void Reset_Saving(object sender, EventArgs e)
     {
-        btnUpdate.IsVisible = true;
-        btnReset.IsVisible = false;
-        btnFinsih.IsVisible = true;
-        btnAccept.IsVisible = false;
+        grdFirstBtns.IsVisible = true;
+        grdUpdateBtns.IsVisible = false;
+        grdDeleteBtns.IsVisible = false;
 
         _vm.Saving.SavingsGoal = _vm.OriginalTarget;
         _vm.Saving.RegularSavingValue = _vm.OriginalDaily;
@@ -220,7 +270,7 @@ public partial class PopupDailySaving : Popup
             double SavingTarget = (double?)_vm.Saving.SavingsGoal ?? 0;
             lblSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
 
-            string GoalDate = _vm.Saving.GoalDate.ToString();
+            string GoalDate = _vm.Saving.GoalDate.GetValueOrDefault().ToShortDateString();
             lblTargetDate.Text = GoalDate;
         }
 

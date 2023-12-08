@@ -26,11 +26,13 @@ public partial class MainPage : ContentPage
         InitializeComponent();
 
         this.BindingContext = viewModel;
-        _vm = viewModel;        
+        _vm = viewModel;
+ 
     }
 
     protected async override void OnAppearing()
     {
+
         if (DateTime.Now.Hour > 12)
         {
             _vm.Title = $"Good afternoon {App.UserDetails.NickName}!";
@@ -63,7 +65,7 @@ public partial class MainPage : ContentPage
 
         if (App.DefaultBudget == null)
         {
-            _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Limited").Result;
+            _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
 
             App.DefaultBudget = _vm.DefaultBudget;
             _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
@@ -74,7 +76,7 @@ public partial class MainPage : ContentPage
             if (App.SessionLastUpdate == default(DateTime))
             {
 
-                _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Limited").Result;
+                _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
 
                 App.DefaultBudget = _vm.DefaultBudget;
                 _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
@@ -89,7 +91,7 @@ public partial class MainPage : ContentPage
 
                     if (App.SessionLastUpdate < LastUpdate)
                     {
-                        _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Limited").Result;
+                        _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
                         App.DefaultBudget = _vm.DefaultBudget;
                         _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
                         App.SessionLastUpdate = DateTime.UtcNow;
@@ -97,6 +99,8 @@ public partial class MainPage : ContentPage
                 }
             }
         }
+
+        //App.DefaultBudget = await _pt.BudgetDailyCycle(App.DefaultBudget);
 
         if (!App.DefaultBudget.IsCreated && !App.HasVisitedCreatePage)
         {

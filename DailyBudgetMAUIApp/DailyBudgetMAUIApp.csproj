@@ -57,14 +57,17 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0-rc.1.23419.4" />
-		<PackageReference Include="CommunityToolkit.Maui" Version="5.3.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="System.ObjectModel" Version="4.3.0" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Handlers\PopupDailyBill.xaml.cs">
+	    <DependentUpon>PopupDailyBill.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Handlers\PopupInfo.xaml.cs">
 	    <DependentUpon>PopupInfo.xaml</DependentUpon>
 	  </Compile>
@@ -78,6 +81,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Handlers\ButtonControlActivityIndicator.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Handlers\PopupDailyBill.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Handlers\PopUpPage.xaml">

@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupDailySavingViewModel : BaseViewModel
+    public partial class PopupDailyBillViewModel : BaseViewModel
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -21,14 +21,13 @@ namespace DailyBudgetMAUIApp.ViewModels
         public double ButtonTwoWidth { get; }
         public double ButtonThreeWidth { get; }
 
-        public decimal OriginalTarget { get; set; }
-        public decimal OriginalDaily { get; set; }
+        public decimal OriginalAmount { get; set; }
         public DateTime OriginalDate { get; set; }
 
         [ObservableProperty]
-        public Savings _saving;
+        public Bills _bill;
 
-        public PopupDailySavingViewModel()
+        public PopupDailyBillViewModel()
         {
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
