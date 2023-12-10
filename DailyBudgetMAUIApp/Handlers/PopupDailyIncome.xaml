@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <xct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-            x:Class="DailyBudgetMAUIApp.Handlers.PopupDailyBill"
+            x:Class="DailyBudgetMAUIApp.Handlers.PopupDailyIncome"
             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
@@ -18,26 +18,26 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Celebration}" Size="24"  Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
-                            <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Bill, Paid, On, Time!"/>
+                            <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="More Money .. Less Problems!"/>
                             <Image Margin="0,20,0,0">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Celebration}" Size="24"  Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Congrats! you have put enough aside each day to pay your bill in full and on time, feels good!"/>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,2,20,5" Text="Or do these details not seem right? You forget you had this Outgoing and not owe it anymore or do you owe a different amount ... or is it not even due today?"/>
+                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Nice one, you have more money coming in which means more money to spend ... or save if you want to be a bore!"/>
+                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,2,20,5" Text="Or do these details not seem right? You forget you had this Income added or does the amount seem different ... or is the person paying you late?"/>
                         <VerticalStackLayout Margin="40,0,20,0">
-                            <HorizontalStackLayout x:Name="hslBillAmount" Margin="0" IsVisible="False" HeightRequest="45">
+                            <HorizontalStackLayout x:Name="hslIncomeAmount" Margin="0" IsVisible="False" HeightRequest="45">
                                 <Image Margin="0,0,5,0" VerticalOptions="Center">
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Monetization_on}" Size="24"  Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>
-                                <Label x:Name="lblBillAmount" CharacterSpacing="2" TextColor="{DynamicResource Danger}" FontSize="Medium" VerticalOptions="Center"/>
-                                <handlers:BorderlessEntry Margin="0" VerticalOptions="Center" IsVisible="False" TextColor="{DynamicResource Danger}" FontSize="Medium" CharacterSpacing="2" x:Name="entBillAmount" TextChanged="BillAmount_Changed" Keyboard="Numeric" />
+                                <Label x:Name="lblIncomeAmount" CharacterSpacing="2" TextColor="{DynamicResource Success}" FontSize="Medium" VerticalOptions="Center"/>
+                                <handlers:BorderlessEntry Margin="0" VerticalOptions="Center" IsVisible="False" TextColor="{DynamicResource Success}" FontSize="Medium" CharacterSpacing="2" x:Name="entIncomeAmount" TextChanged="IncomeAmount_Changed" Keyboard="Numeric" />
                             </HorizontalStackLayout>
-                            <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorBillAmount">
+                            <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorIncomeAmount">
                                 <Image>
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
@@ -47,16 +47,16 @@
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
                         <VerticalStackLayout Margin="40,0,20,0">
-                            <HorizontalStackLayout x:Name="hslTargetDate" Margin="0" IsVisible="False" HeightRequest="45">
+                            <HorizontalStackLayout x:Name="hslIncomeDate" Margin="0" IsVisible="False" HeightRequest="45">
                                 <Image Margin="0,0,5,0" VerticalOptions="Center">
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Calendar_month}" Size="24"  Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>
-                                <Label VerticalOptions="Center" x:Name="lblTargetDate" CharacterSpacing="1" FontSize="Medium" />
-                                <DatePicker CharacterSpacing="1" x:Name="entTargetDate" Date="{Binding Bill.BillDueDate}" IsVisible="False" VerticalOptions="Center" FontSize="Medium" Margin="0"/>
+                                <Label VerticalOptions="Center" x:Name="lblIncomeDate" CharacterSpacing="1" FontSize="Medium" />
+                                <DatePicker CharacterSpacing="1" x:Name="entIncomeDate" Date="{Binding Income.DateOfIncomeEvent}" IsVisible="False" VerticalOptions="Center" FontSize="Medium" Margin="0"/>
                             </HorizontalStackLayout>
-                            <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorBillDate">
+                            <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorIncomeDate">
                                 <Image>
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
@@ -66,7 +66,7 @@
                             </HorizontalStackLayout>
                         </VerticalStackLayout>                        
                     </VerticalStackLayout>
-                    <VerticalStackLayout x:Name="vslDeleteBill" IsVisible="False">
+                    <VerticalStackLayout x:Name="vslDeleteIncome" IsVisible="False">
                         <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
                             <Image Margin="0,20,0,0">
                                 <Image.Source>
@@ -80,8 +80,8 @@
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Uh oh, Did you forget about this outoing?"/>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,5,20,5" Text="Or did you just change your mind last minute? It's ok you can still delete the outgoing, good news is you will be able to spend it on something else."/>
+                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Uh oh, Did you forget about this Income?"/>
+                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,5,20,5" Text="Or did someone change your mind last minute? It's ok you can still delete the income, unfortunately you wont have the money to spend!"/>
                     </VerticalStackLayout>
                     <Grid Margin="20,5,20,20" RowDefinitions="*" ColumnDefinitions="*,20,*" x:Name="grdFirstBtns">
                         <Button WidthRequest="{Binding ButtonOneWidth}" Grid.Row="0" Grid.Column="0" Margin="0" x:Name="btnUpdate" Text="That's not right!" FontSize="Caption" Clicked="Update_Saving" HorizontalOptions="Center" BackgroundColor="{StaticResource Tertiary}" TextColor="White" Padding="15,0"/>

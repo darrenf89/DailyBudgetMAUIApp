@@ -798,6 +798,88 @@ namespace DailyBudgetMAUIApp.DataServices
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<string> UpdatePayPeriodStats(PayPeriodStats Stats)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<PayPeriodStats>(Stats, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/budgets/updatepayperiodstats", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to update payperiodstats in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<PayPeriodStats> CreateNewPayPeriodStats(int BudgetID)
+        {
+            PayPeriodStats stats = new PayPeriodStats();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/createnewpayperiodstats/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            stats = serializer.Deserialize<PayPeriodStats>(reader);
+                        }
+
+                        return stats;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get bill by id in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
 
         public async Task<string> PatchBudget(int BudgetID, List<PatchDoc> PatchDoc)
         {
@@ -1538,7 +1620,54 @@ namespace DailyBudgetMAUIApp.DataServices
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<Transactions> TransactTransaction(int TransactionID)
+        {
+            Transactions Transaction = new Transactions();
 
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/transacttransaction/{TransactionID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            Transaction = serializer.Deserialize<Transactions>(reader);
+                        }
+
+                        return Transaction;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Transaction by ID in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
         public async Task<string> UpdateTransaction(Transactions Transaction)
         {
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)

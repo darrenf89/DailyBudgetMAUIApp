@@ -66,6 +66,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                 Preferences.Remove(nameof(App.DefaultBudgetID));
             }
 
+            App.DefaultBudgetID = 0;
+            App.DefaultBudget = null;
+
             await Application.Current.MainPage.Navigation.PopModalAsync();
             await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
         }

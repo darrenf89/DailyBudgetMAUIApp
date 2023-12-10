@@ -17,6 +17,7 @@ namespace DailyBudgetMAUIApp.Models
         public DateTime? _transactionDate;
         [ObservableProperty]
         public DateTime? _whenAdded  = DateTime.UtcNow;
+        [ObservableProperty]
         public bool _isIncome;
         [ObservableProperty]
         public decimal? _transactionAmount;

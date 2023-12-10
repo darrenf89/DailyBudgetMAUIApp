@@ -63,7 +63,7 @@ public partial class MainPage : ContentPage
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-gb");
         }
 
-        if (App.DefaultBudget == null)
+        if (App.DefaultBudget == null || App.DefaultBudget.BudgetID == 0)
         {
             _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
 
@@ -87,9 +87,9 @@ public partial class MainPage : ContentPage
             {
                 if (DateTime.UtcNow.Subtract(App.SessionLastUpdate) > new TimeSpan(0, 0, 3, 0))
                 {
-                    DateTime LastUpdate = _ds.GetBudgetLastUpdatedAsync(_vm.DefaultBudgetID).Result;
+                    DateTime LastUpdated = _ds.GetBudgetLastUpdatedAsync(_vm.DefaultBudgetID).Result;
 
-                    if (App.SessionLastUpdate < LastUpdate)
+                    if (App.SessionLastUpdate < LastUpdated)
                     {
                         _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
                         App.DefaultBudget = _vm.DefaultBudget;

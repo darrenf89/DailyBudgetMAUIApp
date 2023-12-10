@@ -65,6 +65,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Handlers\PopupDailyPayDay.xaml.cs">
+	    <DependentUpon>PopupDailyPayDay.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Handlers\PopupDailyIncome.xaml.cs">
+	    <DependentUpon>PopupDailyIncome.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Handlers\PopupDailyBill.xaml.cs">
 	    <DependentUpon>PopupDailyBill.xaml</DependentUpon>
 	  </Compile>
@@ -81,6 +87,12 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Handlers\ButtonControlActivityIndicator.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Handlers\PopupDailyPayDay.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Handlers\PopupDailyIncome.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Handlers\PopupDailyBill.xaml">
