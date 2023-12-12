@@ -158,7 +158,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             if (Saving.SavingsGoal != 0 && Saving.GoalDate > DateTime.Today.Date)
             {
-                int DaysToSavingDate = (Saving.GoalDate.GetValueOrDefault().Date - DateTime.Today.Date).Days;
+                int DaysToSavingDate = (Saving.GoalDate.GetValueOrDefault().Date - DateTime.Now.Date).Days;
                 decimal? AmountOutstanding = Saving.SavingsGoal - Saving.CurrentBalance;
 
                 if(DaysToSavingDate != 0)

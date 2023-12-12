@@ -9,6 +9,7 @@ using System.Net.Mail;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using CommunityToolkit.Maui.ApplicationModel;
+using System.Transactions;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -1841,6 +1842,55 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to get All Transactions by ID in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<Budgets> SaveBudgetDailyCycle(Budgets budget)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Budgets>(budget, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/budgets/savebudgetdailycycle", request).Result;
+
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        budget = serializer.Deserialize<Budgets>(reader);
+                    }
+
+                    return budget;
+                }
+                else
+                {   
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying update budget in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }

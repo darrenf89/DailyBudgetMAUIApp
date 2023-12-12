@@ -100,7 +100,11 @@ public partial class MainPage : ContentPage
             }
         }
 
-        //App.DefaultBudget = await _pt.BudgetDailyCycle(App.DefaultBudget);
+        if(App.DefaultBudget.IsCreated)
+        {
+            App.DefaultBudget = await _pt.BudgetDailyCycle(App.DefaultBudget);
+            _vm.DefaultBudget = App.DefaultBudget;
+        }
 
         if (!App.DefaultBudget.IsCreated && !App.HasVisitedCreatePage)
         {
@@ -112,9 +116,6 @@ public partial class MainPage : ContentPage
         ProcessSnackBar();
 
         base.OnAppearing();
-
-        
-
     }
 
     private async void ProcessSnackBar()

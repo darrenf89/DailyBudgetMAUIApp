@@ -148,14 +148,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public string CalculateRegularBillValue()
         {
-            if(Bill.BillAmount == 0 || Bill.BillAmount == null || Bill.BillCurrentBalance >= Bill.BillAmount || Bill.BillDueDate == null || Bill.BillDueDate <= DateTime.Now)
+            if(Bill.BillAmount == 0 || Bill.BillAmount == null || Bill.BillCurrentBalance >= Bill.BillAmount || Bill.BillDueDate == null || Bill.BillDueDate.GetValueOrDefault().Date <= DateTime.Now.Date)
             {
                 return "Please update details!";
             }
             else
             {
                 decimal DailySavingValue = new();
-                TimeSpan Difference = (TimeSpan)(Bill.BillDueDate - DateTime.Now.AddDays(-1));
+                TimeSpan Difference = (TimeSpan)(Bill.BillDueDate.GetValueOrDefault().Date - DateTime.Now.Date);
                 int NumberOfDays = Difference.Days;
                 decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
                 if(NumberOfDays != 0)

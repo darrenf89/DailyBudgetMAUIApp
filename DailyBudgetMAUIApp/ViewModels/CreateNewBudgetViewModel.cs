@@ -295,7 +295,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         PayDayDuration = LastOfTheMonthDuration ?? "Monday";
                     }
 
-                    AproxDaysBetweenPay = (Budget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Now.Date).Days;
+                    AproxDaysBetweenPay = _pt.CalculateBudgetDaysBetweenPay(Budget);
 
                     if (AproxDaysBetweenPay != Budget.AproxDaysBetweenPay)
                     {

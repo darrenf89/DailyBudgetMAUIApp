@@ -53,6 +53,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> DeleteTransaction(int TransactionID);
         public Task<Transactions> GetTransactionFromID(int TransactionID);
         public Task<Budgets> GetAllBudgetTransactions(int BudgetID);
+        public Task<Budgets> SaveBudgetDailyCycle(Budgets budget);
 
 
     }
