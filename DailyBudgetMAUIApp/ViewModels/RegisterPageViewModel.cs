@@ -109,28 +109,45 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         if(ReturnUser.Error == null)
                         {
-                            ReturnUser.SessionExpiry = DateTime.UtcNow.AddDays(0);
-
-                            if (Preferences.ContainsKey(nameof(App.UserDetails)))
-                            {
-                                Preferences.Remove(nameof(App.UserDetails));
-                            }
-
-                            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
-                            {
-                                Preferences.Remove(nameof(App.DefaultBudgetID));
-                            }
-
-                            string userDetailsStr = JsonConvert.SerializeObject(ReturnUser);
-                            Preferences.Set(nameof(App.UserDetails), userDetailsStr);
-                            Preferences.Set(nameof(App.DefaultBudgetID), ReturnUser.DefaultBudgetID);
-
-                            App.UserDetails = ReturnUser;
-                            App.DefaultBudgetID = ReturnUser.DefaultBudgetID;
-
                             await Application.Current.MainPage.Navigation.PopModalAsync();
-                            //TODO: Sign in User Session and save to DB
-                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                            string status = await _ds.CreateNewOtpCode(ReturnUser.UserID);
+                            if (status == "OK")
+                            {
+                                var popup = new PopupOTP(ReturnUser.UserID, new PopupDailyOTPViewModel(), "ValidateEmail", new ProductTools(new RestDataService()));
+                                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+                                if((string)result.ToString() == "OK")
+                                {
+                                    //TODO: SHow Success Message and show OTP pop up to validate user.
+                                    ReturnUser.SessionExpiry = DateTime.UtcNow.AddDays(0);
+
+                                    if (Preferences.ContainsKey(nameof(App.UserDetails)))
+                                    {
+                                        Preferences.Remove(nameof(App.UserDetails));
+                                    }
+
+                                    if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                                    {
+                                        Preferences.Remove(nameof(App.DefaultBudgetID));
+                                    }
+
+                                    string userDetailsStr = JsonConvert.SerializeObject(ReturnUser);
+                                    Preferences.Set(nameof(App.UserDetails), userDetailsStr);
+                                    Preferences.Set(nameof(App.DefaultBudgetID), ReturnUser.DefaultBudgetID);
+
+                                    App.UserDetails = ReturnUser;
+                                    App.DefaultBudgetID = ReturnUser.DefaultBudgetID;
+
+                                    await Application.Current.MainPage.Navigation.PopModalAsync();
+                                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                                }
+                            }
+                            else
+                            {
+                                await Application.Current.MainPage.Navigation.PopModalAsync();
+                                await Application.Current.MainPage.DisplayAlert("Opps", "There was an error sending you an OTP code to verify you email! Please click the link to create a new one so you can continue your daily budgeting journey", "OK");
+
+                            }
                         }
                         else
                         {

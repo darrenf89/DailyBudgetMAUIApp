@@ -56,6 +56,9 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<Transactions> GetTransactionFromID(int TransactionID);
         public Task<Budgets> GetAllBudgetTransactions(int BudgetID);
         public Task<Budgets> SaveBudgetDailyCycle(Budgets budget);
+        public Task<string> CreateNewOtpCode(int UserID);
+        public Task<string> ValidateOTPCodeEmail(OTP UserOTP);
+        public Task<int> GetUserIdFromEmail(string UserEmail);
 
 
     }
