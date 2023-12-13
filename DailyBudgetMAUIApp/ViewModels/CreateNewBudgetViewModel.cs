@@ -44,11 +44,15 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private List<lut_DateFormat> _dateFormats;
         [ObservableProperty]
+        private List<lut_BudgetTimeZone> _timeZones;
+        [ObservableProperty]
         private lut_DateFormat _selectedDateFormats;
         [ObservableProperty]
         private List<lut_NumberFormat> _numberFormats;
         [ObservableProperty]
         private lut_NumberFormat _selectedNumberFormats;
+        [ObservableProperty]
+        private lut_BudgetTimeZone _selectedTimeZone;
 
         public string PayDayTypeText { get; set; }
         public string PayAmountText { get; set; }
@@ -75,6 +79,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             CurrencyPlacements = _ds.GetCurrencyPlacements("").Result;
             DateFormats = _ds.GetDateFormatsByString("").Result;
             NumberFormats = _ds.GetNumberFormats().Result;
+            TimeZones = _ds.GetBudgetTimeZones("").Result;
 
         }
 
@@ -182,6 +187,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     BudgetSettings.CurrencyGroupSeparator = SelectedNumberFormats.CurrencyGroupSeparatorID;
                     BudgetSettings.DateSeperator = SelectedDateFormats.DateSeperatorID;
                     BudgetSettings.ShortDatePattern = SelectedDateFormats.ShortDatePatternID;
+                    BudgetSettings.TimeZone = SelectedTimeZone.TimeZoneID;
 
                     await _ds.UpdateBudgetSettings(BudgetID, BudgetSettings);
 
@@ -435,7 +441,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         {
                             op = "replace",
                             path = "/BudgetValuesLastUpdated",
-                            value = DateTime.Now.Date
+                            value = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date
                         };
 
                         BudgetUpdate.Add(BudgetLastUpdated);

@@ -33,15 +33,6 @@ public partial class MainPage : ContentPage
     protected async override void OnAppearing()
     {
 
-        if (DateTime.Now.Hour > 12)
-        {
-            _vm.Title = $"Good afternoon {App.UserDetails.NickName}!";
-        }
-        else
-        {
-            _vm.Title = $"Good morning {App.UserDetails.NickName}!";
-        }
-
         _vm.DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID), 1);
         if (_vm.DefaultBudgetID != 0)
         {
@@ -111,6 +102,17 @@ public partial class MainPage : ContentPage
             App.HasVisitedCreatePage = true;
 
             await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={App.DefaultBudgetID}&NavigatedFrom=Budget Settings");
+        }
+
+        datetime.Text = _pt.GetBudgetLocalTime(DateTime.UtcNow).ToString("dd MM yyyy HH:mm:ss");
+
+        if (_pt.GetBudgetLocalTime(DateTime.UtcNow).Hour > 12)
+        {
+            _vm.Title = $"Good afternoon {App.UserDetails.NickName}!";
+        }
+        else
+        {
+            _vm.Title = $"Good morning {App.UserDetails.NickName}!";
         }
 
         ProcessSnackBar();

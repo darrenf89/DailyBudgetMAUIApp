@@ -12,9 +12,9 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         private string _incomeName  = "";
         [ObservableProperty]
-        private DateTime _incomeActiveDate  = DateTime.Now;
+        private DateTime _incomeActiveDate  = DateTime.UtcNow;
         [ObservableProperty]
-        private DateTime _dateOfIncomeEvent  = DateTime.Now;
+        private DateTime _dateOfIncomeEvent  = DateTime.UtcNow;
         [ObservableProperty]
         private bool _isRecurringIncome;
         [ObservableProperty]

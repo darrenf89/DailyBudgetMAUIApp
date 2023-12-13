@@ -39,6 +39,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public string UpdatePayPeriodStats(int? BudgetID);
         public string TransactSavingsTransaction(ref Transactions T, ref Budgets Budget);
         public string TransactTransaction(ref Transactions T, ref Budgets Budget);
+        public DateTime GetBudgetLocalTime(DateTime UtcDate);
 
     }
 }

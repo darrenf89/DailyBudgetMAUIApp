@@ -118,11 +118,13 @@ public partial class CreateNewBudget : ContentPage
                 _vm.SelectedCurrencyPlacement = _ds.GetCurrencyPlacements(_vm.BudgetSettings.CurrencyPattern.ToString()).Result[0];
                 _vm.SelectedDateFormats = _ds.GetDateFormatsById(_vm.BudgetSettings.ShortDatePattern ?? 1, _vm.BudgetSettings.DateSeperator ?? 1).Result;
                 _vm.SelectedNumberFormats = _ds.GetNumberFormatsById(_vm.BudgetSettings.CurrencyDecimalDigits ?? 2, _vm.BudgetSettings.CurrencyDecimalSeparator ?? 2, _vm.BudgetSettings.CurrencyGroupSeparator ?? 1).Result;
+                _vm.SelectedTimeZone = _ds.GetTimeZoneById(_vm.BudgetSettings.TimeZone.GetValueOrDefault()).Result;
             }
 
             pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;            
             pckrDateFormat.SelectedIndex = _vm.SelectedDateFormats.Id - 1;
             pckrNumberFormat.SelectedIndex = _vm.SelectedNumberFormats.Id - 1;
+            pckrTimeZone.SelectedIndex = _vm.SelectedTimeZone.TimeZoneID - 1;
 
 
             double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
@@ -131,7 +133,7 @@ public partial class CreateNewBudget : ContentPage
             entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
 
             dtpckPayDay.Date = _vm.Budget.NextIncomePayday ?? default;
-            dtpckPayDay.MinimumDate = DateTime.Now;
+            dtpckPayDay.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
 
             UpdateSelectedOption(_vm.Budget.PaydayType);
 
@@ -443,7 +445,7 @@ public partial class CreateNewBudget : ContentPage
     {
         bool IsValid = true;
 
-        if (dtpckPayDay.Date <= DateTime.Now.Date)
+        if (dtpckPayDay.Date <= _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
         {
             IsValid = false;
             validatorPayDay.IsVisible = true;

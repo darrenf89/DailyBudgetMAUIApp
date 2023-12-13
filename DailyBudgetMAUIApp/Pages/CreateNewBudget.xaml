@@ -103,12 +103,17 @@
                 <Label Text="Date Format" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
                 <Label Text="Select your preferred date format, when presenting a date in numbers we will use this format." FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
-                    <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrDateFormat" Title="Select your currency symbol placement" ItemsSource="{Binding DateFormats}" ItemDisplayBinding="{Binding DateFormat}" SelectedItem="{Binding SelectedDateFormats}"/>
+                    <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrDateFormat" Title="Select your preferred Date Format" ItemsSource="{Binding DateFormats}" ItemDisplayBinding="{Binding DateFormat}" SelectedItem="{Binding SelectedDateFormats}"/>
                 </Border>
                 <Label Text="Number Format" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
                 <Label Text="Select your preferred number format. Number of decimals, decimal symbol and number group seperator. " FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
-                    <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrNumberFormat" Title="Select your currency symbol placement" ItemsSource="{Binding NumberFormats}" ItemDisplayBinding="{Binding NumberFormat}" SelectedItem="{Binding SelectedNumberFormats}"/>
+                    <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrNumberFormat" Title="Select your preferred number format" ItemsSource="{Binding NumberFormats}" ItemDisplayBinding="{Binding NumberFormat}" SelectedItem="{Binding SelectedNumberFormats}"/>
+                </Border>
+                <Label Text="Budget Time Zone " FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
+                <Label Text="Select the time zone for your budget. This will dictate when the daily budgetting happens so choose carefully!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                    <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrTimeZone" Title="Select your Time Zone" ItemsSource="{Binding TimeZones}" ItemDisplayBinding="{Binding TimeZoneDisplayName}" SelectedItem="{Binding SelectedTimeZone}"/>
                 </Border>
                 <Button 
                     Margin="5,0,0,0"

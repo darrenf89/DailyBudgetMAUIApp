@@ -23,7 +23,7 @@ public partial class AddBill : ContentPage
         _pt = pt;
         _ds = ds;
 
-        dtpckBillDueDate.MinimumDate = DateTime.UtcNow.AddDays(1);
+        dtpckBillDueDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(1);
     }
 
     async protected override void OnAppearing()
@@ -404,7 +404,7 @@ public partial class AddBill : ContentPage
             validatorBillName.IsVisible = false;
         }
 
-        if (dtpckBillDueDate.Date <= DateTime.Now.Date)
+        if (dtpckBillDueDate.Date <= _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
         {
             IsValid = false;
             validatorBillDue.IsVisible = true;

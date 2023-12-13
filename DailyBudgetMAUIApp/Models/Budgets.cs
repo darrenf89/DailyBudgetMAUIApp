@@ -10,7 +10,7 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         private string? _budgetName;
         [ObservableProperty]
-        private DateTime _budgetCreatedOn = DateTime.Now;
+        private DateTime _budgetCreatedOn = DateTime.UtcNow;
         [ObservableProperty]
         private decimal? _bankBalance ;
         [ObservableProperty]

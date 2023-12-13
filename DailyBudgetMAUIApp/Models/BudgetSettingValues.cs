@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DailyBudgetMAUIApp.Models
+﻿namespace DailyBudgetMAUIApp.Models
 {
     public class BudgetSettingValues
     {
@@ -15,6 +9,8 @@ namespace DailyBudgetMAUIApp.Models
         public string DateSeparator { get; set; }
         public int CurrencyDecimalDigits { get; set; }
         public int CurrencyPositivePattern { get; set; }
+        public string TimeZoneName { get; set; }
+        public int TimeZoneUTCOffset { get; set; }
         public bool IsUpdatedFlag { get; set; }
     }
 }

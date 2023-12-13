@@ -121,7 +121,7 @@ public partial class PopupDailyBill : Popup
             validatorBillAmount.IsVisible = false;
         }
 
-        if (_vm.Bill.BillDueDate < DateTime.UtcNow.Date)
+        if (_vm.Bill.BillDueDate < _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
         {
             IsValid = false;
             validatorBillDate.IsVisible = true;

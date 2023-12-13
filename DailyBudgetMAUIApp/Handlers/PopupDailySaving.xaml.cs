@@ -112,7 +112,7 @@ public partial class PopupDailySaving : Popup
             entSavingTarget.IsVisible = true;
             entTargetDate.IsVisible = true;
 
-            entTargetDate.MinimumDate = DateTime.UtcNow.Date;
+            entTargetDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date;
 
             double SavingTarget = (double?)_vm.Saving.SavingsGoal ?? 0;
             entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
@@ -159,7 +159,7 @@ public partial class PopupDailySaving : Popup
             entSavingTarget.IsVisible = true;
             entTargetDate.IsVisible = true;
 
-            entTargetDate.MinimumDate = DateTime.UtcNow.Date;
+            entTargetDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date;
 
             double SavingTarget = (double?)_vm.Saving.SavingsGoal ?? 0;
             entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
@@ -191,7 +191,7 @@ public partial class PopupDailySaving : Popup
             validatorSavingsDailyAmount.IsVisible = false;
         }
 
-        if (_vm.Saving.GoalDate < DateTime.UtcNow.Date)
+        if (_vm.Saving.GoalDate < _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
         {
             IsValid = false;
             validatorSavingsDate.IsVisible = true;
@@ -213,7 +213,7 @@ public partial class PopupDailySaving : Popup
                 decimal? BalanceLeft = _vm.Saving.SavingsGoal - (_vm.Saving.CurrentBalance ?? 0);
                 int NumberOfDays = (int)Math.Ceiling(BalanceLeft / _vm.Saving.RegularSavingValue ?? 0);
 
-                DateTime Today = DateTime.UtcNow;
+                DateTime Today = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date;
                 _vm.Saving.GoalDate = Today.AddDays(NumberOfDays);
             }
             else if (_vm.Saving.SavingsType == "TargetDate")

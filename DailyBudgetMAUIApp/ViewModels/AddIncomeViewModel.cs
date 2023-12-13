@@ -39,6 +39,8 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             Title = "Add a New Outgoing";
             Income = new IncomeEvents();
+
+            MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date.AddDays(1);
         }
 
         [ICommand]

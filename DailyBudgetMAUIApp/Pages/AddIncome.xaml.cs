@@ -215,7 +215,7 @@ public partial class AddIncome : ContentPage
             _vm.Income.IsInstantActive = true;
             hslInstanceActiveCaution.IsVisible = true;
 
-            _vm.Income.IncomeActiveDate = DateTime.Now;
+            _vm.Income.IncomeActiveDate = DateTime.UtcNow;
 
         }
         else if (option == "No")
@@ -445,7 +445,7 @@ public partial class AddIncome : ContentPage
     {
         if(_vm.Income.IsInstantActive ?? false)
         {
-            _vm.Income.IncomeActiveDate = DateTime.Now;
+            _vm.Income.IncomeActiveDate = DateTime.UtcNow;
         }
         else
         {
@@ -467,7 +467,7 @@ public partial class AddIncome : ContentPage
             validatorIncomeName.IsVisible = false;
         }
         
-        if (dtpckIncomeDate.Date <= DateTime.Now.Date)
+        if (dtpckIncomeDate.Date <= _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
         {
             IsValid = false;
             validatorIncomeDate.IsVisible = true;

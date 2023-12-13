@@ -15,7 +15,7 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         private decimal? _currentBalance  = 0;
         [ObservableProperty]
-        private DateTime _lastUpdatedDate = DateTime.Now;
+        private DateTime _lastUpdatedDate = DateTime.UtcNow;
         [ObservableProperty]
         private DateTime? _goalDate = null;
         [ObservableProperty]

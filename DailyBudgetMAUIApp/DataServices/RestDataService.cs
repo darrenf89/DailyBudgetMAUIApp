@@ -599,6 +599,57 @@ namespace DailyBudgetMAUIApp.DataServices
 
         }
 
+        public async Task<List<lut_BudgetTimeZone>> GetBudgetTimeZones(string Query)
+        {
+            List<lut_BudgetTimeZone> TimeZones = new List<lut_BudgetTimeZone>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getbudgettimezones/{Query}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            TimeZones = serializer.Deserialize<List<lut_BudgetTimeZone>>(reader);
+                        }
+
+                        return TimeZones;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get TimeZones in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+
+        }
+
         public async Task<List<lut_DateFormat>> GetDateFormatsByString(string SearchQuery)
         {
             List<lut_DateFormat> DateFormats = new List<lut_DateFormat>();
@@ -698,7 +749,55 @@ namespace DailyBudgetMAUIApp.DataServices
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<lut_BudgetTimeZone> GetTimeZoneById(int TimeZoneID)
+        {
+            lut_BudgetTimeZone TimeZone = new lut_BudgetTimeZone();
 
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/gettimezonebyid/{TimeZoneID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            TimeZone = serializer.Deserialize<lut_BudgetTimeZone>(reader);
+                        }
+
+                        return TimeZone;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get Time zone by id in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
 
         public async Task<lut_NumberFormat> GetNumberFormatsById(int CurrencyDecimalDigits, int CurrencyDecimalSeparator, int CurrencyGroupSeparator)
         {

@@ -21,7 +21,7 @@ public partial class AddSaving : ContentPage
         _pt = pt;
         _ds = ds;
 
-        dtpckGoalDate.MinimumDate = DateTime.UtcNow.AddDays(1);
+        dtpckGoalDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(1);
 
        
 	}
@@ -36,7 +36,7 @@ public partial class AddSaving : ContentPage
         }
 
         _vm.BudgetNextPayDate = _ds.GetBudgetNextIncomePayDayAsync(_vm.BudgetID).Result;
-        _vm.BudgetDaysToNextPay = (_vm.BudgetNextPayDate.Date - DateTime.Now.Date).Days;
+        _vm.BudgetDaysToNextPay = (_vm.BudgetNextPayDate.Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).Days;
         _vm.BudgetDaysBetweenPay = _ds.GetBudgetDaysBetweenPayDay(_vm.BudgetID).Result;
 
         if (_vm.SavingID == 0)
@@ -611,7 +611,7 @@ public partial class AddSaving : ContentPage
                     validatorCurrentBalance.IsVisible = false;
                 }
 
-                if (DateTime.UtcNow.Date > _vm.Saving.GoalDate)
+                if (_pt.GetBudgetLocalTime(DateTime.UtcNow).Date > _vm.Saving.GoalDate)
                 {
                     IsValid = false;
                     validatorGoalDate.IsVisible = true;
@@ -665,7 +665,7 @@ public partial class AddSaving : ContentPage
                     validatorCurrentBalance.IsVisible = false;
                 }
 
-                if (DateTime.UtcNow.Date > _vm.Saving.GoalDate)
+                if (_pt.GetBudgetLocalTime(DateTime.UtcNow).Date > _vm.Saving.GoalDate)
                 {
                     IsValid = false;
                     validatorGoalDate.IsVisible = true;

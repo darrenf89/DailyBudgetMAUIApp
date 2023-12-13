@@ -118,7 +118,7 @@ public partial class PopupDailyIncome : Popup
             validatorIncomeAmount.IsVisible = false;
         }
 
-        if (_vm.Income.DateOfIncomeEvent < DateTime.UtcNow.Date)
+        if (_vm.Income.DateOfIncomeEvent < _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
         {
             IsValid = false;
             validatorIncomeDate.IsVisible = true;

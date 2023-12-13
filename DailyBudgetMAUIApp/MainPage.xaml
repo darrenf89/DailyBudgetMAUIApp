@@ -101,8 +101,63 @@
                         <Label Text="{Binding DefaultBudget.BudgetName, StringFormat='Your Budget Name is {0}'}"
                             VerticalOptions="Center" 
                             HorizontalOptions="Center"
-                            TextColor="Black"/>  
+                            TextColor="Black"/>
+                        <Label x:Name="datetime"
+                            VerticalOptions="Center" 
+                            HorizontalOptions="Center"
+                            TextColor="Black"/>
                     </VerticalStackLayout>
+                </Border>
+                <Border Style="{DynamicResource DashboardMainContent}">
+                    <ListView ItemsSource="{Binding DefaultBudget.Bills}" RowHeight="130" Margin="10,0,20,0" SeparatorVisibility="None" x:Name="LVOutgoings" SelectionMode="None" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <VerticalStackLayout>
+                                        <Label FontSize="Medium" Text="{Binding BillName}"></Label>
+                                        <Label FontSize="Caption" Text="{Binding BillType}"></Label>
+                                        <Label FontSize="Caption" Text="{Binding BillAmount, StringFormat='{0:c}'}"></Label>
+                                        <Label FontSize="Caption" Text="{Binding BillCurrentBalance, StringFormat='{0:c}'}"></Label>
+                                        <Label FontSize="Caption" Text="{Binding RegularBillValue, StringFormat='{0:c}'}"></Label>
+                                    </VerticalStackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Border>
+                <Border Style="{DynamicResource DashboardMainContent}">
+                    <ListView ItemsSource="{Binding DefaultBudget.Savings}" RowHeight="180" Margin="10,0,20,0" SeparatorVisibility="None" x:Name="LVSavings" SelectionMode="None" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <VerticalStackLayout>
+                                        <Label FontSize="Medium" Text="{Binding SavingsName}"/>
+                                        <Label FontSize="Caption" Text="{Binding SavingsType}"/>
+                                        <Label FontSize="Caption" Text="{Binding SavingGoal, StringFormat='{0:c}'}"/>
+                                        <Label FontSize="Caption" Text="{Binding CurrentBalance, StringFormat='{0:c}'}"/>
+                                        <Label FontSize="Caption" Text="{Binding RegularSavingValue, StringFormat='{0:c}'}"/>
+                                        <Label FontSize="Caption" Text="{Binding PeriodSavingValue, StringFormat='{0:c}'}"/>
+                                    </VerticalStackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Border>
+                <Border Style="{DynamicResource DashboardMainContent}">
+                    <ListView ItemsSource="{Binding DefaultBudget.IncomeEvents}" RowHeight="180" Margin="10,0,20,0" SeparatorVisibility="None" x:Name="LVIncome" SelectionMode="None" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <VerticalStackLayout>
+                                        <Label FontSize="Medium" Text="{Binding IncomeName}"/>
+                                        <Label FontSize="Caption" Text="{Binding IsInstantActive}"/>
+                                        <Label FontSize="Caption" Text="{Binding IsRecurringIncome}"/>
+                                        <Label FontSize="Caption" Text="{Binding IncomeAmount, StringFormat='{0:c}'}"/>
+                                    </VerticalStackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </Border>
             </VerticalStackLayout>
         </ScrollView>

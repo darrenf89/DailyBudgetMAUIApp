@@ -134,15 +134,15 @@ namespace DailyBudgetMAUIApp.DataServices
                 NumberOfDaysBefore = 1;
             }
 
-            int year = DateTime.Now.Year;
-            int month = DateTime.Now.Month;
+            int year = GetBudgetLocalTime(DateTime.UtcNow).Year;
+            int month = GetBudgetLocalTime(DateTime.UtcNow).Month;
 
             int NextYear = new int();
             int NextMonth = new int();
 
             if (month != 12)
             {
-                NextYear = DateTime.Now.Year;
+                NextYear = GetBudgetLocalTime(DateTime.UtcNow).Year;
                 NextMonth = month + 1;
             }
             else
@@ -209,15 +209,15 @@ namespace DailyBudgetMAUIApp.DataServices
         public int GetNumberOfDaysLastDayOfWeek(int dayNumber)
         {
 
-            int year = DateTime.Now.Year;
-            int month = DateTime.Now.Month;
+            int year = GetBudgetLocalTime(DateTime.UtcNow).Year;
+            int month = GetBudgetLocalTime(DateTime.UtcNow).Month;
 
             int NextYear = new int();
             int NextMonth = new int();
 
             if (month != 12)
             {
-                NextYear = DateTime.Now.Year;
+                NextYear = GetBudgetLocalTime(DateTime.UtcNow).Year;
                 NextMonth = month + 1;
             }
             else
@@ -338,8 +338,8 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             else if (Budget.PaydayType == "OfEveryMonth")
             {
-                int year = DateTime.Now.Year;
-                int month = DateTime.Now.Month;
+                int year = GetBudgetLocalTime(DateTime.UtcNow).Year;
+                int month = GetBudgetLocalTime(DateTime.UtcNow).Month;
                 int days = DateTime.DaysInMonth(year, month);
                 NumberOfDays = days;
             }
@@ -391,7 +391,7 @@ namespace DailyBudgetMAUIApp.DataServices
                             decimal? BalanceLeft = Saving.SavingsGoal - (Saving.CurrentBalance ?? 0);
                             int NumberOfDays = (int)Math.Ceiling(BalanceLeft / Saving.RegularSavingValue ?? 0);
 
-                            DateTime Today = DateTime.UtcNow;
+                            DateTime Today = GetBudgetLocalTime(DateTime.UtcNow);
                             Saving.GoalDate = Today.AddDays(NumberOfDays);
 
                         }
@@ -426,7 +426,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             if (Budget != null)
             {
-                DateTime Today = DateTime.Now;
+                DateTime Today = GetBudgetLocalTime(DateTime.UtcNow).Date;
 
                 foreach (IncomeEvents Income in Budget.IncomeEvents)
                 {
@@ -823,7 +823,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
 
                 Bill.BillDueDate = CalculateNextDate(Bill.BillDueDate.GetValueOrDefault(), Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
-                TimeSpan Difference = (TimeSpan)(Bill.BillDueDate - DateTime.Now.Date);
+                TimeSpan Difference = (TimeSpan)(Bill.BillDueDate - GetBudgetLocalTime(DateTime.UtcNow).Date);
                 int NumberOfDays = Difference.Days;
                 decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
 
@@ -837,13 +837,13 @@ namespace DailyBudgetMAUIApp.DataServices
                     Bill.RegularBillValue = RemainingBillAmount;
                 }
 
-                Bill.LastUpdatedDate = DateTime.Now;
+                Bill.LastUpdatedDate = DateTime.UtcNow;
             }
             else
             {
                 Bill.RegularBillValue = 0;
                 Bill.IsClosed = true;
-                Bill.LastUpdatedDate = DateTime.Now;
+                Bill.LastUpdatedDate = DateTime.UtcNow;
             }
         }
 
@@ -867,7 +867,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     if (Income.IsInstantActive.GetValueOrDefault())
                     {
-                        Income.IncomeActiveDate = DateTime.Now;
+                        Income.IncomeActiveDate = DateTime.UtcNow;
                     }
 
                 }
@@ -925,7 +925,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             if(budget.IsCreated)
             {            
-                while (budget.BudgetValuesLastUpdated < DateTime.UtcNow.Date)
+                while (budget.BudgetValuesLastUpdated < GetBudgetLocalTime(DateTime.UtcNow).Date)
                 {
                     budget.BudgetValuesLastUpdated = budget.BudgetValuesLastUpdated.AddDays(1);
 
@@ -984,7 +984,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     Stats.IncomeToDate += budget.PaydayAmount.GetValueOrDefault();
                     //Update the next pay date
                     budget.NextIncomePayday = CalculateNextDate(budget.NextIncomePayday.GetValueOrDefault(), budget.PaydayType, budget.PaydayValue.GetValueOrDefault(), budget.PaydayDuration);
-                    TimeSpan NoOfDays = budget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Now.Date;
+                    TimeSpan NoOfDays = budget.NextIncomePayday.GetValueOrDefault().Date - GetBudgetLocalTime(DateTime.UtcNow).Date;
                     budget.AproxDaysBetweenPay = NoOfDays.Days;
                     //Reset any envelope savings
                     for (int i = budget.Savings.Count - 1; i >= 0; i--)
@@ -1178,7 +1178,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 int DaysToPayDay = (Budget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).Days;
                 Budget.LeftToSpendDailyAmount += (T.TransactionAmount ?? 0) / DaysToPayDay;
                 Budget.PayPeriodStats[0].IncomeToDate += T.TransactionAmount ?? 0;
-                Budget.LastUpdated = DateTime.Now;
+                Budget.LastUpdated = DateTime.UtcNow;
             }
             else
             {
@@ -1187,7 +1187,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 Budget.LeftToSpendBalance -= T.TransactionAmount;
                 Budget.LeftToSpendDailyAmount -= T.TransactionAmount ?? 0;
                 Budget.PayPeriodStats[0].SpendToDate += T.TransactionAmount ?? 0;
-                Budget.LastUpdated = DateTime.Now;
+                Budget.LastUpdated = DateTime.UtcNow;
             }
 
             T.IsTransacted = true;
@@ -1217,7 +1217,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         Budget.MoneyAvailableBalance += T.TransactionAmount;
                         Budget.PayPeriodStats[0].IncomeToDate += T.TransactionAmount ?? 0;
                         Budget.PayPeriodStats[0].SavingsToDate += T.TransactionAmount ?? 0;
-                        Budget.LastUpdated = DateTime.Now;
+                        Budget.LastUpdated = DateTime.UtcNow;
                         S.CurrentBalance += T.TransactionAmount;
                         S.LastUpdatedValue = T.TransactionAmount;
                         S.LastUpdatedDate = DateTime.UtcNow;
@@ -1226,7 +1226,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         Budget.BankBalance -= T.TransactionAmount;
                         Budget.MoneyAvailableBalance -= T.TransactionAmount;
-                        Budget.LastUpdated = DateTime.Now;
+                        Budget.LastUpdated = DateTime.UtcNow;
                         S.CurrentBalance -= T.TransactionAmount;
                         S.LastUpdatedValue = T.TransactionAmount;
                         S.LastUpdatedDate = DateTime.UtcNow;
@@ -1243,7 +1243,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         Budget.BankBalance += T.TransactionAmount;
                         Budget.MoneyAvailableBalance += T.TransactionAmount;
                         Budget.LeftToSpendBalance += T.TransactionAmount;
-                        Budget.LastUpdated = DateTime.Now;
+                        Budget.LastUpdated = DateTime.UtcNow;
                         S.CurrentBalance += T.TransactionAmount;
                         S.SavingsGoal += T.TransactionAmount;
                         S.LastUpdatedValue = T.TransactionAmount;
@@ -1256,7 +1256,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         Budget.BankBalance -= T.TransactionAmount;
                         Budget.MoneyAvailableBalance -= T.TransactionAmount;
                         Budget.LeftToSpendBalance += T.TransactionAmount;
-                        Budget.LastUpdated = DateTime.Now;
+                        Budget.LastUpdated = DateTime.UtcNow;
                         S.CurrentBalance -= T.TransactionAmount;
                         S.SavingsGoal -= T.TransactionAmount;
                         S.LastUpdatedValue = T.TransactionAmount;
@@ -1270,7 +1270,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         Budget.BankBalance += T.TransactionAmount;
                         Budget.MoneyAvailableBalance += T.TransactionAmount;
-                        Budget.LastUpdated = DateTime.Now;
+                        Budget.LastUpdated = DateTime.UtcNow;
                         S.CurrentBalance += T.TransactionAmount;
                         S.LastUpdatedValue = T.TransactionAmount;
                         S.LastUpdatedDate = DateTime.UtcNow;
@@ -1281,7 +1281,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         Budget.BankBalance -= T.TransactionAmount;
                         Budget.MoneyAvailableBalance -= T.TransactionAmount;
-                        Budget.LastUpdated = DateTime.Now;
+                        Budget.LastUpdated = DateTime.UtcNow;
                         S.CurrentBalance -= T.TransactionAmount;
                         S.LastUpdatedValue = T.TransactionAmount;
                         S.LastUpdatedDate = DateTime.UtcNow;
@@ -1318,7 +1318,7 @@ namespace DailyBudgetMAUIApp.DataServices
             decimal? BalanceLeft = S.SavingsGoal - (S.CurrentBalance ?? 0);
             int NumberOfDays = (int)Math.Ceiling(BalanceLeft / S.RegularSavingValue ?? 0);
 
-            DateTime Today = DateTime.UtcNow;
+            DateTime Today = GetBudgetLocalTime(DateTime.UtcNow).Date;
             S.GoalDate = Today.AddDays(NumberOfDays);
 
             return "OK";
@@ -1332,6 +1332,23 @@ namespace DailyBudgetMAUIApp.DataServices
             S.RegularSavingValue = AmountOutstanding / DaysToSavingDate;
 
             return "OK";
+        }
+        public DateTime GetBudgetLocalTime(DateTime UtcDate)
+        {
+            DateTime LocalDate = new DateTime();
+
+            try
+            {
+                TimeZoneInfo BudgetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(App.CurrentSettings.TimeZoneName);
+                LocalDate = TimeZoneInfo.ConvertTime(UtcDate, BudgetTimeZone);
+            }
+            catch (TimeZoneNotFoundException ex)
+            {
+                LocalDate = UtcDate.AddHours(App.CurrentSettings.TimeZoneUTCOffset);
+            }
+
+            return LocalDate;
+
         }
     }
 }

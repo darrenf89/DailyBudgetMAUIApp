@@ -41,6 +41,8 @@ namespace DailyBudgetMAUIApp.ViewModels
             Title = "Add a New Outgoing";
             Bill = new Bills();
 
+            MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date.AddDays(1);
+
         }
 
         public async void AddBill()
@@ -148,14 +150,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public string CalculateRegularBillValue()
         {
-            if(Bill.BillAmount == 0 || Bill.BillAmount == null || Bill.BillCurrentBalance >= Bill.BillAmount || Bill.BillDueDate == null || Bill.BillDueDate.GetValueOrDefault().Date <= DateTime.Now.Date)
+            if(Bill.BillAmount == 0 || Bill.BillAmount == null || Bill.BillCurrentBalance >= Bill.BillAmount || Bill.BillDueDate == null || Bill.BillDueDate.GetValueOrDefault().Date <= _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
             {
                 return "Please update details!";
             }
             else
             {
                 decimal DailySavingValue = new();
-                TimeSpan Difference = (TimeSpan)(Bill.BillDueDate.GetValueOrDefault().Date - DateTime.Now.Date);
+                TimeSpan Difference = (TimeSpan)(Bill.BillDueDate.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date);
                 int NumberOfDays = Difference.Days;
                 decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
                 if(NumberOfDays != 0)

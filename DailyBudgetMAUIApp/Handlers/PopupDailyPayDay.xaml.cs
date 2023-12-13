@@ -78,7 +78,7 @@ public partial class PopupDailyPayDay : Popup
             validatorPayDayAmount.IsVisible = false;
         }
 
-        if (_vm.Budget.NextIncomePayday < DateTime.UtcNow.Date)
+        if (_vm.Budget.NextIncomePayday < _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
         {
             IsValid = false;
             validatorNextIncomePayday.IsVisible = true;

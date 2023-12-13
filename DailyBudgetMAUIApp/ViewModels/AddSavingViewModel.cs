@@ -48,6 +48,8 @@ namespace DailyBudgetMAUIApp.ViewModels
             PickerClass PerDay = new PickerClass("Every Day", "PerDay");
             DropDownSavingPeriod.Add(PerDay);
 
+            MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date.AddDays(1);
+
         }
 
         public async void AddSaving()
@@ -158,7 +160,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             if (Saving.SavingsGoal != 0 && Saving.GoalDate > DateTime.Today.Date)
             {
-                int DaysToSavingDate = (Saving.GoalDate.GetValueOrDefault().Date - DateTime.Now.Date).Days;
+                int DaysToSavingDate = (Saving.GoalDate.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).Days;
                 decimal? AmountOutstanding = Saving.SavingsGoal - Saving.CurrentBalance;
 
                 if(DaysToSavingDate != 0)
@@ -185,7 +187,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     decimal? BalanceLeft = Saving.SavingsGoal - (Saving.CurrentBalance ?? 0);
                     int NumberOfDays = (int)Math.Ceiling(BalanceLeft / Saving.RegularSavingValue ?? 0);
 
-                    DateTime Today = DateTime.UtcNow;
+                    DateTime Today = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date;
                     Saving.GoalDate = Today.AddDays(NumberOfDays);
                 }
                 else if (Saving.DdlSavingsPeriod == "PerPayPeriod")
