@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+           x:Class="DailyBudgetMAUIApp.Handlers.PopUpOTP"
+           xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+           xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+           xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+           CanBeDismissedByTappingOutsideOfPopup="False"
+           Color="Transparent">
+    <AbsoluteLayout x:Name="AbsLayout">
+        <ImageButton x:Name="btnClose" Clicked="Close_Window" WidthRequest="22" HeightRequest="22" Background="{DynamicResource Gray400}" CornerRadius="11" ZIndex="99">
+            <ImageButton.Source>
+                <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Cancel}" Color="White"/>
+            </ImageButton.Source>
+        </ImageButton>
+        <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0">
+            <Border BackgroundColor="{DynamicResource White}" Margin="15,120,15,0" HorizontalOptions="Start" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16">
+                <VerticalStackLayout>
+                    <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0"/>
+                    <Label x:Name="lblDescription" FontAttributes="Bold" FontSize="Caption" VerticalOptions="Center" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray400}" Margin="30,15,30,0" />
+                    <VerticalStackLayout IsVisible="false" x:Name="entEmail">
+                        <handlers:BorderlessEntry x:Name="entEmailBox" Margin="0,15,0,0" Loaded="txtEmail_Loaded" HorizontalOptions="Center" WidthRequest="{Binding EntryWidth}" Text="{Binding UserEmail}" Keyboard="Text" Style="{StaticResource LogonEntry}" MaxLength="20" HeightRequest="50" FontSize="20" Placeholder="Enter your accounts Email address">
+                            <Entry.Behaviors>
+                                <xct:EmailValidationBehavior Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused,ValidateOnAttaching" IsValid="{Binding EmailValid}" />
+                                <xct:TextValidationBehavior MinimumLength="1" Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused, ValidateOnAttaching" IsValid="{Binding EmailRequired}" />
+                            </Entry.Behaviors>
+                        </handlers:BorderlessEntry>
+                        <HorizontalStackLayout IsVisible="{Binding EmailRequired, Converter={StaticResource BoolConverter}}" Margin="10,0,0,0">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Please let us know your email, pretty please!" Style="{StaticResource ErrorMessage}"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout IsVisible="{Binding EmailValid, Converter={StaticResource BoolConverter}}" Margin="10,0,0,0">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="You have to enter a valid email, or else ... nothing happens!!" Style="{StaticResource ErrorMessage}"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout IsVisible="{Binding EmailNotFound}" Margin="10,0,0,0">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="We couldn't find an account with that email, please register to create an account." Style="{StaticResource ErrorMessage}"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout IsVisible="false" x:Name="entOTPCode" WidthRequest="{Binding EntryWidth}" HorizontalOptions="Center">
+                        <HorizontalStackLayout Margin="0,25,0,10">
+                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,15,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
+                                <handlers:BorderlessEntry Identifier="entOTPOne" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPOne" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="Small" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            </Border>
+                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,15,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
+                                <handlers:BorderlessEntry Identifier="entOTPTwo" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPTwo" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="Small" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            </Border>
+                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,15,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
+                                <handlers:BorderlessEntry Identifier="entOTPThree" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPThree" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="Small" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            </Border>
+                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,15,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
+                                <handlers:BorderlessEntry Identifier="entOTPFour" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPFour" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="Small" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            </Border>
+                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,15,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
+                                <handlers:BorderlessEntry Identifier="entOTPFive" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPFive" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="Small" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            </Border>
+                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,15,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
+                                <handlers:BorderlessEntry Identifier="entOTPSix" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPSix" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="Small" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            </Border>
+                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,15,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
+                                <handlers:BorderlessEntry Identifier="entOTPSeven" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPSeven" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1" FontSize="Small" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            </Border>
+                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,15,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
+                                <handlers:BorderlessEntry Identifier="entOTPEight" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPEight" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="Small" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            </Border>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout IsVisible="{Binding OTPNotFound}" Margin="10,0,0,0">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="That code doesn't match our records, please try again or resend a new code." Style="{StaticResource ErrorMessage}"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout IsVisible="{Binding OTPRequired}" Margin="10,0,0,0">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Please enter all 8 digits for the OTP code" Style="{StaticResource ErrorMessage}"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <Button x:Name="btnSave" Margin="0,10,0,30" WidthRequest="{Binding EntryWidth}" Text="Save" Clicked="ValidateOTP_Popup" HorizontalOptions="Center" Style="{StaticResource PrimaryDarkButton}"/>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </AbsoluteLayout>
+</xct:Popup>

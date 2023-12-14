@@ -20,11 +20,11 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public int? _currencyDecimalSeparator  = 1;
         [ObservableProperty]
-        public int? _currencyGroupSeparator  = 1;
+        public int? _currencyGroupSeparator  = 2;
         [ObservableProperty]
         public int? _dateSeperator  = 1;
         [ObservableProperty]       
-        public int? _shortDatePattern  = 1;
+        public int? _shortDatePattern  = 2;
         [ObservableProperty]
         public int? _timeZone = 47;
 

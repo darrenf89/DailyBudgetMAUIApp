@@ -19,7 +19,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             Title = "Please Sign Up!";
             _ds = ds;
-            _pt = pt;   
+            _pt = pt;
         }
 
         [ObservableProperty]
@@ -46,6 +46,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool _passwordSameSame;
         [ObservableProperty]
         private bool _passwordStrong;
+        [ObservableProperty]
+        private bool _registerSuccess;
 
         public bool PageIsValid()
         {
@@ -80,7 +82,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]        
         async void SignUp()
         {
-
+            
             try
             {
                 if(!PageIsValid())                
@@ -113,12 +115,13 @@ namespace DailyBudgetMAUIApp.ViewModels
                             string status = await _ds.CreateNewOtpCode(ReturnUser.UserID);
                             if (status == "OK")
                             {
-                                var popup = new PopupOTP(ReturnUser.UserID, new PopupDailyOTPViewModel(), "ValidateEmail", new ProductTools(new RestDataService()));
+                                RegisterSuccess = true;
+
+                                var popup = new PopUpOTP(ReturnUser.UserID, new PopUpOTPViewModel(), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
                                 var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
                                 if((string)result.ToString() == "OK")
-                                {
-                                    //TODO: SHow Success Message and show OTP pop up to validate user.
+                                {                                    
                                     ReturnUser.SessionExpiry = DateTime.UtcNow.AddDays(0);
 
                                     if (Preferences.ContainsKey(nameof(App.UserDetails)))

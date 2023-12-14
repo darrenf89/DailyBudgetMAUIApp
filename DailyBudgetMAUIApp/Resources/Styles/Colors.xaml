@@ -12,6 +12,7 @@
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>
     <Color x:Key="Success">#38b44a</Color>
+    <Color x:Key="SuccessLight">#c3e8c8</Color>
     <Color x:Key="Danger">#df382c</Color>
     <Color x:Key="Warning">#efb73e</Color>
     <Color x:Key="Info">#004fb6</Color>
@@ -32,6 +33,7 @@
     <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}"/>
+    <SolidColorBrush x:Key="SuccessLightBrush" Color="{StaticResource SuccessLight}"/>
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource Danger}"/>
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}"/>
     <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}"/>

@@ -2,5 +2,6 @@
 {
     public class BorderlessEntry : Entry
     {
+        public string Identifier { get; set; }
     }
 }

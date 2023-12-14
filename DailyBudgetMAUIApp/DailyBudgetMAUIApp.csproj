@@ -77,6 +77,9 @@
 	  <Compile Update="Handlers\PopupInfo.xaml.cs">
 	    <DependentUpon>PopupInfo.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Handlers\PopUpOTP.xaml.cs">
+	    <DependentUpon>PopUpOTP.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\CreateNewBudget.xaml.cs">
 	    <DependentUpon>CreateNewBudget.xaml</DependentUpon>
 	  </Compile>
@@ -102,6 +105,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Handlers\PopupInfo.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Handlers\PopUpOTP.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\AddBill.xaml">

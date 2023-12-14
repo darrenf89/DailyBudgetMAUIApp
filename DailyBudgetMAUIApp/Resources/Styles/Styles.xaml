@@ -20,7 +20,15 @@
         <Setter Property="LineBreakMode" Value="WordWrap"/>
         <Setter Property="WidthRequest" Value="215"/>
     </Style>
-    
+
+    <Style TargetType="Label" x:Key="SuccessMessage">
+        <Setter Property="TextColor" Value="{DynamicResource SuccessLight}"/>
+        <Setter Property="FontSize" Value="Caption"/>
+        <Setter Property="Margin" Value="10,5,0,0"/>
+        <Setter Property="LineBreakMode" Value="WordWrap"/>
+        <Setter Property="WidthRequest" Value="215"/>
+    </Style>
+
     <Style TargetType="Border" x:Key="FrameWhiteStandardContent">
         <Setter Property="Margin" Value="20,0,20,0"/>
         <Setter Property="Padding" Value="15,15,15,15"/>

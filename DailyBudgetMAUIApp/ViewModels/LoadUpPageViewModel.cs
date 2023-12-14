@@ -36,7 +36,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-
                 string userDetailsStr = Preferences.Get(nameof(App.UserDetails),"");
 
                 if (!string.IsNullOrEmpty(userDetailsStr))

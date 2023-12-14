@@ -15,19 +15,21 @@ public static class MauiProgram
 
         var builder = MauiApp.CreateBuilder();
 
-        builder			
-			.UseMauiApp<App>()
+        builder
+            .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialDesignIcons");
             })
-            .ConfigureMauiHandlers(handlers => {
+            .ConfigureMauiHandlers(handlers =>
+            {
 #if __ANDROID__
                 handlers.AddHandler(typeof(RefreshView), typeof(Handlers.CustomRefreshViewHandler));
-#endif 
+#endif
+
             });
 
         builder.Services.AddSingleton<IRestDataService, RestDataService>();

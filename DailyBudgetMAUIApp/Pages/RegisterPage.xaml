@@ -13,11 +13,9 @@
             <Image Source="logonbackgroundorange.jpg"
                Aspect="AspectFill" />
             <VerticalStackLayout VerticalOptions="Start">
-
                 <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,50,0,45">
                     <Image Source="colorlogonobackground.png" Aspect="AspectFill" ></Image>
                 </Border>
-
                 <Border Style="{StaticResource FrameWhiteStandardContent}">
                     <VerticalStackLayout HorizontalOptions="Fill" >
                         <Label Text="Welcome!" 
@@ -35,6 +33,16 @@
                             HeightRequest="2"
                             Margin="0,20,0,30" 
                             StrokeThickness="1"/>
+                        <Border Padding="10,5,10,5" Margin="0,5,0,15" IsVisible="{Binding RegisterSuccess}" Background="{StaticResource SuccessLight}" StrokeShape="RoundRectangle 3" Stroke="{StaticResource SuccessBrush}" StrokeThickness="1">
+                            <Label LineBreakMode="WordWrap" VerticalOptions="Center">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Congrats!" TextColor="{StaticResource Success}" FontAttributes="Bold"/>
+                                        <Span Text=" You have successfully set up an account." TextColor="{StaticResource Success}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </Border>
                         <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Start">
                             <VerticalStackLayout Margin="0,0,0,15">
                                 <Border Style="{StaticResource FrameLogonStandardContent}">
@@ -97,9 +105,8 @@
                                         </Entry.Behaviors>
                                     </handlers:BorderlessEntry>
                                 </Border>
-                                <HorizontalStackLayout 
-                                IsVisible="{Binding EmailRequired, Converter={StaticResource BoolConverter}}"                                                 
-                                Margin="10,0,0,0">
+                                <HorizontalStackLayout IsVisible="{Binding EmailRequired, Converter={StaticResource BoolConverter}}"                                                 
+                                    Margin="10,0,0,0">
                                     <Image>
                                         <Image.Source>
                                             <FontImageSource 
