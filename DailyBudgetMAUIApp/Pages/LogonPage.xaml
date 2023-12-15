@@ -136,6 +136,23 @@
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
+                        <VerticalStackLayout Margin="0,5,0,15">
+                            <HorizontalStackLayout HorizontalOptions="End" VerticalOptions="Center">
+                                <Label Text="Forgot your password? "
+                                        FontAttributes="Bold" 
+                                        FontSize="Caption">
+                                </Label>
+                                <Label Text="Click here to reset!"
+                                        TextColor="{DynamicResource Primary}"
+                                        TextDecorations="Underline"
+                                        FontAttributes="Bold"
+                                        FontSize="Caption">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ResetPasswordCommand}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
                         <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="0,0,0,10">
                             <CheckBox IsChecked="{Binding RememberMe}"/>
                             <Label Text="Remember Me!"
