@@ -65,6 +65,23 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ICommand]
+        async void ResetPassword()
+        {
+            var popup = new PopupOTP(0, new PopupDailyOTPViewModel(), "ResetPassword", new ProductTools(new RestDataService()), new RestDataService());
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+            if((string)result.ToString() == "OK")
+            {
+                //TODO: SHOW SUCCESS MESSAGE
+            }
+            else
+            {
+                //TODO: SHOW FAIL MESSAGE
+            }
+
+        }
+
+        [ICommand]
         async void Login()
         {
 
@@ -114,7 +131,21 @@ namespace DailyBudgetMAUIApp.ViewModels
                                         if (!userDetails.isEmailVerified)
                                         {
                                             await Application.Current.MainPage.Navigation.PopModalAsync();
-                                            await Application.Current.MainPage.DisplayAlert("Opps", "You haven't validated your email .. do that and come back!", "OK");
+                                            bool ValidateEmail = await Application.Current.MainPage.DisplayAlert("Mmmm Can't be doing that!", "You haven't verified your email! Would you like to now so you can log in?", "Verify email","Not now");
+                                            if(ValidateEmail)
+                                            {
+                                                var popup = new PopupOTP(userDetails.UserID, new PopupDailyOTPViewModel(), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
+                                                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+                                                if((string)result.ToString() == "OK")
+                                                {
+                                                    //TODO: SHOW SUCCESS MESSAGE
+                                                }
+                                                else
+                                                {
+                                                    //TODO: SHOW FAIL MESSAGE
+                                                }
+                                            }
                                         }
                                         else
                                         {
