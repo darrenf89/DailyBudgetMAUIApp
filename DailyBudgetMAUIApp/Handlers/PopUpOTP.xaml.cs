@@ -5,6 +5,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
+using static Android.Provider.ContactsContract.CommonDataKinds;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
@@ -42,8 +43,8 @@ public partial class PopUpOTP : Popup
         {
             if (_vm.UserID == 0)
             {
-                lblTitle.Text = "Verify Your Email";
-                lblDescription.Text = "Please enter the email address attached to your account";
+                lblTitleEmail.Text = "Verify Your Email";
+                lblDescriptionEmail.Text = "Please enter your accounts Email";
                 btnSave.Text = "Confirm Email";
 
                 entEmail.IsVisible = true;
@@ -51,8 +52,8 @@ public partial class PopUpOTP : Popup
             }
             else
             {
-                lblTitle.Text = "Verify Your Email";
-                lblDescription.Text = "Please enter the One-time Passcode we sent to your email, can't find it request again using the resend button.";
+                lblTitleOTPCode.Text = "Verify Your Email";
+                lblDescriptionOTPCode.Text = "Please enter the OTP provided";
                 btnSave.Text = "Verify Account";
 
                 entEmail.IsVisible = false;
@@ -63,12 +64,56 @@ public partial class PopUpOTP : Popup
         }
         else if (_vm.OTPType == "ResetPassword")
         {
+            if (_vm.UserID == 0)
+            {
+                lblTitleEmail.Text = "Reset Your Password";
+                lblDescriptionEmail.Text = "Please enter your accounts Email";
+                btnSave.Text = "Confirm Email";
 
+                entEmail.IsVisible = true;
+                entOTPCode.IsVisible = false;
+                entPasswordReset.IsVisible = false;
+            }
+            else if (_vm.OTPValidated)
+            {
+                lblTitlePassword.Text = "Reset Your Password";
+                lblDescriptionPassword.Text = "Please enter your desired password";
+                btnSave.Text = "Change Password";
+
+                entEmail.IsVisible = false;
+                entOTPCode.IsVisible = false;
+                entPasswordReset.IsVisible = true;
+
+                entPassword.Focus();
+            }
+            else
+            {
+                lblTitleOTPCode.Text = "Reset Your Password";
+                lblDescriptionOTPCode.Text = "Please enter the OTP provided";
+                btnSave.Text = "Enter Code";
+
+                entEmail.IsVisible = false;
+                entOTPCode.IsVisible = true;
+                entPasswordReset.IsVisible = false;
+
+                entOTPOne.Focus();
+            }
         }
+    }
+
+    private void ResetSuccessFailureMessage()
+    {        
+        _vm.ResendSuccess = false;
+        _vm.MaxLimitFailure = false;
+        _vm.ResendFailure = false;
+        _vm.PasswordResetFailure = false;
+        _vm.EmailNotFound = false;
+        _vm.OTPRequired = false;
     }
 
     private void ValidateOTP_Popup(object sender, EventArgs e)
 	{
+        ResetSuccessFailureMessage();
         if (_vm.OTPType == "ValidateEmail")
         {
             if (_vm.UserID == 0)
@@ -98,6 +143,7 @@ public partial class PopUpOTP : Popup
                 {
                     _vm.OTP.OTPExpiryTime = DateTime.UtcNow;
                     _vm.OTP.UserAccountID = _vm.UserID;
+                    _vm.OTP.OTPType = _vm.OTPType;
                     string status = _ds.ValidateOTPCodeEmail(_vm.OTP).Result;
                     if(status == "OK")
                     {
@@ -113,7 +159,98 @@ public partial class PopUpOTP : Popup
         }
         else if(_vm.OTPType == "ResetPassword")
         {
+            if (_vm.UserID == 0)
+            {
+                if (_vm.EmailRequired && _vm.EmailValid)
+                {
+                    _vm.UserID = _ds.GetUserIdFromEmail(_vm.UserEmail).Result;
+                    _vm.OTP.UserAccountID = _vm.UserID;
 
+                    if (_vm.UserID == 0)
+                    {
+                        _vm.EmailNotFound = true;
+                    }
+                    else
+                    {
+                        string status = _ds.CreateNewOtpCode(_vm.UserID, _vm.OTPType).Result;
+                        if (status == "OK")
+                        {
+                            LoadOTPType();
+                        }
+                        else if (status == "MaxLimit")
+                        {
+                            _vm.MaxLimitFailure = true;
+                        }
+                        else
+                        {
+                            _vm.ResendFailure = true;
+                        }
+                    }
+                }
+            }
+            else if (_vm.OTPValidated)
+            {
+                if(_vm.PasswordSameSame && _vm.PasswordStrong && _vm.PasswordRequired)
+                {
+                    RegisterModel User = new RegisterModel();
+                    User.Salt = _ds.GetUserSaltAsync(_vm.UserEmail).Result;
+                    User.Password = _vm.Password;
+                    User = _pt.ResetUserPassword(User);
+
+                    List<PatchDoc> UserDetails = new List<PatchDoc>();
+
+                    PatchDoc NewSalt = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/Salt",
+                        value = User.Salt
+                    };
+
+                    PatchDoc NewPassword = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/Password",
+                        value = User.Password
+                    };
+
+                    UserDetails.Add(NewSalt);
+                    UserDetails.Add(NewPassword);
+
+                    string status = _ds.PatchUserAccount(_vm.UserID, UserDetails).Result;
+
+                    if(status == "OK")
+                    {
+                        this.Close("OK");
+                    }
+                    else
+                    {
+                        _vm.PasswordResetFailure = true;
+                    }
+                }
+            }
+            else
+            {
+                if (_vm.OTP.OTPCode.Length < 8)
+                {
+                    _vm.OTPRequired = true;
+                }
+                else
+                {
+                    _vm.OTP.OTPExpiryTime = DateTime.UtcNow;
+                    _vm.OTP.UserAccountID = _vm.UserID;
+                    _vm.OTP.OTPType = _vm.OTPType;
+                    string status = _ds.ValidateOTPCodeEmail(_vm.OTP).Result;
+                    if (status == "OK")
+                    {
+                        _vm.OTPValidated = true;
+                        LoadOTPType();
+                    }
+                    else
+                    {
+                        _vm.OTPNotFound = true;
+                    }
+                }
+            }
         }
     }
 
@@ -133,33 +270,86 @@ public partial class PopUpOTP : Popup
 
         var entOTP = (BorderlessEntry)sender;
 
-        if(entOTP.Identifier == "entOTPOne")
+        if (entOTP.Identifier == "entOTPOne")
         {
-            entOTPTwo.Focus();
+            if (!string.IsNullOrEmpty(e.NewTextValue))
+            {
+                entOTPTwo.Focus();
+            }
         }
-        else if(entOTP.Identifier == "entOTPTwo")
+        else if (entOTP.Identifier == "entOTPTwo")
         {
-            entOTPThree.Focus();
+            if (string.IsNullOrEmpty(e.NewTextValue))
+            {
+                entOTPOne.Focus();
+            }
+            else
+            {
+                entOTPThree.Focus();
+            }
+
         }
-        else if(entOTP.Identifier == "entOTPThree")
+        else if (entOTP.Identifier == "entOTPThree")
         {
-            entOTPFour.Focus();
+            if (string.IsNullOrEmpty(e.NewTextValue))
+            {
+                entOTPTwo.Focus();
+            }
+            else
+            {
+                entOTPFour.Focus();
+            }
         }
-        else if(entOTP.Identifier == "entOTPFour")
+        else if (entOTP.Identifier == "entOTPFour")
         {
-            entOTPFive.Focus();
+            if (string.IsNullOrEmpty(e.NewTextValue))
+            {
+                entOTPThree.Focus();
+            }
+            else
+            {
+                entOTPFive.Focus();
+            }
         }
-        else if(entOTP.Identifier == "entOTPFive")
+        else if (entOTP.Identifier == "entOTPFive")
         {
-            entOTPSix.Focus();
+            if (string.IsNullOrEmpty(e.NewTextValue))
+            {
+                entOTPFour.Focus();
+            }
+            else
+            {
+                entOTPSix.Focus();
+            }
         }
-        else if(entOTP.Identifier == "entOTPSix")
+        else if (entOTP.Identifier == "entOTPSix")
         {
-            entOTPSeven.Focus();
+            if (string.IsNullOrEmpty(e.NewTextValue))
+            {
+                entOTPFive.Focus();
+            }
+            else
+            {
+                entOTPSeven.Focus();
+            }
         }
-        else if(entOTP.Identifier == "entOTPSeven")
+        else if (entOTP.Identifier == "entOTPSeven")
         {
-            entOTPEight.Focus();
+            if (string.IsNullOrEmpty(e.NewTextValue))
+            {
+                entOTPSix.Focus();
+            }
+            else
+            {
+                entOTPEight.Focus();
+            }
+        }
+        else if (entOTP.Identifier == "entOTPEight")
+        {
+            if (string.IsNullOrEmpty(e.NewTextValue))
+            {
+                entOTPSeven.Focus();
+            }
         }
     }
 

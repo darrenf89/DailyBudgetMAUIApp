@@ -18,6 +18,16 @@ namespace DailyBudgetMAUIApp.DataServices
             _ds = ds;
         }
 
+        public RegisterModel ResetUserPassword(RegisterModel obj)
+        {
+
+            string HashedPassword = GenerateHashedPassword(obj.Password, obj.Salt);
+
+            obj.Password = HashedPassword;
+
+            return obj;
+        }
+
         public RegisterModel CreateUserSecurityDetails(RegisterModel obj)
         {
             Random rnd = new();
@@ -201,7 +211,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
             }
 
-            int DaysBetweenPay = (NextDate.Date - CurrentDate.Date).Days;
+            int DaysBetweenPay = (int)Math.Ceiling((NextDate.Date - CurrentDate.Date).TotalDays);
 
             return DaysBetweenPay;
         }
@@ -261,7 +271,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
             }
 
-            int DaysBetweenPay = (NextDate.Date - CurrentDate.Date).Days;
+            int DaysBetweenPay = (int)Math.Ceiling((NextDate.Date - CurrentDate.Date).TotalDays);
 
             return DaysBetweenPay;
         }
@@ -284,7 +294,7 @@ namespace DailyBudgetMAUIApp.DataServices
             status = status == "OK" ? UpdateBudgetCreateBillsSpend(ref Budget) : status;
 
             Budget.LastUpdated = DateTime.UtcNow;
-            int DaysToPayDay = (Budget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).Days;
+            int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
             Budget.LeftToSpendDailyAmount = (Budget.LeftToSpendBalance ?? 0) / DaysToPayDay;
             Budget.StartDayDailyAmount = Budget.LeftToSpendDailyAmount;
 
@@ -360,7 +370,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     decimal? BalanceLeft = Bill.BillAmount - Bill.BillCurrentBalance;
 
                     TimeSpan TimeToGoal = (Bill.BillDueDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date);
-                    int? DaysToGoal = TimeToGoal.Days;
+                    int? DaysToGoal = (int)TimeToGoal.TotalDays;
 
                     Bill.RegularBillValue = BalanceLeft / DaysToGoal;
                 }
@@ -400,7 +410,7 @@ namespace DailyBudgetMAUIApp.DataServices
                             decimal? BalanceLeft = Saving.SavingsGoal - (Saving.CurrentBalance ?? 0);
 
                             TimeSpan TimeToGoal = (Saving.GoalDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date);
-                            int? DaysToGoal = TimeToGoal.Days;
+                            int? DaysToGoal = (int)TimeToGoal.TotalDays;
 
                             Saving.RegularSavingValue = BalanceLeft / DaysToGoal;
                         }
@@ -477,7 +487,7 @@ namespace DailyBudgetMAUIApp.DataServices
             decimal DailySavingOutgoing = new();
             decimal PeriodTotalSavingOutgoing = new();
 
-            int DaysToPayDay = (Budget.NextIncomePayday.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).Days;
+            int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
 
             foreach (Savings Saving in Budget.Savings)
             {
@@ -492,7 +502,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         DailySavingOutgoing += Saving.RegularSavingValue ?? 0;
                         //check if goal date is before pay day
-                        int DaysToSaving = (Saving.GoalDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).Days;
+                        int DaysToSaving = (int)Math.Ceiling((Saving.GoalDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
                         if (DaysToSaving < DaysToPayDay)
                         {
                             PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToSaving);
@@ -519,13 +529,13 @@ namespace DailyBudgetMAUIApp.DataServices
             decimal DailyBillOutgoing = new();
             decimal PeriodTotalBillOutgoing = new();
 
-            int DaysToPayDay = (Budget.NextIncomePayday.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).Days;
+            int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
 
             foreach (Bills Bill in Budget.Bills)
             {
                 DailyBillOutgoing += Bill.RegularBillValue ?? 0;
                 //Check if Due Date is before Pay Dat
-                int DaysToBill = (Bill.BillDueDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).Days;
+                int DaysToBill = (int)Math.Ceiling((Bill.BillDueDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
                 if (Bill.IsRecuring)
                 {
                     if (DaysToBill < DaysToPayDay)
@@ -533,7 +543,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
 
                         DateTime BillDueAfterNext = CalculateNextDate(Bill.BillDueDate.GetValueOrDefault(), Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
-                        int NumberOfDaysBill = (BillDueAfterNext - Bill.BillDueDate.GetValueOrDefault()).Days;
+                        int NumberOfDaysBill = (int)Math.Ceiling((BillDueAfterNext - Bill.BillDueDate.GetValueOrDefault()).TotalDays);
                         decimal? BillRegularValue = Bill.BillAmount / NumberOfDaysBill;
 
                         PeriodTotalBillOutgoing += BillRegularValue.GetValueOrDefault() * (DaysToPayDay - DaysToBill);
@@ -824,7 +834,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 Bill.BillDueDate = CalculateNextDate(Bill.BillDueDate.GetValueOrDefault(), Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
                 TimeSpan Difference = (TimeSpan)(Bill.BillDueDate - GetBudgetLocalTime(DateTime.UtcNow).Date);
-                int NumberOfDays = Difference.Days;
+                int NumberOfDays = (int)Difference.TotalDays;
                 decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
 
                 if (NumberOfDays != 0)
@@ -985,7 +995,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     //Update the next pay date
                     budget.NextIncomePayday = CalculateNextDate(budget.NextIncomePayday.GetValueOrDefault(), budget.PaydayType, budget.PaydayValue.GetValueOrDefault(), budget.PaydayDuration);
                     TimeSpan NoOfDays = budget.NextIncomePayday.GetValueOrDefault().Date - GetBudgetLocalTime(DateTime.UtcNow).Date;
-                    budget.AproxDaysBetweenPay = NoOfDays.Days;
+                    budget.AproxDaysBetweenPay = (int)NoOfDays.TotalDays;
                     //Reset any envelope savings
                     for (int i = budget.Savings.Count - 1; i >= 0; i--)
                     {
@@ -1175,7 +1185,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 Budget.BankBalance += T.TransactionAmount;
                 Budget.MoneyAvailableBalance += T.TransactionAmount;
                 Budget.LeftToSpendBalance += T.TransactionAmount;
-                int DaysToPayDay = (Budget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).Days;
+                int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
                 Budget.LeftToSpendDailyAmount += (T.TransactionAmount ?? 0) / DaysToPayDay;
                 Budget.PayPeriodStats[0].IncomeToDate += T.TransactionAmount ?? 0;
                 Budget.LastUpdated = DateTime.UtcNow;
@@ -1326,7 +1336,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         private string CalculateSavingsTargetDate(ref Savings S)
         {
-            int DaysToSavingDate = (S.GoalDate.GetValueOrDefault().Date - DateTime.Today.Date).Days;
+            int DaysToSavingDate = (int)Math.Ceiling((S.GoalDate.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
             decimal? AmountOutstanding = S.SavingsGoal - S.CurrentBalance;
 
             S.RegularSavingValue = AmountOutstanding / DaysToSavingDate;

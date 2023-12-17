@@ -13,6 +13,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public string GenerateSalt(int nSalt);
         public string GenerateHashedPassword(string NonHasdedPassword, string Salt);
         public RegisterModel CreateUserSecurityDetails(RegisterModel obj);
+        public RegisterModel ResetUserPassword(RegisterModel obj);
         public Task<ErrorLog> HandleCatchedException(Exception ex, string page, string Method);
         public DateTime GetBudgetLastUpdated(int BudgetID);
         public void ShowPopup(PopUpPage popup);

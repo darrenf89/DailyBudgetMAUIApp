@@ -10,15 +10,12 @@
              Shell.NavBarIsVisible = "False">
     <ScrollView>
         <Grid>
-            
             <Image Source="logonbackgroundorange.jpg"
-                   Aspect="AspectFill" />            
-
+                   Aspect="AspectFill" />  
             <VerticalStackLayout VerticalOptions="Start">
                 <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,50,0,180">
                     <Image Source="colorlogonobackground.png" Aspect="AspectFill" ></Image>
                 </Border>
-
                 <Border Style="{StaticResource FrameWhiteStandardContent}">
                     <VerticalStackLayout HorizontalOptions="Fill" >
                         <Label Text="Welcome!" 
@@ -36,6 +33,38 @@
                                 HeightRequest="2"
                                 Margin="0,20,0,30" 
                                 StrokeThickness="1"/>
+                        <VerticalStackLayout>
+                            <Border Padding="10,5,10,5" Margin="0,5,0,15" IsVisible="{Binding EmailValidatedSuccess}" Background="{StaticResource SuccessLight}" StrokeShape="RoundRectangle 3" Stroke="{StaticResource SuccessBrush}" StrokeThickness="1">
+                                <Label LineBreakMode="WordWrap" VerticalOptions="Center">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Congrats!" TextColor="{StaticResource Success}" FontAttributes="Bold"/>
+                                            <Span Text=" You have verified your email, you can now login to your account" TextColor="{StaticResource Success}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Border>
+                            <Border Padding="10,5,10,5" Margin="0,5,0,15" IsVisible="{Binding ResetPasswordSuccess}" Background="{StaticResource SuccessLight}" StrokeShape="RoundRectangle 3" Stroke="{StaticResource SuccessBrush}" StrokeThickness="1">
+                                <Label LineBreakMode="WordWrap" VerticalOptions="Center">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Congrats!" TextColor="{StaticResource Success}" FontAttributes="Bold"/>
+                                            <Span Text=" You have reset your password, you can now loging" TextColor="{StaticResource Success}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Border>
+                            <Border Padding="10,5,10,5" Margin="0,5,0,15" IsVisible="{Binding ResetPasswordFail}" Background="{StaticResource DangerLight}" StrokeShape="RoundRectangle 3" Stroke="{StaticResource DangerBrush}" StrokeThickness="1">
+                                <Label LineBreakMode="WordWrap" VerticalOptions="Center">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Opps that didnt work!" TextColor="{StaticResource Danger}" FontAttributes="Bold"/>
+                                            <Span Text=" Please try again if you want to reset your password" TextColor="{StaticResource Danger}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Border>
+                        </VerticalStackLayout>                            
                         <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Start">
                             <VerticalStackLayout Margin="0,0,0,15">
                                 <Border Style="{StaticResource FrameLogonStandardContent}">
@@ -136,13 +165,9 @@
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
-                        <VerticalStackLayout Margin="0,5,0,15">
+                        <VerticalStackLayout Margin="0,0,0,5">
                             <HorizontalStackLayout HorizontalOptions="End" VerticalOptions="Center">
-                                <Label Text="Forgot your password? "
-                                        FontAttributes="Bold" 
-                                        FontSize="Caption">
-                                </Label>
-                                <Label Text="Click here to reset!"
+                                <Label Text="Reset Password"
                                         TextColor="{DynamicResource Primary}"
                                         TextDecorations="Underline"
                                         FontAttributes="Bold"

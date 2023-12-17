@@ -9,6 +9,7 @@ namespace DailyBudgetMAUIApp.DataServices
 {
     public interface IRestDataService
     {
+        public Task<string> PatchUserAccount(int UserID, List<PatchDoc> PatchDoc);
         public Task<UserDetailsModel> RegisterNewUserAsync(RegisterModel User);
         public Task<string> GetUserSaltAsync(string UserEmail);
         public string LogoutUserAsync(RegisterModel User);
@@ -56,7 +57,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<Transactions> GetTransactionFromID(int TransactionID);
         public Task<Budgets> GetAllBudgetTransactions(int BudgetID);
         public Task<Budgets> SaveBudgetDailyCycle(Budgets budget);
-        public Task<string> CreateNewOtpCode(int UserID);
+        public Task<string> CreateNewOtpCode(int UserID, string OTPType);
         public Task<string> ValidateOTPCodeEmail(OTP UserOTP);
         public Task<int> GetUserIdFromEmail(string UserEmail);
 

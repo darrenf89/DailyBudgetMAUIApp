@@ -5,6 +5,7 @@ using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Helpers;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 namespace DailyBudgetMAUIApp;
 

@@ -218,7 +218,7 @@ public partial class PopupDailySaving : Popup
             }
             else if (_vm.Saving.SavingsType == "TargetDate")
             {
-                int DaysToSavingDate = (_vm.Saving.GoalDate.GetValueOrDefault().Date - DateTime.Today.Date).Days;
+                int DaysToSavingDate = (int)Math.Ceiling((_vm.Saving.GoalDate.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
                 decimal? AmountOutstanding = _vm.Saving.SavingsGoal - _vm.Saving.CurrentBalance;
 
                 if (DaysToSavingDate != 0)

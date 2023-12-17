@@ -139,7 +139,7 @@ public partial class PopupDailyBill : Popup
         if(ValidatePage())
         {
 
-            int DaysToSavingDate = (_vm.Bill.BillDueDate.GetValueOrDefault().Date - DateTime.Today.Date).Days;
+            int DaysToSavingDate = (int)Math.Ceiling((_vm.Bill.BillDueDate.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
             decimal? AmountOutstanding = _vm.Bill.BillAmount - _vm.Bill.BillCurrentBalance;
 
             if (DaysToSavingDate != 0)

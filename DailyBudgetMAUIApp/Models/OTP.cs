@@ -14,6 +14,8 @@ namespace DailyBudgetMAUIApp.Models
         public int _userAccountID;
         [ObservableProperty]
         public bool _isValidated;
+        [ObservableProperty]
+        public string _oTPType;
     }
 
 }

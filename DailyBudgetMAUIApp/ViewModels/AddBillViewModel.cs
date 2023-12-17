@@ -158,7 +158,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 decimal DailySavingValue = new();
                 TimeSpan Difference = (TimeSpan)(Bill.BillDueDate.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date);
-                int NumberOfDays = Difference.Days;
+                int NumberOfDays = (int)Difference.TotalDays;
                 decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
                 if(NumberOfDays != 0)
                 {

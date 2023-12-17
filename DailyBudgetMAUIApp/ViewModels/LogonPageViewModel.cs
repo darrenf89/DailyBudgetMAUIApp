@@ -41,6 +41,15 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool _passwordRequired;
 
+        [ObservableProperty]
+        private bool _emailValidatedSuccess;
+
+        [ObservableProperty]
+        private bool _resetPasswordSuccess;
+
+        [ObservableProperty]
+        private bool _resetPasswordFail;
+
         public bool PageIsValid()
         {
             bool IsValid = true;
@@ -58,6 +67,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             return IsValid;
         }
+
+        private async Task ResetSuccessFailureMessage()
+        {
+            ResetPasswordFail = false;
+            ResetPasswordSuccess = false;
+            EmailValidatedSuccess = false;
+        }
+
         [ICommand]
         async void NavigateRegister()
         {
@@ -67,16 +84,18 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void ResetPassword()
         {
-            var popup = new PopupOTP(0, new PopupDailyOTPViewModel(), "ResetPassword", new ProductTools(new RestDataService()), new RestDataService());
+            await ResetSuccessFailureMessage();
+
+            var popup = new PopUpOTP(0, new PopUpOTPViewModel(new RestDataService()), "ResetPassword", new ProductTools(new RestDataService()), new RestDataService());
             var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
             if((string)result.ToString() == "OK")
             {
-                //TODO: SHOW SUCCESS MESSAGE
+                ResetPasswordSuccess = true;
             }
             else
             {
-                //TODO: SHOW FAIL MESSAGE
+                ResetPasswordFail = true;
             }
 
         }
@@ -84,7 +103,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void Login()
         {
-
+            await ResetSuccessFailureMessage();
             try
             {
                 if (!PageIsValid())
@@ -131,20 +150,23 @@ namespace DailyBudgetMAUIApp.ViewModels
                                         if (!userDetails.isEmailVerified)
                                         {
                                             await Application.Current.MainPage.Navigation.PopModalAsync();
-                                            bool ValidateEmail = await Application.Current.MainPage.DisplayAlert("Mmmm Can't be doing that!", "You haven't verified your email! Would you like to now so you can log in?", "Verify email","Not now");
+                                            bool ValidateEmail = await Application.Current.MainPage.DisplayAlert("Mmmm, can't be doing that!", "You haven't verified your email! Would you like to now so you can log in?", "Verify email","Not now");
                                             if(ValidateEmail)
                                             {
-                                                var popup = new PopupOTP(userDetails.UserID, new PopupDailyOTPViewModel(), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
-                                                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                                                string status = await _ds.CreateNewOtpCode(userDetails.UserID, "ValidateEmail");
+                                                if (status == "OK" || status == "MaxLimit")
+                                                {
+                                                    var popup = new PopUpOTP(userDetails.UserID, new PopUpOTPViewModel(new RestDataService()), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
+                                                    var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
-                                                if((string)result.ToString() == "OK")
-                                                {
-                                                    //TODO: SHOW SUCCESS MESSAGE
+                                                    if ((string)result.ToString() == "OK")
+                                                    {
+                                                        EmailValidatedSuccess = true;
+                                                    }
                                                 }
-                                                else
-                                                {
-                                                    //TODO: SHOW FAIL MESSAGE
-                                                }
+
+                                                Email = "";
+                                                Password = "";
                                             }
                                         }
                                         else

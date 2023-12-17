@@ -10,6 +10,7 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using CommunityToolkit.Maui.ApplicationModel;
 using System.Transactions;
+using System.Net;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -35,7 +36,40 @@ namespace DailyBudgetMAUIApp.DataServices
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
         }
+        public async Task<string> PatchUserAccount(int UserID, List<PatchDoc> PatchDoc)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
 
+            try
+            {
+
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PatchAsync($"{_url}/userAccounts/{UserID}", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get patch User Account in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+
+        }
         public async Task<string> GetUserSaltAsync(string UserEmail)
         {
             RegisterModel User = new RegisterModel();
@@ -1994,7 +2028,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public async Task<string> CreateNewOtpCode(int UserID)
+        public async Task<string> CreateNewOtpCode(int UserID, string OTPType)
         {
             OTP UserOTP = new OTP();
 
@@ -2006,42 +2040,45 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/otp/createnewotpcode/{UserID}").Result;
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/otp/createnewotpcode/{UserID}/{OTPType}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
+                if(response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return "MaxLimit";
+                }
+                else if (response.IsSuccessStatusCode)
+                {
 
-                    if (response.IsSuccessStatusCode)
+                    using (JsonReader reader = new JsonTextReader(sr))
                     {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        UserOTP = serializer.Deserialize<OTP>(reader);
+                    }
 
-                            UserOTP = serializer.Deserialize<OTP>(reader);
-                        }
-
-                        if (UserOTP.OTPID == 0)
-                        {
-                            return "Error";
-                        }
-                        else
-                        {
-                            return "OK";
-                        }
-                        
+                    if (UserOTP.OTPID == 0)
+                    {
+                        return "Error";
                     }
                     else
                     {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
+                        return "OK";
                     }
+                        
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
 
             }
             catch (Exception ex)

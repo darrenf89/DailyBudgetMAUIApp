@@ -79,10 +79,15 @@ namespace DailyBudgetMAUIApp.ViewModels
             return IsValid;
         }
 
-        [ICommand]        
+        private async Task ResetSuccessFailureMessage()
+        {
+            RegisterSuccess = false;
+        }
+
+        [ICommand]    
         async void SignUp()
         {
-            
+            await ResetSuccessFailureMessage();
             try
             {
                 if(!PageIsValid())                
@@ -112,12 +117,12 @@ namespace DailyBudgetMAUIApp.ViewModels
                         if(ReturnUser.Error == null)
                         {
                             await Application.Current.MainPage.Navigation.PopModalAsync();
-                            string status = await _ds.CreateNewOtpCode(ReturnUser.UserID);
+                            string status = await _ds.CreateNewOtpCode(ReturnUser.UserID, "ValidateEmail");
                             if (status == "OK")
                             {
                                 RegisterSuccess = true;
 
-                                var popup = new PopUpOTP(ReturnUser.UserID, new PopUpOTPViewModel(), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
+                                var popup = new PopUpOTP(ReturnUser.UserID, new PopUpOTPViewModel(new RestDataService()), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
                                 var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
                                 if((string)result.ToString() == "OK")
@@ -143,6 +148,15 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                     await Application.Current.MainPage.Navigation.PopModalAsync();
                                     await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                                }
+                                else
+                                {
+                                    NickName = "";
+                                    Email = "";
+                                    Password = "";
+                                    PasswordConfirm = "";
+                                    IsDPAPermissions = false;
+                                    IsAgreedToTerms = false;
                                 }
                             }
                             else
