@@ -59,7 +59,7 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
-            <Border Style="{DynamicResource AddEditTransContent}" x:Name="vslSavingRecurringTypeSelected" IsVisible="False" Margin="20,0,20,25">
+            <Border Style="{DynamicResource AddEditTransContent}" x:Name="vslSavingRecurringTypeSelected" IsVisible="False" Margin="20,0,20,5">
                 <VerticalStackLayout>
                     <Label Text="Ongoing Saving Type" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     <VerticalStackLayout Margin="0,0,0,10" x:Name="vslSavingRecurringType">
@@ -174,8 +174,8 @@
                 </VerticalStackLayout>
             </Border>
             <Grid ColumnDefinitions="30,*,30" RowDefinitions="10,*,40">
-                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryInfoButton}" x:Name="btnAddSaving" Text="Add New Outgoing" TextColor="White"  Clicked="btnAddSaving_Clicked" IsVisible="false" BackgroundColor="{DynamicResource Success}"/>
-                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryInfoButton}" x:Name="btnUpdateSaving" Text="Update Outgoing" TextColor="White"  Clicked="btnUpdateSaving_Clicked" IsVisible="false" BackgroundColor="{DynamicResource Success}"/>
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryInfoButton}" x:Name="btnAddSaving" Text="Add New Saving" TextColor="White"  Clicked="btnAddSaving_Clicked" IsVisible="false" BackgroundColor="{DynamicResource Success}"/>
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryInfoButton}" x:Name="btnUpdateSaving" Text="Update Saving" TextColor="White"  Clicked="btnUpdateSaving_Clicked" IsVisible="false" BackgroundColor="{DynamicResource Success}"/>
             </Grid>
             <HorizontalStackLayout IsVisible="false" Margin="10,5,0,0" x:Name="validatorSavingsName" HorizontalOptions="Center">
                 <Image>

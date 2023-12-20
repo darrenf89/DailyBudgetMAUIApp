@@ -5,7 +5,6 @@ using Microsoft.Toolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
-using static Android.Provider.ContactsContract.CommonDataKinds;
 
 namespace DailyBudgetMAUIApp.Handlers;
 

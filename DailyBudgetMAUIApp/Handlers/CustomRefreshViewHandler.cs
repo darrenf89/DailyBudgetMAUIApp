@@ -5,7 +5,7 @@ namespace DailyBudgetMAUIApp.Handlers
 {
     public class CustomRefreshViewHandler : RefreshViewHandler
     {
-        protected override void ConnectHandler(MauiSwipeRefreshLayout platformView)
+        protected override void ConnectHandler(Microsoft.Maui.Platform.MauiSwipeRefreshLayout platformView)
         {
 
             int deviceOffset = platformView?.ProgressViewEndOffset ?? 0;

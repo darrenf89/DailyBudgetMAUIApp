@@ -903,7 +903,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     Saving.LastUpdatedDate = DateTime.UtcNow;
                     Saving.LastUpdatedValue = Saving.RegularSavingValue;
                     Saving.CurrentBalance += Saving.RegularSavingValue;
-                    if(!Saving.CanExceedGoal && Saving.CurrentBalance > Saving.SavingsGoal)
+                    if(!Saving.CanExceedGoal && Saving.CurrentBalance > Saving.SavingsGoal && !(Saving.SavingsType == "SavingsBuilder"))
                     {
                         Saving.CurrentBalance = Saving.SavingsGoal;
                     }
@@ -938,6 +938,9 @@ namespace DailyBudgetMAUIApp.DataServices
                 while (budget.BudgetValuesLastUpdated < GetBudgetLocalTime(DateTime.UtcNow).Date)
                 {
                     budget.BudgetValuesLastUpdated = budget.BudgetValuesLastUpdated.AddDays(1);
+
+                    budget.LeftToSpendBalance = budget.BankBalance;
+                    budget.MoneyAvailableBalance = budget.BankBalance;
 
                     budget = await BudgetDailyEventsCheck(budget);
                     string status = "OK";

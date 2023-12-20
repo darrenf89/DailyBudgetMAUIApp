@@ -8,7 +8,8 @@
     <Color x:Key="PrimaryDark">#e94320</Color>
     <Color x:Key="PrimaryLight">#ff8551</Color>
     <Color x:Key="Secondary">#aea79f</Color>
-    <Color x:Key="Tertiary">#772953</Color>
+    <Color x:Key="Tertiary">#b03d7b</Color>
+    <Color x:Key="TertiaryLight">#d78cb4</Color>
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>
     <Color x:Key="Success">#38b44a</Color>
@@ -31,6 +32,7 @@
     <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLight}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
+    <SolidColorBrush x:Key="TertiaryLightBrush" Color="{StaticResource TertiaryLight}"/>
     <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}"/>

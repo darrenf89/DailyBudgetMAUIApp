@@ -20,16 +20,16 @@
         <Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
             <ShellContent ContentTemplate="{DataTemplate local:MainPage}"/>
         </Tab>
-        <Tab Title="Bills" Route="AddBill" Icon="bill.svg">
+        <Tab Title="Bill" Route="AddBill" Icon="bill.svg">
             <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>
         </Tab>
-        <Tab Route="AddTransactions" Title="Transactions" Icon="transaction.svg">
+        <Tab Route="AddTransactions" Title="Transaction" Icon="transaction.svg">
             <ShellContent ContentTemplate="{DataTemplate Pages:AddTransaction}"/>
         </Tab>
-        <Tab Route="AddIncome" Title="Incomes" Icon="income.svg">
+        <Tab Route="AddIncome" Title="Income" Icon="income.svg">
             <ShellContent ContentTemplate="{DataTemplate Pages:AddIncome}"/>
         </Tab>
-        <Tab Route="AddSaving" Title="Savings" Icon="saving.svg">
+        <Tab Route="AddSaving" Title="Saving" Icon="saving.svg">
             <ShellContent ContentTemplate="{DataTemplate Pages:AddSaving}"/>
         </Tab>
     </TabBar>

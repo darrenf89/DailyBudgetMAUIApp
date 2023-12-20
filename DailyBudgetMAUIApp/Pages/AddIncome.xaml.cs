@@ -130,7 +130,7 @@ public partial class AddIncome : ContentPage
             brdSavingRecurringTypeSelected.IsVisible = false;
             vslIncomeInstantActive.IsVisible = false;
             vslIncomeDetails.IsVisible = false;
-            vslIncomeType.IsVisible = false;
+            brdRecurringIncomeTypeSelected.IsVisible = false;
 
             _vm.IncomeTypeText = "";
             _vm.Income.IsRecurringIncome = false;
@@ -154,7 +154,7 @@ public partial class AddIncome : ContentPage
         brdSavingRecurringTypeSelected.IsVisible = true;
         vslIncomeInstantActive.IsVisible = true;
         vslIncomeDetails.IsVisible = true;
-        vslIncomeType.IsVisible = false;
+        brdRecurringIncomeTypeSelected.IsVisible = false;
 
         _vm.IncomeTypeText = "OneOff";
         _vm.Income.IsRecurringIncome = false;
@@ -175,7 +175,7 @@ public partial class AddIncome : ContentPage
         brdSavingRecurringTypeSelected.IsVisible = true;
         vslIncomeInstantActive.IsVisible = true;
         vslIncomeDetails.IsVisible = true;
-        vslIncomeType.IsVisible = true;
+        brdRecurringIncomeTypeSelected.IsVisible = true;
 
         _vm.IncomeTypeText = "Recurring";
         _vm.Income.IsRecurringIncome = true;

@@ -6,18 +6,20 @@ using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using IeuanWalker.Maui.Switch;
 
 namespace DailyBudgetMAUIApp;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
+    public static MauiApp CreateMauiApp()
+    {
 
         var builder = MauiApp.CreateBuilder();
 
         builder
             .UseMauiApp<App>()
+            .UseSwitch()
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
@@ -30,7 +32,6 @@ public static class MauiProgram
 #if __ANDROID__
                 handlers.AddHandler(typeof(RefreshView), typeof(Handlers.CustomRefreshViewHandler));
 #endif
-
             });
 
         builder.Services.AddSingleton<IRestDataService, RestDataService>();
@@ -66,10 +67,32 @@ public static class MauiProgram
         builder.Services.AddTransient<PopUpPageSingleInput, PopUpPageSingleInputViewModel>();
         builder.Services.AddTransient<PopupInfo>();
 
+#if WINDOWS
+      SetWindowHandlers(); 
+#endif
+
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
 
+
 		return builder.Build();
 	}
+
+#if WINDOWS
+    public static void SetWindowHandlers()
+    {
+      Microsoft.Maui.Handlers.SwitchHandler.Mapper
+        .AppendToMapping("Custom", (h, v) =>
+      {
+        // Get rid of On/Off label beside switch, to match other platforms
+        h.PlatformView.OffContent = string.Empty;
+        h.PlatformView.OnContent = string.Empty;
+
+        h.PlatformView.MinWidth = 0;
+      });
+    }
+#endif
 }
+
+

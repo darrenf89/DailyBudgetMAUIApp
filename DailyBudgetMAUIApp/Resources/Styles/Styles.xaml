@@ -806,9 +806,11 @@
         <Setter Property="BackgroundColor" Value="{StaticResource White}" />
     </Style>
 
-    <Style TargetType="Switch">
-        <Setter Property="OnColor" Value="{StaticResource Primary}" />
-        <Setter Property="ThumbColor" Value="{StaticResource White}" />
+    <Style TargetType="Switch" x:Key="DateSwitch">
+        <Setter Property="OnColor" Value="{StaticResource PrimaryDark}" />
+        <Setter Property="ThumbColor" Value="{StaticResource PrimaryDark}" />
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -821,13 +823,46 @@
                     </VisualState>
                     <VisualState x:Name="On">
                         <VisualState.Setters>
-                            <Setter Property="OnColor" Value="{StaticResource Secondary}" />
-                            <Setter Property="ThumbColor" Value="{StaticResource Primary}" />
+                            <Setter Property="OnColor" Value="{StaticResource TertiaryLight}" />
+                            <Setter Property="ThumbColor" Value="{StaticResource PrimaryDark}" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Off">
                         <VisualState.Setters>
-                            <Setter Property="ThumbColor" Value="{StaticResource Gray400}" />
+                            <Setter Property="ThumbColor" Value="{StaticResource Tertiary}" />
+                            <Setter Property="OnColor" Value="{StaticResource Primary}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Switch" x:Key="SavingSpendSwitch">
+        <Setter Property="OnColor" Value="{StaticResource PrimaryLight}" />
+        <Setter Property="ThumbColor" Value="{StaticResource Gray100}" />
+        <Setter Property="VerticalOptions" Value="Center"/>
+        <Setter Property="HorizontalOptions" Value="Center"/>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="OnColor" Value="{StaticResource Gray300}" />
+                            <Setter Property="ThumbColor" Value="{StaticResource Gray300}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="On">
+                        <VisualState.Setters>
+                            <Setter Property="OnColor" Value="{StaticResource Gray100}" />
+                            <Setter Property="ThumbColor" Value="{StaticResource PrimaryLight}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Off">
+                        <VisualState.Setters>
+                            <Setter Property="ThumbColor" Value="{StaticResource Gray100}" />
+                            <Setter Property="OnColor" Value="{StaticResource PrimaryLight}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
