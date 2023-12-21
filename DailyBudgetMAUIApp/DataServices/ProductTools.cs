@@ -898,12 +898,12 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 Savings Saving = Budget.Savings[i];
 
-                if(Saving.IsRegularSaving)
+                if (Saving.IsRegularSaving)
                 {
                     Saving.LastUpdatedDate = DateTime.UtcNow;
                     Saving.LastUpdatedValue = Saving.RegularSavingValue;
                     Saving.CurrentBalance += Saving.RegularSavingValue;
-                    if(!Saving.CanExceedGoal && Saving.CurrentBalance > Saving.SavingsGoal && !(Saving.SavingsType == "SavingsBuilder"))
+                    if (!Saving.CanExceedGoal && Saving.CurrentBalance > Saving.SavingsGoal && !(Saving.SavingsType == "SavingsBuilder"))
                     {
                         Saving.CurrentBalance = Saving.SavingsGoal;
                     }
@@ -933,8 +933,8 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<Budgets> BudgetDailyCycle(Budgets budget)
         {
-            if(budget.IsCreated)
-            {            
+            if (budget.IsCreated)
+            {
                 while (budget.BudgetValuesLastUpdated < GetBudgetLocalTime(DateTime.UtcNow).Date)
                 {
                     budget.BudgetValuesLastUpdated = budget.BudgetValuesLastUpdated.AddDays(1);
@@ -946,7 +946,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     string status = "OK";
 
                     status = status == "OK" ? BudgetDailyEventsValuesUpdate(ref budget) : status;
-                    
+
                     status = status == "OK" ? BudgetDailyCycleBudgetValuesUpdate(ref budget) : status;
 
                     if (status == "OK")
@@ -974,7 +974,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         //SAVE BUDGET UPDATES
                         budget = await _ds.SaveBudgetDailyCycle(budget);
                     }
-                }                
+                }
             }
             return budget;
         }
@@ -1004,13 +1004,13 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         Savings Saving = budget.Savings[i];
 
-                        if(!Saving.IsRegularSaving)
+                        if (!Saving.IsRegularSaving)
                         {
                             Stats.SavingsToDate += (Saving.PeriodSavingValue.GetValueOrDefault() - Saving.CurrentBalance.GetValueOrDefault());
 
                             Saving.CurrentBalance = Saving.PeriodSavingValue;
                             Saving.LastUpdatedValue = Saving.PeriodSavingValue;
-                            Saving.GoalDate = budget.NextIncomePayday;         
+                            Saving.GoalDate = budget.NextIncomePayday;
 
                         }
 
@@ -1038,7 +1038,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         if (Saving.IsAutoComplete)
                         {
                             CloseSaving(ref Saving);
-                            budget.Savings[i] = Saving;                            
+                            budget.Savings[i] = Saving;
                         }
                         else
                         {
@@ -1159,10 +1159,10 @@ namespace DailyBudgetMAUIApp.DataServices
                     else
                     {
                         TransactTransaction(ref Transaction, ref budget);
-                        
+
                     }
 
-                    if(Transaction.IsIncome)
+                    if (Transaction.IsIncome)
                     {
                         Stats.IncomeToDate += Transaction.TransactionAmount.GetValueOrDefault();
                     }
@@ -1361,7 +1361,6 @@ namespace DailyBudgetMAUIApp.DataServices
             }
 
             return LocalDate;
-
         }
     }
 }

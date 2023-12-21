@@ -17,7 +17,9 @@
     <Color x:Key="Danger">#df382c</Color>
     <Color x:Key="DangerLight">#f8d7d4</Color>
     <Color x:Key="Warning">#efb73e</Color>
+    <Color x:Key="WarningLight">#fae6bd</Color>
     <Color x:Key="Info">#004fb6</Color>
+    <Color x:Key="InfoLight">#68a9ff</Color>
     <Color x:Key="Light">#f9f9f9</Color>
     <Color x:Key="Gray100">#E1E1E1</Color>
     <Color x:Key="Gray200">#C8C8C8</Color>
@@ -40,7 +42,9 @@
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource Danger}"/>
     <SolidColorBrush x:Key="DangerLightBrush" Color="{StaticResource DangerLight}"/>
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}"/>
+    <SolidColorBrush x:Key="WarningLightBrush" Color="{StaticResource WarningLight}"/>
     <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}"/>
+    <SolidColorBrush x:Key="InfoLightBrush" Color="{StaticResource InfoLight}"/>
     <SolidColorBrush x:Key="LightBrush" Color="{StaticResource Light}"/>
     <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
     <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>

@@ -17,7 +17,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <Shell.TitleView>
-        <Grid ColumnDefinitions="*,5,60,60,15">
+        <Grid ColumnDefinitions="*,40,40,5">
             <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="0" Padding="0" FontSize="14"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Start" Grid.Column="0"/>
             <Button TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="SaveTransaction_Clicked" HorizontalOptions="End" Grid.Column="1" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
                 <Button.ImageSource>
@@ -43,7 +43,7 @@
                         <Label Text="-" HorizontalOptions="End" VerticalOptions="Center" Padding="0,0,0,7" FontSize="55" TextColor="{DynamicResource Danger}" IsVisible="{Binding Transaction.IsIncome, Converter={StaticResource BoolConverter}}"/>
                         <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" x:Name="entTransactionAmount" TextChanged="TransactionAmount_Changed" Keyboard="Numeric" HorizontalOptions="Center" FontSize="55" />
                     </HorizontalStackLayout>
-                    <HorizontalStackLayout Margin="0,0,0,5">
+                    <HorizontalStackLayout Margin="0,0,0,0" >
                         <Image>
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Event}" Size="25" Color="{DynamicResource Primary}"/>
@@ -51,21 +51,14 @@
                         </Image>
                         <Label Text="Transaction Date" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
-                    <Grid ColumnDefinitions="60,*" Margin="0,0,0,10">
-                        <switch:CustomSwitch Grid.Column="0" BackgroundColor="{StaticResource TertiaryLight}" HeightRequest="20" HorizontalOptions="Center" IsToggled="{Binding IsFutureDatedTransaction}"  KnobBackgroundColor="#fafafa"  KnobHeight="30" KnobLimit="Max" KnobWidth="30" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhTransactionDate_Toggled" VerticalOptions="Center" WidthRequest="30">
-                            <switch:CustomSwitch.StrokeShape>
-                                <RoundRectangle CornerRadius="10" />
-                            </switch:CustomSwitch.StrokeShape>
-                            <switch:CustomSwitch.KnobStrokeShape>
-                                <RoundRectangle CornerRadius="17" />
-                            </switch:CustomSwitch.KnobStrokeShape>
-                        </switch:CustomSwitch>
+                    <Grid ColumnDefinitions="60,*" Margin="0,0,0,15" HeightRequest="40">
+                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0"  IsToggled="{Binding IsFutureDatedTransaction}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhTransactionDate_Toggled"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End" HeightRequest="40">
-                            <Label VerticalOptions="Center" HorizontalOptions="End" Text="{Binding IsFutureDatedTransaction, Converter={StaticResource IsFutureDatedTransactionText}}" TextColor="{StaticResource Gray400}"  Grid.Column="1" FontSize="Medium" Padding="0,3,5,0" />
+                            <Label VerticalOptions="Center" HorizontalOptions="End" Text="{Binding IsFutureDatedTransaction, Converter={StaticResource IsFutureDatedTransactionText}}" TextColor="{StaticResource Gray400}"  Grid.Column="1" FontSize="Medium" Padding="0,0,5,0" />
                             <DatePicker VerticalOptions="Center" HorizontalOptions="End" CharacterSpacing="1" x:Name="entTransactionDate" Date="{Binding Transaction.TransactionDate}" IsVisible="{Binding IsFutureDatedTransaction}"  Format="dd MMMM" TextColor="{StaticResource Gray400}" FontSize="Medium"/>
                         </HorizontalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout Margin="0,0,0,10">
+                    <HorizontalStackLayout Margin="0,0,0,0" >
                         <Image>
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Storefront}" Size="25" Color="{DynamicResource Primary}"/>
@@ -73,21 +66,14 @@
                         </Image>
                         <Label Text="Payee" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
-                    <Grid ColumnDefinitions="60,*" Margin="0,0,0,10">
-                        <switch:CustomSwitch Grid.Column="0" BackgroundColor="{StaticResource TertiaryLight}" HeightRequest="20" HorizontalOptions="Center" IsToggled="{Binding IsPayee}"  KnobBackgroundColor="#fafafa"  KnobHeight="30" KnobLimit="Max" KnobWidth="30" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhPayee_Toggled" VerticalOptions="Center" WidthRequest="30">
-                            <switch:CustomSwitch.StrokeShape>
-                                <RoundRectangle CornerRadius="10" />
-                            </switch:CustomSwitch.StrokeShape>
-                            <switch:CustomSwitch.KnobStrokeShape>
-                                <RoundRectangle CornerRadius="17" />
-                            </switch:CustomSwitch.KnobStrokeShape>
-                        </switch:CustomSwitch>
+                    <Grid ColumnDefinitions="60,*" Margin="0,0,0,15" HeightRequest="40">
+                        <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsPayee}"  SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhPayee_Toggled"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label HorizontalOptions="End" Text="{Binding IsPayee, Converter={StaticResource IsPayeeText}}" TextColor="{StaticResource Gray400}" FontSize="Medium" Padding="0,0,5,0"/>
                             <Label IsVisible="{Binding IsPayee}" HorizontalOptions="End" Text="{Binding Transaction.Payee}" TextColor="{StaticResource Gray400}" FontSize="Medium" Padding="0,0,5,0"/>
                         </HorizontalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout Margin="0,0,0,10">
+                    <HorizontalStackLayout Margin="0,0,0,0">
                         <Image>
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Category}" Size="25" Color="{DynamicResource Primary}"/>
@@ -95,21 +81,14 @@
                         </Image>
                         <Label Text="Spend Category" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
-                    <Grid ColumnDefinitions="60,*" Margin="0,0,0,10">
-                        <switch:CustomSwitch Grid.Column="0" BackgroundColor="{StaticResource TertiaryLight}" HeightRequest="20" HorizontalOptions="Center" IsToggled="{Binding IsSpendCategory}"  KnobBackgroundColor="#fafafa"  KnobHeight="30" KnobLimit="Max" KnobWidth="30" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhSpendCategory_Toggled" VerticalOptions="Center" WidthRequest="30">
-                            <switch:CustomSwitch.StrokeShape>
-                                <RoundRectangle CornerRadius="10" />
-                            </switch:CustomSwitch.StrokeShape>
-                            <switch:CustomSwitch.KnobStrokeShape>
-                                <RoundRectangle CornerRadius="17" />
-                            </switch:CustomSwitch.KnobStrokeShape>
-                        </switch:CustomSwitch>
+                    <Grid ColumnDefinitions="60,*" Margin="0,0,0,15" HeightRequest="40">
+                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding IsSpendCategory}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhSpendCategory_Toggled"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label HorizontalOptions="End" Text="{Binding IsSpendCategory, Converter={StaticResource IsSpendCategoryText}}" TextColor="{StaticResource Gray400}"  FontSize="Medium" Padding="0,0,5,0"/>
                             <Label HorizontalOptions="End" IsVisible="{Binding IsSpendCategory}" Text="{Binding Transaction.Category}" TextColor="{StaticResource Gray400}"  FontSize="Medium" Padding="0,0,5,0"/>
                         </HorizontalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout Margin="0,0,0,5">
+                    <HorizontalStackLayout Margin="0,0,0,0">
                         <Image>
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mark_as_unread}" Size="25" Color="{DynamicResource Primary}"/>
@@ -117,21 +96,14 @@
                         </Image>
                         <Label Text="Take From Envelope" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
-                    <Grid ColumnDefinitions="60,*" Margin="0,0,0,10" RowDefinitions="40">
-                        <switch:CustomSwitch Grid.Column="0" BackgroundColor="{StaticResource TertiaryLight}" HeightRequest="20" HorizontalOptions="Center" IsToggled="{Binding Transaction.IsSpendFromSavings}"  KnobBackgroundColor="#fafafa"  KnobHeight="30" KnobLimit="Max" KnobWidth="30" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="SavingSpend_Toggled" VerticalOptions="Center" WidthRequest="30">
-                            <switch:CustomSwitch.StrokeShape>
-                                <RoundRectangle CornerRadius="10" />
-                            </switch:CustomSwitch.StrokeShape>
-                            <switch:CustomSwitch.KnobStrokeShape>
-                                <RoundRectangle CornerRadius="17" />
-                            </switch:CustomSwitch.KnobStrokeShape>
-                        </switch:CustomSwitch>
+                    <Grid ColumnDefinitions="60,*" Margin="0,0,0,15" RowDefinitions="40" HeightRequest="40">
+                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding Transaction.IsSpendFromSavings}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="SavingSpend_Toggled" />
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label HorizontalOptions="End" Text="{Binding Transaction.IsSpendFromSavings, Converter={StaticResource IsSpendFromSavingText}}" TextColor="{StaticResource Gray400}"  FontSize="Medium" Padding="0,0,0,0"/>
                             <Label IsVisible="{Binding Transaction.IsSpendFromSavings}" HorizontalOptions="End" Text="{Binding Transaction.SavingName}" TextColor="{StaticResource Gray400}" FontSize="Medium" Padding="0,0,0,0"/>
                         </HorizontalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout Margin="0,0,0,10">
+                    <HorizontalStackLayout Margin="0,0,0,0">
                         <Image>
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Note_add}" Size="25" Color="{DynamicResource Primary}"/>
@@ -139,16 +111,9 @@
                         </Image>
                         <Label Text="Add Note" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
-                    <Grid ColumnDefinitions="60,*" RowDefinitions="*,*" Margin="0,0,0,10">
-                        <switch:CustomSwitch Grid.Column="0" BackgroundColor="{StaticResource TertiaryLight}" HeightRequest="20" HorizontalOptions="Center" IsToggled="{Binding IsNote}" KnobBackgroundColor="#fafafa"  KnobHeight="30" KnobLimit="Max" KnobWidth="30" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhNotes_Toggled" VerticalOptions="Center" WidthRequest="30">
-                            <switch:CustomSwitch.StrokeShape>
-                                <RoundRectangle CornerRadius="10" />
-                            </switch:CustomSwitch.StrokeShape>
-                            <switch:CustomSwitch.KnobStrokeShape>
-                                <RoundRectangle CornerRadius="17" />
-                            </switch:CustomSwitch.KnobStrokeShape>
-                        </switch:CustomSwitch>
-                        <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
+                    <Grid ColumnDefinitions="60,*" RowDefinitions="*,*" Margin="0,0,0,10" >
+                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding IsNote}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhNotes_Toggled" />
+                        <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End" HeightRequest="40">
                             <Label Text="{Binding IsNote, Converter={StaticResource IsNoteText}}" TextColor="{StaticResource Gray400}" VerticalOptions="Center" FontSize="Medium" />
                         </HorizontalStackLayout>
                         <VerticalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding IsNote}">

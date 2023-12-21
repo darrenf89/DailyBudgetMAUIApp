@@ -18,7 +18,7 @@ public partial class App : Application
 
     public App()
 	{
-
+        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mjk4ODg4NEAzMjM0MmUzMDJlMzBtUDY3VFhTeER1WTJyd3VWaG9zQ3BaakFhOUZ1bDdGRDFET0p3VUkwNk5JPQ==");
 		InitializeComponent();
 
         Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping(nameof(BorderlessEntry), (handler, view) =>

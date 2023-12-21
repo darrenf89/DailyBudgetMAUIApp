@@ -172,7 +172,7 @@ public partial class AddTransaction : ContentPage
         }
         else
         {
-            var page = new SelectPayeePage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()));
+            var page = new SelectPayeePage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectPayeePageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
             await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
         }
     }
@@ -225,7 +225,7 @@ public partial class AddTransaction : ContentPage
         }
         else
         {
-            var page = new SelectPayeePage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()));
+            var page = new SelectPayeePage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectPayeePageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
             await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
         }
     }
@@ -234,12 +234,12 @@ public partial class AddTransaction : ContentPage
     {
         Application.Current.Resources.TryGetValue("Primary", out var Primary);
         Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-        Application.Current.Resources.TryGetValue("TertiaryLight", out var TertiaryLight);
         Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
 
         //Switch Color Animation
-        Color fromSwitchColor = e.IsToggled ? (Color)Primary : (Color)TertiaryLight;
-        Color toSwitchColor = e.IsToggled ? (Color)TertiaryLight : (Color)Primary;
+        Color fromSwitchColor = e.IsToggled ? (Color)Primary : (Color)Gray400;
+        Color toSwitchColor = e.IsToggled ? (Color)Gray400 : (Color)Primary;
 
         //BackGroundColor Animation
         Color fromColor = e.IsToggled ? (Color)Tertiary : (Color)PrimaryLight;

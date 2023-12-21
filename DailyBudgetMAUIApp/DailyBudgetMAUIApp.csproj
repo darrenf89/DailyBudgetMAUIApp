@@ -66,6 +66,7 @@
 		<PackageReference Include="CommunityToolkit.Maui" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Syncfusion.Licensing" Version="24.1.41" />
 		<PackageReference Include="System.ObjectModel" Version="4.3.0" />
 	</ItemGroup>
 

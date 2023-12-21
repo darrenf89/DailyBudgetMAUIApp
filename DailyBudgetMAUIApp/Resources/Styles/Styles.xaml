@@ -3,7 +3,8 @@
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+    xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch">
 
     <xct:InvertedBoolConverter x:Key="BoolConverter"/>
     <xct:IsStringNullOrEmptyConverter x:Key="IsStringNullOrEmptyConverter" />
@@ -39,6 +40,30 @@
         </Setter>
     </Style>
 
+    <Style TargetType="Border" x:Key="brdInfo">
+        <Setter Property="Margin" Value="20,10,20,10"/>
+        <Setter Property="Padding" Value="10,5,10,5"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
+        <Setter Property="Stroke" Value="{StaticResource Info}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource InfoLight}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+        </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="brdWarning">
+        <Setter Property="Margin" Value="20,10,20,10"/>
+        <Setter Property="Padding" Value="10,5,10,5"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
+        <Setter Property="Stroke" Value="{StaticResource Warning}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource WarningLight}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+        </Setter>
+    </Style>
+
     <Style TargetType="Border" x:Key="DashboardMainContent">
         <Setter Property="Margin" Value="5,0,5,15"/>
         <Setter Property="Padding" Value="10,10,10,10"/>
@@ -46,6 +71,18 @@
         <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
+    </Style>
+
+    <Style TargetType="Border" x:Key="AddEditTransContentTwo">
+        <Setter Property="Margin" Value="10,25,10,25"/>
+        <Setter Property="Padding" Value="5,0,5,0"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 4"/>
+        <Setter Property="Stroke" Value="{StaticResource White}"/>
+        <Setter Property="StrokeThickness" Value="0"/>
+        <Setter Property="Background" Value="{DynamicResource White}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Primary}" Offset="0,0" Radius="20" Opacity="0.95" />
+        </Setter>
     </Style>
 
     <Style TargetType="Border" x:Key="AddEditTransContent">
@@ -406,10 +443,9 @@
                     </VisualState>
                     <VisualState x:Name="Pressed">
                         <VisualState.Setters>
-                            <Setter Property="Scale" Value="0.9" />
+                            <Setter Property="Scale" Value="0.5" />
                             <Setter Property="TranslationY" Value="0"/>
-                            <Setter Property="Opacity" Value="0.8"/>
-                            <Setter Property="TextColor" Value="{StaticResource Info}" />
+                            <Setter Property="Opacity" Value="0.4"/>
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -804,6 +840,23 @@
 
     <Style TargetType="SwipeItem">
         <Setter Property="BackgroundColor" Value="{StaticResource White}" />
+    </Style>
+
+    <Style TargetType="switch:CustomSwitch" x:Key="AddTransactionSwitch">
+        <Setter Property="KnobWidth" Value="20" />
+        <Setter Property="WidthRequest" Value="35" />
+        <Setter Property="KnobHeight" Value="20" />
+        <Setter Property="KnobLimit" Value="Boundary" />
+        <Setter Property="HeightRequest" Value="22" />
+        <Setter Property="HorizontalOptions" Value="Start" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="KnobBackgroundColor" Value="#fafafa" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 11" />
+        <Setter Property="KnobStrokeShape" Value="RoundRectangle 10"/>
+        <Setter Property="BackgroundColor" Value="{StaticResource TertiaryLight}"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="HorizontalKnobMargin" Value="1"/>
     </Style>
 
     <Style TargetType="Switch" x:Key="DateSwitch">
