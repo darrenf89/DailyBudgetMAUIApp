@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DailyBudgetMAUIApp.Pages.SelectCategoryPage"
+             Title="SelectPayeePage"
+             Shell.PresentationMode="ModalAnimated"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:accordion="clr-namespace:Syncfusion.Maui.Accordion;assembly=Syncfusion.Maui.Expander">
+    <ScrollView>
+        <VerticalStackLayout MinimumHeightRequest="{Binding MinHeight}">
+            <Grid ColumnDefinitions="*" RowDefinitions="80,Auto,Auto,Auto">
+                <Button Margin="0" Padding="5,0,0,0" Grid.Row="0" Grid.Column="0" TextColor="{StaticResource White}" BackgroundColor="{StaticResource White}" Clicked="BackButton_Clicked" HorizontalOptions="Start" Style="{StaticResource TitleButtons}">
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Close}" Size="40" Color="{DynamicResource Primary}"/>
+                    </Button.ImageSource>
+                </Button>
+                <Label Grid.Row="0" Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Center" Text="Select a Category!"  TextColor="{DynamicResource Primary}"  FontSize="Large" FontFamily="OpenSansSemibold" FontAttributes="Bold"/>
+                <Border WidthRequest="{Binding PayeeBorderWidth}" Style="{DynamicResource brdSecondary}" Grid.Row="1" Grid.Column="0">
+                    <VerticalStackLayout>
+                        <HorizontalStackLayout VerticalOptions="Center">
+                            <Image Margin="10,0,0,0" VerticalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sort}" Size="25" Color="{DynamicResource Gray900}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Margin="5,0,0,0" Text="Sort &amp; Filter" TextColor="{DynamicResource Gray900}" FontSize="Small" VerticalOptions="Center"/>
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="ShowHideSortFiler" Tapped="ShowHideSortFiler_Tapped"/>
+                            </HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+                <Border  Style="{StaticResource brdWarning}" Margin="20,0,20,10" Grid.Row="2" Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Center" x:Name="brdNoCategories" WidthRequest="{Binding PayeeBorderWidth}">
+                    <Label HorizontalTextAlignment="Center" x:Name="lblNoCategories" VerticalOptions="Center" HorizontalOptions="Center" Text="{Binding NoCategoriesText}" TextColor="{DynamicResource Warning}" FontAttributes="Bold" FontSize="Small"/>
+                </Border>
+                <VerticalStackLayout BackgroundColor="{DynamicResource White}" Grid.Row="3" Grid.Column="0" Margin="0,0,0,5" WidthRequest="{Binding ScreenWidth}" x:Name="CategoryList">
+                    <Border Style="{DynamicResource AddEditTransContentTwo}" x:Name="brdvslCategories" Margin="20,10,20,25" Padding="10,10,10,10">
+                        <VerticalStackLayout x:Name="vslCategories">
+                            <Border Style="{DynamicResource brdPrimaryWhite}" Margin="10,0,10,30">
+                                <VerticalStackLayout>
+                                    <Label Text="Category Group 1" TextColor="{DynamicResource Primary}"/>
+                                    <Border Style="{DynamicResource brdPrimary}">
+                                        <Label Text="Sub Category 1" />
+                                    </Border>                                    
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Style="{DynamicResource brdPrimaryWhite}" Margin="10,0,10,0">
+                                <VerticalStackLayout>
+                                    <Label Text="Category Group 2" TextColor="{DynamicResource Primary}"/>
+                                    <Border Style="{DynamicResource brdPrimary}">
+                                        <Label Text="Sub Category 2" />
+                                    </Border>
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

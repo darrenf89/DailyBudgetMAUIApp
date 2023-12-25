@@ -1,16 +1,11 @@
-﻿using CommunityToolkit.Maui.Views;
-using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
+﻿using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using System.Diagnostics;
-using System.Globalization;
+
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class SelectPayeePageViewModel : BaseViewModel
+    public partial class SelectCategoryPageViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
@@ -22,9 +17,14 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool _payeeDoesntExists;
         [ObservableProperty]
-        private List<string>? _payeeList = new List<string>();
+        private List<Categories>? _categoryList = new List<Categories>();
         [ObservableProperty]
-        private string _filteredListEmptyText = "You have not set up any Payee's go ahead and do that!";
+        private List<Categories>? _subCategoryList = new List<Categories>();
+        [ObservableProperty]
+        private List<Categories>? _groupCategoryList = new List<Categories>();
+        [ObservableProperty]
+        private string _noCategoriesText = "You have not set up any Categories go ahead and do that!";
+
 
         public double ScreenWidth { get; }
         public double EntryWidth { get; }
@@ -32,7 +32,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public double PayeeBorderWidth { get; }
         public double MinHeight { get; }
 
-        public SelectPayeePageViewModel(IProductTools pt, IRestDataService ds)
+        public SelectCategoryPageViewModel(IProductTools pt, IRestDataService ds)
         {
             _pt = pt;
             _ds = ds;

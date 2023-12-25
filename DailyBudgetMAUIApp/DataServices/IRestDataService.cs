@@ -61,7 +61,8 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> ValidateOTPCodeEmail(OTP UserOTP);
         public Task<int> GetUserIdFromEmail(string UserEmail);
         public Task<List<string>> GetPayeeList(int BudgetID);
-
+        public Task<Categories> GetPayeeLastCategory(int BudgetID, string PayeeName);
+        public Task<List<Categories>> GetCategories(int BudgetID);
 
     }
 }

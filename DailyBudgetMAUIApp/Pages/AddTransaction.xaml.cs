@@ -166,6 +166,11 @@ public partial class AddTransaction : ContentPage
 
     private async void swhPayee_Toggled(object sender, ToggledEventArgs e)
     {
+        entTransactionAmount.IsEnabled = false;
+        entTransactionAmount.IsEnabled = true;
+        edtNotes.IsEnabled = false;
+        edtNotes.IsEnabled = true;
+
         if (!_vm.IsPayee)
         {            
             _vm.Transaction.Payee = "";
@@ -179,6 +184,11 @@ public partial class AddTransaction : ContentPage
 
     private async void swhSpendCategory_Toggled(object sender, ToggledEventArgs e)
     {
+        entTransactionAmount.IsEnabled = false;
+        entTransactionAmount.IsEnabled = true;
+        edtNotes.IsEnabled = false;
+        edtNotes.IsEnabled = true;
+
         if (!_vm.IsSpendCategory)
         {
             _vm.Transaction.Category = "";
@@ -186,12 +196,18 @@ public partial class AddTransaction : ContentPage
         }
         else
         {
-
+            var page = new SelectCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
+            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
         }
     }
 
-    private async void swhSavingSpendCategory_Toggled(object sender, ToggledEventArgs e)
+    async void SavingSpend_Toggled(object sender, ToggledEventArgs e)
     {
+        entTransactionAmount.IsEnabled = false;
+        entTransactionAmount.IsEnabled = true;
+        edtNotes.IsEnabled = false;
+        edtNotes.IsEnabled = true;
+
         if (!_vm.Transaction.IsSpendFromSavings)
         {
             _vm.Transaction.SavingName = "";
@@ -203,8 +219,14 @@ public partial class AddTransaction : ContentPage
         }
     }
 
+
     private async void swhNotes_Toggled(object sender, ToggledEventArgs e)
     {
+        entTransactionAmount.IsEnabled = false;
+        entTransactionAmount.IsEnabled = true;
+        edtNotes.IsEnabled = false;
+        edtNotes.IsEnabled = true;
+
         if (!_vm.IsNote)
         {
             _vm.Transaction.Notes = "";
@@ -215,19 +237,6 @@ public partial class AddTransaction : ContentPage
     {
         int StringLength = edtNotes.Text.Length;
         lblNoteCharacterLeft.Text = $"{250 - StringLength} characters remaining";
-    }
-
-    async void SavingSpend_Toggled(object sender, ToggledEventArgs e)
-    {
-        if (!_vm.Transaction.IsSpendFromSavings)
-        {
-            _vm.Transaction.Payee = "";
-        }
-        else
-        {
-            var page = new SelectPayeePage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectPayeePageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
-        }
     }
 
     static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
@@ -258,6 +267,11 @@ public partial class AddTransaction : ContentPage
 
     private async void ResetTransaction_Clicked(object sender, EventArgs e)
     {
+        entTransactionAmount.IsEnabled = false;
+        entTransactionAmount.IsEnabled = true;
+        edtNotes.IsEnabled = false;
+        edtNotes.IsEnabled = true;
+
         bool result = await DisplayAlert("Transaction Reset", "Are you sure you want to Reset the details of this transaction", "Yes, continue", "Cancel");
         if (result)
         {
@@ -273,5 +287,35 @@ public partial class AddTransaction : ContentPage
             _vm.Transaction.IsIncome = false;
             UpdateExpenseIncomeSelected();
         }
+    }
+
+    private async void ChangeSelectedPayee_Tapped(object sender, TappedEventArgs e)
+    {
+        entTransactionAmount.IsEnabled = false;
+        entTransactionAmount.IsEnabled = true;
+        edtNotes.IsEnabled = false;
+        edtNotes.IsEnabled = true;
+
+        var page = new SelectPayeePage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectPayeePageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
+        await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+    }
+
+    private async void ChangeSelectedCategory_Tapped(object sender, TappedEventArgs e)
+    {
+        entTransactionAmount.IsEnabled = false;
+        entTransactionAmount.IsEnabled = true;
+        edtNotes.IsEnabled = false;
+        edtNotes.IsEnabled = true;
+
+        var page = new SelectCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
+        await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+    }
+
+    private async void ChangeSelectedSaving_Tapped(object sender, TappedEventArgs e)
+    {
+        entTransactionAmount.IsEnabled = false;
+        entTransactionAmount.IsEnabled = true;
+        edtNotes.IsEnabled = false;
+        edtNotes.IsEnabled = true;
     }
 }

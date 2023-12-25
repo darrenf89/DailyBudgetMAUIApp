@@ -40,11 +40,23 @@
         </Setter>
     </Style>
 
+    <Style TargetType="Border" x:Key="brdSecondary">
+        <Setter Property="Margin" Value="20,10,20,10"/>
+        <Setter Property="Padding" Value="10,5,10,5"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
+        <Setter Property="Stroke" Value="{StaticResource SecondaryBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource SecondaryLight}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+        </Setter>
+    </Style>
+
     <Style TargetType="Border" x:Key="brdInfo">
         <Setter Property="Margin" Value="20,10,20,10"/>
         <Setter Property="Padding" Value="10,5,10,5"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
-        <Setter Property="Stroke" Value="{StaticResource Info}"/>
+        <Setter Property="Stroke" Value="{StaticResource InfoBrush}"/>
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource InfoLight}"/>
         <Setter Property="Shadow">
@@ -56,9 +68,33 @@
         <Setter Property="Margin" Value="20,10,20,10"/>
         <Setter Property="Padding" Value="10,5,10,5"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
-        <Setter Property="Stroke" Value="{StaticResource Warning}"/>
+        <Setter Property="Stroke" Value="{StaticResource WarningBrush}"/>
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource WarningLight}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+        </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="brdPrimary">
+        <Setter Property="Margin" Value="20,10,20,10"/>
+        <Setter Property="Padding" Value="10,5,10,5"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
+        <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource PrimaryLightLight}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+        </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="brdPrimaryWhite">
+        <Setter Property="Margin" Value="20,10,20,10"/>
+        <Setter Property="Padding" Value="10,5,10,5"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
+        <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">
             <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
         </Setter>
@@ -77,7 +113,7 @@
         <Setter Property="Margin" Value="10,25,10,25"/>
         <Setter Property="Padding" Value="5,0,5,0"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 4"/>
-        <Setter Property="Stroke" Value="{StaticResource White}"/>
+        <Setter Property="Stroke" Value="{StaticResource WhiteBrush}"/>
         <Setter Property="StrokeThickness" Value="0"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">
@@ -103,13 +139,13 @@
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="HorizontalOptions" Value="Fill"/>
         <Setter Property="Padding" Value="20,0,0,0"/>
-        <Setter Property="Stroke" Value="{DynamicResource Gray400}"/> 
+        <Setter Property="Stroke" Value="{DynamicResource Gray400Brush}"/> 
     </Style>
 
 
     <Style TargetType="Border" x:Key="StandardInputBorderOptionSelect">
         <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
-        <Setter Property="Stroke" Value="{DynamicResource Gray900}"/>
+        <Setter Property="Stroke" Value="{DynamicResource Gray900Brush}"/>
         <Setter Property="BackgroundColor" Value="{DynamicResource White}"/>
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Padding" Value="20,10,0,10"/>
@@ -134,7 +170,7 @@
 
     <Style TargetType="Border" x:Key="StandardInputBorder">
         <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
-        <Setter Property="Stroke" Value="{DynamicResource Gray900}"/>
+        <Setter Property="Stroke" Value="{DynamicResource Gray900Brush}"/>
         <Setter Property="BackgroundColor" Value="{DynamicResource Light}"/>
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Padding" Value="20,10,0,10"/>
@@ -196,7 +232,7 @@
     </Style>
 
     <Style TargetType="Border" x:Key="PrimaryBorderTertiaryShadow">
-        <Setter Property="Stroke" Value="{DynamicResource Primary}"/>
+        <Setter Property="Stroke" Value="{DynamicResource PrimaryBrush}"/>
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 15"/>
         <Setter Property="HeightRequest" Value="42"/>
@@ -332,7 +368,7 @@
         <Setter Property="Margin" Value="0"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="Stroke" Value="{StaticResource Black}"/>
+        <Setter Property="Stroke" Value="{StaticResource BlackBrush}"/>
         <Setter Property="StrokeThickness" Value="0.5"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
@@ -531,7 +567,7 @@
     </Style>
 
     <Style TargetType="Border">
-        <Setter Property="Stroke" Value="{StaticResource Gray200}" />
+        <Setter Property="Stroke" Value="{StaticResource Gray200Brush}" />
         <Setter Property="StrokeShape" Value="Rectangle"/>
         <Setter Property="StrokeThickness" Value="1"/>
     </Style>
@@ -843,20 +879,20 @@
     </Style>
 
     <Style TargetType="switch:CustomSwitch" x:Key="AddTransactionSwitch">
-        <Setter Property="KnobWidth" Value="20" />
-        <Setter Property="WidthRequest" Value="35" />
-        <Setter Property="KnobHeight" Value="20" />
+        <Setter Property="KnobWidth" Value="24" />
+        <Setter Property="WidthRequest" Value="45" />
+        <Setter Property="KnobHeight" Value="24" />
         <Setter Property="KnobLimit" Value="Boundary" />
-        <Setter Property="HeightRequest" Value="22" />
+        <Setter Property="HeightRequest" Value="28" />
         <Setter Property="HorizontalOptions" Value="Start" />
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="KnobBackgroundColor" Value="#fafafa" />
-        <Setter Property="StrokeShape" Value="RoundRectangle 11" />
-        <Setter Property="KnobStrokeShape" Value="RoundRectangle 10"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 15" />
+        <Setter Property="KnobStrokeShape" Value="RoundRectangle 12"/>
         <Setter Property="BackgroundColor" Value="{StaticResource TertiaryLight}"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="Margin" Value="0"/>
-        <Setter Property="HorizontalKnobMargin" Value="1"/>
+        <Setter Property="HorizontalKnobMargin" Value="2"/>
     </Style>
 
     <Style TargetType="Switch" x:Key="DateSwitch">

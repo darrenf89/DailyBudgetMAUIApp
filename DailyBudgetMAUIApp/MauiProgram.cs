@@ -7,6 +7,8 @@ using DailyBudgetMAUIApp.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using IeuanWalker.Maui.Switch;
+using Syncfusion.Maui.Core.Hosting;
+
 
 namespace DailyBudgetMAUIApp;
 
@@ -21,11 +23,13 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .UseSwitch()
             .UseMauiCommunityToolkit()
+            .ConfigureSyncfusionCore()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialDesignIcons");
+                fonts.AddFont("manolo-mono.ttf", "ManoloMono");
             })
             .ConfigureMauiHandlers(handlers =>
             {

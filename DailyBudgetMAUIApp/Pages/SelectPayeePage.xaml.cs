@@ -17,10 +17,10 @@ public partial class SelectPayeePage : ContentPage
             Transaction.Payee = "";
         }
 
-        InitializeComponent();
-
         _ds = ds;
-		_pt = pt;
+        _pt = pt;
+
+        InitializeComponent();
 
         this.BindingContext = viewModel;
         _vm = viewModel;
@@ -73,44 +73,145 @@ public partial class SelectPayeePage : ContentPage
 
     private void LoadPayeeList(string SearchQuery)
     {
-       List<string> FilteredList = new List<string>();
+        Application.Current.Resources.TryGetValue("Primary", out var Primary);
+        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+        Application.Current.Resources.TryGetValue("brdPrimary", out var brdPrimary);
+        Application.Current.Resources.TryGetValue("PrimaryDark", out var PrimaryDark);
+
+        List<string> FilteredList = new List<string>();
 
         if (!(_vm.PayeeList.Count == 0 && _vm.PayeeList == null))
         {
-            
-            FilteredList = _vm.PayeeList.Where(x => x.Contains(SearchQuery)).ToList();
-            string StartLetter = "*";
+            vslPayeeList.Children.Clear();
 
-            foreach (string s in FilteredList)
+            FilteredList = _vm.PayeeList.Where(x => x.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+            string StartLetter = "*";
+            VerticalStackLayout LetterVSL = null;
+
+            foreach (string Payee in FilteredList)
             {
-                if (!s.StartsWith(StartLetter))
+                if (!Payee.StartsWith(StartLetter))
                 {
-                    StartLetter = s[0].ToString();
+                    if (LetterVSL != null)
+                    {
+                        vslPayeeList.Children.Add(LetterVSL);
+                    }
+
+                    StartLetter = Payee[0].ToString();
+
+                    LetterVSL = new VerticalStackLayout
+                    {
+                        HorizontalOptions = LayoutOptions.End,
+                        WidthRequest = _vm.PayeeBorderWidth,
+                        Margin = new Thickness(0, 0, 0, 10)
+                    };
+
+                    Label LetterLabel = new Label
+                    {
+                        Text = StartLetter.ToUpper(),
+                        FontFamily = "ManoloMono",
+                        HorizontalOptions = LayoutOptions.End,
+                        FontSize = 40,
+                        TextColor = (Color)Primary
+                    };
+
+                    BoxView LetterBoxView = new BoxView
+                    {
+                        WidthRequest = 60,
+                        HeightRequest = 4,
+                        Color = (Color)Tertiary,
+                        HorizontalOptions = LayoutOptions.End,
+                        Margin = new Thickness(0, 0, 0, 10)
+
+                    };
+                    LetterVSL.Children.Add(LetterLabel);
+                    LetterVSL.Children.Add(LetterBoxView);
                 }
+
+                Border PayeeBorder = new Border
+                {
+                    Style = (Style)brdPrimary,
+                    Margin = new Thickness(5,0,5,4),                    
+                };
+
+                TapGestureRecognizer PayeeTapGesture = new TapGestureRecognizer {
+                    CommandParameter = Payee
+                };
+                PayeeTapGesture.Tapped += (s, e) => SelectExistingPayee_Tapped(s, e);
+                PayeeBorder.GestureRecognizers.Add(PayeeTapGesture);
+
+                Label PayeeLabel = new Label
+                {
+                    Text = Payee,
+                    TextColor = (Color)Gray900,
+                    FontSize = 14,
+                    Padding = new Thickness(2,2,2,2)
+                };
+
+                PayeeBorder.Content = PayeeLabel;
+                LetterVSL.Children.Add(PayeeBorder);
             }
+
+            vslPayeeList.Children.Add(LetterVSL);
         }
 
         if(FilteredList.Count == 0)
         {
             brdPayeeNotSetUp.IsVisible = true;
-            _vm.FilteredListEmptyText = "No Payee's matches that name, to create one go ahead and hit the create button!";
+            PayeeList.IsVisible = false;
+            _vm.FilteredListEmptyText = "No Payee matches that name, to create one go ahead and hit the create button!";
         }
         else
         {
             brdPayeeNotSetUp.IsVisible = false;
+            PayeeList.IsVisible = true;
         }
  
+    }
+
+    private async void SelectExistingPayee_Tapped(object sender, TappedEventArgs e)
+    {
+        string Payee = (string)e.Parameter;
+
+        bool result = await DisplayAlert($"Select {Payee}", $"Are you sure you want to Select {Payee} as the Payee?", "Yes, continue", "No, go back!");
+        if (result)
+        {
+            entPayee.IsEnabled = false;
+            entPayee.IsEnabled = true;
+            entPayee.Unfocus();
+
+            if(string.IsNullOrEmpty(_vm.Transaction.Category))
+            {
+                Categories LastCategory = await _ds.GetPayeeLastCategory(_vm.BudgetID, Payee);
+                _vm.Transaction.Category = LastCategory.CategoryName;
+                _vm.Transaction.CategoryID = LastCategory.CategoryID;
+            }
+
+            _vm.Transaction.Payee = Payee;
+            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
+            new Dictionary<string, object>
+            {
+                ["Transaction"] = _vm.Transaction
+            });
+        }
+
+
     }
 
     private async void BackButton_Clicked(object sender, EventArgs e)
     {
         _vm.Transaction.Payee = "";
 
+        entPayee.IsEnabled = false;
+        entPayee.IsEnabled = true;
+        entPayee.Unfocus();
+
         await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}", 
-            new Dictionary<string,object>
-            {
-                ["Transaction"] = _vm.Transaction
-            });
+        new Dictionary<string,object>
+        {
+            ["Transaction"] = _vm.Transaction
+        });
     }
 
     private void ClearEntPayee_Clicked(object sender, EventArgs e)
@@ -130,7 +231,15 @@ public partial class SelectPayeePage : ContentPage
         bool result = await DisplayAlert("Add New Payee", $"Are you sure you want to add {_vm.Transaction.Payee} as a new Payee?", "Yes, continue", "No, go back!");
         if (result)
         {
+            entPayee.IsEnabled = false;
+            entPayee.IsEnabled = true;
+            entPayee.Unfocus();
 
+            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
+            new Dictionary<string, object>
+            {
+                ["Transaction"] = _vm.Transaction
+            });
         }
     }
 
