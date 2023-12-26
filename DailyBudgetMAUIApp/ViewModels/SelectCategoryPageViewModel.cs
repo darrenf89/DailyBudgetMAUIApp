@@ -24,6 +24,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private List<Categories>? _groupCategoryList = new List<Categories>();
         [ObservableProperty]
         private string _noCategoriesText = "You have not set up any Categories go ahead and do that!";
+        [ObservableProperty]
+        private bool _isFilterShown = false;
+        [ObservableProperty]
+        private double _sortFilterHeight = 300;
 
 
         public double ScreenWidth { get; }

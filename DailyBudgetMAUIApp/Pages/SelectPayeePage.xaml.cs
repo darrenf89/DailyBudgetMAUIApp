@@ -132,7 +132,7 @@ public partial class SelectPayeePage : ContentPage
                 Border PayeeBorder = new Border
                 {
                     Style = (Style)brdPrimary,
-                    Margin = new Thickness(5,0,5,4),                    
+                    Margin = new Thickness(5,0,5,4)                   
                 };
 
                 TapGestureRecognizer PayeeTapGesture = new TapGestureRecognizer {

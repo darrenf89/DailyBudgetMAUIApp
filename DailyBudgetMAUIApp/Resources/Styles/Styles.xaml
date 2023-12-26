@@ -52,6 +52,42 @@
         </Setter>
     </Style>
 
+    <Style TargetType="Border" x:Key="brdTertiary">
+        <Setter Property="Margin" Value="20,10,20,10"/>
+        <Setter Property="Padding" Value="10,5,10,5"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
+        <Setter Property="Stroke" Value="{StaticResource TertiaryBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource TertiaryLight}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+        </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="brdSuccess">
+        <Setter Property="Margin" Value="20,10,20,10"/>
+        <Setter Property="Padding" Value="10,5,10,5"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
+        <Setter Property="Stroke" Value="{StaticResource SuccessBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource SuccessLight}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+        </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="brdDanger">
+        <Setter Property="Margin" Value="20,10,20,10"/>
+        <Setter Property="Padding" Value="10,5,10,5"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
+        <Setter Property="Stroke" Value="{StaticResource DangerBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource DangerLight}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+        </Setter>
+    </Style>
+
     <Style TargetType="Border" x:Key="brdInfo">
         <Setter Property="Margin" Value="20,10,20,10"/>
         <Setter Property="Padding" Value="10,5,10,5"/>
@@ -93,6 +129,18 @@
         <Setter Property="Padding" Value="10,5,10,5"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
         <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource White}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+        </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="brdSecondaryWhite">
+        <Setter Property="Margin" Value="20,10,20,10"/>
+        <Setter Property="Padding" Value="10,5,10,5"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
+        <Setter Property="Stroke" Value="{StaticResource SecondaryBrush}"/>
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">

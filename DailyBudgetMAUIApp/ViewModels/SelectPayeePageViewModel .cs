@@ -26,6 +26,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private string _filteredListEmptyText = "You have not set up any Payee's go ahead and do that!";
 
+
         public double ScreenWidth { get; }
         public double EntryWidth { get; }
         public double EntryButtonWidth { get; }

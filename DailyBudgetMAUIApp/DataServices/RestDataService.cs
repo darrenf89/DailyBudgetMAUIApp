@@ -2324,5 +2324,53 @@ namespace DailyBudgetMAUIApp.DataServices
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<Categories> AddNewSubCategory(int BudgetID, Categories Category)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Categories>(Category, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/categories/addnewsubcategory/{BudgetID}", request).Result;
+
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            Category = serializer.Deserialize<Categories>(reader);
+                        }
+
+                        return Category;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying validate otp code in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
