@@ -1,11 +1,11 @@
 ﻿namespace DailyBudgetMAUIApp.Handlers
 {
-    public class LoadingPage : ContentPage
+    public class LoadingPageTwo : ContentPage
     {
         private ActivityIndicator _indicator;
         private VerticalStackLayout _stackLayout;
 
-        public LoadingPage()
+        public LoadingPageTwo()
         {
             double ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
             double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
@@ -19,8 +19,8 @@
             _indicator = new ActivityIndicator
             {
                 IsRunning = true,
-                Color = (Color)Light,
-                Scale = 1.3,
+                Color = (Color)Primary,
+                Scale = 1,
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.Center,
                 Margin = new Thickness(0, 400, 0, 0),
@@ -30,9 +30,9 @@
             var loadingLabel = new Label()
             {
                 Text = "Loading...",
-                TextColor = (Color)Light,
+                TextColor = (Color)Primary,
                 HorizontalOptions = LayoutOptions.Center,
-                FontSize = 18,
+                FontSize = 12,
                 Margin = new Thickness(0,20,0,0),
                 FontAttributes = FontAttributes.Bold,
                 Opacity = 1
@@ -42,8 +42,8 @@
             {
                 WidthRequest = ScreenWidth,
                 HeightRequest = ScreenHeight,
-                BackgroundColor = (Color)Gray900,
-                Opacity = 0.4,
+                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                Opacity = 1,
                 Children =
             {
                 _indicator,

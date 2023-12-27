@@ -184,6 +184,8 @@ public partial class AddTransaction : ContentPage
 
     private async void swhSpendCategory_Toggled(object sender, ToggledEventArgs e)
     {
+
+
         entTransactionAmount.IsEnabled = false;
         entTransactionAmount.IsEnabled = true;
         edtNotes.IsEnabled = false;
@@ -197,7 +199,7 @@ public partial class AddTransaction : ContentPage
         else
         {
             var page = new SelectCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+            await Navigation.PushModalAsync(page, true);
         }
     }
 
@@ -308,7 +310,7 @@ public partial class AddTransaction : ContentPage
         edtNotes.IsEnabled = true;
 
         var page = new SelectCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-        await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+        await Navigation.PushModalAsync(page, true);
     }
 
     private async void ChangeSelectedSaving_Tapped(object sender, TappedEventArgs e)

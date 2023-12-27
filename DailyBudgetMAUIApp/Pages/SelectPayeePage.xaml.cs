@@ -17,6 +17,8 @@ public partial class SelectPayeePage : ContentPage
             Transaction.Payee = "";
         }
 
+
+
         _ds = ds;
         _pt = pt;
 
@@ -27,6 +29,7 @@ public partial class SelectPayeePage : ContentPage
 
         _vm.Transaction = Transaction;
         _vm.BudgetID = BudgetID;
+        _vm.SelectedPayee = Transaction.Payee;
 
     }
 
@@ -78,6 +81,7 @@ public partial class SelectPayeePage : ContentPage
         Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
         Application.Current.Resources.TryGetValue("brdPrimary", out var brdPrimary);
         Application.Current.Resources.TryGetValue("PrimaryDark", out var PrimaryDark);
+        Application.Current.Resources.TryGetValue("PrimaryLightLight", out var PrimaryLight);
 
         List<string> FilteredList = new List<string>();
 
@@ -149,7 +153,36 @@ public partial class SelectPayeePage : ContentPage
                     Padding = new Thickness(2,2,2,2)
                 };
 
-                PayeeBorder.Content = PayeeLabel;
+                string PayeeImageGlyph = "";
+
+                if (_vm.SelectedPayee == Payee)
+                {
+                    PayeeImageGlyph = "\ue837";
+                }
+                else
+                {
+                    PayeeImageGlyph = "\ue836";
+                }
+
+                Image PayeeImage = new Image
+                {
+                    VerticalOptions = LayoutOptions.Center,
+                    BackgroundColor = (Color)PrimaryLight,
+                    Source = new FontImageSource
+                    {
+                        FontFamily = "MaterialDesignIcons",
+                        Glyph = PayeeImageGlyph,
+                        Size = 20,
+                        Color = (Color)PrimaryDark
+                    }
+                };
+
+                HorizontalStackLayout PayeeHSL = new HorizontalStackLayout();
+
+                PayeeHSL.Children.Add(PayeeImage);
+                PayeeHSL.Children.Add(PayeeLabel);
+
+                PayeeBorder.Content = PayeeHSL;
                 LetterVSL.Children.Add(PayeeBorder);
             }
 

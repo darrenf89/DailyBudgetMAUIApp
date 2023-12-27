@@ -19,21 +19,21 @@
                 </Button>
                 <Label Grid.Row="0" Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Center" Text="Select a Category!"  TextColor="{DynamicResource Primary}"  FontSize="Large" FontFamily="OpenSansSemibold" FontAttributes="Bold"/>
                 <VerticalStackLayout  Grid.Row="1" Grid.Column="0" Margin="0,0,0,10">
-                    <Border WidthRequest="{Binding PayeeBorderWidth}" Style="{DynamicResource brdSecondary}" Margin="20,0,20,0">
+                    <Border WidthRequest="{Binding PayeeBorderWidth}" Style="{DynamicResource brdSecondary}" >
                         <VerticalStackLayout>
-                            <Grid VerticalOptions="Center" ColumnDefinitions="35,*,35">
+                            <Grid VerticalOptions="Center" ColumnDefinitions="35,*,35" Margin="0,5,0,5">
                                 <Image Margin="10,0,0,0" VerticalOptions="Center" Grid.Column="0">
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sort}" Size="25" Color="{DynamicResource Gray900}"/>
                                     </Image.Source>
                                 </Image>
                                 <Label Grid.Column="1" Margin="5,0,0,0" Text="Sort &amp; Filter" TextColor="{DynamicResource Gray900}" FontSize="Small" VerticalOptions="Center"/>
-                                <Image Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsVisible="true" x:Name="FilterHidden">
+                                <Image Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsVisible="true" x:Name="FilterHidden" Margin="0,0,5,0">
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_less}" Size="25" Color="{DynamicResource Gray900}"/>
                                     </Image.Source>
                                 </Image>
-                                <Image Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsVisible="false" x:Name="FilterShown">
+                                <Image Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsVisible="false" x:Name="FilterShown" Margin="0,0,5,0">
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_more}" Size="25" Color="{DynamicResource Gray900}"/>
                                     </Image.Source>
@@ -41,11 +41,50 @@
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer x:Name="ShowHideSortFiler" Tapped="ShowHideSortFiler_Tapped"/>
                                 </Grid.GestureRecognizers>
-                            </Grid>
-                            <VerticalStackLayout Margin="0,10,0,0" x:Name="FilterOptions">
-                                <Label Text="Sort" Margin="0,0,0,40"/>
-                                <Label Text="Category Filter" Margin="0,0,0,40"/>
-                                <Label Text="Sub Category Filter" Margin="0,0,0,40"/>
+                            </Grid>                            
+                            <VerticalStackLayout Margin="0" x:Name="FilterOptions" IsVisible="false">
+                                <BoxView HeightRequest="3" Color="White" Margin="0,5,0,10">
+                                    <BoxView.Shadow>
+                                        <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2"/>
+                                    </BoxView.Shadow>
+                                </BoxView>
+                                <Label Text="Sort By" Margin="0,0,0,10" TextColor="{DynamicResource Gray900}"/>
+                                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Default">
+                                    <HorizontalStackLayout Margin="0,0,0,10">
+                                        <Button Text="Ascending" Margin="0,0,5,0" x:Name="AscSort" Clicked="AscSort_Clicked" Style="{StaticResource buttonUnclicked}">
+                                        </Button>
+                                        <Button Text="Descending" x:Name="DesSort" Clicked="DesSort_Clicked" Style="{StaticResource buttonUnclicked}">
+                                        </Button>
+                                    </HorizontalStackLayout>
+                                </ScrollView>
+                                <BoxView HeightRequest="1" Color="White"  Margin="0,5,0,10"/>
+                                <Label Text="Category Filter" Margin="0,0,0,10" TextColor="{DynamicResource Gray900}"/>
+                                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Default">
+                                    <HorizontalStackLayout Margin="0,0,0,10" x:Name="hslCatFilter">
+                                        
+                                    </HorizontalStackLayout>
+                                </ScrollView>
+                                <BoxView HeightRequest="1" Color="White"  Margin="0,5,0,10"/>
+                                <Label Text="Sub Category Filter" Margin="0,0,0,10" TextColor="{DynamicResource Gray900}"/>
+                                <Border Stroke="{StaticResource SecondaryBrush}" StrokeThickness="1" StrokeShape="RoundRectangle 4" BackgroundColor="White" Margin="0,0,40,5">
+                                    <Grid Padding="1" ColumnDefinitions="30,*" RowDefinitions="34">
+                                        <Image VerticalOptions="Center" Grid.Column="0">
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Search}" Size="24"  Color="{DynamicResource Gray400}"/>
+                                            </Image.Source>
+                                        </Image>
+                                        <handlers:BorderlessEntry HeightRequest="34" Grid.Column="1" x:Name="entCatFilterSearch" BackgroundColor="WHite" TextColor="{StaticResource Gray400}" Margin="0,0,10,0" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Border>
+                                <BoxView HeightRequest="1" Color="White"  Margin="0,5,0,10"/>
+                                <HorizontalStackLayout HorizontalOptions="End"  VerticalOptions="Center" Padding="5,0,5,0">
+                                    <Label Text="Clear All" VerticalOptions="Center" Margin="10,0,15,5" Padding="0" TextColor="{DynamicResource Danger}" TextDecorations="Underline" FontAttributes="Bold">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer x:Name="ClearAllFilter" Tapped="ClearAllFilter_Tapped"/>
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Button Text="Apply" VerticalOptions="Center" x:Name="SortFilterApply" Clicked="SortFilterApply_Clicked" HorizontalOptions="End" Style="{StaticResource buttonApply}" Margin="0,0,0,5"/>
+                                </HorizontalStackLayout>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
                     </Border>
@@ -54,11 +93,9 @@
                     <Label HorizontalTextAlignment="Center" x:Name="lblNoCategories" VerticalOptions="Center" HorizontalOptions="Center" Text="{Binding NoCategoriesText}" TextColor="{DynamicResource Warning}" FontAttributes="Bold" FontSize="Small"/>
                 </Border>
                 <VerticalStackLayout BackgroundColor="{DynamicResource White}" Grid.Row="3" Grid.Column="0" Margin="0,0,0,5" WidthRequest="{Binding ScreenWidth}" x:Name="CategoryList">
-                    <Border Style="{DynamicResource AddEditTransContentTwo}" x:Name="brdvslCategories" Margin="20,10,20,25" Padding="10,10,10,10">
-                        <VerticalStackLayout x:Name="vslCategories">
+                    <VerticalStackLayout x:Name="vslCategories" Margin="15,0,15,0">
                            
-                        </VerticalStackLayout>
-                    </Border>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </Grid>
         </VerticalStackLayout>

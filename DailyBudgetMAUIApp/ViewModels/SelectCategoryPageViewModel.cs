@@ -1,4 +1,5 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 
@@ -27,7 +28,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool _isFilterShown = false;
         [ObservableProperty]
-        private double _sortFilterHeight = 300;
+        private double _sortFilterHeight = 326;
+
 
 
         public double ScreenWidth { get; }

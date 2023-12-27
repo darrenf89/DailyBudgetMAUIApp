@@ -55,7 +55,7 @@
                         <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0"  IsToggled="{Binding IsFutureDatedTransaction}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhTransactionDate_Toggled"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End" HeightRequest="40">
                             <Label VerticalOptions="Center" HorizontalOptions="End" Text="{Binding IsFutureDatedTransaction, Converter={StaticResource IsFutureDatedTransactionText}}" TextColor="{StaticResource Gray400}"  Grid.Column="1" FontSize="Medium" Padding="0,0,5,0" />
-                            <DatePicker VerticalOptions="Center" HorizontalOptions="End" CharacterSpacing="1" x:Name="entTransactionDate" Date="{Binding Transaction.TransactionDate}" IsVisible="{Binding IsFutureDatedTransaction}"  Format="dd MMMM" TextColor="{StaticResource Gray400}" FontSize="Medium"/>
+                            <DatePicker VerticalOptions="Center" HorizontalOptions="End" CharacterSpacing="1" x:Name="entTransactionDate" Date="{Binding Transaction.TransactionDate}" IsVisible="{Binding IsFutureDatedTransaction}"  Format="dd MMMM" TextColor="{StaticResource Primary}" FontSize="Medium" FontAttributes="Bold"/>
                         </HorizontalStackLayout>
                     </Grid>
                     <HorizontalStackLayout Margin="0,0,0,0" >
@@ -70,7 +70,7 @@
                         <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsPayee}"  SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhPayee_Toggled"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label HorizontalOptions="End" Text="{Binding IsPayee, Converter={StaticResource IsPayeeText}}" TextColor="{StaticResource Gray400}" FontSize="Medium" Padding="0,0,5,0"/>
-                            <Label IsVisible="{Binding IsPayee}" HorizontalOptions="End" Text="{Binding Transaction.Payee}" TextColor="{StaticResource Gray400}" FontSize="Medium" Padding="0,0,5,0">
+                            <Label IsVisible="{Binding IsPayee}" HorizontalOptions="End" Text="{Binding Transaction.Payee}" TextColor="{StaticResource Primary}" FontSize="Medium" Padding="0,0,5,0" FontAttributes="Bold">
                                 <Label.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="ChangeSelectedPayee_Tapped" />
                                 </Label.GestureRecognizers>
@@ -83,13 +83,13 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Category}" Size="25" Color="{DynamicResource Primary}"/>
                             </Image.Source>
                         </Image>
-                        <Label Text="Spend Category" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
+                        <Label Text="Category" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40">
                         <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding IsSpendCategory}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhSpendCategory_Toggled"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label HorizontalOptions="End" Text="{Binding IsSpendCategory, Converter={StaticResource IsSpendCategoryText}}" TextColor="{StaticResource Gray400}"  FontSize="Medium" Padding="0,0,5,0"/>
-                            <Label HorizontalOptions="End" IsVisible="{Binding IsSpendCategory}" Text="{Binding Transaction.Category}" TextColor="{StaticResource Gray400}"  FontSize="Medium" Padding="0,0,5,0">
+                            <Label HorizontalOptions="End" IsVisible="{Binding IsSpendCategory}" Text="{Binding Transaction.Category}" TextColor="{StaticResource Primary}"  FontSize="Medium" Padding="0,0,5,0" FontAttributes="Bold">
                                 <Label.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="ChangeSelectedCategory_Tapped" />
                                 </Label.GestureRecognizers>
@@ -107,8 +107,8 @@
                     <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" RowDefinitions="40" HeightRequest="40">
                         <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding Transaction.IsSpendFromSavings}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="SavingSpend_Toggled" />
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
-                            <Label HorizontalOptions="End" Text="{Binding Transaction.IsSpendFromSavings, Converter={StaticResource IsSpendFromSavingText}}" TextColor="{StaticResource Gray400}"  FontSize="Medium" Padding="0,0,0,0"/>
-                            <Label IsVisible="{Binding Transaction.IsSpendFromSavings}" HorizontalOptions="End" Text="{Binding Transaction.SavingName}" TextColor="{StaticResource Gray400}" FontSize="Medium" Padding="0,0,0,0">
+                            <Label HorizontalOptions="End" Text="{Binding Transaction.IsSpendFromSavings, Converter={StaticResource IsSpendFromSavingText}}" TextColor="{StaticResource Gray400}"  FontSize="Medium" Padding="0,0,5,0"/>
+                            <Label IsVisible="{Binding Transaction.IsSpendFromSavings}" HorizontalOptions="End" Text="{Binding Transaction.SavingName}" TextColor="{StaticResource Primary}" FontSize="Medium" Padding="0,0,0,0" FontAttributes="Bold">
                                 <Label.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="ChangeSelectedSaving_Tapped" />
                                 </Label.GestureRecognizers>
@@ -126,7 +126,7 @@
                     <Grid ColumnDefinitions="60,*" RowDefinitions="*,*" Margin="0,5,0,5" >
                         <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding IsNote}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhNotes_Toggled" />
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End" HeightRequest="40">
-                            <Label Text="{Binding IsNote, Converter={StaticResource IsNoteText}}" TextColor="{StaticResource Gray400}" VerticalOptions="Center" FontSize="Medium" />
+                            <Label Text="{Binding IsNote, Converter={StaticResource IsNoteText}}" TextColor="{StaticResource Gray400}" VerticalOptions="Center" FontSize="Medium" Padding="0,0,5,0"/>
                         </HorizontalStackLayout>
                         <VerticalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding IsNote}">
                             <Editor Margin="0" HeightRequest="140" Placeholder="Enter your note here" Text="{Binding Transaction.Notes}" FontSize="Small" IsVisible="{Binding IsNote}" MaxLength="250" x:Name="edtNotes" TextChanged="edtNotes_TextChanged"/>

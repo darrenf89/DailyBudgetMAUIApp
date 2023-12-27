@@ -25,6 +25,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private List<string>? _payeeList = new List<string>();
         [ObservableProperty]
         private string _filteredListEmptyText = "You have not set up any Payee's go ahead and do that!";
+        [ObservableProperty]
+        private string _selectedPayee;
 
 
         public double ScreenWidth { get; }

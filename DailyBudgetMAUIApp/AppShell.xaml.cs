@@ -1,4 +1,5 @@
-﻿using DailyBudgetMAUIApp.Pages;
+﻿using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using System.ComponentModel;
@@ -23,6 +24,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(AddSaving), typeof(AddSaving));
         Routing.RegisterRoute(nameof(LogoutPage), typeof(LogoutPage));
         Routing.RegisterRoute(nameof(CreateNewBudget), typeof(CreateNewBudget));
+        Routing.RegisterRoute(nameof(LoadingPage), typeof(LoadingPage));
+        Routing.RegisterRoute(nameof(LoadingPageTwo), typeof(LoadingPageTwo));
 
         this.BindingContext = this;
     }
