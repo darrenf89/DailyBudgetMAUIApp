@@ -76,6 +76,18 @@
         </Setter>
     </Style>
 
+    <Style TargetType="Border" x:Key="pillSuccess">
+        <Setter Property="Margin" Value="10,0,10,0"/>
+        <Setter Property="Padding" Value="3,3,3,3"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 10"/>
+        <Setter Property="Stroke" Value="{StaticResource SuccessBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource SuccessLight}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+        </Setter>
+    </Style>
+
     <Style TargetType="Border" x:Key="brdDanger">
         <Setter Property="Margin" Value="20,10,20,10"/>
         <Setter Property="Padding" Value="10,5,10,5"/>

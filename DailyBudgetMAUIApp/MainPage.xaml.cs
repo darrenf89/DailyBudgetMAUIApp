@@ -193,9 +193,61 @@ public partial class MainPage : ContentPage
 
                 await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
             }
+
+            if(_vm.SnackBar == "Transaction Updated")
+            {
+                CancellationTokenSource source = new CancellationTokenSource();
+                CancellationToken token = source.Token;
+
+                text = $"Nice one, transaction updated!";
+                actionButtonText = "Ok";
+                action = async() =>
+                {
+                    source.Cancel();
+                };
+                duration = TimeSpan.FromSeconds(10);
+
+                var SnackBar = Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions);
+                await SnackBar.Show(token);
+
+                _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+
+                App.DefaultBudget = _vm.DefaultBudget;
+                _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+                App.SessionLastUpdate = DateTime.UtcNow;
+            }
+
+
+            if (_vm.SnackBar == "Transaction Added")
+            {
+                text = $"Sweet, transaction created!";
+                actionButtonText = "Undo";
+                action = async () => await UndoAddTransaction(_vm.SnackID);
+                duration = TimeSpan.FromSeconds(10);
+
+                await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+
+                _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+
+                App.DefaultBudget = _vm.DefaultBudget;
+                _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+                App.SessionLastUpdate = DateTime.UtcNow;
+            }
         }
     }
+    private async Task UndoAddTransaction(int TransactionID)
+    {
+        Transactions Transaction = await _ds.GetTransactionFromID(TransactionID);
+        Transaction.TransactionID = 0;
 
+        await _ds.DeleteTransaction(TransactionID);
+
+        await Shell.Current.GoToAsync($"{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = Transaction
+                });
+    }
     private async Task UndoCreateBudget(int BudgetID)
     {
         var popup = new PopUpPage();

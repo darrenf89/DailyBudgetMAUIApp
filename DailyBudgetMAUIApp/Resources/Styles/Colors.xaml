@@ -22,6 +22,8 @@
     <Color x:Key="WarningLight">#fae6bd</Color>
     <Color x:Key="Info">#004fb6</Color>
     <Color x:Key="InfoLight">#68a9ff</Color>
+    <Color x:Key="InfoLL">#cae1ff</Color>
+    <Color x:Key="InfoLLL">#f1f7ff</Color>
     <Color x:Key="Light">#f9f9f9</Color>
     <Color x:Key="Gray100">#E1E1E1</Color>
     <Color x:Key="Gray200">#C8C8C8</Color>
@@ -49,6 +51,8 @@
     <SolidColorBrush x:Key="WarningLightBrush" Color="{StaticResource WarningLight}"/>
     <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}"/>
     <SolidColorBrush x:Key="InfoLightBrush" Color="{StaticResource InfoLight}"/>
+    <SolidColorBrush x:Key="InfoLLLBrush" Color="{StaticResource InfoLLL}"/>
+    <SolidColorBrush x:Key="InfoLLBrush" Color="{StaticResource InfoLL}"/>
     <SolidColorBrush x:Key="LightBrush" Color="{StaticResource Light}"/>
     <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
     <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>

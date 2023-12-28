@@ -770,7 +770,7 @@ public partial class SelectCategoryPage : ContentPage
         await Application.Current.MainPage.Navigation.PushModalAsync(LoadingPage, true);
 
         Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonClicked);
+        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
 
         if (FilteredGroupCat.Count > 0)
         {
@@ -794,7 +794,13 @@ public partial class SelectCategoryPage : ContentPage
 
         FillSubCategoryLists(_vm.GroupCategoryList);
 
-        _vm.SubCategoryList = _vm.SubCategoryList.Where(x => x.CategoryName.Contains(entCatFilterSearch.Text, StringComparison.OrdinalIgnoreCase)).ToList();
+        string SearchText = "";
+        if (!string.IsNullOrEmpty(entCatFilterSearch.Text))
+        {
+            SearchText = entCatFilterSearch.Text;
+        }
+
+        _vm.SubCategoryList = _vm.SubCategoryList.Where(x => x.CategoryName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
 
         for (int i = _vm.GroupCategoryList.Count - 1; i >= 0; i--)
         {

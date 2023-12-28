@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using IeuanWalker.Maui.Switch;
 using Syncfusion.Maui.Core.Hosting;
+using Maui.FixesAndWorkarounds;
 
 
 namespace DailyBudgetMAUIApp;
@@ -24,6 +25,7 @@ public static class MauiProgram
             .UseSwitch()
             .UseMauiCommunityToolkit()
             .ConfigureSyncfusionCore()
+            .ConfigureMauiWorkarounds()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -52,6 +54,8 @@ public static class MauiProgram
         builder.Services.AddTransient<AddIncome>();
         builder.Services.AddTransient<AddSaving>();
         builder.Services.AddTransient<CreateNewBudget>();
+        builder.Services.AddTransient<LoadingPage>();
+        builder.Services.AddTransient<LoadingPageTwo>();
 
 
         //ViewModes
@@ -70,6 +74,11 @@ public static class MauiProgram
         builder.Services.AddTransient<PopUpPage>();
         builder.Services.AddTransient<PopUpPageSingleInput, PopUpPageSingleInputViewModel>();
         builder.Services.AddTransient<PopupInfo>();
+        builder.Services.AddTransient<PopUpOTP, PopUpOTPViewModel>();
+        builder.Services.AddTransient<PopupDailySaving, PopupDailySavingViewModel>();
+        builder.Services.AddTransient<PopupDailyBill, PopupDailyBillViewModel>();
+        builder.Services.AddTransient<PopupDailyPayDay, PopupDailyPayDayViewModel>();
+        builder.Services.AddTransient<PopupDailyIncome, PopupDailyIncomeViewModel>();
 
 #if WINDOWS
       SetWindowHandlers(); 

@@ -43,6 +43,14 @@
                         <Label Text="-" HorizontalOptions="End" VerticalOptions="Center" Padding="0,0,0,7" FontSize="55" TextColor="{DynamicResource Danger}" IsVisible="{Binding Transaction.IsIncome, Converter={StaticResource BoolConverter}}"/>
                         <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" x:Name="entTransactionAmount" TextChanged="TransactionAmount_Changed" Keyboard="Numeric" HorizontalOptions="Center" FontSize="55" />
                     </HorizontalStackLayout>
+                    <HorizontalStackLayout IsVisible="false" Margin="5,5,5,5" x:Name="validatorTransactionAmount" HorizontalOptions="Center">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="20" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="You can't add a transaction worth 0!" Style="{StaticResource ErrorMessage}" FontSize="Caption" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
                     <HorizontalStackLayout Margin="0,0,0,0" >
                         <Image>
                             <Image.Source>

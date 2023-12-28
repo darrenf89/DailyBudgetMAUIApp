@@ -69,6 +69,8 @@ namespace DailyBudgetMAUIApp.ViewModels
             App.DefaultBudgetID = 0;
             App.DefaultBudget = null;
 
+            Application.Current!.MainPage = new AppShell();
+
             await Application.Current.MainPage.Navigation.PopModalAsync();
             await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
         }

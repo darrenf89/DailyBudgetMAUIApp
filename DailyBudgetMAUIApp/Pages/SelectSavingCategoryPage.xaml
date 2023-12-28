@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DailyBudgetMAUIApp.Pages.SelectSavingCategoryPage"
+             Title="SelectPayeePage"
+             Shell.PresentationMode="ModalAnimated"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:accordion="clr-namespace:Syncfusion.Maui.Accordion;assembly=Syncfusion.Maui.Expander">
+    <ScrollView>
+        <VerticalStackLayout MinimumHeightRequest="{Binding MinHeight}">
+            <Grid ColumnDefinitions="*" RowDefinitions="80,Auto,Auto,Auto">
+                <Button Margin="0" Padding="5,0,0,0" Grid.Row="0" Grid.Column="0" TextColor="{StaticResource White}" BackgroundColor="{StaticResource White}" Clicked="BackButton_Clicked" HorizontalOptions="Start" Style="{StaticResource TitleButtons}">
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Close}" Size="40" Color="{DynamicResource Primary}"/>
+                    </Button.ImageSource>
+                </Button>
+                <Label Grid.Row="0" Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Center" Text="Select an Envelope!"  TextColor="{DynamicResource Primary}"  FontSize="Large" FontFamily="OpenSansSemibold" FontAttributes="Bold"/>
+                <VerticalStackLayout  Grid.Row="1" Grid.Column="0" Margin="0,0,0,10">
+                    <VerticalStackLayout>
+                        <Border BackgroundColor="{DynamicResource InfoLLL}" StrokeShape="RoundRectangle 4" StrokeThickness="0" Margin="40,20,40,10">
+                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+                                <VerticalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" BackgroundColor="{DynamicResource InfoLL}">
+                                    <Label Text="Envelope Funds Summary" TextColor="{DynamicResource Info}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="Center" HorizontalOptions="Center"  Margin="0,10,0,10"/>
+                                </VerticalStackLayout>
+                                <Label x:Name="entTotal" Grid.Row="1" Grid.Column="0" TextColor="{DynamicResource Success}" VerticalOptions="End" HorizontalOptions="Center" Margin="0,15,0,0" FontSize="Medium" FontAttributes="Bold"/>
+                                <Label Grid.Row="2" Grid.Column="0" TextColor="{DynamicResource Gray600}" VerticalOptions="Start" HorizontalOptions="Center" Margin="0,5,0,15" Text="Total Put Away" FontSize="Small"/>
+                                <Label x:Name="entBalanceRemaining" Grid.Row="1" Grid.Column="1" TextColor="{DynamicResource Success}" VerticalOptions="End" HorizontalOptions="Center" Margin="0,15,0,0" FontSize="Medium" FontAttributes="Bold"/>
+                                <Label Grid.Row="2" Grid.Column="1" TextColor="{DynamicResource Gray600}" VerticalOptions="Start" HorizontalOptions="Center" Margin="0,5,0,15" Text="Balances Remaining" FontSize="Small"/>
+                            </Grid>                            
+                        </Border>
+                    </VerticalStackLayout>
+                    <Border WidthRequest="{Binding PayeeBorderWidth}" Style="{DynamicResource brdSecondary}" Margin="0,5,0,0">
+                        <VerticalStackLayout>
+                            <Grid VerticalOptions="Center" ColumnDefinitions="35,*,35" Margin="0,5,0,5">
+                                <Image Margin="10,0,0,0" VerticalOptions="Center" Grid.Column="0">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sort}" Size="25" Color="{DynamicResource Gray900}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Grid.Column="1" Margin="5,0,0,0" Text="Sort &amp; Filter" TextColor="{DynamicResource Gray900}" FontSize="Small" VerticalOptions="Center"/>
+                                <Image Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsVisible="true" x:Name="FilterHidden" Margin="0,0,5,0">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_less}" Size="25" Color="{DynamicResource Gray900}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Image Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsVisible="false" x:Name="FilterShown" Margin="0,0,5,0">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_more}" Size="25" Color="{DynamicResource Gray900}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="ShowHideSortFiler" Tapped="ShowHideSortFiler_Tapped"/>
+                                </Grid.GestureRecognizers>
+                            </Grid>                            
+                            <VerticalStackLayout Margin="0" x:Name="FilterOptions" IsVisible="false">
+                                <BoxView HeightRequest="3" Color="White" Margin="0,5,0,10">
+                                    <BoxView.Shadow>
+                                        <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2"/>
+                                    </BoxView.Shadow>
+                                </BoxView>
+                                <Label Text="Sort By" Margin="0,0,0,10" TextColor="{DynamicResource Gray900}"/>
+                                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Default">
+                                    <HorizontalStackLayout Margin="0,0,0,10">
+                                        <Button Text="Name Asc" Margin="0,0,5,0" x:Name="AscSort" Clicked="AscSort_Clicked" Style="{StaticResource buttonUnclicked}"/>
+                                        <Button Text="Name Des" x:Name="DesSort" Clicked="DesSort_Clicked" Style="{StaticResource buttonUnclicked}"/>
+                                        <Button Text="Balance Asc" Margin="0,0,5,0" x:Name="BalanceAscSort" Clicked="BalanceAscSort_Clicked" Style="{StaticResource buttonUnclicked}"/>
+                                        <Button Text="Balance Des" x:Name="BalanceDesSort" Clicked="BalanceDesSort_Clicked" Style="{StaticResource buttonUnclicked}"/>
+                                    </HorizontalStackLayout>
+                                </ScrollView>
+                                <BoxView HeightRequest="1" Color="White"  Margin="0,5,0,10"/>                                
+                                <Label Text="Envelope Filter" Margin="0,0,0,10" TextColor="{DynamicResource Gray900}"/>
+                                <Border Stroke="{StaticResource SecondaryBrush}" StrokeThickness="1" StrokeShape="RoundRectangle 4" BackgroundColor="White" Margin="0,0,40,5">
+                                    <Grid Padding="1" ColumnDefinitions="30,*" RowDefinitions="34">
+                                        <Image VerticalOptions="Center" Grid.Column="0">
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Search}" Size="24"  Color="{DynamicResource Gray400}"/>
+                                            </Image.Source>
+                                        </Image>
+                                        <handlers:BorderlessEntry HeightRequest="34" Grid.Column="1" x:Name="entEnvelopeSearch" BackgroundColor="WHite" TextColor="{StaticResource Gray400}" Margin="0,0,10,0" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Border>
+                                <BoxView HeightRequest="1" Color="White"  Margin="0,5,0,10"/>
+                                <HorizontalStackLayout HorizontalOptions="End"  VerticalOptions="Center" Padding="5,0,5,0">
+                                    <Label Text="Clear All" VerticalOptions="Center" Margin="10,0,15,5" Padding="0" TextColor="{DynamicResource Danger}" TextDecorations="Underline" FontAttributes="Bold">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer x:Name="ClearAllFilter" Tapped="ClearAllFilter_Tapped"/>
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Button Text="Apply" VerticalOptions="Center" x:Name="SortFilterApply" Clicked="SortFilterApply_Clicked" HorizontalOptions="End" Style="{StaticResource buttonApply}" Margin="0,0,0,5"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+                <Border  Style="{StaticResource brdWarning}" Margin="20,0,20,10" Grid.Row="2" Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Center" x:Name="brdNoSavings" WidthRequest="{Binding PayeeBorderWidth}">
+                    <Label HorizontalTextAlignment="Center" x:Name="lblNoSavings" VerticalOptions="Center" HorizontalOptions="Center" Text="{Binding NoEnvelopeSavingText}" TextColor="{DynamicResource Warning}" FontAttributes="Bold" FontSize="Small"/>
+                </Border>
+                <VerticalStackLayout BackgroundColor="{DynamicResource White}" Grid.Row="3" Grid.Column="0" Margin="0,0,0,5" WidthRequest="{Binding ScreenWidth}" x:Name="SavingList">
+                    <Border Style="{DynamicResource AddEditTransContentTwo}" x:Name="brdSavingList" Margin="20,10,20,25" Padding="0,10,0,10">
+                        <VerticalStackLayout x:Name="vslSavings" Margin="5,0,5,0">
+
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

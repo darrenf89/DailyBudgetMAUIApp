@@ -9,6 +9,7 @@ using IeuanWalker.Maui.Switch;
 using IeuanWalker.Maui.Switch.Events;
 using IeuanWalker.Maui.Switch.Helpers;
 using System.Windows.Input;
+using CommunityToolkit.Maui.ApplicationModel;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -43,6 +44,7 @@ public partial class AddTransaction : ContentPage
                 _vm.Transaction = new Transactions();
                 _vm.Title = "Add a New Transaction";
                 btnAddTransaction.IsVisible = true;
+                _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date;
             }
             else
             {
@@ -129,18 +131,89 @@ public partial class AddTransaction : ContentPage
         UpdateExpenseIncomeSelected();
     }
 
-    private void btnAddTransaction_Clicked(object sender, EventArgs e)
+    private bool ValidateBillDetails()
     {
+        bool IsValid = true;
+
+        if (_vm.Transaction.TransactionAmount == 0)
+        {
+            IsValid = false;
+            validatorTransactionAmount.IsVisible = true;
+        }
+        else
+        {
+            validatorTransactionAmount.IsVisible = false;
+        }
+
+        _vm.IsPageValid = IsValid;
+        return IsValid;
+    }
+
+    private async void btnAddTransaction_Clicked(object sender, EventArgs e)
+    {
+        if(ValidateBillDetails())
+        {
+            string TransactionAmount = _vm.Transaction.TransactionAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+            string TransactionType = "";
+            if (_vm.Transaction.IsIncome)
+            {
+                TransactionType = "an Income";
+            }
+            else
+            {
+                TransactionType = "an Expenditure";
+            }
+
+            bool result = await DisplayAlert("Add New Transaction", $"You are adding {TransactionType} for {TransactionAmount}, are you sure you want to continue?", "Yes, continue", "Cancel");
+            if (result)
+            {
+                _vm.Transaction = _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID).Result;
+                if (_vm.Transaction.TransactionID != 0)
+                {
+                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Transaction Added&SnackID={_vm.Transaction.TransactionID}");
+                }
+            }
+        }
 
     }
 
-    private void btnUpdateTransaction_Clicked(object sender, EventArgs e)
+    private async void btnUpdateTransaction_Clicked(object sender, EventArgs e)
     {
+        if (ValidateBillDetails())
+        {
+            string TransactionAmount = _vm.Transaction.TransactionAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+            string TransactionType = "";
+            if (_vm.Transaction.IsIncome)
+            {
+                TransactionType = "an Income";
+            }
+            else
+            {
+                TransactionType = "an Expenditure";
+            }
 
+            bool result = await DisplayAlert("Update A Transaction", $"You are updating {TransactionType} to {TransactionAmount}, are you sure you want to?", "Yes, continue", "Cancel");
+            if (result)
+            {
+                string status = _ds.UpdateTransaction(_vm.Transaction).Result;
+                if (status == "OK")
+                {
+                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
+
+                }
+            }
+        }
+    }
+
+    private void ClearAllValidators()
+    {
+        validatorTransactionAmount.IsVisible = false;
     }
 
     void TransactionAmount_Changed(object sender, TextChangedEventArgs e)
     {
+        ClearAllValidators();
+
         decimal TransactionAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
         entTransactionAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entTransactionAmount.Text);
@@ -214,10 +287,12 @@ public partial class AddTransaction : ContentPage
         {
             _vm.Transaction.SavingName = "";
             _vm.Transaction.SavingID = 0;
+            _vm.Transaction.SavingsSpendType = "";
         }
         else
         {
-
+            var page = new SelectSavingCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectSavingCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
+            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
         }
     }
 
@@ -264,7 +339,15 @@ public partial class AddTransaction : ContentPage
 
     private async void SaveTransaction_Clicked(object sender, EventArgs e)
     {
-
+        if(btnAddTransaction.IsVisible)
+        {
+            btnAddTransaction_Clicked(sender, e);
+        } 
+        else if(btnUpdateTransaction.IsVisible)
+        {
+            btnUpdateTransaction_Clicked(sender, e);
+        }
+            
     }
 
     private async void ResetTransaction_Clicked(object sender, EventArgs e)
@@ -319,5 +402,8 @@ public partial class AddTransaction : ContentPage
         entTransactionAmount.IsEnabled = true;
         edtNotes.IsEnabled = false;
         edtNotes.IsEnabled = true;
+
+        var page = new SelectSavingCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectSavingCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
+        await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
     }
 }

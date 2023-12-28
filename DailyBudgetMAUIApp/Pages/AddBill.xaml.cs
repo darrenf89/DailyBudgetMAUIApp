@@ -482,6 +482,8 @@ public partial class AddBill : ContentPage
 
         _vm.IsPageValid = IsValid;
         return IsValid;
+
+        
     }
     private void ClearAllValidators()
     {
