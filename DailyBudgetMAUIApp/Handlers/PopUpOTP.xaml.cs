@@ -28,8 +28,18 @@ public partial class PopUpOTP : Popup
         _pt = pt;
         _ds = ds;
 
+        if (OTPType == "ShareBudget")
+        {
+            _vm.ShareBudgetRequest = _ds.GetShareBudgetRequestByID(UserID).Result;
+            int OTPUserID = _ds.GetUserIdFromEmail(_vm.ShareBudgetRequest.SharedByUserEmail).Result;
+            _vm.UserID = OTPUserID;
+        }
+        else
+        {
+            _vm.UserID = UserID;
+        }
+
         _vm.OTPType = OTPType;
-        _vm.UserID = UserID;
         _vm.OTP = new OTP();
         _vm.OTP.OTPCode = "";
 
@@ -97,6 +107,18 @@ public partial class PopUpOTP : Popup
 
                 entOTPOne.Focus();
             }
+        }
+        else if(_vm.OTPType == "ShareBudget")
+        {
+            lblTitleOTPCode.Text = "Start Sharing a Budget!";
+            lblDescriptionOTPCode.Text = "To verify the share budget request, please enter the OTP provided";
+            btnSave.Text = "Enter Code";
+
+            entEmail.IsVisible = false;
+            entOTPCode.IsVisible = true;
+            entPasswordReset.IsVisible = false;
+
+            entOTPOne.Focus();
         }
     }
 
@@ -248,6 +270,30 @@ public partial class PopUpOTP : Popup
                     {
                         _vm.OTPNotFound = true;
                     }
+                }
+            }
+        }
+        else if (_vm.OTPType == "ShareBudget")
+        {
+            if (_vm.OTP.OTPCode.Length < 8)
+            {
+                _vm.OTPRequired = true;
+            }
+            else
+            {
+                _vm.OTP.OTPExpiryTime = DateTime.UtcNow;
+                _vm.OTP.UserAccountID = _vm.UserID;
+                _vm.OTP.OTPType = _vm.OTPType;
+                string status = _ds.ValidateOTPCodeShareBudget(_vm.OTP, _vm.ShareBudgetRequest.SharedBudgetRequestID).Result;
+                if (status == "OK")
+                {
+                    _vm.ShareBudgetRequest.IsVerified = true;
+                    _vm.OTPValidated = true;
+                    this.Close(_vm.ShareBudgetRequest);
+                }
+                else
+                {
+                    _vm.OTPNotFound = true;
                 }
             }
         }

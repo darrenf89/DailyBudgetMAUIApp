@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "314130828479",
+    "project_id": "dbudget-c353b",
+    "storage_bucket": "dbudget-c353b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:314130828479:android:ddfd29640b13191cd14a0a",
+        "android_client_info": {
+          "package_name": "com.companyname.dailybudgetmauiapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCi4wfH9J8n27iWaB7GWiDovGB7ZdX7DqY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

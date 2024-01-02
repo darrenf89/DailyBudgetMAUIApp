@@ -2,13 +2,12 @@
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using System.Diagnostics;
-using Newtonsoft.Json;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using System.Globalization;
+using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp;
 
@@ -32,6 +31,10 @@ public partial class MainPage : ContentPage
 
     protected async override void OnAppearing()
     {
+
+        base.OnAppearing();
+
+        await _pt.NavigateFromPendingIntent(Preferences.Get("NavigationType", ""));
 
         _vm.DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID), 1);
         if (_vm.DefaultBudgetID != 0)
@@ -117,7 +120,6 @@ public partial class MainPage : ContentPage
 
         ProcessSnackBar();
 
-        base.OnAppearing();
     }
 
     private async void ProcessSnackBar()
@@ -188,7 +190,8 @@ public partial class MainPage : ContentPage
             {
                 text=$"Hurrrrah, you have created a budget!";
                 actionButtonText="Undo";
-                action = async () => await UndoCreateBudget(_vm.SnackID);
+                int BudgetID = _vm.SnackID;
+                action = async () => await UndoCreateBudget(BudgetID);
                 duration = TimeSpan.FromSeconds(10);
 
                 await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
@@ -222,7 +225,8 @@ public partial class MainPage : ContentPage
             {
                 text = $"Sweet, transaction created!";
                 actionButtonText = "Undo";
-                action = async () => await UndoAddTransaction(_vm.SnackID);
+                int TransactionID = _vm.SnackID;
+                action = async () => await UndoAddTransaction(TransactionID);
                 duration = TimeSpan.FromSeconds(10);
 
                 await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
@@ -233,6 +237,9 @@ public partial class MainPage : ContentPage
                 _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
                 App.SessionLastUpdate = DateTime.UtcNow;
             }
+
+            _vm.SnackBar = "";
+            _vm.SnackID = 0;
         }
     }
     private async Task UndoAddTransaction(int TransactionID)
@@ -271,6 +278,30 @@ public partial class MainPage : ContentPage
         }
 
     }
+
+    private void ShareBudget_Tapped(object sender, TappedEventArgs e)
+    {
+        ShareBudgetRequest SBR = new ShareBudgetRequest
+        {
+            SharedBudgetID = _vm.DefaultBudgetID,
+            IsVerified = false,
+            SharedByUserEmail = App.UserDetails.Email
+        };
+
+        ShareBudget page = new ShareBudget(SBR, new RestDataService());
+
+        page.Detents = new DetentsCollection()
+        {
+            new ContentDetent()
+        };
+
+        page.HasBackdrop = true;
+        page.CornerRadius = 30;
+        
+        page.ShowAsync();
+
+    }
+
 
 }
 

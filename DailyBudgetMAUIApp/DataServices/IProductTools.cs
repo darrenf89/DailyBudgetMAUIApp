@@ -41,6 +41,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public string TransactSavingsTransaction(ref Transactions T, ref Budgets Budget);
         public string TransactTransaction(ref Transactions T, ref Budgets Budget);
         public DateTime GetBudgetLocalTime(DateTime UtcDate);
+        public Task NavigateFromPendingIntent(string NavigationID);
 
     }
 }

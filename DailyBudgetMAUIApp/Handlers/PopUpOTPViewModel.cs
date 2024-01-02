@@ -59,6 +59,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string _passwordConfirm;
         [ObservableProperty]
         private bool _passwordResetFailure;
+        [ObservableProperty]
+        private ShareBudgetRequest _shareBudgetRequest;
 
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }

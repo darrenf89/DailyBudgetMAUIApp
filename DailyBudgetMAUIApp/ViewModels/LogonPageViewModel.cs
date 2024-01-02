@@ -7,6 +7,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using CommunityToolkit.Maui.Views;
+using DailySpendWebApp.Models;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -197,6 +198,20 @@ namespace DailyBudgetMAUIApp.ViewModels
                                             App.UserDetails = userDetails;
                                             App.DefaultBudgetID = userDetails.DefaultBudgetID;
                                             App.HasVisitedCreatePage = false;
+
+                                            if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
+                                            {
+                                                int FirebaseID = Convert.ToInt32(await SecureStorage.Default.GetAsync("FirebaseID"));
+
+                                                FirebaseDevices UserDevice = new FirebaseDevices
+                                                {
+                                                    FirebaseDeviceID = FirebaseID,
+                                                    UserAccountID = userDetails.UserID,
+                                                    LoginExpiryDate = userDetails.SessionExpiry
+                                                };
+
+                                                await _ds.UpdateDeviceUserDetails(UserDevice);
+                                            }
 
                                             //TODO: Sign in or update User Session and save to DB
                                             await Application.Current.MainPage.Navigation.PopModalAsync();

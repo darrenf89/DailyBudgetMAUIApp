@@ -21,6 +21,13 @@ public partial class App : Application
         Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mjk4ODg4NEAzMjM0MmUzMDJlMzBtUDY3VFhTeER1WTJyd3VWaG9zQ3BaakFhOUZ1bDdGRDFET0p3VUkwNk5JPQ==");
 		InitializeComponent();
 
+        Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping(nameof(Button), (handler, view) =>
+        {
+#if ANDROID
+               handler.PlatformView.Gravity = Android.Views.GravityFlags.Center;  
+#endif
+        });
+
         Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping(nameof(BorderlessEntry), (handler, view) =>
         {
             if (view is BorderlessEntry)

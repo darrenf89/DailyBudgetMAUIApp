@@ -18,6 +18,8 @@ namespace DailyBudgetMAUIApp.Models
         public ErrorClass? Error { get; set; } = null;
         public bool isDPAPermissions { get; set; }
         public bool isAgreedToTerms { get; set; }
+        public string? SubscriptionType { get; set; }
+        public DateTime SubscriptionExpiry { get; set; }
 
     }
 }

@@ -13,6 +13,5 @@ public partial class LogonPage : ContentPage
 		InitializeComponent();
 		this.BindingContext = viewModel;
 
-
     }
 }

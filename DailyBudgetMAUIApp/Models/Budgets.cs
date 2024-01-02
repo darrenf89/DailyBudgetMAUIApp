@@ -65,5 +65,11 @@ namespace DailyBudgetMAUIApp.Models
         private ErrorClass? _error  = null;
         [ObservableProperty]
         private int _stage = 1;
+        [ObservableProperty]
+        private int _sharedUserID = 0;
+        [ObservableProperty]
+        private bool _isSharedValidated;
+        [ObservableProperty]
+        private string _budgetType = "Basic";
     }
 }

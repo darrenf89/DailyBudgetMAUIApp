@@ -7,7 +7,8 @@
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
-             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             HeightRequest="100">
     <ScrollView>
         <VerticalStackLayout MinimumHeightRequest="{Binding MinHeight}">
             <Grid ColumnDefinitions="*" RowDefinitions="80,Auto,Auto,Auto">

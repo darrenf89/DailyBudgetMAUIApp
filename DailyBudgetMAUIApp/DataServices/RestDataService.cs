@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using CommunityToolkit.Maui.ApplicationModel;
 using System.Transactions;
 using System.Net;
+using DailySpendWebApp.Models;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -2415,6 +2416,256 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to get envelope savings in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> ShareBudgetRequest(ShareBudgetRequest BudgetShare)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<ShareBudgetRequest>(BudgetShare, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/budgets/sharebudgetrequest", request).Result;
+
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            BudgetShare = serializer.Deserialize<ShareBudgetRequest>(reader);
+                        }
+
+                        if (BudgetShare.SharedBudgetID != 0)
+                        {
+                            return "OK";
+                        }
+                        else
+                        {
+                            return "Not Saved";
+                        }                        
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        if (error.ErrorMessage == "User Not Found")
+                        {
+                            return "User Not Found";
+                        }
+                        else
+                        {
+                            throw new Exception(error.ErrorMessage);
+                        }
+                    }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying share budget in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<FirebaseDevices> RegisterNewFirebaseDevice(FirebaseDevices NewDevice)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FirebaseDevices>(NewDevice, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/firebasedevices/registernewfirebasedevice", request).Result;
+
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        NewDevice = serializer.Deserialize<FirebaseDevices>(reader);
+                    }
+
+                    return NewDevice;
+
+                }  
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying registering firebase token in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<FirebaseDevices> UpdateDeviceUserDetails(FirebaseDevices NewDevice)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FirebaseDevices>(NewDevice, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/firebasedevices/updatedeviceuserdetails", request).Result;
+
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            NewDevice = serializer.Deserialize<FirebaseDevices>(reader);
+                        }
+
+                        return NewDevice;
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying registering firebase token in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> ValidateOTPCodeShareBudget(OTP UserOTP, int SharedBudgetRequestID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<OTP>(UserOTP, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/otp/validateotpcodesharebudget/{SharedBudgetRequestID}", request).Result;
+
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+
+        }
+
+        public async Task<ShareBudgetRequest> GetShareBudgetRequestByID(int SharedBudgetRequestID)
+        {
+            ShareBudgetRequest ShareRequest = new ShareBudgetRequest();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getsharebudgetrequestbyid/{SharedBudgetRequestID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            ShareRequest = serializer.Deserialize<ShareBudgetRequest>(reader);
+                        }
+
+                        return ShareRequest;
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get sharebudgetrequest in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }

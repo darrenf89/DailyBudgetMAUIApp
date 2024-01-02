@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DailyBudgetMAUIApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -115,6 +116,58 @@ namespace DailyBudgetMAUIApp.Converters
             else
             {
                 return "No Note";
+            }
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class IsBudgetNotSharedBudgetToBool : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            Budgets budget = (Budgets)value;
+
+            if (budget.IsSharedValidated && budget.SharedUserID != 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class IsBudgetSharedBudgetToBool : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            Budgets budget = (Budgets)value;
+
+            if (budget.IsSharedValidated && budget.SharedUserID != 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
 
         }

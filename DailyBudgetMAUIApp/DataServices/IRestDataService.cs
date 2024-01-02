@@ -1,4 +1,6 @@
 ﻿using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Pages;
+using DailySpendWebApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,5 +67,10 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<List<Categories>> GetCategories(int BudgetID);
         public Task<Categories> AddNewSubCategory(int BudgetID, Categories Category);
         public Task<List<Savings>> GetBudgetEnvelopeSaving(int BudgetID);
+        public Task<string> ShareBudgetRequest(ShareBudgetRequest BudgetShare);
+        public Task<FirebaseDevices> RegisterNewFirebaseDevice(FirebaseDevices NewDevice);
+        public Task<FirebaseDevices> UpdateDeviceUserDetails(FirebaseDevices NewDevice);
+        public Task<string> ValidateOTPCodeShareBudget(OTP UserOTP, int SharedBudgetRequestID);
+        public Task<ShareBudgetRequest> GetShareBudgetRequestByID(int SharedBudgetRequestID);
     }
 }

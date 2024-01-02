@@ -1428,5 +1428,54 @@ namespace DailyBudgetMAUIApp.DataServices
 
             return LocalDate;
         }
+
+        public async Task NavigateFromPendingIntent(string NavigationType)
+        {
+            switch(NavigationType)
+            {
+                case "ShareBudget":
+                    int ShareBudgetRequestID = Convert.ToInt32(Preferences.Get("NavigationID", "0"));
+
+                    var popup = new PopUpOTP(ShareBudgetRequestID, new PopUpOTPViewModel(new RestDataService()), "ShareBudget", new ProductTools(new RestDataService()), new RestDataService());
+                    var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+                    if ((string)result.ToString() != "User Closed")
+                    {
+                        ShareBudgetRequest BudgetRequest = (ShareBudgetRequest)result;
+
+                        bool DefaultBudgetYesNo = await Application.Current.MainPage.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
+
+                        if (DefaultBudgetYesNo)
+                        {
+                            App.DefaultBudgetID = BudgetRequest.SharedBudgetID;
+                            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                            {
+                                Preferences.Remove(nameof(App.DefaultBudgetID));
+                            }
+                            Preferences.Set(nameof(App.DefaultBudgetID), BudgetRequest.SharedBudgetID);
+                            List<PatchDoc> UserDetails = new List<PatchDoc>();
+
+                            PatchDoc DefaultBudgetID = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/DefaultBudgetID",
+                                value = BudgetRequest.SharedBudgetID
+                            };
+
+                            UserDetails.Add(DefaultBudgetID);
+                            await _ds.PatchUserAccount(App.UserDetails.UserID, UserDetails);
+
+                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+
+                        }
+                    }
+
+                    break;
+                case "":
+                    break;
+                default:
+                    break;     
+            }
+        }
     }
 }

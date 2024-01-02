@@ -1,12 +1,11 @@
-using CommunityToolkit.Maui.Views;
-using CommunityToolkit.Maui.Alerts;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using System.Globalization;
+using The49.Maui.BottomSheet;
+using System.Windows.Input;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -22,7 +21,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         private int _defaultBudgetID;
 
         [ObservableProperty]
-        private Budgets _defaultBudget;
+        private Budgets _defaultBudget = new Budgets();
 
         [ObservableProperty]
         private bool _isBudgetCreated;

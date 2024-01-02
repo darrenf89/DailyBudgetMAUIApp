@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using IeuanWalker.Maui.Switch;
 using Syncfusion.Maui.Core.Hosting;
 using Maui.FixesAndWorkarounds;
+using The49.Maui.BottomSheet;
 
 
 namespace DailyBudgetMAUIApp;
@@ -26,6 +27,7 @@ public static class MauiProgram
             .UseMauiCommunityToolkit()
             .ConfigureSyncfusionCore()
             .ConfigureMauiWorkarounds()
+            .UseBottomSheet()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

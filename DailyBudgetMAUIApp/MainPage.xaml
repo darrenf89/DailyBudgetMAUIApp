@@ -5,7 +5,15 @@
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
+             xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
              Background="{StaticResource Primary}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:IsBudgetSharedBudgetToBool x:Key="IsBudgetSharedBudgetToBool" />
+            <converters:IsBudgetNotSharedBudgetToBool x:Key="IsBudgetNotSharedBudgetToBool" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <Shell.TitleView>
         <Grid ColumnDefinitions="*,40,40" ColumnSpacing="5">
             <Label Text="{Binding Title}" 
@@ -41,29 +49,53 @@
     <RefreshView Command="{Binding RefreshPageCommand}" IsRefreshing="{Binding IsRefreshing}">
         <ScrollView>
             <VerticalStackLayout VerticalOptions="Start">
-                <Border Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
-                    <Label
-                    Text="You haven't finished creating your budget, finalise your details before you continue"
-                    FontSize="32"
-                    HorizontalOptions="Center" />
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
-                    </Border.GestureRecognizers>
+                <Border Style="{DynamicResource DashboardMainContent}" Padding="0">
+                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto">
+                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" HeightRequest="60" Margin="20,0,0,0"/>
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" HorizontalOptions="End" Margin="0,10,35,10">
+                            <Image Source="mainpagelogotext.png" Aspect="AspectFill"  HeightRequest="60"/>
+                        </VerticalStackLayout>
+                    </Grid>
                 </Border>
-                <Border Style="{DynamicResource DashboardMainContent}">
-                    <Label
-                    Text="Hello, World!"
-                    SemanticProperties.HeadingLevel="Level1"
-                    FontSize="32"
-                    HorizontalOptions="Center" />
+                <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
+                    <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
+                        <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
+                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                            <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Complete Set up"  FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
+                            <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to finalise your budget's details!" FontSize="Caption" TextColor="{DynamicResource Gray600}"/>
+                        </VerticalStackLayout>
+                        <Grid BackgroundColor="{DynamicResource Tertiary}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                            <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
+                                </Image.Source>
+                            </Image>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </Grid>
                 </Border>
-                <Border Style="{DynamicResource DashboardMainContent}">
-                    <Label
-                    Text="Welcome to .NET Multi-platform App UI"
-                    SemanticProperties.HeadingLevel="Level2"
-                    SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                    FontSize="18"
-                    HorizontalOptions="Center" />
+                <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetNotSharedBudgetToBool}}" >
+                    <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
+                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                            <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Share Your Budget!"  FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
+                            <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to Share your budget with a family or friend!" FontSize="Caption" TextColor="{DynamicResource Gray600}"/>
+                        </VerticalStackLayout>
+                        <Grid BackgroundColor="{DynamicResource PrimaryLight}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                            <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
+                                </Image.Source>
+                            </Image>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="ShareBudget" Tapped="ShareBudget_Tapped" />
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </Grid>
                 </Border>
                 <Border Style="{DynamicResource DashboardMainContent}">
                     <VerticalStackLayout>

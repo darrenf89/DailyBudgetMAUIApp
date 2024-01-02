@@ -3,6 +3,7 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
+using DailySpendWebApp.Models;
 using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -12,12 +13,14 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class LoadUpPageViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
+        private readonly IRestDataService _ds;
 
-        public LoadUpPageViewModel(IProductTools pt)
+        public LoadUpPageViewModel(IProductTools pt, IRestDataService ds)
         {
 
             CheckUserLoginDetails();
             _pt = pt;
+            _ds = ds;
         }
 
         [ICommand]
@@ -58,6 +61,20 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         App.UserDetails = userDetails;
                         App.DefaultBudgetID = userDetails.DefaultBudgetID;
+
+                        if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
+                        {
+                            int FirebaseID = Convert.ToInt32(await SecureStorage.Default.GetAsync("FirebaseID"));
+
+                            FirebaseDevices UserDevice = new FirebaseDevices
+                            {
+                                FirebaseDeviceID = FirebaseID,
+                                UserAccountID = userDetails.UserID,
+                                LoginExpiryDate = userDetails.SessionExpiry
+                            };
+
+                            await _ds.UpdateDeviceUserDetails(UserDevice);
+                        }                        
 
                         //TODO: Update User Session
 
