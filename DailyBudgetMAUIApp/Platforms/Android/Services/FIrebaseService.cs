@@ -5,6 +5,7 @@ using DailyBudgetMAUIApp.Models;
 using DailySpendWebApp.Models;
 using AndroidX.Core.App;
 using Android.Content;
+using Microsoft.Maui.Controls.PlatformConfiguration;
 
 
 namespace DailyBudgetMAUIApp.Platforms.Android.Services
@@ -83,7 +84,17 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
                 intent.PutExtra(key, value);
             }
 
-            var pendingIntent = PendingIntent.GetActivity(this, MainActivity.NotificationID, intent, PendingIntentFlags.OneShot);
+            PendingIntent pendingIntent = null;
+
+            if (OperatingSystem.IsOSPlatformVersionAtLeast("android", 31))
+            {
+                pendingIntent = PendingIntent.GetActivity(this, MainActivity.NotificationID, intent, PendingIntentFlags.Mutable);
+            }
+            else
+            {
+                pendingIntent = PendingIntent.GetActivity(this, MainActivity.NotificationID, intent, PendingIntentFlags.OneShot);
+            }
+            
 
             var notificationBuilder = new NotificationCompat.Builder(this, MainActivity.Channel_ID)
                 .SetContentTitle(title)
@@ -91,7 +102,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
                 .SetSmallIcon(Resource.Mipmap.appicon)
                 .SetChannelId(MainActivity.Channel_ID)
                 .SetContentIntent(pendingIntent)
-                .SetPriority(2);
+                .SetPriority(1);
 
             var notificationManager = NotificationManagerCompat.From(this);
             notificationManager.Notify(MainActivity.NotificationID, notificationBuilder.Build());               

@@ -56,9 +56,10 @@ public static class MauiProgram
         builder.Services.AddTransient<AddIncome>();
         builder.Services.AddTransient<AddSaving>();
         builder.Services.AddTransient<CreateNewBudget>();
-        builder.Services.AddTransient<LoadingPage>();
-        builder.Services.AddTransient<LoadingPageTwo>();
-
+        builder.Services.AddTransient<ShareBudget>();
+        builder.Services.AddTransient<SelectSavingCategoryPage>();
+        builder.Services.AddTransient<SelectPayeePage>();
+        builder.Services.AddTransient<SelectCategoryPage>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();
@@ -71,6 +72,11 @@ public static class MauiProgram
         builder.Services.AddTransient<AddIncomeViewModel>();
         builder.Services.AddTransient<AddSavingViewModel>();
         builder.Services.AddTransient<CreateNewBudgetViewModel>();
+        builder.Services.AddTransient<SelectSavingCategoryPageViewModel>();
+        builder.Services.AddTransient<SelectPayeePageViewModel>();
+        builder.Services.AddTransient<SelectCategoryPageViewModel>();
+        builder.Services.AddTransient<BaseViewModel>();
+
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();
@@ -81,9 +87,11 @@ public static class MauiProgram
         builder.Services.AddTransient<PopupDailyBill, PopupDailyBillViewModel>();
         builder.Services.AddTransient<PopupDailyPayDay, PopupDailyPayDayViewModel>();
         builder.Services.AddTransient<PopupDailyIncome, PopupDailyIncomeViewModel>();
+        builder.Services.AddTransient<LoadingPage>();
+        builder.Services.AddTransient<LoadingPageTwo>();
 
 #if WINDOWS
-      SetWindowHandlers(); 
+        SetWindowHandlers(); 
 #endif
 
 #if DEBUG

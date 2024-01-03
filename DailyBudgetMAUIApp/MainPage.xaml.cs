@@ -292,7 +292,9 @@ public partial class MainPage : ContentPage
 
         page.Detents = new DetentsCollection()
         {
-            new ContentDetent()
+            new ContentDetent(),
+            new FullscreenDetent()
+
         };
 
         page.HasBackdrop = true;

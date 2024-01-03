@@ -1469,9 +1469,12 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         }
                     }
-
+                    Preferences.Remove("NavigationType");
+                    Preferences.Remove("NavigationID");
                     break;
-                case "":
+                case "BudgetShared":
+                    Preferences.Remove("NavigationType");
+
                     break;
                 default:
                     break;     

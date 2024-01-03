@@ -28,34 +28,25 @@ public partial class ShareBudget : BottomSheet
 
     private void btnShareBudgetButton_Clicked(object sender, EventArgs e)
     {
-        entSharedWithUserEmail.IsEnabled = false;
-        entSharedWithUserEmail.IsEnabled = true;
-
         ShareBudgetRequest.SharedWithUserEmail = entSharedWithUserEmail.Text;
 
         string Status = _ds.ShareBudgetRequest(ShareBudgetRequest).Result;
 
-        if(Status == "OK")
+        if (Status == "OK")
         {
             grdShareBudget.IsVisible = false;
             grdBudgetShared.IsVisible = true;
         }
         else
         {
-            validatorIsEmailFound.IsEnabled = true;
-        }
+            validatorIsEmailFound.IsVisible = true;
+            lblEmailValidator.Text = "No User with that email exists please check and try again!";
+        }            
     }
 
     private void entSharedWithUserEmail_Focused(object sender, FocusEventArgs e)
     {
-        validatorIsEmailFound.IsEnabled = false;
+        validatorIsEmailFound.IsVisible = false;
     }
 
-    private void Dismiss_Clicked(object sender, EventArgs e)
-    {
-        entSharedWithUserEmail.IsEnabled = false;
-        entSharedWithUserEmail.IsEnabled = true;
-
-        this.DismissAsync();
-    }
 }

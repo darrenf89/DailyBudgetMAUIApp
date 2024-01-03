@@ -636,7 +636,30 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
+    
+    <Style TargetType="Button" x:Key="PressedButton">
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="TranslationY" Value="0"/>
+                            <Setter Property="Opacity" Value="1"/>
+                            <Setter Property="Scale" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="0.95" />
+                            <Setter Property="TranslationY" Value="0"/>
+                            <Setter Property="Opacity" Value="0.4"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+    
     <Style TargetType="Button" x:Key="TitleButtons">
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>

@@ -11,25 +11,27 @@
     <VerticalStackLayout>
         <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="10,0,10,0" x:Name="grdShareBudget">
             <BoxView WidthRequest="60" HeightRequest="6" Color="{DynamicResource Primary}" HorizontalOptions="Center" Margin="0,10,0,20" Grid.Row="0"/>
-            <Label FontAttributes="Bold" Text="Share your budget!" FontFamily="OpenSansSemibold" HorizontalOptions="Center" FontSize="30" TextColor="{DynamicResource Primary}" Grid.Row="1" VerticalOptions="Center" Padding="5,0,0,10"/>
-            <Label Text="You are allowed to share your budget with a friend or family member. Do you and someone share finances or a bank account and want to use the same budget to manage it, don't worry we got you!" FontSize="Small" TextColor="{DynamicResource Gray400}" Padding="5,0,0,5" Grid.Row="2"/>
-            <Label Text="Enter the email asoicated with their account and we will notify them. You will get sent an OTP to your email, they can use this to verify the request and you can both start budgeting every day together!" FontSize="Small" TextColor="{DynamicResource Gray400}" Padding="5,0,0,0" Grid.Row="3"/>
-            <VerticalStackLayout  Grid.Column="0" Grid.Row="4" Margin="15,20,15,20">
-                <handlers:BorderlessEntry Focused="entSharedWithUserEmail_Focused" x:Name="entSharedWithUserEmail" FontSize="20" Placeholder="Please Enter Email" PlaceholderColor="{DynamicResource Gray200}" TextColor="{DynamicResource Gray900}"/>
-                <HorizontalStackLayout IsVisible="false" Margin="5,0,0,0" x:Name="validatorIsEmailFound">
-                    <Border Style="{DynamicResource brdDanger}">
-                        <Label Text="No User with that email exists please check and try again!" TextColor="{DynamicResource Danger}"/>
+            <VerticalStackLayout Grid.Row="1">
+                <Label FontAttributes="Bold" Text="Share your budget!" FontFamily="OpenSansSemibold" HorizontalOptions="Center" FontSize="30" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,10"/>
+                <VerticalStackLayout IsVisible="false" Margin="0,0,0,10" x:Name="validatorIsEmailFound">
+                    <Border Style="{DynamicResource brdDanger}" Margin="0">
+                        <Label x:Name="lblEmailValidator" Text="No User with that email exists please check and try again!" TextColor="{DynamicResource Danger}"/>
                     </Border>
-                </HorizontalStackLayout>
+                </VerticalStackLayout>  
+            </VerticalStackLayout>            
+            <Label Text="You are allowed to share your budget with a friend or family member. Do you and someone share finances or a bank account and want to use the same budget to manage it, don't worry we got you!" FontSize="Small" TextColor="{DynamicResource Gray400}" Padding="5,0,0,5" Grid.Row="2"/>
+            <VerticalStackLayout  Grid.Column="0" Grid.Row="3" Margin="15,20,15,20">
+                <handlers:BorderlessEntry Focused="entSharedWithUserEmail_Focused" x:Name="entSharedWithUserEmail" FontSize="25" Placeholder="Please Enter Email" PlaceholderColor="{DynamicResource Gray200}" TextColor="{DynamicResource Gray900}"/>
             </VerticalStackLayout>
-            <Button HorizontalOptions="Center" VerticalOptions="Center" x:Name="btnShareBudgetButton" Text="Share Your Budget Now!" FontSize="15" Padding="10" FontAttributes="Bold" Grid.Row="5" Grid.Column="0" Margin="15,0,15,0" Clicked="btnShareBudgetButton_Clicked"/>
+            <Label Margin="0,0,0,20" Text="Enter the email asoicated with their account and we will notify them. You will get sent an OTP to your email, they can use this to verify the request and you can both start budgeting every day together!" FontSize="Small" TextColor="{DynamicResource Gray400}" Padding="5,0,0,0" Grid.Row="4"/>
+            <Button Style="{DynamicResource PressedButton}" HorizontalOptions="Center" VerticalOptions="Center" x:Name="btnShareBudgetButton" Text="Share Your Budget Now!" FontSize="15" Padding="10" FontAttributes="Bold" Grid.Row="5" Grid.Column="0" Margin="15,0,15,0" Clicked="btnShareBudgetButton_Clicked"/>
         </Grid>
-        <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto" Margin="10,0,10,0" x:Name="grdBudgetShared" IsVisible="false">
+        <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto" Margin="0,0,0,0" x:Name="grdBudgetShared" IsVisible="false">
             <BoxView WidthRequest="60" HeightRequest="6" Color="{DynamicResource Primary}" HorizontalOptions="Center" Margin="0,10,0,20" Grid.Row="0"/>
-            <Border Style="{DynamicResource brdSuccess}" Grid.Row="1">
+            <Label FontAttributes="Bold" Text="Share your budget!" FontFamily="OpenSansSemibold" HorizontalOptions="Center" FontSize="30" Grid.Row="1" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,10"/>
+            <Border Style="{DynamicResource brdSuccess}" Grid.Row="2" Margin="0,20,0,20">
                 <Label Text="Congrats, we have shared your budget please verify the request to start sharing your budget" TextColor="{DynamicResource Success}"/>
             </Border>
-            <Button Grid.Row="2" Text="Ok" Style="{DynamicResource infoButton}" x:Name="Dismiss" Clicked="Dismiss_Clicked" HorizontalOptions="End" VerticalOptions="Center" FontSize="Small"/>
         </Grid>
     </VerticalStackLayout>
 </the49:BottomSheet>
