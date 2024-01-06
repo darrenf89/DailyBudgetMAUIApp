@@ -71,5 +71,13 @@ namespace DailyBudgetMAUIApp.Models
         private bool _isSharedValidated;
         [ObservableProperty]
         private string _budgetType = "Basic";
+        [ObservableProperty]
+        private AccountInfo _accountInfo = new AccountInfo();
+    }
+
+    public class AccountInfo
+    {
+        public int BudgetShareRequestID { get; set; } = 0;
+
     }
 }

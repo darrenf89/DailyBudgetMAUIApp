@@ -5,7 +5,7 @@ using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
 using System.Globalization;
 using DailyBudgetMAUIApp.ViewModels;
-using CommunityToolkit.Maui.ApplicationModel;
+
 
 namespace DailyBudgetMAUIApp.DataServices
 {
@@ -1434,7 +1434,11 @@ namespace DailyBudgetMAUIApp.DataServices
             switch(NavigationType)
             {
                 case "ShareBudget":
+
                     int ShareBudgetRequestID = Convert.ToInt32(Preferences.Get("NavigationID", "0"));
+
+                    Preferences.Remove("NavigationType");
+                    Preferences.Remove("NavigationID");
 
                     var popup = new PopUpOTP(ShareBudgetRequestID, new PopUpOTPViewModel(new RestDataService()), "ShareBudget", new ProductTools(new RestDataService()), new RestDataService());
                     var result = await Application.Current.MainPage.ShowPopupAsync(popup);
@@ -1465,12 +1469,10 @@ namespace DailyBudgetMAUIApp.DataServices
                             UserDetails.Add(DefaultBudgetID);
                             await _ds.PatchUserAccount(App.UserDetails.UserID, UserDetails);
 
-                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
-
+                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");                        
                         }
                     }
-                    Preferences.Remove("NavigationType");
-                    Preferences.Remove("NavigationID");
+
                     break;
                 case "BudgetShared":
                     Preferences.Remove("NavigationType");

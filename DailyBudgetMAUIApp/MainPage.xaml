@@ -7,11 +7,19 @@
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
              xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
+             xmlns:gauge="clr-namespace:Syncfusion.Maui.Gauges;assembly=Syncfusion.Maui.Gauges"
+             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
              Background="{StaticResource Primary}">
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:IsBudgetSharedBudgetToBool x:Key="IsBudgetSharedBudgetToBool" />
             <converters:IsBudgetNotSharedBudgetToBool x:Key="IsBudgetNotSharedBudgetToBool" />
+            <converters:IsBudgetShareRequestToBool x:Key="IsBudgetShareRequestToBool" />
+            <converters:DecimalToCurrencyString x:Key="DecimalToCurrencyString" />
+            <converters:GreaterLessZeroColorLight x:Key="GreaterLessZeroColorLight" />
+            <converters:GreaterLessZeroColor x:Key="GreaterLessZeroColor" />
+            <converters:LeftToSpendDailyAmountHideShow x:Key="LeftToSpendDailyAmountHideShow" />
+            <converters:LeftToSpendBalanceHideShow x:Key="LeftToSpendBalanceHideShow" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <Shell.TitleView>
@@ -49,16 +57,91 @@
     <RefreshView Command="{Binding RefreshPageCommand}" IsRefreshing="{Binding IsRefreshing}">
         <ScrollView>
             <VerticalStackLayout VerticalOptions="Start">
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0">
-                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto">
-                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" HeightRequest="60" Margin="20,0,0,0"/>
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" HorizontalOptions="End" Margin="0,10,35,10">
-                            <Image Source="mainpagelogotext.png" Aspect="AspectFill"  HeightRequest="60"/>
-                        </VerticalStackLayout>
+                <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,10">
+                    <Grid ColumnDefinitions="*" RowDefinitions="Auto">
+                        <Image Source="mainpagelogo.png" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" MaximumHeightRequest="70" Margin="10,0,0,0" HorizontalOptions="Center"/>
                     </Grid>
                 </Border>
+                <Border Style="{DynamicResource DashboardMainContent}" Stroke="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColorLight}}" StrokeThickness="3" Padding="0">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto, Auto, *" Padding="0" Margin="0">
+                        <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Padding="20,5,0,5">
+                            <Label  Text="Left of Today's Budget" TextColor="{DynamicResource PrimaryDark}" FontSize="Medium"  FontAttributes="Bold" VerticalOptions="Center"/>
+                            <Image VerticalOptions="Center" Margin="2,0,0,0">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="20" Color="{DynamicResource PrimaryDark}"/>
+                                </Image.Source>
+                            </Image>
+                        </HorizontalStackLayout>
+                        <Label Grid.Row="1" Grid.Column="1" Padding="20,0,0,0" FontSize="Caption" Margin="0">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Todays budget was: " TextColor="{StaticResource Gray400}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label Grid.Row="1" Grid.Column="2" Padding="2,0,0,0" FontSize="Caption" Margin="0">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span FontAttributes="Bold" Text="{Binding DefaultBudget.StartDayDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label Grid.Row="2" Grid.Column="1" Padding="20,0,0,0" FontSize="Caption" Margin="0">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Budget to pay day:  " TextColor="{StaticResource Gray400}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label Grid.Row="2" Grid.Column="2" Padding="2,0,0,0" FontSize="Caption" Margin="0">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span FontAttributes="Bold" Text="{Binding DefaultBudget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <gauge:SfRadialGauge  Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" MaximumHeightRequest="100" MaximumWidthRequest="100" Margin="5,0,0,0">
+                            <gauge:SfRadialGauge.Axes>
+                                <gauge:RadialAxis StartAngle="150" EndAngle="30" Minimum="0" Maximum="{Binding DefaultBudget.StartDayDailyAmount}" Interval="0" AnimationDuration="6000" EnableLoadingAnimation="True" RadiusFactor="0.95">
+                                    <gauge:RadialAxis.AxisLineStyle>
+                                        <gauge:RadialLineStyle Fill="{StaticResource DangerLight}"/>
+                                    </gauge:RadialAxis.AxisLineStyle>
+                                    <gauge:RadialAxis.Ranges>
+                                        <gauge:RadialRange StartValue="0" EndValue="{Binding DefaultBudget.LeftToSpendDailyAmount}"/>
+                                    </gauge:RadialAxis.Ranges>
+                                    <gauge:RadialAxis.Annotations>
+                                        <gauge:GaugeAnnotation x:Name="annotation" DirectionUnit="Angle" DirectionValue="90" PositionFactor="0">
+                                            <gauge:GaugeAnnotation.Content>
+                                                <Label Text="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" FontSize="Small" FontAttributes="Bold" TextColor="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColor}}" Padding="0,0,0,5" Margin="0"/>
+                                            </gauge:GaugeAnnotation.Content>
+                                        </gauge:GaugeAnnotation>
+                                    </gauge:RadialAxis.Annotations>
+                                </gauge:RadialAxis>
+                            </gauge:SfRadialGauge.Axes>
+                        </gauge:SfRadialGauge>
+                        <VerticalStackLayout Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendDailyAmountHideShow}}" BackgroundColor="{StaticResource InfoLLL}">
+                            <BoxView HeightRequest="2" Color="{StaticResource Info}" />
+                            <Label Padding="5,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Caption" Text="Don't worry if you've overspent today, you can still make it up!" TextColor="{DynamicResource Info}"/>
+                        </VerticalStackLayout>
+                        <Grid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendBalanceHideShow}}" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource WarningLightLight}">
+                            <BoxView HeightRequest="2" Color="{StaticResource Warning}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="5,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="No money left to spend, Fix that!" TextColor="{DynamicResource Warning}"/>
+                            <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="35" Color="{DynamicResource Gray600}"/>
+                                </Image.Source>
+                            </Image>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="NoMoneyLeft" Tapped="NoMoneyLeft_Tapped"/>
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </Grid>
+                </Border>
+                <Border Style="{DynamicResource DashboardMainContent}" HeightRequest="120">
+                    <Label Text="ADVERTISEMENT PLACEHOLDER" FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center"/>
+                </Border>
                 <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
-                    <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
+                    <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
                         <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
                             <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                         </VerticalStackLayout>
@@ -78,8 +161,61 @@
                         </Grid>
                     </Grid>
                 </Border>
+                <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetShareRequestToBool}}" >
+                    <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
+                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
+                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                            <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Someone wants to Share a Budget"  FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
+                            <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to Verify a Budget Share Request" FontSize="Caption" TextColor="{DynamicResource Gray600}"/>
+                        </VerticalStackLayout>
+                        <Grid BackgroundColor="{DynamicResource PrimaryLight}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                            <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
+                                </Image.Source>
+                            </Image>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="VerifyBudgetShare" Tapped="VerifyBudgetShare_Tapped" />
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </Grid>
+                </Border>
+                <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated}">
+                    <Grid ColumnDefinitions="45, Auto, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
+                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5"/>
+                        <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="End" Margin="5,5,5,0">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.More_vert}" Size="40"  Color="{DynamicResource Primary}" />
+                            </Image.Source>
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="BudgetMoreOptions" Tapped="BudgetMoreOptions_Tapped" />
+                            </Image.GestureRecognizers>
+                        </Image>
+                        <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4" Text="{Binding DefaultBudget.BudgetName}" FontAttributes="Bold" FontSize="Large" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0"/>
+                        <Label CharacterSpacing="0.1" FontAttributes="Bold" Grid.Column="1" Grid.Row="2" Text="{Binding DefaultBudget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" />
+                        <Label Text="Current Bank Balance" Grid.Column="1" Grid.Row="3" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
+                        <progressBar:SfLinearProgressBar AnimationDuration="6000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" SecondaryProgressFill="{StaticResource Tertiary}" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,0,10,5" Minimum="0" Maximum="{Binding DefaultBudget.BankBalance}" Progress="{Binding DefaultBudget.LeftToSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
+                        <Label Grid.Column="1" Grid.Row="5" Text="Money to Spend" FontSize="Caption" TextColor="{StaticResource Success}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
+                        <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="1" Grid.Row="6" Text="{Binding DefaultBudget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="Caption" TextColor="{StaticResource Gray900}" Padding="10,0,0,5" HorizontalTextAlignment="Start"/>
+                        <Label Grid.Column="2" Grid.Row="5" Text="Available Money" FontSize="Caption" TextColor="{StaticResource Tertiary}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
+                        <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="2" Grid.Row="6" Text="{Binding DefaultBudget.MoneyAvailableBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="Caption" TextColor="{StaticResource Gray900}" Padding="10,0,10,5" HorizontalTextAlignment="End"/>
+                        <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7" Margin="10,5,10,10"/>
+                        <HorizontalStackLayout Grid.Row="8" Grid.Column="1" Margin="10,0,10,0">
+                            <Label VerticalOptions="Center" Text="Days to Pay Day | " FontSize="Caption" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                            <Label VerticalOptions="Center" Text="{Binding DaysToPayDay, StringFormat='{0} Days'}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource Gray900}"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="9" Grid.Column="1" Margin="10,0,10,0">
+                            <Label VerticalOptions="Center" Text="Due Date | " FontSize="Caption" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                            <Label VerticalOptions="Center" Text="{Binding DefaultBudget.NextIncomePayday, StringFormat='{0:dd MMM yy}'}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource Gray900}"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="10" Grid.Column="1" Margin="10,0,10,10">
+                            <Label VerticalOptions="Center" Text="Pay Day Amount | " FontSize="Caption" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                            <Label VerticalOptions="Center" Text="{Binding DefaultBudget.PaydayAmount, StringFormat='{0:c}'}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource Gray900}"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </Border>
                 <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetNotSharedBudgetToBool}}" >
-                    <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
+                    <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
                         <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                         <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
                             <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Share Your Budget!"  FontSize="Medium" TextColor="{DynamicResource Gray900}"/>

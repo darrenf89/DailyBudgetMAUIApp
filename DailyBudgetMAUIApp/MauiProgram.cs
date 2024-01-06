@@ -3,9 +3,7 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
-using DailyBudgetMAUIApp.Helpers;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 using IeuanWalker.Maui.Switch;
 using Syncfusion.Maui.Core.Hosting;
 using Maui.FixesAndWorkarounds;
@@ -60,6 +58,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SelectSavingCategoryPage>();
         builder.Services.AddTransient<SelectPayeePage>();
         builder.Services.AddTransient<SelectCategoryPage>();
+        builder.Services.AddTransient<BudgetOptionsBottomSheet>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();

@@ -31,8 +31,7 @@ public partial class PopUpOTP : Popup
         if (OTPType == "ShareBudget")
         {
             _vm.ShareBudgetRequest = _ds.GetShareBudgetRequestByID(UserID).Result;
-            int OTPUserID = _ds.GetUserIdFromEmail(_vm.ShareBudgetRequest.SharedByUserEmail).Result;
-            _vm.UserID = OTPUserID;
+            _vm.UserID = _vm.ShareBudgetRequest.SharedWithUserAccountID;
         }
         else
         {
@@ -150,6 +149,7 @@ public partial class PopUpOTP : Popup
                     }
                     else
                     {
+                        CloseKeyBoard();
                         LoadOTPType();
                     }                        
                 }
@@ -169,6 +169,7 @@ public partial class PopUpOTP : Popup
                     if(status == "OK")
                     {
                         _vm.OTPValidated = true;
+                        CloseKeyBoard();
                         this.Close("OK");
                     }
                     else
@@ -196,6 +197,7 @@ public partial class PopUpOTP : Popup
                         string status = _ds.CreateNewOtpCode(_vm.UserID, _vm.OTPType).Result;
                         if (status == "OK")
                         {
+                            CloseKeyBoard();
                             LoadOTPType();
                         }
                         else if (status == "MaxLimit")
@@ -241,6 +243,7 @@ public partial class PopUpOTP : Popup
 
                     if(status == "OK")
                     {
+                        CloseKeyBoard();
                         this.Close("OK");
                     }
                     else
@@ -264,6 +267,7 @@ public partial class PopUpOTP : Popup
                     if (status == "OK")
                     {
                         _vm.OTPValidated = true;
+                        CloseKeyBoard();
                         LoadOTPType();
                     }
                     else
@@ -289,7 +293,12 @@ public partial class PopUpOTP : Popup
                 {
                     _vm.ShareBudgetRequest.IsVerified = true;
                     _vm.OTPValidated = true;
+                    CloseKeyBoard();
                     this.Close(_vm.ShareBudgetRequest);
+                }
+                else if(status == "Error")
+                {
+                    return;
                 }
                 else
                 {
@@ -297,6 +306,45 @@ public partial class PopUpOTP : Popup
                 }
             }
         }
+    }
+
+    private void CloseKeyBoard()
+    {
+        entOTPOne.IsEnabled = false;
+        entOTPOne.IsEnabled = true;
+
+        entOTPTwo.IsEnabled = false;
+        entOTPTwo.IsEnabled = true;
+
+        entOTPThree.IsEnabled = false;
+        entOTPThree.IsEnabled = true;
+
+        entOTPFour.IsEnabled = false;
+        entOTPFour.IsEnabled = true;
+
+        entOTPFive.IsEnabled = false;
+        entOTPFive.IsEnabled = true;
+
+        entOTPSix.IsEnabled = false;
+        entOTPSix.IsEnabled = true;
+
+        entOTPSeven.IsEnabled = false;
+        entOTPSeven.IsEnabled = true;
+
+        entOTPEight.IsEnabled = false;
+        entOTPEight.IsEnabled = true;
+
+        entEmail.IsEnabled = false;
+        entEmail.IsEnabled = true;
+
+        entEmailBox.IsEnabled = false;
+        entEmailBox.IsEnabled = true;
+
+        entPassword.IsEnabled = false;
+        entPassword.IsEnabled = true;
+
+        entPasswordReset.IsEnabled = false;
+        entPasswordReset.IsEnabled = true;
     }
 
     private void Close_Window(object sender, EventArgs e)

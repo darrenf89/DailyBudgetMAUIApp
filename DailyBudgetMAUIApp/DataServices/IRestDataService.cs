@@ -72,5 +72,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<FirebaseDevices> UpdateDeviceUserDetails(FirebaseDevices NewDevice);
         public Task<string> ValidateOTPCodeShareBudget(OTP UserOTP, int SharedBudgetRequestID);
         public Task<ShareBudgetRequest> GetShareBudgetRequestByID(int SharedBudgetRequestID);
+        public Task<string> CancelCurrentShareBudgetRequest(int BudgetID);
+        public Task<string> StopSharingBudget(int BudgetID);
     }
 }

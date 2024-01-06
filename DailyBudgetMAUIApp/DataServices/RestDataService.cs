@@ -1,17 +1,11 @@
 ﻿using DailyBudgetMAUIApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json;
-using System.Net.Mail;
 using System.Diagnostics;
 using Newtonsoft.Json;
-using CommunityToolkit.Maui.ApplicationModel;
-using System.Transactions;
 using System.Net;
 using DailySpendWebApp.Models;
+using DailyBudgetMAUIApp.Pages;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -37,6 +31,24 @@ namespace DailyBudgetMAUIApp.DataServices
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
         }
+
+        private async void HandleError(Exception ex, string Page, string Method)
+        {
+            if (ex.Message == "Connectivity")
+            {
+
+            }
+            else
+            {
+                ErrorLog Error = new ErrorLog(ex, Page, Method);
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });
+            }
+        }
+
         public async Task<string> PatchUserAccount(int UserID, List<PatchDoc> PatchDoc)
         {
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
@@ -2468,6 +2480,14 @@ namespace DailyBudgetMAUIApp.DataServices
                         {
                             return "User Not Found";
                         }
+                        else if(error.ErrorMessage == "Budget Already Shared")
+                        {
+                            return "Budget Already Shared";
+                        }
+                        else if (error.ErrorMessage == "Share Request Active")
+                        {
+                            return "Share Request Active";
+                        }
                         else
                         {
                             throw new Exception(error.ErrorMessage);
@@ -2611,14 +2631,16 @@ namespace DailyBudgetMAUIApp.DataServices
                         error = serializer.Deserialize<ErrorClass>(reader);
                     }
 
-                    throw new Exception(error.ErrorMessage);
+                    HandleError(new Exception(error.ErrorMessage), "PopUpOTP", "ValidateOTPCodeShareBudget");
+                    return "Error";
                 }
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+
                 Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
-                throw new Exception(ex.Message);
+                HandleError(ex, "PopUpOTP", "ValidateOTPCodeShareBudget");
+                return "Error";
             }
 
         }
@@ -2666,6 +2688,82 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to get sharebudgetrequest in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> CancelCurrentShareBudgetRequest(int BudgetID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/cancelcurrentsharebudgetrequest/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return "OK";
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to cancel current sharebudgetrequest in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> StopSharingBudget(int BudgetID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/stopsharingbudget/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return "OK";
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to cancel current sharebudgetrequest in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }

@@ -28,20 +28,52 @@ public partial class ShareBudget : BottomSheet
 
     private void btnShareBudgetButton_Clicked(object sender, EventArgs e)
     {
-        ShareBudgetRequest.SharedWithUserEmail = entSharedWithUserEmail.Text;
+        entSharedWithUserEmail.IsEnabled = false;
+        entSharedWithUserEmail.IsEnabled = true;
 
-        string Status = _ds.ShareBudgetRequest(ShareBudgetRequest).Result;
-
-        if (Status == "OK")
+        if (entSharedWithUserEmail.Text == ShareBudgetRequest.SharedByUserEmail)
         {
-            grdShareBudget.IsVisible = false;
-            grdBudgetShared.IsVisible = true;
+            BudgetShareSuccess.IsVisible = false;
+            validatorIsEmailFound.IsVisible = true;
+            lblEmailValidator.Text = "Can not share a budget with yourself!";
         }
         else
         {
-            validatorIsEmailFound.IsVisible = true;
-            lblEmailValidator.Text = "No User with that email exists please check and try again!";
-        }            
+            ShareBudgetRequest.SharedWithUserEmail = entSharedWithUserEmail.Text;
+
+            string Status = _ds.ShareBudgetRequest(ShareBudgetRequest).Result;
+
+            if (Status == "OK")
+            {
+                BudgetShareSuccess.IsVisible = true;
+                validatorIsEmailFound.IsVisible = false;
+                entSharedWithUserEmail.IsEnabled = false;
+                btnShareBudgetButton.IsEnabled = false;
+            }
+            else if (Status == "Budget Already Shared")
+            {
+                BudgetShareSuccess.IsVisible = false;
+                validatorIsEmailFound.IsVisible = true;
+                lblEmailValidator.Text = "This Budget has already been shared. Please stop sharing the budget to share with someone else";
+                entSharedWithUserEmail.IsEnabled = false;
+                btnShareBudgetButton.IsEnabled = false;
+            }
+            else if (Status == "Share Request Active")
+            {
+                BudgetShareSuccess.IsVisible = false;
+                validatorIsEmailFound.IsVisible = true;
+                lblEmailValidator.Text = "There is already a share request active, please cancel this request to share again!";
+                entSharedWithUserEmail.IsEnabled = false;
+                btnShareBudgetButton.IsEnabled = false;
+                btnCancelCurrentRequest.IsVisible = true;
+            }
+            else
+            {
+                BudgetShareSuccess.IsVisible = false;
+                validatorIsEmailFound.IsVisible = true;
+                lblEmailValidator.Text = "No User with that email exists please check and try again!";
+            }
+        }
     }
 
     private void entSharedWithUserEmail_Focused(object sender, FocusEventArgs e)
@@ -49,4 +81,19 @@ public partial class ShareBudget : BottomSheet
         validatorIsEmailFound.IsVisible = false;
     }
 
+    private async void btnCancelCurrentRequest_Tapped(object sender, TappedEventArgs e)
+    {
+        bool result = await Shell.Current.DisplayAlert("Cancel Current Requests", "Are you sure you want to cancel all currently acitve budget share requests", "Yes", "No, go back");
+        if(result)
+        {
+            _ds.CancelCurrentShareBudgetRequest(ShareBudgetRequest.SharedBudgetID);
+
+            BudgetShareSuccess.IsVisible = false;
+            validatorIsEmailFound.IsVisible = false;
+            entSharedWithUserEmail.IsEnabled = true;
+            btnShareBudgetButton.IsEnabled = true;
+            btnCancelCurrentRequest.IsVisible = false;
+        }
+
+    }
 }

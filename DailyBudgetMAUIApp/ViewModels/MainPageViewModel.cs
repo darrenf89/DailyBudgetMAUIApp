@@ -31,11 +31,18 @@ namespace DailyBudgetMAUIApp.ViewModels
         public string _snackBar = "";
         [ObservableProperty]
         public int _snackID = 0;
+        [ObservableProperty]
+        public double _progressBarWidthRequest;
+        [ObservableProperty]
+        public int _daysToPayDay;        
+
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {
             _ds = ds;
             _pt = pt;
+            double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
+            ProgressBarWidthRequest = ScreenWidth - 85;
         }
 
         [ICommand]

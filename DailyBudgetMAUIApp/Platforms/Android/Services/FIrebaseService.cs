@@ -70,6 +70,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
             var notification = message.GetNotification();
 
             SendNotification(notification.Body, notification.Title, message.Data);
+
         }
 
 
@@ -85,7 +86,6 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
             }
 
             PendingIntent pendingIntent = null;
-
             if (OperatingSystem.IsOSPlatformVersionAtLeast("android", 31))
             {
                 pendingIntent = PendingIntent.GetActivity(this, MainActivity.NotificationID, intent, PendingIntentFlags.Mutable);

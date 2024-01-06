@@ -8,6 +8,8 @@ using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using System.Globalization;
 using The49.Maui.BottomSheet;
+using Syncfusion.Maui.Gauges;
+using CommunityToolkit.Maui.ApplicationModel;
 
 namespace DailyBudgetMAUIApp;
 
@@ -29,12 +31,18 @@ public partial class MainPage : ContentPage
  
     }
 
+    protected async override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+        ProcessSnackBar();        
+    }
+
+
+
     protected async override void OnAppearing()
     {
 
         base.OnAppearing();
-
-        await _pt.NavigateFromPendingIntent(Preferences.Get("NavigationType", ""));
 
         _vm.DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID), 1);
         if (_vm.DefaultBudgetID != 0)
@@ -116,10 +124,9 @@ public partial class MainPage : ContentPage
         else
         {
             _vm.Title = $"Good morning {App.UserDetails.NickName}!";
-        }
+        }       
 
-        ProcessSnackBar();
-
+        _vm.DaysToPayDay = (int)Math.Ceiling((_vm.DefaultBudget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
     }
 
     private async void ProcessSnackBar()
@@ -304,6 +311,62 @@ public partial class MainPage : ContentPage
 
     }
 
+    private async void VerifyBudgetShare_Tapped(object sender, TappedEventArgs e)
+    {
+        var popup = new PopUpOTP(+_vm.DefaultBudget.AccountInfo.BudgetShareRequestID, new PopUpOTPViewModel(new RestDataService()), "ShareBudget", new ProductTools(new RestDataService()), new RestDataService());
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
+        if ((string)result.ToString() != "User Closed")
+        {
+            ShareBudgetRequest BudgetRequest = (ShareBudgetRequest)result;
+
+            bool DefaultBudgetYesNo = await Application.Current.MainPage.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
+
+            if (DefaultBudgetYesNo)
+            {
+                App.DefaultBudgetID = BudgetRequest.SharedBudgetID;
+                if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                {
+                    Preferences.Remove(nameof(App.DefaultBudgetID));
+                }
+                Preferences.Set(nameof(App.DefaultBudgetID), BudgetRequest.SharedBudgetID);
+                List<PatchDoc> UserDetails = new List<PatchDoc>();
+
+                PatchDoc DefaultBudgetID = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/DefaultBudgetID",
+                    value = BudgetRequest.SharedBudgetID
+                };
+
+                UserDetails.Add(DefaultBudgetID);
+                await _ds.PatchUserAccount(App.UserDetails.UserID, UserDetails);
+
+                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+
+            }
+        }
+    }
+
+    private void NoMoneyLeft_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private void BudgetMoreOptions_Tapped(object sender, TappedEventArgs e)
+    {
+        BudgetOptionsBottomSheet page = new BudgetOptionsBottomSheet();
+
+        page.Detents = new DetentsCollection()
+        {
+            new ContentDetent(),
+            new MediumDetent()
+        };
+
+        page.HasBackdrop = true;
+        page.CornerRadius = 30;
+
+        page.ShowAsync();
+    }
 }
 
