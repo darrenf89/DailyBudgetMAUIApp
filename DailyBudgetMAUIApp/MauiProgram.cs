@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Pages;
+using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
 using Microsoft.Extensions.Logging;
@@ -75,7 +76,6 @@ public static class MauiProgram
         builder.Services.AddTransient<SelectPayeePageViewModel>();
         builder.Services.AddTransient<SelectCategoryPageViewModel>();
         builder.Services.AddTransient<BaseViewModel>();
-
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();

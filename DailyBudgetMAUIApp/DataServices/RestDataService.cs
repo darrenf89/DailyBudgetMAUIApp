@@ -420,6 +420,47 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<DateTime> GetBudgetValuesLastUpdatedAsync(int BudgetID, string Page)
+        {
+            Budgets Budget = new Budgets();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getbudgetvalueslastupdated/{BudgetID}").Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
+
+                    return Budget.BudgetValuesLastUpdated;
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    HandleError(new Exception(error.ErrorMessage), Page, "GetBudgetValuesLastUpdatedAsync");
+                    
+                    
+                    return new DateTime();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, Page, "GetBudgetValuesLastUpdatedAsync");
+
+                return new DateTime();
+            }
+        }
+
         public async Task<BudgetSettings> GetBudgetSettings(int BudgetID)
         {
             BudgetSettings BudgetSettings = new BudgetSettings();
@@ -2765,6 +2806,53 @@ namespace DailyBudgetMAUIApp.DataServices
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to cancel current sharebudgetrequest in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<List<Budgets>> GetUserAccountBudgets(int UserID, string page)
+        {
+            List<Budgets> budgets = new List<Budgets>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getuseraccountbudgets/{UserID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            budgets = serializer.Deserialize<List<Budgets>>(reader);
+                        }
+
+                        return budgets;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), page, "ValidateOTPCodeShareBudget");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, page, "ValidateOTPCodeShareBudget");
+                return null;
             }
         }
     }

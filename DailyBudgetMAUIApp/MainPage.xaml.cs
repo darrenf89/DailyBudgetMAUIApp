@@ -1,5 +1,6 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Pages;
+using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
@@ -8,8 +9,7 @@ using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using System.Globalization;
 using The49.Maui.BottomSheet;
-using Syncfusion.Maui.Gauges;
-using CommunityToolkit.Maui.ApplicationModel;
+
 
 namespace DailyBudgetMAUIApp;
 
@@ -34,6 +34,7 @@ public partial class MainPage : ContentPage
     protected async override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
+        _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
         ProcessSnackBar();        
     }
 
@@ -306,7 +307,8 @@ public partial class MainPage : ContentPage
 
         page.HasBackdrop = true;
         page.CornerRadius = 30;
-        
+
+        App.CurrentBottomSheet = page;
         page.ShowAsync();
 
     }
@@ -324,26 +326,7 @@ public partial class MainPage : ContentPage
 
             if (DefaultBudgetYesNo)
             {
-                App.DefaultBudgetID = BudgetRequest.SharedBudgetID;
-                if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
-                {
-                    Preferences.Remove(nameof(App.DefaultBudgetID));
-                }
-                Preferences.Set(nameof(App.DefaultBudgetID), BudgetRequest.SharedBudgetID);
-                List<PatchDoc> UserDetails = new List<PatchDoc>();
-
-                PatchDoc DefaultBudgetID = new PatchDoc
-                {
-                    op = "replace",
-                    path = "/DefaultBudgetID",
-                    value = BudgetRequest.SharedBudgetID
-                };
-
-                UserDetails.Add(DefaultBudgetID);
-                await _ds.PatchUserAccount(App.UserDetails.UserID, UserDetails);
-
-                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
-
+                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID);
             }
         }
     }
@@ -355,16 +338,17 @@ public partial class MainPage : ContentPage
 
     private void BudgetMoreOptions_Tapped(object sender, TappedEventArgs e)
     {
-        BudgetOptionsBottomSheet page = new BudgetOptionsBottomSheet();
+        BudgetOptionsBottomSheet page = new BudgetOptionsBottomSheet(_vm.DefaultBudget, new ProductTools(new RestDataService()),new RestDataService());
 
         page.Detents = new DetentsCollection()
         {
-            new ContentDetent(),
-            new MediumDetent()
+            new ContentDetent()
         };
 
         page.HasBackdrop = true;
         page.CornerRadius = 30;
+
+        App.CurrentBottomSheet = page;
 
         page.ShowAsync();
     }

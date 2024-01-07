@@ -5,6 +5,10 @@ using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
 using System.Globalization;
 using DailyBudgetMAUIApp.ViewModels;
+using DailyBudgetMAUIApp.Converters;
+using Newtonsoft.Json;
+using DailyBudgetMAUIApp.Pages;
+using DailyBudgetMAUIApp.Converters;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -999,8 +1003,21 @@ namespace DailyBudgetMAUIApp.DataServices
                             _ds.UpdatePayPeriodStats(budget.PayPeriodStats[i]);
                         }
 
-                        //SAVE BUDGET UPDATES
-                        budget = await _ds.SaveBudgetDailyCycle(budget);
+                        //SAVE BUDGET UPDATES - BEFORE CHECK IT HASNT ALREADY BEEN UPDATED
+                        DateTime BudgetUpdatedCheck = await _ds.GetBudgetValuesLastUpdatedAsync(budget.BudgetID, "DailyChecks");
+
+                        if(BudgetUpdatedCheck.Date >= GetBudgetLocalTime(DateTime.UtcNow).Date)
+                        {
+                            await Shell.Current.DisplayAlert("Budget Already Updated!", "Your budget has already been updated for today, any changes you have just made will not be saved.", "OK");
+                            budget = await _ds.GetBudgetDetailsAsync(budget.BudgetID, "Full");
+
+                            return budget;
+                        }
+                        else
+                        {
+                            budget = await _ds.SaveBudgetDailyCycle(budget);
+                        }
+                        
                     }
                 }
             }
@@ -1099,7 +1116,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (Saving.SavingsType == "TargetAmount" || Saving.SavingsType == "TargetDate")
                 {
-                    if (Saving.GoalDate == budget.BudgetValuesLastUpdated.Date)
+                    if (Saving.GoalDate.GetValueOrDefault().Date == budget.BudgetValuesLastUpdated.Date)
                     {
                         if (Saving.IsAutoComplete)
                         {
@@ -1451,25 +1468,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         if (DefaultBudgetYesNo)
                         {
-                            App.DefaultBudgetID = BudgetRequest.SharedBudgetID;
-                            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
-                            {
-                                Preferences.Remove(nameof(App.DefaultBudgetID));
-                            }
-                            Preferences.Set(nameof(App.DefaultBudgetID), BudgetRequest.SharedBudgetID);
-                            List<PatchDoc> UserDetails = new List<PatchDoc>();
-
-                            PatchDoc DefaultBudgetID = new PatchDoc
-                            {
-                                op = "replace",
-                                path = "/DefaultBudgetID",
-                                value = BudgetRequest.SharedBudgetID
-                            };
-
-                            UserDetails.Add(DefaultBudgetID);
-                            await _ds.PatchUserAccount(App.UserDetails.UserID, UserDetails);
-
-                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");                        
+                            await ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID);                      
                         }
                     }
 
@@ -1481,6 +1480,90 @@ namespace DailyBudgetMAUIApp.DataServices
                 default:
                     break;     
             }
+        }
+
+        public async Task<Picker> SwitchBudget(string page)
+        {
+
+            List<Budgets> Budgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, page);
+
+            Picker picker = new Picker
+            {
+                Title = "Select a budget",
+                ItemsSource = Budgets
+            };
+
+            picker.ItemDisplayBinding = new Binding(".", BindingMode.Default, new ChangeBudgetStringConvertor());
+
+            //picker.ItemDisplayBinding = new MultiBinding
+            //{
+            //    Bindings = new Collection<BindingBase>
+            //    {
+            //        new Binding("BudgetName"),
+            //        new Binding("LastUpdated")
+            //    },
+            //    StringFormat = "{0} ({1:dd MMM yy})"
+                
+            //};
+
+            picker.SelectedIndexChanged += async (s, e) =>
+            {
+                var picker = (Picker)s;
+                var SelectedBudget = (Budgets)picker.SelectedItem;
+
+                await ChangeDefaultBudget(App.UserDetails.UserID, SelectedBudget.BudgetID);
+            };
+
+            return picker;
+        }
+
+        public async Task ChangeDefaultBudget(int UserID, int BudgetID)
+        {
+
+            List<PatchDoc> UpdateUserDetails = new List<PatchDoc>();
+
+            PatchDoc DefaultBudgetID = new PatchDoc
+            {
+                op = "replace",
+                path = "/DefaultBudgetID",
+                value = BudgetID
+            };
+
+            UpdateUserDetails.Add(DefaultBudgetID);
+            await _ds.PatchUserAccount(App.UserDetails.UserID, UpdateUserDetails);
+
+            App.DefaultBudget = null;
+            App.CurrentSettings = null;
+
+            string userDetailsStr = Preferences.Get(nameof(App.UserDetails), "");
+            UserDetailsModel userDetails = JsonConvert.DeserializeObject<UserDetailsModel>(userDetailsStr);
+            userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
+            userDetails.DefaultBudgetID = BudgetID;
+            userDetailsStr = JsonConvert.SerializeObject(userDetails);            
+
+            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+            {
+                Preferences.Remove(nameof(App.DefaultBudgetID));
+            }
+
+            if (Preferences.ContainsKey(nameof(App.UserDetails)))
+            {
+                Preferences.Remove(nameof(App.UserDetails));
+            }
+
+            Preferences.Set(nameof(App.UserDetails), userDetailsStr);
+            Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
+
+            App.UserDetails = userDetails;
+            App.DefaultBudgetID = userDetails.DefaultBudgetID;
+
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }            
+
+            await Shell.Current.GoToAsync($"{nameof(LoadUpPage)}");
         }
     }
 }

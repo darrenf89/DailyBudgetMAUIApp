@@ -3,7 +3,7 @@ using DailyBudgetMAUIApp.Models;
 
 using The49.Maui.BottomSheet;
 
-namespace DailyBudgetMAUIApp.Pages;
+namespace DailyBudgetMAUIApp.Pages.BottomSheets;
 
 public partial class ShareBudget : BottomSheet
 {

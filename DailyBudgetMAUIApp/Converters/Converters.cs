@@ -338,4 +338,34 @@ namespace DailyBudgetMAUIApp.Converters
         }
 
     }
+
+    public class ChangeBudgetStringConvertor : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            Budgets budget = (Budgets)value;
+
+            string result = "";
+
+            if (App.UserDetails.UserID == budget.SharedUserID)
+            {
+                result = $"[Shared]{budget.BudgetName} ({budget.LastUpdated.ToString("dd MMM yy")})";                
+            }
+            else
+            {
+                result = $"{budget.BudgetName} ({budget.LastUpdated.ToString("dd MMM yy")})";
+            }
+
+            return result;
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
 }

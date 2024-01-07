@@ -3,6 +3,7 @@ using DailyBudgetMAUIApp.Pages;
 using DailySpendWebApp.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog);
         public Task<Budgets> GetBudgetDetailsAsync(int BudgetID, string Mode);
         public Task<DateTime> GetBudgetLastUpdatedAsync(int BudgetID);
+        public Task<DateTime> GetBudgetValuesLastUpdatedAsync(int BudgetID, string page);
         public Task<DateTime> GetBudgetNextIncomePayDayAsync(int BudgetID);
         public Task<int> GetBudgetDaysBetweenPayDay(int BudgetID);
         public Task<BudgetSettingValues> GetBudgetSettingsValues(int BudgetID);
@@ -74,5 +76,6 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<ShareBudgetRequest> GetShareBudgetRequestByID(int SharedBudgetRequestID);
         public Task<string> CancelCurrentShareBudgetRequest(int BudgetID);
         public Task<string> StopSharingBudget(int BudgetID);
+        public Task<List<Budgets>> GetUserAccountBudgets(int UserID, string page);
     }
 }

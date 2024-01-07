@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <the49:BottomSheet xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                   x:Class="DailyBudgetMAUIApp.Pages.ShareBudget"
+                   x:Class="DailyBudgetMAUIApp.Pages.BottomSheets.ShareBudget"
                    xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
                    xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
                    xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
@@ -34,7 +34,7 @@
                 </Label>
             </VerticalStackLayout>
             <Label Margin="0,0,0,20" Text="Enter the email asoicated with their account and we will notify them. You will get sent an OTP to your email, they can use this to verify the request and you can both start budgeting every day together!" FontSize="Small" TextColor="{DynamicResource Gray400}" Padding="5,0,0,0" Grid.Row="4"/>
-            <Button Style="{DynamicResource PressedButton}" HorizontalOptions="Center" VerticalOptions="Center" x:Name="btnShareBudgetButton" Text="Share Your Budget Now!" FontSize="15" Padding="10" FontAttributes="Bold" Grid.Row="5" Grid.Column="0" Margin="15,0,15,0" Clicked="btnShareBudgetButton_Clicked"/>
+            <Button Style="{DynamicResource PressedButton}" HorizontalOptions="Center" VerticalOptions="Center" x:Name="btnShareBudgetButton" Text="Share Your Budget Now!" FontSize="15" Padding="10" FontAttributes="Bold" Grid.Row="5" Grid.Column="0" Margin="15,0,15,0" Clicked="btnShareBudgetButton_Clicked" TextColor="White"/>
         </Grid>
     </VerticalStackLayout>
 </the49:BottomSheet>

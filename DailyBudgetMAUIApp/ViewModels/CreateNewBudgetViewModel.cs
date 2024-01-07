@@ -447,17 +447,15 @@ namespace DailyBudgetMAUIApp.ViewModels
                         BudgetUpdate.Add(BudgetLastUpdated);
 
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
-                        App.DefaultBudgetID = BudgetID;
 
-                        if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                        if(App.DefaultBudgetID != BudgetID)
                         {
-                            Preferences.Remove(nameof(App.DefaultBudgetID));
+                            bool result = await Shell.Current.DisplayAlert("Change Default Budget?", "Do you want to make the newly created budget your default budget?", "Yes", "No");
+                            if(result)
+                            {
+                                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, BudgetID);
+                            }
                         }
-
-                        Preferences.Set(nameof(App.DefaultBudgetID), BudgetID);
-
-                        App.DefaultBudget = null;
-                        App.CurrentSettings = null;
 
                     break;
                 }                

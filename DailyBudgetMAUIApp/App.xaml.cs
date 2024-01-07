@@ -1,7 +1,6 @@
 ﻿using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using System.Globalization;
-using Microsoft.Maui.Platform;
+using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp;
 
@@ -13,6 +12,7 @@ public partial class App : Application
     public static DateTime SessionLastUpdate;
     public static bool HasVisitedCreatePage;
     public static BudgetSettingValues CurrentSettings;
+    public static BottomSheet CurrentBottomSheet;
 
     public static int SessionPeriod = 7;
 
@@ -52,12 +52,16 @@ public partial class App : Application
                 handler.PlatformView.Background = null;
                 handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
 #elif __IOS__
-                handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
-                //handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+                handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;                
 #endif
             }
         });
 
-        MainPage = new AppShell();
+        //MainPage = new AppShell();
 	}
+
+    protected override Window CreateWindow(IActivationState activationState) 
+    { 
+        return new Window(new AppShell());   
+    }
 }
