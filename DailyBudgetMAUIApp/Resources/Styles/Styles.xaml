@@ -210,7 +210,8 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Padding" Value="20,10,0,10"/>
         <Setter Property="Margin" Value="0,0,0,15"/>
-        <Setter Property="VisualStateManager.VisualStateGroups">
+        <Setter Property="ZIndex" Value="999"/>
+        <Setter Property="VisualStateManager.VisualStateGroups">            
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState x:Name="Normal">
@@ -231,10 +232,11 @@
     <Style TargetType="Border" x:Key="StandardInputBorder">
         <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
         <Setter Property="Stroke" Value="{DynamicResource Gray900Brush}"/>
-        <Setter Property="BackgroundColor" Value="{DynamicResource Light}"/>
+        <Setter Property="BackgroundColor" Value="{DynamicResource White}"/>
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Padding" Value="20,10,0,10"/>
         <Setter Property="Margin" Value="0,0,0,15"/>
+        <Setter Property="ZIndex" Value="999"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -561,7 +563,7 @@
         <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="Stroke" Value="{StaticResource BlackBrush}"/>
-        <Setter Property="StrokeThickness" Value="0.5"/>
+        <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -582,7 +584,7 @@
         <Setter Property="CornerRadius" Value="5"/>
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{DynamicResource Primary}"/>
-        <Setter Property="BackgroundColor" Value="{DynamicResource White}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">

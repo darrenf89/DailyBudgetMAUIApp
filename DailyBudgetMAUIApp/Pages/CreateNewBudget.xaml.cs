@@ -435,6 +435,16 @@ public partial class CreateNewBudget : ContentPage
 
             await _vm.SaveStage("Budget Details");
 
+            entBankBalance.IsEnabled = false;
+            entBankBalance.IsEnabled = true;
+            entPayAmount.IsEnabled = false;
+            entPayAmount.IsEnabled = true;
+            entEverynthValue.IsEnabled = false;
+            entEverynthValue.IsEnabled = true;
+            entOfEveryMonthValue.IsEnabled = false;
+            entOfEveryMonthValue.IsEnabled = true;
+            entWorkingDaysValue.IsEnabled = false;
+            entWorkingDaysValue.IsEnabled = true;
 
             //await MainScrollView.ScrollToAsync(0, 215, true);
         }
@@ -819,9 +829,9 @@ public partial class CreateNewBudget : ContentPage
         if (option == "Everynth")
         {
             vslOption1Select.BackgroundColor = (Color)Success;
-            vslOption2Select.BackgroundColor = (Color)White;
-            vslOption3Select.BackgroundColor = (Color)White;
-            vslOption4Select.BackgroundColor = (Color)White;
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption4Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.Bold;
             lblOption2.FontAttributes = FontAttributes.None;
@@ -846,10 +856,10 @@ public partial class CreateNewBudget : ContentPage
         }
         else if (option == "WorkingDays")
         {
-            vslOption1Select.BackgroundColor = (Color)White;
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
             vslOption2Select.BackgroundColor = (Color)Success;
-            vslOption3Select.BackgroundColor = (Color)White;
-            vslOption4Select.BackgroundColor = (Color)White;
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption4Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.None;
             lblOption2.FontAttributes = FontAttributes.Bold;
@@ -872,10 +882,10 @@ public partial class CreateNewBudget : ContentPage
         }
         else if (option == "OfEveryMonth")
         {
-            vslOption1Select.BackgroundColor = (Color)White;
-            vslOption2Select.BackgroundColor = (Color)White;
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
             vslOption3Select.BackgroundColor = (Color)Success;
-            vslOption4Select.BackgroundColor = (Color)White;
+            vslOption4Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.None;
             lblOption2.FontAttributes = FontAttributes.None;
@@ -899,9 +909,9 @@ public partial class CreateNewBudget : ContentPage
         else if (option == "LastOfTheMonth")
         {
 
-            vslOption1Select.BackgroundColor = (Color)White;
-            vslOption2Select.BackgroundColor = (Color)White;
-            vslOption3Select.BackgroundColor = (Color)White;
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
             vslOption4Select.BackgroundColor = (Color)Success;
 
             lblOption1.FontAttributes = FontAttributes.None;
@@ -925,10 +935,10 @@ public partial class CreateNewBudget : ContentPage
         }
         else
         {
-            vslOption1Select.BackgroundColor = (Color)White;
-            vslOption2Select.BackgroundColor = (Color)White;
-            vslOption3Select.BackgroundColor = (Color)White;
-            vslOption4Select.BackgroundColor = (Color)White;
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption4Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.None;
             lblOption2.FontAttributes = FontAttributes.None;
@@ -1061,7 +1071,7 @@ public partial class CreateNewBudget : ContentPage
         if (option == "Yes")
         {
             vslBillsYesSelect.BackgroundColor = (Color)Success;
-            vslBillsNoSelect.BackgroundColor = (Color)Light;
+            vslBillsNoSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblBillsYes.FontAttributes = FontAttributes.Bold;
             lblBillsNo.FontAttributes = FontAttributes.None;
@@ -1076,7 +1086,7 @@ public partial class CreateNewBudget : ContentPage
         }
         else if (option == "No")
         {
-            vslBillsYesSelect.BackgroundColor = (Color)Light;
+            vslBillsYesSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
             vslBillsNoSelect.BackgroundColor = (Color)Success;
 
             lblBillsYes.FontAttributes = FontAttributes.None;
@@ -1091,8 +1101,8 @@ public partial class CreateNewBudget : ContentPage
         }
         else
         {
-            vslBillsYesSelect.BackgroundColor = (Color)Light;
-            vslBillsNoSelect.BackgroundColor = (Color)Light;
+            vslBillsYesSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslBillsNoSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblBillsYes.FontAttributes = FontAttributes.None;
             lblBillsNo.FontAttributes = FontAttributes.None;
@@ -1118,7 +1128,7 @@ public partial class CreateNewBudget : ContentPage
         if (option == "Yes")
         {
             vslSavingsYesSelect.BackgroundColor = (Color)Success;
-            vslSavingsNoSelect.BackgroundColor = (Color)Light;
+            vslSavingsNoSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblSavingsYes.FontAttributes = FontAttributes.Bold;
             lblSavingsNo.FontAttributes = FontAttributes.None;
@@ -1133,7 +1143,7 @@ public partial class CreateNewBudget : ContentPage
         }
         else if (option == "No")
         {
-            vslSavingsYesSelect.BackgroundColor = (Color)Light;
+            vslSavingsYesSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
             vslSavingsNoSelect.BackgroundColor = (Color)Success;
 
             lblSavingsYes.FontAttributes = FontAttributes.None;
@@ -1148,8 +1158,8 @@ public partial class CreateNewBudget : ContentPage
         }
         else
         {
-            vslSavingsYesSelect.BackgroundColor = (Color)Light;
-            vslSavingsNoSelect.BackgroundColor = (Color)Light;
+            vslSavingsYesSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslSavingsNoSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblSavingsYes.FontAttributes = FontAttributes.None;
             lblSavingsNo.FontAttributes = FontAttributes.None;
@@ -1175,7 +1185,7 @@ public partial class CreateNewBudget : ContentPage
         if (option == "Yes")
         {
             vslIncomeYesSelect.BackgroundColor = (Color)Success;
-            vslIncomeNoSelect.BackgroundColor = (Color)Light;
+            vslIncomeNoSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblIncomeYes.FontAttributes = FontAttributes.Bold;
             lblIncomeNo.FontAttributes = FontAttributes.None;
@@ -1190,7 +1200,7 @@ public partial class CreateNewBudget : ContentPage
         }
         else if (option == "No")
         {
-            vslIncomeYesSelect.BackgroundColor = (Color)Light;
+            vslIncomeYesSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
             vslIncomeNoSelect.BackgroundColor = (Color)Success;
 
             lblIncomeYes.FontAttributes = FontAttributes.None;
@@ -1205,8 +1215,8 @@ public partial class CreateNewBudget : ContentPage
         }
         else
         {
-            vslIncomeYesSelect.BackgroundColor = (Color)Light;
-            vslIncomeNoSelect.BackgroundColor = (Color)Light;
+            vslIncomeYesSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslIncomeNoSelect.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblIncomeYes.FontAttributes = FontAttributes.None;
             lblIncomeNo.FontAttributes = FontAttributes.None;

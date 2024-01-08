@@ -64,14 +64,14 @@
                     <VerticalStackLayout Margin="0,0,0,10" x:Name="vslIncomeType" IsVisible="True">
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,5,0" HeightRequest="38">
                             <Grid RowDefinitions="*" ColumnDefinitions="*,*" VerticalOptions="Center">
-                                <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="{DynamicResource White}">
+                                <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="Transparent">
                                     <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblOption1" Text="Every nth" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                     </Label>
                                     <VerticalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="Option1Select_Tapped"/>
                                     </VerticalStackLayout.GestureRecognizers>
                                 </VerticalStackLayout>
-                                <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="{DynamicResource White}">
+                                <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="Transparent">
                                     <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblOption2" Text="... of the month" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                     </Label>
                                     <VerticalStackLayout.GestureRecognizers>
@@ -98,7 +98,7 @@
                             </Border>
                             <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="1" Grid.Row="1">
-                                <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration" BackgroundColor="White">
+                                <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration" BackgroundColor="Transparent">
                                     <Picker.ItemsSource>
                                         <x:Array Type="{x:Type x:String}">
                                             <x:String>days</x:String>
@@ -148,14 +148,14 @@
                         <VerticalStackLayout Margin="5,0,5,5">
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="0,0,0,2" HeightRequest="38" WidthRequest="200" HorizontalOptions="Start">
                                 <Grid RowDefinitions="*" ColumnDefinitions="*,*" VerticalOptions="Center">
-                                    <VerticalStackLayout x:Name="vslIncomeActiveYesSelect" Grid.Column="0" BackgroundColor="{DynamicResource White}">
+                                    <VerticalStackLayout x:Name="vslIncomeActiveYesSelect" Grid.Column="0" BackgroundColor="Transparent">
                                         <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblIncomeActiveYes" Text="Yes" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                         </Label>
                                         <VerticalStackLayout.GestureRecognizers>
                                             <TapGestureRecognizer Tapped="IncomeActiveYesSelect_Tapped"/>
                                         </VerticalStackLayout.GestureRecognizers>
                                     </VerticalStackLayout>
-                                    <VerticalStackLayout x:Name="vslIncomeActiveNoSelect" Grid.Column="1" BackgroundColor="{DynamicResource White}">
+                                    <VerticalStackLayout x:Name="vslIncomeActiveNoSelect" Grid.Column="1" BackgroundColor="Transparent">
                                         <Label Margin="0,8,0,0" HeightRequest="38" x:Name="lblIncomeActiveNo" Text="No" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                         </Label>
                                         <VerticalStackLayout.GestureRecognizers>

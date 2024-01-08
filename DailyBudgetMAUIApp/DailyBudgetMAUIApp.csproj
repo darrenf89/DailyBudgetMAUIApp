@@ -78,6 +78,7 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="PureWeen.Maui.FixesAndWorkarounds" Version="1.5.0" />
 		<PackageReference Include="Syncfusion.Licensing" Version="24.1.44" />
+		<PackageReference Include="Syncfusion.Maui.Carousel" Version="24.1.44" />
 		<PackageReference Include="Syncfusion.Maui.Expander" Version="24.1.44" />
 		<PackageReference Include="Syncfusion.Maui.Gauges" Version="24.1.44" />
 		<PackageReference Include="Syncfusion.Maui.Picker" Version="24.1.44" />
@@ -101,6 +102,9 @@
 	  </Compile>
 	  <Compile Update="Handlers\PopUpOTP.xaml.cs">
 	    <DependentUpon>PopUpOTP.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\BottomSheets\EnvelopeOptionsBottomSheet.xaml.cs">
+	    <DependentUpon>EnvelopeOptionsBottomSheet.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Pages\CreateNewBudget.xaml.cs">
 	    <DependentUpon>CreateNewBudget.xaml</DependentUpon>
@@ -151,6 +155,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\AddTransaction.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\BottomSheets\EnvelopeOptionsBottomSheet.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\CreateNewBudget.xaml">

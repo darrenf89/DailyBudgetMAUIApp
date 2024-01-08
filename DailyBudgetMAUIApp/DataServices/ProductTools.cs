@@ -8,7 +8,6 @@ using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Converters;
 using Newtonsoft.Json;
 using DailyBudgetMAUIApp.Pages;
-using DailyBudgetMAUIApp.Converters;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -824,7 +823,6 @@ namespace DailyBudgetMAUIApp.DataServices
         private void CloseSaving(ref Savings Saving)
         {
             Saving.CurrentBalance = Saving.SavingsGoal;
-            Saving.SavingsGoal = null;
             Saving.GoalDate = null;
             Saving.RegularSavingValue = null;
             Saving.PeriodSavingValue = null;
@@ -915,28 +913,29 @@ namespace DailyBudgetMAUIApp.DataServices
             for (int i = Budget.Savings.Count - 1; i >= 0; i--)
             {
                 Savings Saving = Budget.Savings[i];
-
-                if (Saving.IsRegularSaving)
+                if (!Saving.IsSavingsClosed)
                 {
-                    Saving.LastUpdatedDate = DateTime.UtcNow;
-                    Saving.LastUpdatedValue = Saving.RegularSavingValue;
+                    if (Saving.IsRegularSaving)
+                    {
+                        Saving.LastUpdatedDate = DateTime.UtcNow;
+                        Saving.LastUpdatedValue = Saving.RegularSavingValue;
 
-                    if(Saving.SavingsType == "SavingsBuilder")
-                    {
-                        Saving.CurrentBalance += Saving.RegularSavingValue;
-                        Stats.SavingsToDate += Saving.RegularSavingValue.GetValueOrDefault();
-                    }    
-                    else if(!(Saving.CurrentBalance >= Saving.SavingsGoal))
-                    {
-                        Saving.CurrentBalance += Saving.RegularSavingValue;
-                        Stats.SavingsToDate += Saving.RegularSavingValue.GetValueOrDefault();
+                        if (Saving.SavingsType == "SavingsBuilder")
+                        {
+                            Saving.CurrentBalance += Saving.RegularSavingValue;
+                            Stats.SavingsToDate += Saving.RegularSavingValue.GetValueOrDefault();
+                        }
+                        else if (!(Saving.CurrentBalance >= Saving.SavingsGoal))
+                        {
+                            Saving.CurrentBalance += Saving.RegularSavingValue;
+                            Stats.SavingsToDate += Saving.RegularSavingValue.GetValueOrDefault();
+                        }
+                        else if (!Saving.CanExceedGoal)
+                        {
+                            Saving.CurrentBalance = Saving.SavingsGoal;
+                        }
                     }
-                    else if (!Saving.CanExceedGoal)
-                    {
-                        Saving.CurrentBalance = Saving.SavingsGoal;
-                    }                   
                 }
-
                 Budget.Savings[i] = Saving;
             }
 
@@ -1484,27 +1483,22 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<Picker> SwitchBudget(string page)
         {
+            Application.Current.Resources.TryGetValue("White", out var White);
+            Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
+            Application.Current.Resources.TryGetValue("Primary", out var Primary);
 
             List<Budgets> Budgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, page);
 
             Picker picker = new Picker
             {
                 Title = "Select a budget",
-                ItemsSource = Budgets
+                ItemsSource = Budgets,
+                TitleColor = (Color)Primary,
+                BackgroundColor = (Color)White,
+                TextColor = (Color)Gray400
             };
 
             picker.ItemDisplayBinding = new Binding(".", BindingMode.Default, new ChangeBudgetStringConvertor());
-
-            //picker.ItemDisplayBinding = new MultiBinding
-            //{
-            //    Bindings = new Collection<BindingBase>
-            //    {
-            //        new Binding("BudgetName"),
-            //        new Binding("LastUpdated")
-            //    },
-            //    StringFormat = "{0} ({1:dd MMM yy})"
-                
-            //};
 
             picker.SelectedIndexChanged += async (s, e) =>
             {
@@ -1539,6 +1533,7 @@ namespace DailyBudgetMAUIApp.DataServices
             UserDetailsModel userDetails = JsonConvert.DeserializeObject<UserDetailsModel>(userDetailsStr);
             userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
             userDetails.DefaultBudgetID = BudgetID;
+
             userDetailsStr = JsonConvert.SerializeObject(userDetails);            
 
             if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
@@ -1555,7 +1550,7 @@ namespace DailyBudgetMAUIApp.DataServices
             Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
 
             App.UserDetails = userDetails;
-            App.DefaultBudgetID = userDetails.DefaultBudgetID;
+            App.DefaultBudgetID = BudgetID;
 
             if (App.CurrentBottomSheet != null)
             {
@@ -1563,7 +1558,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 App.CurrentBottomSheet = null;
             }            
 
-            await Shell.Current.GoToAsync($"{nameof(LoadUpPage)}");
+            await Shell.Current.GoToAsync($"{nameof(MainPage)}");
         }
     }
 }

@@ -91,14 +91,14 @@
                         <Label Text="How does the outgoing get paid?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Margin="5,5,5,0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,10,5,0" HeightRequest="39">
                             <Grid RowDefinitions="*" ColumnDefinitions="*,*" VerticalOptions="Center">
-                                <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="{DynamicResource Light}">
+                                <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="Transparent">
                                     <Label Margin="0,8,0,0" HeightRequest="55" x:Name="lblOption1" Text="Every nth" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                     </Label>
                                     <VerticalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="Option1Select_Tapped"/>
                                     </VerticalStackLayout.GestureRecognizers>
                                 </VerticalStackLayout>
-                                <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="{DynamicResource Light}">
+                                <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="Transparent">
                                     <Label Margin="0,8,0,0" HeightRequest="55" x:Name="lblOption2" Text="... of the month" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                     </Label>
                                     <VerticalStackLayout.GestureRecognizers>

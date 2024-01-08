@@ -4,8 +4,8 @@ using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using The49.Maui.BottomSheet;
 using System.Windows.Input;
+using Syncfusion.Maui.Carousel;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -28,13 +28,19 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool _isRefreshing;
         [ObservableProperty]
-        public string _snackBar = "";
+        private string _snackBar = "";
         [ObservableProperty]
-        public int _snackID = 0;
+        private int _snackID = 0;
         [ObservableProperty]
-        public double _progressBarWidthRequest;
+        private double _progressBarWidthRequest;
         [ObservableProperty]
-        public int _daysToPayDay;        
+        private double _progressBarCarWidthRequest;
+        [ObservableProperty]
+        private int _daysToPayDay;
+        [ObservableProperty]
+        private EnvelopeStats _envelopeStats;
+        [ObservableProperty]
+        private double _signOutButtonWidth;
 
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
@@ -43,6 +49,9 @@ namespace DailyBudgetMAUIApp.ViewModels
             _pt = pt;
             double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             ProgressBarWidthRequest = ScreenWidth - 85;
+            SignOutButtonWidth = ScreenWidth - 30;
+            ProgressBarCarWidthRequest = ScreenWidth - 115;
+
         }
 
         [ICommand]
@@ -84,7 +93,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         async void RefreshPage()
         {
-            DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Limited").Result;
+            DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Full").Result;
 
             App.DefaultBudget = DefaultBudget;
             IsBudgetCreated = App.DefaultBudget.IsCreated;
@@ -92,6 +101,8 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
             App.CurrentSettings = Settings;
+
+            EnvelopeStats = new EnvelopeStats(DefaultBudget.Savings);
 
             IsRefreshing = false;
 

@@ -17,9 +17,9 @@
         <ShellContent  ContentTemplate="{DataTemplate Pages:ErrorPage}"/>
     </ShellItem>
 
-    <TabBar>
+    <TabBar>si
         <Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
-            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate local:MainPage}" />
         </Tab>
         <Tab Title="Bill" Route="AddBill" Icon="bill.svg">
             <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddBill}"/>

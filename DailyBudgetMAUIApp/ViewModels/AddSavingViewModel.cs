@@ -12,6 +12,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 {
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     [QueryProperty(nameof(SavingID), nameof(SavingID))]
+    [QueryProperty(nameof(SavingType), nameof(SavingType))]
     public partial class AddSavingViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -27,6 +28,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool _isPageValid;
         [ObservableProperty]
         private DateTime _minimumDate = DateTime.UtcNow.Date.AddDays(1);
+        [ObservableProperty]
+        private string _savingType;
 
         public string SavingTypeText { get; set; } = "";
         public string SavingRecurringText { get; set; } = "";

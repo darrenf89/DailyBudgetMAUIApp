@@ -368,4 +368,145 @@ namespace DailyBudgetMAUIApp.Converters
         }
 
     }
+
+    public class SavingProgressBarMax : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            Savings saving = (Savings)value;
+
+            if(saving.SavingsType == "SavingsBuilder")
+            {
+                return saving.CurrentBalance;
+            }
+            else
+            {
+
+                return saving.SavingsGoal;                
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class SavingProgressBarMaxString : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            Savings saving = (Savings)value;
+
+            if (saving.SavingsType == "SavingsBuilder")
+            {
+                return saving.CurrentBalance.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+            }
+            else
+            {
+                return saving.SavingsGoal.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);                
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class SavingTypeConverter : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            string SavingType = (string)value;
+
+            if (SavingType == "SavingsBuilder")
+            {
+                return "Building savings every day";
+            }
+            else if(SavingType == "TargetAmount")
+            {
+                return "Saving set amount every day";
+            }
+            else if(SavingType == "TargetDate")
+            {
+                return "Saving for a target date";
+            }
+            else
+            {
+                return "Unknown";
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class RegularSavingValueString : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            Savings saving = (Savings)value;
+
+            if (saving.IsSavingsClosed)
+            {
+                return "Saving Closed";
+            }
+            else
+            {
+                return saving.RegularSavingValue.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class SavingGoalDateString : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            Savings saving = (Savings)value;
+
+            if (saving.IsSavingsClosed)
+            {
+                return "Saving Closed";
+            }
+            else
+            {
+                if(saving.SavingsType == "SavingsBuilder")
+                {
+                    return "Continuous Saving";
+                }
+                else
+                {
+                    return saving.GoalDate.GetValueOrDefault().ToString("dd MMM yy");
+                }
+                
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
 }

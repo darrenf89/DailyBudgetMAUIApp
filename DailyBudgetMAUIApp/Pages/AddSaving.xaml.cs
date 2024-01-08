@@ -44,6 +44,19 @@ public partial class AddSaving : ContentPage
             _vm.Saving = new Savings();
             _vm.Title = "Add a New Saving";
             btnAddSaving.IsVisible = true;
+
+            if(_vm.SavingType == "Envelope")
+            {
+                _vm.SavingRecurringText = "Envelope";
+                _vm.Saving.IsRegularSaving = false;
+                UpdateDisplaySelection("Envelope");
+            }
+            else if(_vm.SavingType == "Regular")
+            {
+                _vm.SavingRecurringText = "Ongoing";
+                _vm.Saving.IsRegularSaving = true;
+                btnOngoingSaving_Clicked(new Object(), new EventArgs());
+            }
         }
         else
         {
@@ -200,8 +213,8 @@ public partial class AddSaving : ContentPage
         if (option == "TargetDate")
         {
             vslOption1Select.BackgroundColor = (Color)Success;
-            vslOption2Select.BackgroundColor = (Color)White;
-            vslOption3Select.BackgroundColor = (Color)White;
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.Bold;
             lblOption2.FontAttributes = FontAttributes.None;
@@ -220,9 +233,9 @@ public partial class AddSaving : ContentPage
         }
         else if (option == "SavingsBuilder")
         {
-            vslOption1Select.BackgroundColor = (Color)White;
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
             vslOption2Select.BackgroundColor = (Color)Success;
-            vslOption3Select.BackgroundColor = (Color)White;
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.None;
             lblOption2.FontAttributes = FontAttributes.Bold;
@@ -240,8 +253,8 @@ public partial class AddSaving : ContentPage
         }
         else if (option == "TargetAmount")
         {
-            vslOption1Select.BackgroundColor = (Color)White;
-            vslOption2Select.BackgroundColor = (Color)White;
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
             vslOption3Select.BackgroundColor = (Color)Success;
 
             lblOption1.FontAttributes = FontAttributes.None;
@@ -259,9 +272,9 @@ public partial class AddSaving : ContentPage
         }
         else
         {
-            vslOption1Select.BackgroundColor = (Color)White;
-            vslOption2Select.BackgroundColor = (Color)White;
-            vslOption3Select.BackgroundColor = (Color)White;
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.None;
             lblOption2.FontAttributes = FontAttributes.None;

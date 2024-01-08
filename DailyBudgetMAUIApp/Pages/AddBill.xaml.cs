@@ -180,7 +180,7 @@ public partial class AddBill : ContentPage
         if (option == "Everynth")
         {
             vslOption1Select.BackgroundColor = (Color)Success;
-            vslOption2Select.BackgroundColor = (Color)Light;
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.Bold;
             lblOption2.FontAttributes = FontAttributes.None;
@@ -200,7 +200,7 @@ public partial class AddBill : ContentPage
         }
         else if (option == "OfEveryMonth")
         {
-            vslOption1Select.BackgroundColor = (Color)Light;
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
             vslOption2Select.BackgroundColor = (Color)Success;
 
             lblOption1.FontAttributes = FontAttributes.None;
@@ -219,8 +219,8 @@ public partial class AddBill : ContentPage
         }
         else
         {
-            vslOption1Select.BackgroundColor = (Color)Light;
-            vslOption2Select.BackgroundColor = (Color)Light;
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.None;
             lblOption2.FontAttributes = FontAttributes.None;

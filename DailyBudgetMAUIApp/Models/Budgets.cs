@@ -1,4 +1,5 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+using System.Globalization;
 
 
 namespace DailyBudgetMAUIApp.Models
@@ -79,5 +80,45 @@ namespace DailyBudgetMAUIApp.Models
     {
         public int BudgetShareRequestID { get; set; } = 0;
 
+    }
+
+    public partial class EnvelopeStats : ObservableObject
+    {
+        [ObservableProperty]
+        private int _numberOfEnvelopes;
+        [ObservableProperty]
+        private string _envelopeTotalString;
+        [ObservableProperty]
+        private string _envelopeCurrentString;
+        [ObservableProperty]
+        private string _amountPerDayString;
+        [ObservableProperty]
+        private decimal _envelopeTotal;
+        [ObservableProperty]
+        private decimal _envelopeCurrent;
+        [ObservableProperty]
+        private decimal _amountPerDay;
+        [ObservableProperty]
+        private int _daysLeftToSpend;
+
+        public EnvelopeStats(List<Savings> Savings)
+        {
+            foreach(Savings Saving in Savings)
+            {
+                if(!Saving.IsRegularSaving)
+                {
+                    this.DaysLeftToSpend = (int)Math.Ceiling((Saving.GoalDate.GetValueOrDefault().Date - DateTime.Now.Date).TotalDays);
+
+                    this.NumberOfEnvelopes += 1;
+                    this.EnvelopeCurrent += Saving.CurrentBalance.GetValueOrDefault();
+                    this.EnvelopeTotal += Saving.PeriodSavingValue.GetValueOrDefault();
+                }
+            }
+            this.AmountPerDay = this.DaysLeftToSpend == 0 ? 0 : this.EnvelopeCurrent / this.DaysLeftToSpend;   
+
+            this.EnvelopeTotalString = this.EnvelopeTotal.ToString("c", CultureInfo.CurrentCulture);
+            this.EnvelopeCurrentString = this.NumberOfEnvelopes == 0 ? "You have no envelope savings!" : this.EnvelopeCurrent.ToString("c", CultureInfo.CurrentCulture);
+            this.AmountPerDayString = this.AmountPerDay.ToString("c", CultureInfo.CurrentCulture);
+        }
     }
 }
