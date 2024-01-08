@@ -148,7 +148,8 @@ public partial class MainPage : ContentPage
         if (_vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).ToList().Count() != 0)
         {
             brdSavingCarousel.IsVisible = true;
-            SavingCarousel.Children.Add(CreateSavingCarousel());
+            _vm.SavingCarousel = CreateSavingCarousel();
+            SavingCarousel.Children.Add(_vm.SavingCarousel);
         }
         else
         {
@@ -431,8 +432,8 @@ public partial class MainPage : ContentPage
                 ColumnDefinitions =
                 {
                     new ColumnDefinition{Width = new GridLength(45)},
-                    new ColumnDefinition{Width = new GridLength((_vm.SignOutButtonWidth - 65)/2)},
-                    new ColumnDefinition{Width = new GridLength((_vm.SignOutButtonWidth - 65)/2)}
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))},
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))}
                 },
                 RowDefinitions =
                 {
@@ -450,6 +451,24 @@ public partial class MainPage : ContentPage
                 }
                 
             };
+
+            Image ClickImage = new Image
+            {
+                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                VerticalOptions = LayoutOptions.Start,
+                HorizontalOptions = LayoutOptions.End,
+                Margin = new Thickness(5, 5, 5, 0),
+                ZIndex = 999,
+                Source = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5d4",
+                    Size = 40,
+                    Color = (Color)Primary,                    
+                }
+            };
+
+            grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
 
             Image image = new Image
             {
@@ -479,11 +498,11 @@ public partial class MainPage : ContentPage
                 Margin = new Thickness(0)
             };
             lblTitle.SetBinding(Label.TextProperty, "SavingsName");
-            grid.AddWithSpan(lblTitle, 0, 1, 1, 2);
+            grid.AddWithSpan(lblTitle, 0, 1, 1, 1);
 
             Label lblSavingType = new Label
             {
-                FontSize = 16,
+                FontSize = 14,
                 Padding = new Thickness(10, 0, 0, 0),
                 TextColor = (Color)Tertiary,
                 Margin = new Thickness(0),
@@ -636,11 +655,15 @@ public partial class MainPage : ContentPage
             WidthRequest = _vm.SignOutButtonWidth + 10,
             ItemWidth = (int)Math.Ceiling(_vm.SignOutButtonWidth) - 10,
             ItemHeight = 260,
-            ItemSpacing = 20,
+            ItemSpacing = 20
         };
 
         sc.ItemTemplate = dt;
         sc.ItemsSource = _vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).Take(7).ToList();
+
+        //TapGestureRecognizer TapGesture = new TapGestureRecognizer();
+        //TapGesture.Tapped += SavingsMoreOptions_Tapped;
+        //sc.GestureRecognizers.Add(TapGesture);
         
         if(sc.ItemsSource.Count() > 0)
         {
@@ -688,6 +711,7 @@ public partial class MainPage : ContentPage
             }
 
             SavingCarouselIdent.Children.Add(button);
+            
 
         }
 
@@ -740,12 +764,30 @@ public partial class MainPage : ContentPage
         if (_vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).ToList().Count() != 0)
         {
             brdSavingCarousel.IsVisible = true;
-            SavingCarousel.Children.Add(CreateSavingCarousel());
+            _vm.SavingCarousel = CreateSavingCarousel();
+            SavingCarousel.Children.Add(_vm.SavingCarousel);
         }
         else
         {
             brdSavingCarousel.IsVisible = false;
         }
+    }
+
+    private void SavingsMoreOptions_Tapped(object sender, TappedEventArgs e)
+    {
+        EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet();
+
+        page.Detents = new DetentsCollection()
+        {
+            new ContentDetent()
+        };
+
+        page.HasBackdrop = true;
+        page.CornerRadius = 30;
+
+        App.CurrentBottomSheet = page;
+
+        page.ShowAsync();
     }
 }
 

@@ -41,6 +41,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private EnvelopeStats _envelopeStats;
         [ObservableProperty]
         private double _signOutButtonWidth;
+        [ObservableProperty]
+        private SfCarousel _savingCarousel;
 
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
