@@ -17,7 +17,7 @@
         <ShellContent  ContentTemplate="{DataTemplate Pages:ErrorPage}"/>
     </ShellItem>
 
-    <TabBar>si
+    <TabBar>
         <Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
             <ContentDI:ShellContentDI ContentTemplate="{DataTemplate local:MainPage}" />
         </Tab>

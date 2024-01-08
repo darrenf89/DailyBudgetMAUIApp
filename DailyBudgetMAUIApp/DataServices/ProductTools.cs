@@ -1467,7 +1467,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         if (DefaultBudgetYesNo)
                         {
-                            await ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID);                      
+                            await ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID, true);                      
                         }
                     }
 
@@ -1505,13 +1505,13 @@ namespace DailyBudgetMAUIApp.DataServices
                 var picker = (Picker)s;
                 var SelectedBudget = (Budgets)picker.SelectedItem;
 
-                await ChangeDefaultBudget(App.UserDetails.UserID, SelectedBudget.BudgetID);
+                await ChangeDefaultBudget(App.UserDetails.UserID, SelectedBudget.BudgetID, true);
             };
 
             return picker;
         }
 
-        public async Task ChangeDefaultBudget(int UserID, int BudgetID)
+        public async Task ChangeDefaultBudget(int UserID, int BudgetID, bool navigate)
         {
 
             List<PatchDoc> UpdateUserDetails = new List<PatchDoc>();
@@ -1557,8 +1557,11 @@ namespace DailyBudgetMAUIApp.DataServices
                 await App.CurrentBottomSheet.DismissAsync();
                 App.CurrentBottomSheet = null;
             }            
-
-            await Shell.Current.GoToAsync($"{nameof(MainPage)}");
+            if(navigate)
+            {
+                await Shell.Current.GoToAsync($"{nameof(MainPage)}");
+            }
+            
         }
     }
 }

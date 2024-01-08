@@ -589,8 +589,23 @@ public partial class CreateNewBudget : ContentPage
             await _vm.SaveStage("Finalise Budget");
             await _vm.SaveStage("Create Budget");
 
+            ;
+
+            if (App.DefaultBudgetID != _vm.BudgetID)
+            {
+                bool result = await Shell.Current.DisplayAlert("Change Default Budget?", "Do you want to make the newly created budget your default budget?", "Yes", "No");
+                if (result)
+                {
+                    
+                    await _pt.ChangeDefaultBudget(App.UserDetails.UserID, _vm.BudgetID, false);
+                }
+            }
+
+            App.SessionLastUpdate = default(DateTime);
+
             await Application.Current.MainPage.Navigation.PopModalAsync();
             await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Budget Created&SnackID={_vm.BudgetID}");
+
         }
 
         //popup.Close();

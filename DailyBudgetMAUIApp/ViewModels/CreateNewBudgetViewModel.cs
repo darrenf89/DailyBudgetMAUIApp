@@ -447,16 +447,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                         BudgetUpdate.Add(BudgetLastUpdated);
 
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
-
-                        if(App.DefaultBudgetID != BudgetID)
-                        {
-                            bool result = await Shell.Current.DisplayAlert("Change Default Budget?", "Do you want to make the newly created budget your default budget?", "Yes", "No");
-                            if(result)
-                            {
-                                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, BudgetID);
-                            }
-                        }
-
                     break;
                 }                
             }

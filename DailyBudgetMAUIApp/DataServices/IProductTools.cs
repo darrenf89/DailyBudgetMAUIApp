@@ -43,7 +43,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public DateTime GetBudgetLocalTime(DateTime UtcDate);
         public Task NavigateFromPendingIntent(string NavigationID);
         public Task<Picker> SwitchBudget(string page);
-        public Task ChangeDefaultBudget(int UserID, int BudgetID);
+        public Task ChangeDefaultBudget(int UserID, int BudgetID, bool Navigate);
 
     }
 }

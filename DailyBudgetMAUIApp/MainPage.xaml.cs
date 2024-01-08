@@ -353,7 +353,7 @@ public partial class MainPage : ContentPage
 
             if (DefaultBudgetYesNo)
             {
-                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID);
+                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID, true);
             }
         }
     }
