@@ -123,6 +123,11 @@ public partial class MainPage : ContentPage
 
         datetime.Text = _pt.GetBudgetLocalTime(DateTime.UtcNow).ToString("dd MM yyyy HH:mm:ss");
 
+        await LoadMainDashboardContent();
+    }
+
+    private async Task LoadMainDashboardContent()
+    {
         if (_pt.GetBudgetLocalTime(DateTime.UtcNow).Hour > 12)
         {
             _vm.Title = $"Good afternoon {App.UserDetails.NickName}!";
@@ -130,13 +135,13 @@ public partial class MainPage : ContentPage
         else
         {
             _vm.Title = $"Good morning {App.UserDetails.NickName}!";
-        }       
+        }
 
         _vm.DaysToPayDay = (int)Math.Ceiling((_vm.DefaultBudget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
-        
-        _vm.EnvelopeStats = new EnvelopeStats(_vm.DefaultBudget.Savings);  
-        
-        if(_vm.EnvelopeStats.NumberOfEnvelopes == 0)
+
+        _vm.EnvelopeStats = new EnvelopeStats(_vm.DefaultBudget.Savings);
+
+        if (_vm.EnvelopeStats.NumberOfEnvelopes == 0)
         {
             brdYourEnvelopes.IsVisible = false;
         }
@@ -156,6 +161,16 @@ public partial class MainPage : ContentPage
             brdSavingCarousel.IsVisible = false;
         }
 
+        if (_vm.DefaultBudget.Bills.Count() != 0)
+        {
+            brdBillCarousel.IsVisible = true;
+            _vm.BillCarousel = CreateBillCarousel();
+            BillCarousel.Children.Add(_vm.BillCarousel);
+        }
+        else
+        {
+            brdBillCarousel.IsVisible = false;
+        }
     }
 
     private async void ProcessSnackBar()
@@ -449,7 +464,7 @@ public partial class MainPage : ContentPage
                     new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
                     new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)}
                 }
-                
+
             };
 
             Image ClickImage = new Image
@@ -464,36 +479,46 @@ public partial class MainPage : ContentPage
                     FontFamily = "MaterialDesignIcons",
                     Glyph = "\ue5d4",
                     Size = 40,
-                    Color = (Color)Primary,                    
+                    Color = (Color)Primary,
                 }
             };
 
+            TapGestureRecognizer TapGesture = new TapGestureRecognizer();
+            TapGesture.NumberOfTapsRequired = 1;
+            TapGesture.Tapped += (s, e) =>
+            {
+                SavingsMoreOptions_Tapped(s, e);
+            };
+
+            ClickImage.GestureRecognizers.Add(TapGesture);
+
             grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
+
 
             Image image = new Image
             {
                 BackgroundColor = Color.FromArgb("#00FFFFFF"),
                 VerticalOptions = LayoutOptions.Start,
                 HorizontalOptions = LayoutOptions.Start,
-                Margin = new Thickness(10,15,0,0),
+                Margin = new Thickness(10, 15, 0, 0),
                 //Source = ImageSource.FromFile("saving.svg"),
                 Source = new FontImageSource
                 {
                     FontFamily = "MaterialDesignIcons",
                     Glyph = "\ue2eb",
                     Size = 45,
-                    Color = (Color)Primary,                    
+                    Color = (Color)Primary,
                 },
                 Aspect = Aspect.AspectFill,
                 WidthRequest = 28
             };
-            grid.AddWithSpan(image,0,0,6,1);
+            grid.AddWithSpan(image, 0, 0, 6, 1);
 
             Label lblTitle = new Label
             {
                 FontAttributes = FontAttributes.Bold,
                 FontSize = 21,
-                Padding = new Thickness(10,5,0,0),
+                Padding = new Thickness(10, 5, 0, 0),
                 TextColor = (Color)Primary,
                 Margin = new Thickness(0)
             };
@@ -508,7 +533,7 @@ public partial class MainPage : ContentPage
                 Margin = new Thickness(0),
                 CharacterSpacing = 0
             };
-            lblSavingType.SetBinding(Label.TextProperty, "SavingsType", BindingMode.Default,new SavingTypeConverter());
+            lblSavingType.SetBinding(Label.TextProperty, "SavingsType", BindingMode.Default, new SavingTypeConverter());
             grid.AddWithSpan(lblSavingType, 1, 1, 1, 2);
 
             Label lblCurrentBalance = new Label
@@ -532,7 +557,7 @@ public partial class MainPage : ContentPage
                 Text = "Current Saving Balance",
                 Margin = new Thickness(0)
             };
-            grid.AddWithSpan(lblBalance, 3, 1,1,2);
+            grid.AddWithSpan(lblBalance, 3, 1, 1, 2);
 
             SfLinearProgressBar ProgressBar = new SfLinearProgressBar
             {
@@ -544,7 +569,7 @@ public partial class MainPage : ContentPage
                 TrackCornerRadius = 5,
                 ProgressCornerRadius = 5,
                 ProgressHeight = 10,
-                Margin = new Thickness(10,0,10,5),
+                Margin = new Thickness(10, 0, 10, 5),
                 Minimum = 0
             };
             ProgressBar.SetBinding(SfLinearProgressBar.MaximumProperty, ".", BindingMode.Default, new SavingProgressBarMax());
@@ -580,7 +605,7 @@ public partial class MainPage : ContentPage
                 HeightRequest = 2,
                 Margin = new Thickness(10, 5, 10, 10)
             };
-            grid.AddWithSpan(bv, 7, 1,1,2);
+            grid.AddWithSpan(bv, 7, 1, 1, 2);
 
             HorizontalStackLayout hsl1 = new HorizontalStackLayout
             {
@@ -598,7 +623,7 @@ public partial class MainPage : ContentPage
             hsl1.Children.Add(labelOne);
 
             Label labelTwo = new Label
-            {                
+            {
                 TextColor = (Color)Gray900,
                 FontSize = 14,
                 VerticalOptions = LayoutOptions.Center,
@@ -654,18 +679,374 @@ public partial class MainPage : ContentPage
             VerticalOptions = LayoutOptions.Center,
             WidthRequest = _vm.SignOutButtonWidth + 10,
             ItemWidth = (int)Math.Ceiling(_vm.SignOutButtonWidth) - 10,
-            ItemHeight = 260,
+            ItemHeight = 250,
             ItemSpacing = 20
         };
 
         sc.ItemTemplate = dt;
         sc.ItemsSource = _vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).Take(7).ToList();
 
-        //TapGestureRecognizer TapGesture = new TapGestureRecognizer();
-        //TapGesture.Tapped += SavingsMoreOptions_Tapped;
-        //sc.GestureRecognizers.Add(TapGesture);
-        
-        if(sc.ItemsSource.Count() > 0)
+
+        if (sc.ItemsSource.Count() > 0)
+        {
+            if ((sc.ItemsSource.Count() % 2) == 0)
+            {
+                sc.SelectedIndex = (sc.ItemsSource.Count() / 2) - 1;
+            }
+            else
+            {
+                sc.SelectedIndex = (sc.ItemsSource.Count() / 2);
+            }
+        }
+
+        sc.SwipeStarted += async (s, e) =>
+        {
+            await CarouselSwipeStarted(s, e);
+        };
+
+        sc.SwipeEnded += async (s, e) =>
+        {
+            await CarouselSwipeEnded(s, e);
+        };
+
+        for (int i = 0; i < sc.ItemsSource.Count(); i++)
+        {
+            Border button = new Border
+            {
+                HeightRequest = 10,
+                WidthRequest = 10,
+                Margin = new Thickness(2, 0, 2, 0),
+                StrokeThickness = 0,
+                StrokeShape = new RoundRectangle
+                {
+                    CornerRadius = new CornerRadius(5)
+                }
+            };
+
+            if (i == sc.SelectedIndex)
+            {
+                button.BackgroundColor = (Color)PrimaryLight;
+            }
+            else
+            {
+                button.BackgroundColor = (Color)Gray100;
+            }
+
+            SavingCarouselIdent.Children.Add(button);
+
+
+        }
+
+        return sc;
+    }
+
+    private SfCarousel CreateBillCarousel()
+    {
+        Application.Current.Resources.TryGetValue("White", out var White);
+        Application.Current.Resources.TryGetValue("Primary", out var Primary);
+        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
+        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
+        Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
+        Application.Current.Resources.TryGetValue("Success", out var Success);
+        Application.Current.Resources.TryGetValue("TertiaryBrush", out var TertiaryBrush);
+        Application.Current.Resources.TryGetValue("Info", out var Info);
+
+        DataTemplate dt = new DataTemplate(() =>
+        {
+            Border border = new Border
+            {
+                Stroke = (Brush)TertiaryBrush,
+                StrokeThickness = 1,
+                StrokeShape = new RoundRectangle
+                {
+                    CornerRadius = new CornerRadius(4)
+                },
+                BackgroundColor = (Color)White
+            };
+
+            Grid grid = new Grid
+            {
+                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                Padding = new Thickness(0),
+                Margin = new Thickness(0),
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition{Width = new GridLength(45)},
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))},
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))}
+                },
+                RowDefinitions =
+                {
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)}
+                }
+                
+            };
+
+            Image ClickImage = new Image
+            {
+                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                VerticalOptions = LayoutOptions.Start,
+                HorizontalOptions = LayoutOptions.End,
+                Margin = new Thickness(5, 5, 5, 0),
+                ZIndex = 999,
+                Source = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5d4",
+                    Size = 40,
+                    Color = (Color)Primary,                    
+                }
+            };
+
+            TapGestureRecognizer TapGesture = new TapGestureRecognizer();
+            TapGesture.NumberOfTapsRequired = 1;
+            TapGesture.Tapped += (s, e) =>
+            {
+                SavingsMoreOptions_Tapped(s,e);
+            };
+            
+            ClickImage.GestureRecognizers.Add(TapGesture);
+
+            grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
+
+
+            Image image = new Image
+            {
+                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                VerticalOptions = LayoutOptions.Start,
+                HorizontalOptions = LayoutOptions.Start,
+                Margin = new Thickness(10,15,0,0),
+                //Source = ImageSource.FromFile("saving.svg"),
+                Source = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\uef6e",
+                    Size = 45,
+                    Color = (Color)Primary,                    
+                },
+                Aspect = Aspect.AspectFill,
+                WidthRequest = 28
+            };
+            grid.AddWithSpan(image,0,0,6,1);
+
+            Label lblTitle = new Label
+            {
+                FontAttributes = FontAttributes.Bold,
+                FontSize = 21,
+                Padding = new Thickness(10,5,0,0),
+                TextColor = (Color)Primary,
+                Margin = new Thickness(0)
+            };
+            lblTitle.SetBinding(Label.TextProperty, "BillName");
+            grid.AddWithSpan(lblTitle, 0, 1, 1, 1);
+
+            Label lblSavingType = new Label
+            {
+                FontSize = 14,
+                Padding = new Thickness(10, 0, 0, 0),
+                TextColor = (Color)Tertiary,
+                Margin = new Thickness(0),
+                CharacterSpacing = 0
+            };
+            lblSavingType.SetBinding(Label.TextProperty, "IsRecuring", BindingMode.Default,new BillTypeConverter());
+            grid.AddWithSpan(lblSavingType, 1, 1, 1, 2);
+
+            Label lblCurrentBalance = new Label
+            {
+                FontSize = 16,
+                Padding = new Thickness(10, 10, 0, 0),
+                TextColor = (Color)Gray900,
+                CharacterSpacing = 0,
+                FontAttributes = FontAttributes.Bold,
+                Margin = new Thickness(0)
+            };
+            lblCurrentBalance.SetBinding(Label.TextProperty, "BillCurrentBalance", BindingMode.Default, new DecimalToCurrencyString());
+            grid.Add(lblCurrentBalance, 1, 2);
+
+            Label lblBalance = new Label
+            {
+                FontSize = 14,
+                Padding = new Thickness(10, 0, 0, 10),
+                TextColor = (Color)Gray400,
+                CharacterSpacing = 0,
+                Text = "Current Balance",
+                Margin = new Thickness(0)
+            };
+            grid.AddWithSpan(lblBalance, 3, 1,1,2);
+
+            SfLinearProgressBar ProgressBar = new SfLinearProgressBar
+            {
+                HorizontalOptions = LayoutOptions.Start,
+                WidthRequest = _vm.ProgressBarCarWidthRequest,
+                TrackFill = (Color)Gray100,
+                ProgressFill = (Color)Success,
+                TrackHeight = 10,
+                TrackCornerRadius = 5,
+                ProgressCornerRadius = 5,
+                ProgressHeight = 10,
+                Margin = new Thickness(10,0,10,5),
+                Minimum = 0
+            };
+            ProgressBar.SetBinding(SfLinearProgressBar.MaximumProperty, "BillAmount");
+            ProgressBar.SetBinding(SfLinearProgressBar.ProgressProperty, "BillCurrentBalance");
+            grid.AddWithSpan(ProgressBar, 4, 1, 1, 2);
+
+            Label lblSavingGoalText = new Label
+            {
+                FontSize = 12,
+                Padding = new Thickness(10, 0, 10, 0),
+                TextColor = (Color)Tertiary,
+                CharacterSpacing = 0,
+                HorizontalTextAlignment = TextAlignment.End,
+                Text = "Outgoing Amount Due"
+            };
+            grid.AddWithSpan(lblSavingGoalText, 5, 2, 1, 1);
+
+            Label SavingProgressBarMaxString = new Label
+            {
+                FontSize = 12,
+                Padding = new Thickness(10, 0, 10, 5),
+                TextColor = (Color)Gray900,
+                CharacterSpacing = 0,
+                FontAttributes = FontAttributes.Bold,
+                HorizontalTextAlignment = TextAlignment.End
+            };
+            SavingProgressBarMaxString.SetBinding(Label.TextProperty, "BillAmount", BindingMode.Default, new DecimalToCurrencyString());
+            grid.Add(SavingProgressBarMaxString, 2, 6);
+
+            BoxView bv = new BoxView
+            {
+                Color = (Color)Gray100,
+                HeightRequest = 2,
+                Margin = new Thickness(10, 5, 10, 10)
+            };
+            grid.AddWithSpan(bv, 7, 1,1,2);
+
+            HorizontalStackLayout hsl1 = new HorizontalStackLayout
+            {
+                Margin = new Thickness(10, 0, 10, 0)
+            };
+
+            Label labelOne = new Label
+            {
+                Text = "Due Date | ",
+                TextColor = (Color)Info,
+                FontSize = 12,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0
+            };
+            hsl1.Children.Add(labelOne);
+
+            Label labelTwo = new Label
+            {                
+                TextColor = (Color)Gray900,
+                FontSize = 14,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0,
+                FontAttributes = FontAttributes.Bold,
+
+            };
+            labelTwo.SetBinding(Label.TextProperty, "BillDueDate", BindingMode.Default, new BillDueDate());
+
+            hsl1.Children.Add(labelTwo);
+
+            grid.AddWithSpan(hsl1, 9, 1, 1, 2);
+
+            HorizontalStackLayout hsl2 = new HorizontalStackLayout
+            {
+                Margin = new Thickness(10, 0, 10, 0)
+            };
+
+            Label labelThree = new Label
+            {
+                Text = "Daily Amount Put Away | ",
+                TextColor = (Color)Info,
+                FontSize = 12,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0
+            };
+            hsl2.Children.Add(labelThree);
+
+            Label labelFour = new Label
+            {
+                TextColor = (Color)Gray900,
+                FontSize = 14,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0,
+                FontAttributes = FontAttributes.Bold,
+            };
+            labelFour.SetBinding(Label.TextProperty, "RegularBillValue", BindingMode.Default, new DecimalToCurrencyString());
+
+            hsl2.Children.Add(labelFour);            
+            grid.AddWithSpan(hsl2, 10, 1, 1, 2);
+
+            HorizontalStackLayout hsl3 = new HorizontalStackLayout
+            {
+                Margin = new Thickness(10, 0, 10, 0)
+            };
+
+            Label labelFive= new Label
+            {
+                Text = "Recurring Details | ",
+                TextColor = (Color)Info,
+                FontSize = 12,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0
+            };
+            hsl3.Children.Add(labelFive);
+
+            Label labelSix = new Label
+            {
+                TextColor = (Color)Gray900,
+                FontSize = 14,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0,
+                FontAttributes = FontAttributes.Bold,
+            };
+            labelSix.SetBinding(Label.TextProperty, ".", BindingMode.Default, new RecurringBillDetails());
+
+            hsl3.Children.Add(labelSix);
+            grid.AddWithSpan(hsl3, 8, 1, 1, 2);
+
+            hsl3.SetBinding(HorizontalStackLayout.IsVisibleProperty, "IsRecuring");
+
+            border.Content = grid;
+
+            return border;
+        });
+
+        SfCarousel sc = new SfCarousel
+        {
+            ScaleOffset = (float)0.9,
+            RotationAngle = 20,
+            Duration = 1000,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            WidthRequest = _vm.SignOutButtonWidth + 10,
+            ItemWidth = (int)Math.Ceiling(_vm.SignOutButtonWidth) - 10,
+            ItemHeight = 270,
+            ItemSpacing = 20
+        };
+
+        sc.ItemTemplate = dt;
+        sc.ItemsSource = _vm.DefaultBudget.Bills;
+
+
+        if (sc.ItemsSource.Count() > 0)
         {
             if((sc.ItemsSource.Count() % 2) == 0)
             {
@@ -679,12 +1060,12 @@ public partial class MainPage : ContentPage
 
         sc.SwipeStarted += async (s, e)  =>
         {
-            await SavingCarouselSwipeStarted(s,e);
+            await BillCarouselSwipeStarted(s,e);
         };
 
         sc.SwipeEnded += async (s, e) =>
         {
-            await SavingCarouselSwipeEnded(s,e);
+            await BillCarouselSwipeEnded(s,e);
         };
 
         for (int i = 0; i < sc.ItemsSource.Count(); i++)
@@ -710,15 +1091,14 @@ public partial class MainPage : ContentPage
                 button.BackgroundColor = (Color)Gray100;
             }
 
-            SavingCarouselIdent.Children.Add(button);
-            
+            BillCarouselIdent.Children.Add(button);            
 
         }
 
         return sc;
     }
 
-    private async Task SavingCarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
+    private async Task CarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
     {
         Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
 
@@ -732,7 +1112,7 @@ public partial class MainPage : ContentPage
 
     }
 
-    private async Task SavingCarouselSwipeEnded(object Sender, EventArgs Event)
+    private async Task CarouselSwipeEnded(object Sender, EventArgs Event)
     {
         Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
 
@@ -744,33 +1124,35 @@ public partial class MainPage : ContentPage
         Border button = (Border)Elements[Index];
         await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
     }
+    private async Task BillCarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
+    {
+        Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
 
+        var Carousel = (SfCarousel)Sender;
+        var Elements = BillCarouselIdent.GetVisualTreeDescendants();
+
+        int Index = (Carousel.SelectedIndex * 2) + 1;
+
+        Border button = (Border)Elements[Index];
+        await button.BackgroundColorTo((Color)Gray100, 16, 500, Easing.CubicIn);
+
+    }
+
+    private async Task BillCarouselSwipeEnded(object Sender, EventArgs Event)
+    {
+        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
+
+        var Carousel = (SfCarousel)Sender;
+        var Elements = BillCarouselIdent.GetVisualTreeDescendants();
+
+        int Index = (Carousel.SelectedIndex * 2) + 1;
+
+        Border button = (Border)Elements[Index];
+        await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
+    }
     private void RefreshView_Refreshing(object sender, EventArgs e)
     {
-        _vm.DaysToPayDay = (int)Math.Ceiling((_vm.DefaultBudget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
-
-        if (_vm.EnvelopeStats.NumberOfEnvelopes == 0)
-        {
-            brdYourEnvelopes.IsVisible = false;
-        }
-        else
-        {
-            brdYourEnvelopes.IsVisible = true;
-        }
-
-        SavingCarousel.Children.Clear();
-        SavingCarouselIdent.Children.Clear();
-
-        if (_vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).ToList().Count() != 0)
-        {
-            brdSavingCarousel.IsVisible = true;
-            _vm.SavingCarousel = CreateSavingCarousel();
-            SavingCarousel.Children.Add(_vm.SavingCarousel);
-        }
-        else
-        {
-            brdSavingCarousel.IsVisible = false;
-        }
+        LoadMainDashboardContent();
     }
 
     private void SavingsMoreOptions_Tapped(object sender, TappedEventArgs e)

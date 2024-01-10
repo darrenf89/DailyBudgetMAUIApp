@@ -509,4 +509,104 @@ namespace DailyBudgetMAUIApp.Converters
         }
 
     }
+
+    public class BillTypeConverter : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            bool IsRecurring = (bool)value;
+
+            if (IsRecurring)
+            {
+                return "Recurring Outgoing";
+            }
+            else
+            {
+                return "One-off Outgoing";
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class BillDueDate : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            DateTime Date = (DateTime)value;
+
+            return Date.ToString("dd MMM yy");
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class RecurringBillDetails : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            Bills Bill = (Bills)value;
+
+            if (Bill.IsRecuring)
+            {
+                if(Bill.BillType == "Everynth")
+                {                    
+                    return Bill.BillValue == 1 ? $"Every {Bill.BillDuration.Replace("s","")}" : $"Every {Bill.BillValue} {Bill.BillDuration}";
+                }
+                else if(Bill.BillType == "OfEveryMonth")
+                {
+                    string DayString;
+                    if (Bill.BillValue == 1)
+                    {
+                        DayString = $"{Bill.BillValue}st";
+                    }
+                    else if (Bill.BillValue == 2)
+                    {
+                        DayString = $"{Bill.BillValue}nd";
+                    }
+                    else if (Bill.BillValue == 3)
+                    {
+                        DayString = $"{Bill.BillValue}rd";
+                    }
+                    else
+                    {
+                        DayString = $"{Bill.BillValue}th";
+                    }
+
+                    return $"{DayString} of the month";
+                }
+                else
+                {
+                    return "";
+                }
+
+            }
+            else
+            {
+                return "";
+            }
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
 }

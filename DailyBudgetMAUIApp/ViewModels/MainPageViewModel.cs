@@ -43,6 +43,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private double _signOutButtonWidth;
         [ObservableProperty]
         private SfCarousel _savingCarousel;
+        [ObservableProperty]
+        private SfCarousel _billCarousel;
 
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
