@@ -36,8 +36,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private double _progressBarCarWidthRequest;
         [ObservableProperty]
-        private int _daysToPayDay;
-        [ObservableProperty]
         private EnvelopeStats _envelopeStats;
         [ObservableProperty]
         private double _signOutButtonWidth;
@@ -45,6 +43,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private SfCarousel _savingCarousel;
         [ObservableProperty]
         private SfCarousel _billCarousel;
+        [ObservableProperty]
+        private SfCarousel _incomeCarousel;
 
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)

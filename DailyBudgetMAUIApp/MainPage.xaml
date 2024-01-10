@@ -24,6 +24,7 @@
             <converters:SavingProgressBarMax x:Key="SavingProgressBarMax" />
             <converters:SavingProgressBarMaxString x:Key="SavingProgressBarMaxString" />
             <converters:SavingTypeConverter x:Key="SavingTypeConverter" />
+            <converters:DateToNumberOfDays x:Key="DateToNumberOfDays" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <Shell.TitleView>
@@ -185,7 +186,7 @@
                     </Grid>
                 </Border>
                 <Border Padding="0" Style="{DynamicResource DashboardMainContent}" >
-                    <Grid ColumnDefinitions="45, Auto, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
+                    <Grid ColumnDefinitions="45, *, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
                         <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5"/>
                         <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="End" Margin="5,5,5,0">
                             <Image.Source>
@@ -206,7 +207,7 @@
                         <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7" Margin="10,5,10,10"/>
                         <HorizontalStackLayout Grid.Row="8" Grid.Column="1" Margin="10,0,10,0">
                             <Label VerticalOptions="Center" Text="Days to Pay Day | " FontSize="Caption" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
-                            <Label VerticalOptions="Center" Text="{Binding DaysToPayDay, StringFormat='{0} Days'}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource Gray900}"/>
+                            <Label VerticalOptions="Center" Text="{Binding DefaultBudget.NextIncomePayday, Converter={StaticResource DateToNumberOfDays}}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource Gray900}"/>
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="9" Grid.Column="1" Margin="10,0,10,0">
                             <Label VerticalOptions="Center" Text="Due Date | " FontSize="Caption" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
@@ -273,84 +274,77 @@
                         </Grid>
                     </Grid>
                 </Border>
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0,2,0,2" IsVisible="false" x:Name="brdSavingCarousel">
-                    <AbsoluteLayout>
-                        <VerticalStackLayout x:Name="SavingCarousel">
-
-                        </VerticalStackLayout>
-                        <HorizontalStackLayout x:Name="SavingCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
-
-                        </HorizontalStackLayout>
-                    </AbsoluteLayout>
-                </Border>
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0,2,0,2" IsVisible="false" x:Name="brdBillCarousel">
-                    <AbsoluteLayout>
-                        <VerticalStackLayout x:Name="BillCarousel">
-
-                        </VerticalStackLayout>
-                        <HorizontalStackLayout x:Name="BillCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
-
-                        </HorizontalStackLayout>
-                    </AbsoluteLayout>
-                </Border>
-                <Border Style="{DynamicResource DashboardMainContent}">
+                <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0" IsVisible="false" x:Name="brdSavingCarousel">
                     <VerticalStackLayout>
-                        <Button
-                        x:Name="CounterBtn"
-                        Text="Click me"
-                        SemanticProperties.Hint="Counts the number of times you click"
-                        HorizontalOptions="Center" />
-                        <Button
-                        x:Name="SignOut"
-                        Command="{Binding SignOutCommand}"
-                        Text="Sign Out"
-                        SemanticProperties.Hint="Signs Out of Account"
-                        HorizontalOptions="Center" />
-                        <Label 
-                            Text="{Binding DefaultBudgetID,StringFormat='The Deafault Budget ID is {0}'}"
-                            Margin="0,100,0,0"
-                            VerticalOptions="Center" 
-                            HorizontalOptions="Center" 
-                            TextColor="Black"/>
-                        <Label TextColor="Black">
-                            <MultiBinding StringFormat="'Testing how a multi binding works in a label with {0:c} and also {1:n} value'">
-                                <Binding Path="DefaultBudgetID"/>
-                                <Binding Path="DefaultBudgetID"/>
-                            </MultiBinding>
-                        </Label>
-                        <Label Text="{Binding DefaultBudget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
-                            VerticalOptions="Center" 
-                            HorizontalOptions="Center" 
-                            TextColor="Black"/>
-                        <Label Text="{Binding DefaultBudget.BankBalance, StringFormat='Your current Bank Balance is {0:c}'}"
-                            VerticalOptions="Center" 
-                            HorizontalOptions="Center" 
-                            TextColor="Black"/>
-                        <Label Text="{Binding DefaultBudget.BudgetName, StringFormat='Your Budget Name is {0}'}"
-                            VerticalOptions="Center" 
-                            HorizontalOptions="Center"
-                            TextColor="Black"/>
-                        <Label x:Name="datetime"
-                            VerticalOptions="Center" 
-                            HorizontalOptions="Center"
-                            TextColor="Black"/>
+                        <AbsoluteLayout>
+                            <VerticalStackLayout x:Name="SavingCarousel">
+
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout x:Name="SavingCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
+
+                            </HorizontalStackLayout>
+                        </AbsoluteLayout>
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
+                            <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="See All Savings" TextColor="{DynamicResource Info}"/>
+                            <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
+                                </Image.Source>
+                            </Image>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="ExtraSavingInfo" Tapped="ExtraSavingInfo_Tapped"/>
+                            </Grid.GestureRecognizers>
+                        </Grid>
                     </VerticalStackLayout>
-                </Border>  
-                <Border Style="{DynamicResource DashboardMainContent}">
-                    <ListView ItemsSource="{Binding DefaultBudget.IncomeEvents}" RowHeight="180" Margin="10,0,20,0" SeparatorVisibility="None" x:Name="LVIncome" SelectionMode="None" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <ViewCell>
-                                    <VerticalStackLayout>
-                                        <Label FontSize="Medium" Text="{Binding IncomeName}"/>
-                                        <Label FontSize="Caption" Text="{Binding IsInstantActive}"/>
-                                        <Label FontSize="Caption" Text="{Binding IsRecurringIncome}"/>
-                                        <Label FontSize="Caption" Text="{Binding IncomeAmount, StringFormat='{0:c}'}"/>
-                                    </VerticalStackLayout>
-                                </ViewCell>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                </Border>
+                <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0" IsVisible="false" x:Name="brdBillCarousel">
+                    <VerticalStackLayout>
+                        <AbsoluteLayout>
+                            <VerticalStackLayout x:Name="BillCarousel">
+
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout x:Name="BillCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
+
+                            </HorizontalStackLayout>
+                        </AbsoluteLayout>
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource TertiaryLightLight}" Margin="0,5,0,0">
+                            <BoxView HeightRequest="2" Color="{StaticResource Tertiary}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="See All Outgoins" TextColor="{DynamicResource Tertiary}"/>
+                            <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Tertiary}"/>
+                                </Image.Source>
+                            </Image>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="ExtraBillInfo" Tapped="ExtraBillInfo_Tapped"/>
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>            
+                <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0" IsVisible="false" x:Name="brdIncomeCarousel">
+                    <VerticalStackLayout>
+                        <AbsoluteLayout>
+                            <VerticalStackLayout x:Name="IncomeCarousel">
+
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout x:Name="IncomeCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
+
+                            </HorizontalStackLayout>
+                        </AbsoluteLayout>
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource PrimaryLightLight}" Margin="0,5,0,0">
+                            <BoxView HeightRequest="2" Color="{StaticResource Primary}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="See All Extra Income Events" TextColor="{DynamicResource Primary}"/>
+                            <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Primary}"/>
+                                </Image.Source>
+                            </Image>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="ExtraInfoDetails" Tapped="ExtraInfoDetails_Tapped"/>
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </VerticalStackLayout>
                 </Border>
                 <Button WidthRequest="{Binding SignOutButtonWidth}" Command="{Binding SignOutCommand}" Style="{DynamicResource buttonClicked}" Text="Sign Out" HeightRequest="50" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,0,5,10" FontSize="20" CornerRadius="25" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
             </VerticalStackLayout>

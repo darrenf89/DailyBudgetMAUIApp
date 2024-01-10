@@ -12,6 +12,7 @@
     <Color x:Key="SecondaryLight">#e4e2df</Color>
     <Color x:Key="Tertiary">#b03d7b</Color>
     <Color x:Key="TertiaryLight">#d78cb4</Color>
+    <Color x:Key="TertiaryLightLight">#f7e8f0</Color>
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>
     <Color x:Key="Success">#38b44a</Color>

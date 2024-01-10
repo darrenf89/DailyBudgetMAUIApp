@@ -121,8 +121,6 @@ public partial class MainPage : ContentPage
             await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={App.DefaultBudgetID}&NavigatedFrom=Budget Settings");
         }
 
-        datetime.Text = _pt.GetBudgetLocalTime(DateTime.UtcNow).ToString("dd MM yyyy HH:mm:ss");
-
         await LoadMainDashboardContent();
     }
 
@@ -137,8 +135,6 @@ public partial class MainPage : ContentPage
             _vm.Title = $"Good morning {App.UserDetails.NickName}!";
         }
 
-        _vm.DaysToPayDay = (int)Math.Ceiling((_vm.DefaultBudget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
-
         _vm.EnvelopeStats = new EnvelopeStats(_vm.DefaultBudget.Savings);
 
         if (_vm.EnvelopeStats.NumberOfEnvelopes == 0)
@@ -150,10 +146,12 @@ public partial class MainPage : ContentPage
             brdYourEnvelopes.IsVisible = true;
         }
 
+        SavingCarousel.Children.Clear();
+        SavingCarouselIdent.Children.Clear();
         if (_vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).ToList().Count() != 0)
         {
             brdSavingCarousel.IsVisible = true;
-            _vm.SavingCarousel = CreateSavingCarousel();
+            _vm.SavingCarousel = await CreateSavingCarousel();
             SavingCarousel.Children.Add(_vm.SavingCarousel);
         }
         else
@@ -161,15 +159,30 @@ public partial class MainPage : ContentPage
             brdSavingCarousel.IsVisible = false;
         }
 
+        BillCarousel.Children.Clear();
+        BillCarouselIdent.Children.Clear();
         if (_vm.DefaultBudget.Bills.Count() != 0)
         {
             brdBillCarousel.IsVisible = true;
-            _vm.BillCarousel = CreateBillCarousel();
+            _vm.BillCarousel = await CreateBillCarousel();
             BillCarousel.Children.Add(_vm.BillCarousel);
         }
         else
         {
             brdBillCarousel.IsVisible = false;
+        }
+
+        IncomeCarousel.Children.Clear();
+        IncomeCarouselIdent.Children.Clear();
+        if (_vm.DefaultBudget.IncomeEvents.Any())
+        {
+            brdIncomeCarousel.IsVisible = true;
+            _vm.IncomeCarousel = await CreateIncomeCarousel();
+            IncomeCarousel.Children.Add(_vm.IncomeCarousel);
+        }
+        else
+        {
+            brdIncomeCarousel.IsVisible = false;
         }
     }
 
@@ -413,7 +426,7 @@ public partial class MainPage : ContentPage
         page.ShowAsync();
     }
 
-    private SfCarousel CreateSavingCarousel()
+    private async Task<SfCarousel> CreateSavingCarousel()
     {
         Application.Current.Resources.TryGetValue("White", out var White);
         Application.Current.Resources.TryGetValue("Primary", out var Primary);
@@ -423,15 +436,15 @@ public partial class MainPage : ContentPage
         Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
         Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
         Application.Current.Resources.TryGetValue("Success", out var Success);
-        Application.Current.Resources.TryGetValue("TertiaryBrush", out var TertiaryBrush);
+        Application.Current.Resources.TryGetValue("PrimaryBrush", out var PrimaryBrush);
         Application.Current.Resources.TryGetValue("Info", out var Info);
 
         DataTemplate dt = new DataTemplate(() =>
         {
             Border border = new Border
             {
-                Stroke = (Brush)TertiaryBrush,
-                StrokeThickness = 1,
+                Stroke = (Brush)PrimaryBrush,
+                StrokeThickness = 2,
                 StrokeShape = new RoundRectangle
                 {
                     CornerRadius = new CornerRadius(4)
@@ -687,7 +700,7 @@ public partial class MainPage : ContentPage
         sc.ItemsSource = _vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).Take(7).ToList();
 
 
-        if (sc.ItemsSource.Count() > 0)
+        if (sc.ItemsSource.Any())
         {
             if ((sc.ItemsSource.Count() % 2) == 0)
             {
@@ -740,7 +753,7 @@ public partial class MainPage : ContentPage
         return sc;
     }
 
-    private SfCarousel CreateBillCarousel()
+    private async Task<SfCarousel> CreateBillCarousel()
     {
         Application.Current.Resources.TryGetValue("White", out var White);
         Application.Current.Resources.TryGetValue("Primary", out var Primary);
@@ -750,15 +763,15 @@ public partial class MainPage : ContentPage
         Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
         Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
         Application.Current.Resources.TryGetValue("Success", out var Success);
-        Application.Current.Resources.TryGetValue("TertiaryBrush", out var TertiaryBrush);
+        Application.Current.Resources.TryGetValue("PrimaryBrush", out var PrimaryBrush);
         Application.Current.Resources.TryGetValue("Info", out var Info);
 
         DataTemplate dt = new DataTemplate(() =>
         {
             Border border = new Border
             {
-                Stroke = (Brush)TertiaryBrush,
-                StrokeThickness = 1,
+                Stroke = (Brush)PrimaryBrush,
+                StrokeThickness = 2,
                 StrokeShape = new RoundRectangle
                 {
                     CornerRadius = new CornerRadius(4)
@@ -1046,7 +1059,7 @@ public partial class MainPage : ContentPage
         sc.ItemsSource = _vm.DefaultBudget.Bills;
 
 
-        if (sc.ItemsSource.Count() > 0)
+        if (sc.ItemsSource.Any())
         {
             if((sc.ItemsSource.Count() % 2) == 0)
             {
@@ -1096,6 +1109,347 @@ public partial class MainPage : ContentPage
         }
 
         return sc;
+    }
+
+    private async Task<SfCarousel> CreateIncomeCarousel()
+    {
+        Application.Current.Resources.TryGetValue("White", out var White);
+        Application.Current.Resources.TryGetValue("Primary", out var Primary);
+        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
+        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
+        Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
+        Application.Current.Resources.TryGetValue("Success", out var Success);
+        Application.Current.Resources.TryGetValue("PrimaryBrush", out var PrimaryBrush);
+        Application.Current.Resources.TryGetValue("Info", out var Info);
+
+        DataTemplate dt = new DataTemplate(() =>
+        {
+            Border border = new Border
+            {
+                Stroke = (Brush)PrimaryBrush,
+                StrokeThickness = 2,
+                StrokeShape = new RoundRectangle
+                {
+                    CornerRadius = new CornerRadius(4)
+                },
+                BackgroundColor = (Color)White
+            };
+
+            Grid grid = new Grid
+            {
+                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                Padding = new Thickness(0),
+                Margin = new Thickness(0),
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition{Width = new GridLength(45)},
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))},
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))}
+                },
+                RowDefinitions =
+                {
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
+                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)}
+
+                }
+
+            };
+
+            Image ClickImage = new Image
+            {
+                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                VerticalOptions = LayoutOptions.Start,
+                HorizontalOptions = LayoutOptions.End,
+                Margin = new Thickness(5, 5, 5, 0),
+                ZIndex = 999,
+                Source = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5d4",
+                    Size = 40,
+                    Color = (Color)Primary,
+                }
+            };
+
+            TapGestureRecognizer TapGesture = new TapGestureRecognizer();
+            TapGesture.NumberOfTapsRequired = 1;
+            TapGesture.Tapped += (s, e) =>
+            {
+                SavingsMoreOptions_Tapped(s, e);
+            };
+
+            ClickImage.GestureRecognizers.Add(TapGesture);
+
+            grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
+
+
+            Image image = new Image
+            {
+                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                VerticalOptions = LayoutOptions.Start,
+                HorizontalOptions = LayoutOptions.Start,
+                Margin = new Thickness(10, 15, 0, 0),
+                //Source = ImageSource.FromFile("saving.svg"),
+                Source = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue8e5",
+                    Size = 45,
+                    Color = (Color)Primary,
+                },
+                Aspect = Aspect.AspectFill,
+                WidthRequest = 28
+            };
+            grid.AddWithSpan(image, 0, 0, 6, 1);
+
+            Label lblTitle = new Label
+            {
+                FontAttributes = FontAttributes.Bold,
+                FontSize = 21,
+                Padding = new Thickness(10, 5, 0, 0),
+                TextColor = (Color)Primary,
+                Margin = new Thickness(0)
+            };
+            lblTitle.SetBinding(Label.TextProperty, "IncomeName");
+            grid.AddWithSpan(lblTitle, 0, 1, 1, 1);
+
+            Label lblSavingType = new Label
+            {
+                FontSize = 14,
+                Padding = new Thickness(10, 0, 0, 0),
+                TextColor = (Color)Tertiary,
+                Margin = new Thickness(0),
+                CharacterSpacing = 0
+            };
+            lblSavingType.SetBinding(Label.TextProperty, ".", BindingMode.Default, new IncomeTypeConverter());
+            grid.AddWithSpan(lblSavingType, 1, 1, 1, 2);
+
+            Label lblCurrentBalance = new Label
+            {
+                FontSize = 16,
+                Padding = new Thickness(10, 10, 0, 0),
+                TextColor = (Color)Gray900,
+                CharacterSpacing = 0,
+                FontAttributes = FontAttributes.Bold,
+                Margin = new Thickness(0)
+            };
+            lblCurrentBalance.SetBinding(Label.TextProperty, "IncomeAmount", BindingMode.Default, new DecimalToCurrencyString());
+            grid.Add(lblCurrentBalance, 1, 2);
+
+            Label lblBalance = new Label
+            {
+                FontSize = 14,
+                Padding = new Thickness(10, 0, 0, 10),
+                TextColor = (Color)Gray400,
+                CharacterSpacing = 0,
+                Text = "Extra Income Amount",
+                Margin = new Thickness(0)
+            };
+            grid.AddWithSpan(lblBalance, 3, 1, 1, 2);
+
+
+            BoxView bv = new BoxView
+            {
+                Color = (Color)Gray100,
+                HeightRequest = 2,
+                Margin = new Thickness(10, 5, 10, 10)
+            };
+            grid.AddWithSpan(bv, 4, 1, 1, 2);
+
+            HorizontalStackLayout hsl1 = new HorizontalStackLayout
+            {
+                Margin = new Thickness(10, 0, 10, 0)
+            };
+
+            Label labelOne = new Label
+            {
+                Text = "Due Date | ",
+                TextColor = (Color)Info,
+                FontSize = 12,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0
+            };
+            hsl1.Children.Add(labelOne);
+
+            Label labelTwo = new Label
+            {
+                TextColor = (Color)Gray900,
+                FontSize = 14,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0,
+                FontAttributes = FontAttributes.Bold,
+
+            };
+            labelTwo.SetBinding(Label.TextProperty, "DateOfIncomeEvent", BindingMode.Default, new BillDueDate());
+
+            hsl1.Children.Add(labelTwo);
+
+            grid.AddWithSpan(hsl1, 5, 1, 1, 2);
+
+            HorizontalStackLayout hsl2 = new HorizontalStackLayout
+            {
+                Margin = new Thickness(10, 0, 10, 0)
+            };
+
+            Label labelThree = new Label
+            {
+                Text = "Number Of Days To Income | ",
+                TextColor = (Color)Info,
+                FontSize = 12,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0
+            };
+            hsl2.Children.Add(labelThree);
+
+            Label labelFour = new Label
+            {
+                TextColor = (Color)Gray900,
+                FontSize = 14,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0,
+                FontAttributes = FontAttributes.Bold,
+            };
+            labelFour.SetBinding(Label.TextProperty, "DateOfIncomeEvent", BindingMode.Default, new DateToNumberOfDays());
+
+            hsl2.Children.Add(labelFour);
+            grid.AddWithSpan(hsl2, 6, 1, 1, 2);
+
+            HorizontalStackLayout hsl3 = new HorizontalStackLayout
+            {
+                Margin = new Thickness(10, 0, 10, 0)
+            };
+
+            Label labelFive = new Label
+            {
+                Text = "Recurring Details | ",
+                TextColor = (Color)Info,
+                FontSize = 12,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0
+            };
+            hsl3.Children.Add(labelFive);
+
+            Label labelSix = new Label
+            {
+                TextColor = (Color)Gray900,
+                FontSize = 14,
+                VerticalOptions = LayoutOptions.Center,
+                CharacterSpacing = 0,
+                FontAttributes = FontAttributes.Bold,
+            };
+            labelSix.SetBinding(Label.TextProperty, ".", BindingMode.Default, new RecurringIncomeDetails());
+
+            hsl3.Children.Add(labelSix);
+            grid.AddWithSpan(hsl3, 7, 1, 1, 2);
+
+            hsl3.SetBinding(HorizontalStackLayout.IsVisibleProperty, "IsRecurringIncome");
+
+            border.Content = grid;
+
+            return border;
+        });
+
+        SfCarousel sc = new SfCarousel
+        {
+            ScaleOffset = (float)0.9,
+            RotationAngle = 20,
+            Duration = 1000,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            WidthRequest = _vm.SignOutButtonWidth + 10,
+            ItemWidth = (int)Math.Ceiling(_vm.SignOutButtonWidth) - 10,
+            ItemHeight = 215,
+            ItemSpacing = 20
+        };
+
+        sc.ItemTemplate = dt;
+        sc.ItemsSource = _vm.DefaultBudget.IncomeEvents;
+
+
+        if (sc.ItemsSource.Any())
+        {
+            if ((sc.ItemsSource.Count() % 2) == 0)
+            {
+                sc.SelectedIndex = (sc.ItemsSource.Count() / 2) - 1;
+            }
+            else
+            {
+                sc.SelectedIndex = (sc.ItemsSource.Count() / 2);
+            }
+        }
+
+        sc.SwipeStarted += async (s, e) =>
+        {
+            await IncomeCarouselSwipeStarted(s, e);
+        };
+
+        sc.SwipeEnded += async (s, e) =>
+        {
+            await IncomeCarouselSwipeEnded(s, e);
+        };
+
+        for (int i = 0; i < sc.ItemsSource.Count(); i++)
+        {
+            Border button = new Border
+            {
+                HeightRequest = 10,
+                WidthRequest = 10,
+                Margin = new Thickness(2, 0, 2, 0),
+                StrokeThickness = 0,
+                StrokeShape = new RoundRectangle
+                {
+                    CornerRadius = new CornerRadius(5)
+                }
+            };
+
+            if (i == sc.SelectedIndex)
+            {
+                button.BackgroundColor = (Color)PrimaryLight;
+            }
+            else
+            {
+                button.BackgroundColor = (Color)Gray100;
+            }
+
+            IncomeCarouselIdent.Children.Add(button);
+
+        }
+
+        return sc;
+    }
+
+    private async Task IncomeCarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
+    {
+        Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
+
+        var Carousel = (SfCarousel)Sender;
+        var Elements = IncomeCarouselIdent.GetVisualTreeDescendants();
+
+        int Index = (Carousel.SelectedIndex * 2) + 1;
+
+        Border button = (Border)Elements[Index];
+        await button.BackgroundColorTo((Color)Gray100, 16, 500, Easing.CubicIn);
+
+    }
+    private async Task IncomeCarouselSwipeEnded(object Sender, EventArgs Event)
+    {
+        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
+
+        var Carousel = (SfCarousel)Sender;
+        var Elements = IncomeCarouselIdent.GetVisualTreeDescendants();
+
+        int Index = (Carousel.SelectedIndex * 2) + 1;
+
+        Border button = (Border)Elements[Index];
+        await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
     }
 
     private async Task CarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
@@ -1170,6 +1524,21 @@ public partial class MainPage : ContentPage
         App.CurrentBottomSheet = page;
 
         page.ShowAsync();
+    }
+
+    private void ExtraInfoDetails_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private void ExtraBillInfo_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private void ExtraSavingInfo_Tapped(object sender, TappedEventArgs e)
+    {
+
     }
 }
 

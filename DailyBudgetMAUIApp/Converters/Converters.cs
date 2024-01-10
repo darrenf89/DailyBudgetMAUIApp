@@ -609,4 +609,118 @@ namespace DailyBudgetMAUIApp.Converters
         }
 
     }
+
+    public class IncomeTypeConverter : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            IncomeEvents Income = (IncomeEvents)value;
+
+            string ReturnValue;
+
+            if (Income.IsRecurringIncome)
+            {
+                ReturnValue = "Recurring ";
+            }
+            else
+            {
+                ReturnValue = "One-off ";
+            }
+
+            if (Income.IsInstantActive ?? false)
+            {
+                ReturnValue = ReturnValue + "Instant Active Extra Income";
+            }
+            else
+            {
+                ReturnValue = ReturnValue + "On Received Extra Income";
+            }
+
+            return ReturnValue;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class DateToNumberOfDays : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            DateTime Date = (DateTime)value;
+
+            string ReturnValue = $"{(int)Math.Ceiling((Date.Date - DateTime.Today.Date).TotalDays)} Days";
+
+            return ReturnValue;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class RecurringIncomeDetails : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            IncomeEvents Income = (IncomeEvents)value;
+
+            if (Income.IsRecurringIncome)
+            {
+                if (Income.RecurringIncomeType == "Everynth")
+                {
+                    return Income.RecurringIncomeValue == 1 ? $"Every {Income.RecurringIncomeDuration.Replace("s", "")}" : $"Every {Income.RecurringIncomeValue} {Income.RecurringIncomeDuration}";
+                }
+                else if (Income.RecurringIncomeType == "OfEveryMonth")
+                {
+                    string DayString;
+                    if (Income.RecurringIncomeValue == 1)
+                    {
+                        DayString = $"{Income.RecurringIncomeValue}st";
+                    }
+                    else if (Income.RecurringIncomeValue == 2)
+                    {
+                        DayString = $"{Income.RecurringIncomeValue}nd";
+                    }
+                    else if (Income.RecurringIncomeValue == 3)
+                    {
+                        DayString = $"{Income.RecurringIncomeValue}rd";
+                    }
+                    else
+                    {
+                        DayString = $"{Income.RecurringIncomeValue}th";
+                    }
+
+                    return $"{DayString} of the month";
+                }
+                else
+                {
+                    return "";
+                }
+
+            }
+            else
+            {
+                return "";
+            }
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
 }
