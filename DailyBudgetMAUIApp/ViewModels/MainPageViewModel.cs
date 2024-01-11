@@ -45,6 +45,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private SfCarousel _billCarousel;
         [ObservableProperty]
         private SfCarousel _incomeCarousel;
+        [ObservableProperty]
+        private bool _showRecentTransactions;
+        [ObservableProperty]
+        private List<Transactions> _recentTransactions;
 
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)

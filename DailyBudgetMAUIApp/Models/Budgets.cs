@@ -79,6 +79,10 @@ namespace DailyBudgetMAUIApp.Models
     public class AccountInfo
     {
         public int BudgetShareRequestID { get; set; } = 0;
+        public decimal TransactionValueToday { get; set; }
+        public int NumberOfTransactionsToday { get; set; } = 0;
+        public decimal TransacionValueThisPeriod { get; set; }
+        public decimal IncomeThisPeriod { get; set; }
 
     }
 

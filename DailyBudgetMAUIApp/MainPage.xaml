@@ -187,7 +187,7 @@
                 </Border>
                 <Border Padding="0" Style="{DynamicResource DashboardMainContent}" >
                     <Grid ColumnDefinitions="45, *, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
-                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5"/>
+                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
                         <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="End" Margin="5,5,5,0">
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.More_vert}" Size="40"  Color="{DynamicResource Primary}" />
@@ -197,7 +197,7 @@
                             </Image.GestureRecognizers>
                         </Image>
                         <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4" Text="{Binding DefaultBudget.BudgetName}" FontAttributes="Bold" FontSize="Large" Padding="10,5,0,0" TextColor="{StaticResource Primary}" Margin="0"/>
-                        <Label CharacterSpacing="0.1" FontAttributes="Bold" Grid.Column="1" Grid.Row="2" Text="{Binding DefaultBudget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" />
+                        <Label Grid.Column="1" Grid.Row="2" Text="{Binding DefaultBudget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" />
                         <Label Text="Current Bank Balance" Grid.Column="1" Grid.Row="3" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
                         <progressBar:SfLinearProgressBar AnimationDuration="6000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" SecondaryProgressFill="{StaticResource Tertiary}" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,0,10,5" Minimum="0" Maximum="{Binding DefaultBudget.BankBalance}" Progress="{Binding DefaultBudget.LeftToSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
                         <Label Grid.Column="1" Grid.Row="5" Text="Money to Spend" FontSize="Caption" TextColor="{StaticResource Success}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
@@ -219,9 +219,41 @@
                         </HorizontalStackLayout>
                     </Grid>
                 </Border>
+                <Border Padding="0" Style="{DynamicResource DashboardMainContent}" x:Name="brdYourTransactions">
+                    <VerticalStackLayout>
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="45,*,*">
+                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
+                            <Label Text="Your Transactions" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontAttributes="Bold" FontSize="Large" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0"/>
+                            <Label Text="Transactions Today" Grid.Column="1" Grid.Row="2" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
+                            <Label Grid.Column="1" Grid.Row="1" Text="{Binding DefaultBudget.AccountInfo.NumberOfTransactionsToday}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Tertiary}" Padding="10,0,0,0"/>
+                            <Label Text="Spent Today" Grid.Column="2" Grid.Row="2" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
+                            <Label Grid.Column="2" Grid.Row="1" Text="{Binding DefaultBudget.AccountInfo.TransactionValueToday, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Tertiary}" Padding="10,0,0,0"/>
+                            <Label Text="Spent This Period" Grid.Column="1" Grid.Row="4" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
+                            <Label Grid.Column="1" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.TransacionValueThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Tertiary}" Padding="10,0,0,0"/>
+                            <Label Text="Income This Period" Grid.Column="2" Grid.Row="4" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
+                            <Label Grid.Column="2" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.IncomeThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Tertiary}" Padding="10,0,0,0"/>
+                            <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5" Margin="10,5,10,10"/>
+                            <VerticalStackLayout x:Name="vslRecentTransactions" IsVisible="{Binding ShowRecentTransactions}" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3">
+                            
+                            </VerticalStackLayout>
+                            <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="3" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource PrimaryLight}" Margin="0,5,0,0">
+                                <BoxView HeightRequest="2" Color="{StaticResource Primary}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="Show Recent Transactions" TextColor="{DynamicResource Primary}"/>
+                                <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="SeeMoreTransactions" Tapped="SeeMoreTransactions_Tapped"/>
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
                 <Border Padding="0" Style="{DynamicResource DashboardMainContent}" x:Name="brdYourEnvelopes">
                     <Grid ColumnDefinitions="45, Auto, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
-                        <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5">
+                        <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mail}" Size="45"  Color="{DynamicResource Primary}" />
                             </Image.Source>
