@@ -10,6 +10,7 @@
              xmlns:gauge="clr-namespace:Syncfusion.Maui.Gauges;assembly=Syncfusion.Maui.Gauges"
              xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
              xmlns:carousel="clr-namespace:Syncfusion.Maui.Carousel;assembly=Syncfusion.Maui.Carousel"
+             xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              Background="{StaticResource Primary}">
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -25,6 +26,8 @@
             <converters:SavingProgressBarMaxString x:Key="SavingProgressBarMaxString" />
             <converters:SavingTypeConverter x:Key="SavingTypeConverter" />
             <converters:DateToNumberOfDays x:Key="DateToNumberOfDays" />
+            <converters:BoolToColor x:Key="BoolToColor" />
+            <converters:EventTypeToGlyph x:Key="EventTypeToGlyph" />            
         </ResourceDictionary>
     </ContentPage.Resources>
     <Shell.TitleView>
@@ -60,7 +63,7 @@
         </Grid>
     </Shell.TitleView>
     <RefreshView Refreshing="RefreshView_Refreshing" Command="{Binding RefreshPageCommand}" IsRefreshing="{Binding IsRefreshing}">
-        <ScrollView>
+        <ScrollView x:Name="MainScrollView">
             <VerticalStackLayout VerticalOptions="Start">
                 <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,10">
                     <Grid ColumnDefinitions="*" RowDefinitions="Auto">
@@ -223,25 +226,50 @@
                     <VerticalStackLayout>
                         <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="45,*,*">
                             <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
-                            <Label Text="Your Transactions" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontAttributes="Bold" FontSize="Large" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0"/>
-                            <Label Text="Transactions Today" Grid.Column="1" Grid.Row="2" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
-                            <Label Grid.Column="1" Grid.Row="1" Text="{Binding DefaultBudget.AccountInfo.NumberOfTransactionsToday}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Tertiary}" Padding="10,0,0,0"/>
-                            <Label Text="Spent Today" Grid.Column="2" Grid.Row="2" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
-                            <Label Grid.Column="2" Grid.Row="1" Text="{Binding DefaultBudget.AccountInfo.TransactionValueToday, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Tertiary}" Padding="10,0,0,0"/>
-                            <Label Text="Spent This Period" Grid.Column="1" Grid.Row="4" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
-                            <Label Grid.Column="1" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.TransacionValueThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Tertiary}" Padding="10,0,0,0"/>
-                            <Label Text="Income This Period" Grid.Column="2" Grid.Row="4" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
-                            <Label Grid.Column="2" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.IncomeThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Tertiary}" Padding="10,0,0,0"/>
+                            <Label Text="Your Transactions" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontAttributes="Bold" FontSize="Large" Padding="10,5,0,10" TextColor="{StaticResource Primary}" Margin="0"/>
+                            <Label Text="Transactions Today" Grid.Column="1" Grid.Row="2" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="Small"/>
+                            <Label Grid.Column="1" Grid.Row="1" Text="{Binding DefaultBudget.AccountInfo.NumberOfTransactionsToday}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
+                            <Label Text="Spent Today" Grid.Column="2" Grid.Row="2" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="Small"/>
+                            <Label Grid.Column="2" Grid.Row="1" Text="{Binding DefaultBudget.AccountInfo.TransactionValueToday, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
+                            <Label Text="Spent This Period" Grid.Column="1" Grid.Row="4" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="Small"/>
+                            <Label Grid.Column="1" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.TransactionValueThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
+                            <Label Text="Income This Period" Grid.Column="2" Grid.Row="4" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="Small"/>
+                            <Label Grid.Column="2" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.IncomeThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
                             <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5" Margin="10,5,10,10"/>
-                            <VerticalStackLayout x:Name="vslRecentTransactions" IsVisible="{Binding ShowRecentTransactions}" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3">
-                            
+                            <VerticalStackLayout x:Name="vslRecentTransactions" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" IsVisible="false">
+                                <sfList:SfListView ItemTapped="SfListView_ItemTapped" AutoFitMode="DynamicHeight" ItemsSource="{Binding RecentTransactions}" SelectionMode="None" ItemSpacing="10,5,10,5">
+                                    <sfList:SfListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <ViewCell>
+                                                <ViewCell.View>
+                                                    <Border Style="{DynamicResource ListViewContent}">
+                                                        <Grid BackgroundColor="Transparent" RowDefinitions="60,Auto" ColumnDefinitions="*">
+                                                            <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" ColumnDefinitions="2*,*" >
+                                                                <Label Padding="10,5,0,0" Grid.Row="0" Grid.Column="0" HorizontalOptions="Start" Text="{Binding TransactionAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{Binding IsIncome, Converter={StaticResource BoolToColor}}" FontSize="Medium" CharacterSpacing="0"/>
+                                                                <Label Padding="10,0,0,5" Grid.Row="1" Grid.Column="0" HorizontalOptions="Start" Text="{Binding TransactionDate, StringFormat='{0:dd MMMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="Caption" CharacterSpacing="0"/>
+                                                                <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,15,0">
+                                                                    <Image.Source>
+                                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding EventType, Converter={StaticResource EventTypeToGlyph}}" Size="30"  Color="{DynamicResource PrimaryDark}" />
+                                                                    </Image.Source>
+                                                                </Image>
+                                                            </Grid>
+                                                            <Grid Grid.Row="1" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto,*" IsVisible="{Binding IsVisible, Mode=TwoWay}">
+                                                                
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Border>
+                                                </ViewCell.View>
+                                            </ViewCell>
+                                        </DataTemplate>
+                                    </sfList:SfListView.ItemTemplate>
+                                </sfList:SfListView>
                             </VerticalStackLayout>
-                            <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="3" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource PrimaryLight}" Margin="0,5,0,0">
-                                <BoxView HeightRequest="2" Color="{StaticResource Primary}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="Show Recent Transactions" TextColor="{DynamicResource Primary}"/>
+                            <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="3" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource TertiaryLight}" Margin="0,5,0,0">
+                                <BoxView HeightRequest="2" Color="{StaticResource Tertiary}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Medium" Text="Show Recent Transactions" TextColor="{DynamicResource Tertiary}"/>
                                 <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
                                     <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Primary}"/>
+                                        <FontImageSource x:Name="fisRecentTransactionHideShow" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_less}" Size="35" Color="{DynamicResource Tertiary}"/>
                                     </Image.Source>
                                 </Image>
                                 <Grid.GestureRecognizers>

@@ -18,6 +18,7 @@
     <Color x:Key="Success">#38b44a</Color>
     <Color x:Key="SuccessLight">#c3e8c8</Color>
     <Color x:Key="Danger">#df382c</Color>
+    <Color x:Key="DangerDark">#85211a</Color>
     <Color x:Key="DangerLight">#f8d7d4</Color>
     <Color x:Key="DangerLightLight">#fcf3f2</Color>
     <Color x:Key="Warning">#efb73e</Color>

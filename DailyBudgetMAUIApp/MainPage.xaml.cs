@@ -184,6 +184,8 @@ public partial class MainPage : ContentPage
         {
             brdIncomeCarousel.IsVisible = false;
         }
+
+        _vm.RecentTransactions = await _ds.GetRecentTransactions(_vm.DefaultBudgetID, 6, "MainPage");
     }
 
     private async void ProcessSnackBar()
@@ -1539,6 +1541,50 @@ public partial class MainPage : ContentPage
     private void ExtraSavingInfo_Tapped(object sender, TappedEventArgs e)
     {
 
+    }
+
+    private void SfListView_ItemTapped(object sender, Syncfusion.Maui.ListView.ItemTappedEventArgs e)
+    {
+        //var tappedItemData = sender as Transactions;
+        //if (tappedItem != null && tappedItem.IsVisible)
+        //{
+        //    tappedItem.IsVisible = false;
+        //}
+
+        //if (tappedItem == tappedItemData)
+        //{
+        //    tappedItem = null;
+        //    return;
+        //}
+
+        //tappedItem = tappedItemData;
+        //tappedItem.IsVisible = true;
+    }
+
+    private async void SeeMoreTransactions_Tapped(object sender, TappedEventArgs e)
+    {
+
+        if (!vslRecentTransactions.IsVisible)
+        {
+            vslRecentTransactions.IsVisible = true;
+            fisRecentTransactionHideShow.Glyph = "\ue5cf";
+            vslRecentTransactions.HeightRequest = 0;
+
+            var animation = new Animation(v => vslRecentTransactions.HeightRequest = v, 0, _vm.RecentTransactionsHeight);
+            animation.Commit(this, "ShowRecentTran", 16, 1000, Easing.CubicOut);
+
+            await MainScrollView.ScrollToAsync(vslRecentTransactions, ScrollToPosition.Start, true);
+        }
+        else
+        {           
+            var animation = new Animation(v => vslRecentTransactions.HeightRequest = v, _vm.RecentTransactionsHeight, 0);
+            animation.Commit(this, "HideRecentTran", 16, 1000, Easing.CubicIn, async (v, c) =>
+            {
+                vslRecentTransactions.IsVisible = false;
+                await MainScrollView.ScrollToAsync(brdYourTransactions,ScrollToPosition.Start, true);
+                fisRecentTransactionHideShow.Glyph = "\ue5ce";
+            });
+        }
     }
 }
 

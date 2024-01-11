@@ -288,6 +288,7 @@ public partial class AddTransaction : ContentPage
             _vm.Transaction.SavingName = "";
             _vm.Transaction.SavingID = 0;
             _vm.Transaction.SavingsSpendType = "";
+            _vm.Transaction.EventType = "";
         }
         else
         {

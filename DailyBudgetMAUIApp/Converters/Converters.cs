@@ -225,6 +225,38 @@ namespace DailyBudgetMAUIApp.Converters
 
     }
 
+    public class BoolToColor : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            Application.Current.Resources.TryGetValue("Success", out var Success);
+            Application.Current.Resources.TryGetValue("DangerDark", out var Danger);
+
+            if (value == null) return (Color)Success;
+
+            bool IsIncome = (bool)value;
+
+            Color OutputColor;
+            if (IsIncome)
+            {
+                OutputColor = (Color)Success;
+            }
+            else
+            {
+                OutputColor = (Color)Danger;
+            }
+
+            return OutputColor;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
     public class GreaterLessZeroColor : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -715,6 +747,47 @@ namespace DailyBudgetMAUIApp.Converters
                 return "";
             }
 
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class EventTypeToGlyph : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return "\uf17e";
+
+            string EventType = (string)value;
+
+            if(EventType == "IncomeEvent")
+            {
+                return "\ue8e5"; 
+            }
+            else if (EventType == "Bill")
+            {
+                return "\uef6e";
+            }
+            else if (EventType == "PayDay")
+            {
+                return "\uef63";
+            }
+            else if (EventType == "Envelope")
+            {
+                return "\ue158";
+            }
+            else if (EventType == "Saving")
+            {
+                return "\ue2eb";
+            }
+            else
+            {
+                return "\uf17e";
+            }
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

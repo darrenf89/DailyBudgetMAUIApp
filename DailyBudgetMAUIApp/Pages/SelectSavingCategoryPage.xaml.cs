@@ -228,6 +228,7 @@ public partial class SelectSavingCategoryPage : ContentPage
             _vm.Transaction.SavingName = Saving.SavingsName;
             _vm.Transaction.SavingID = Saving.SavingID;
             _vm.Transaction.SavingsSpendType = "EnvelopeSaving";
+            _vm.Transaction.EventType = "Envelope";
 
             await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
                 new Dictionary<string, object>
@@ -242,6 +243,7 @@ public partial class SelectSavingCategoryPage : ContentPage
         _vm.Transaction.SavingName = "";
         _vm.Transaction.SavingID = 0;
         _vm.Transaction.SavingsSpendType = "";
+        _vm.Transaction.EventType = "";
 
         await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
         new Dictionary<string, object>

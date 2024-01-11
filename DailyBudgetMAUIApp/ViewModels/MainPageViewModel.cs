@@ -46,9 +46,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private SfCarousel _incomeCarousel;
         [ObservableProperty]
-        private bool _showRecentTransactions;
-        [ObservableProperty]
         private List<Transactions> _recentTransactions;
+        [ObservableProperty]
+        private double _recentTransactionsHeight = 452;
 
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)

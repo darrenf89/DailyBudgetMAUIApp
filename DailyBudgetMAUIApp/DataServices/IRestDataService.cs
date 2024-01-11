@@ -60,6 +60,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> DeleteTransaction(int TransactionID);
         public Task<Transactions> GetTransactionFromID(int TransactionID);
         public Task<Budgets> GetAllBudgetTransactions(int BudgetID);
+        public Task<List<Transactions>> GetRecentTransactions(int BudgetID, int NumberOf, string page);
         public Task<Budgets> SaveBudgetDailyCycle(Budgets budget);
         public Task<string> CreateNewOtpCode(int UserID, string OTPType);
         public Task<string> ValidateOTPCodeEmail(OTP UserOTP);
