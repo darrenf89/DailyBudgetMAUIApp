@@ -2071,7 +2071,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         }
 
 
-                        HandleError(new Exception(error.ErrorMessage), page, "ValidateOTPCodeShareBudget");
+                        HandleError(new Exception(error.ErrorMessage), page, "GetRecentTransactions");
                         return null;
                     }
 
@@ -2079,7 +2079,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
-                HandleError(ex, page, "ValidateOTPCodeShareBudget");
+                HandleError(ex, page, "GetRecentTransactions");
                 return null;
             }
         }

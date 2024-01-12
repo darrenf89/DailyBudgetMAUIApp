@@ -393,6 +393,23 @@ public partial class MainPage : ContentPage
     {
 
     }
+    private void YourTransactionsOption_Tapped(object sender, TappedEventArgs e)
+    {
+        BudgetOptionsBottomSheet page = new BudgetOptionsBottomSheet(_vm.DefaultBudget, new ProductTools(new RestDataService()),new RestDataService());
+
+        page.Detents = new DetentsCollection()
+        {
+            new ContentDetent()
+        };
+
+        page.HasBackdrop = true;
+        page.CornerRadius = 30;
+
+        App.CurrentBottomSheet = page;
+
+        page.ShowAsync();
+    }
+
 
     private void BudgetMoreOptions_Tapped(object sender, TappedEventArgs e)
     {
@@ -492,7 +509,7 @@ public partial class MainPage : ContentPage
                 Source = new FontImageSource
                 {
                     FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue5d4",
+                    Glyph = "\ue25d",
                     Size = 40,
                     Color = (Color)Primary,
                 }
@@ -821,7 +838,7 @@ public partial class MainPage : ContentPage
                 Source = new FontImageSource
                 {
                     FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue5d4",
+                    Glyph = "\ue25d",
                     Size = 40,
                     Color = (Color)Primary,                    
                 }
@@ -1175,7 +1192,7 @@ public partial class MainPage : ContentPage
                 Source = new FontImageSource
                 {
                     FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue5d4",
+                    Glyph = "\ue25d",
                     Size = 40,
                     Color = (Color)Primary,
                 }
@@ -1543,24 +1560,6 @@ public partial class MainPage : ContentPage
 
     }
 
-    private void SfListView_ItemTapped(object sender, Syncfusion.Maui.ListView.ItemTappedEventArgs e)
-    {
-        //var tappedItemData = sender as Transactions;
-        //if (tappedItem != null && tappedItem.IsVisible)
-        //{
-        //    tappedItem.IsVisible = false;
-        //}
-
-        //if (tappedItem == tappedItemData)
-        //{
-        //    tappedItem = null;
-        //    return;
-        //}
-
-        //tappedItem = tappedItemData;
-        //tappedItem.IsVisible = true;
-    }
-
     private async void SeeMoreTransactions_Tapped(object sender, TappedEventArgs e)
     {
 
@@ -1571,7 +1570,7 @@ public partial class MainPage : ContentPage
             vslRecentTransactions.HeightRequest = 0;
 
             var animation = new Animation(v => vslRecentTransactions.HeightRequest = v, 0, _vm.RecentTransactionsHeight);
-            animation.Commit(this, "ShowRecentTran", 16, 1000, Easing.CubicOut);
+            animation.Commit(this, "ShowRecentTran", 16, 1000, Easing.CubicIn);
 
             await MainScrollView.ScrollToAsync(vslRecentTransactions, ScrollToPosition.Start, true);
         }
@@ -1580,10 +1579,36 @@ public partial class MainPage : ContentPage
             var animation = new Animation(v => vslRecentTransactions.HeightRequest = v, _vm.RecentTransactionsHeight, 0);
             animation.Commit(this, "HideRecentTran", 16, 1000, Easing.CubicIn, async (v, c) =>
             {
+                fisRecentTransactionHideShow.Glyph = "\ue5ce";
                 vslRecentTransactions.IsVisible = false;
                 await MainScrollView.ScrollToAsync(brdYourTransactions,ScrollToPosition.Start, true);
-                fisRecentTransactionHideShow.Glyph = "\ue5ce";
+                
             });
+        }
+    }
+
+    private async void EditTransaction_Tapped(object sender, TappedEventArgs e)
+    {
+        bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
+        if (EditTransaction)
+        {
+            Transactions transaction = (Transactions)e.Parameter;
+            await Shell.Current.GoToAsync($"{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}&TransactionID={transaction.TransactionID}",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = Transaction
+                });
+        }
+    }
+
+    private async void DeleteTransaction_Tapped(object sender, TappedEventArgs e)
+    {
+        bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
+        if (DeleteTransaction)
+        {
+            Transactions transaction = (Transactions)e.Parameter;
+            await _ds.DeleteTransaction(transaction.TransactionID);
+            _vm.RecentTransactions = await _ds.GetRecentTransactions(_vm.DefaultBudgetID, 6, "MainPageDelete");
         }
     }
 }

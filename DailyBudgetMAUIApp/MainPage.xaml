@@ -193,7 +193,7 @@
                         <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
                         <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="End" Margin="5,5,5,0">
                             <Image.Source>
-                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.More_vert}" Size="40"  Color="{DynamicResource Primary}" />
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
                             </Image.Source>
                             <Image.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="BudgetMoreOptions" Tapped="BudgetMoreOptions_Tapped" />
@@ -226,6 +226,14 @@
                     <VerticalStackLayout>
                         <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="45,*,*">
                             <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
+                            <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="End" Margin="5,5,5,0">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
+                                </Image.Source>
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="YourTransactionsOption" Tapped="YourTransactionsOption_Tapped" />
+                                </Image.GestureRecognizers>
+                            </Image>
                             <Label Text="Your Transactions" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontAttributes="Bold" FontSize="Large" Padding="10,5,0,10" TextColor="{StaticResource Primary}" Margin="0"/>
                             <Label Text="Transactions Today" Grid.Column="1" Grid.Row="2" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="Small"/>
                             <Label Grid.Column="1" Grid.Row="1" Text="{Binding DefaultBudget.AccountInfo.NumberOfTransactionsToday}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
@@ -237,7 +245,35 @@
                             <Label Grid.Column="2" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.IncomeThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
                             <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5" Margin="10,5,10,10"/>
                             <VerticalStackLayout x:Name="vslRecentTransactions" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" IsVisible="false">
-                                <sfList:SfListView ItemTapped="SfListView_ItemTapped" AutoFitMode="DynamicHeight" ItemsSource="{Binding RecentTransactions}" SelectionMode="None" ItemSpacing="10,5,10,5">
+                                <sfList:SfListView AllowSwiping="True" AutoFitMode="DynamicHeight" ItemsSource="{Binding RecentTransactions}" SelectionMode="None" ItemSpacing="10,5,10,5">
+                                    <sfList:SfListView.StartSwipeTemplate>
+                                        <DataTemplate x:Name="StartSwipeTemplate">    
+                                            <Grid BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill" Grid.Column="0">
+                                                <Grid VerticalOptions="Center" HorizontalOptions="Center" ColumnDefinitions="*,*">
+                                                    <Border Grid.Column="0" BackgroundColor="{StaticResouce InfoLight}">
+                                                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0" >
+                                                            <Image.Source>
+                                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="30"  Color="{DynamicResource Info}" />
+                                                            </Image.Source>
+                                                        </Image>
+                                                        <Border.GestureRecognizers>
+                                                            <TapGestureRecognizer Tapped="EditTransaction_Tapped" CommandParameter="{Binding .}"/>
+                                                        </Border.GestureRecognizers>
+                                                    </Border>
+                                                    <Border Grid.Column="1" BackgroundColor="{StaticResource DangerLight}"> 
+                                                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0" >
+                                                            <Image.Source>
+                                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete_forever }" Size="30"  Color="{DynamicResource Danger}" />
+                                                            </Image.Source>
+                                                        </Image>
+                                                        <Border.GestureRecognizers>
+                                                            <TapGestureRecognizer Tapped="DeleteTransaction_Tapped" CommandParameter="{Binding .}"/>
+                                                        </Border.GestureRecognizers>
+                                                    </Border>
+                                                </Grid>           
+                                            </Grid>
+                                        </DataTemplate>
+                                    </sfList:SfListView.StartSwipeTemplate>
                                     <sfList:SfListView.ItemTemplate>
                                         <DataTemplate>
                                             <ViewCell>
@@ -253,7 +289,7 @@
                                                                     </Image.Source>
                                                                 </Image>
                                                             </Grid>
-                                                            <Grid Grid.Row="1" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto,*" IsVisible="{Binding IsVisible, Mode=TwoWay}">
+                                                            <Grid Grid.Row="1" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto,*">
                                                                 
                                                             </Grid>
                                                         </Grid>
@@ -264,12 +300,12 @@
                                     </sfList:SfListView.ItemTemplate>
                                 </sfList:SfListView>
                             </VerticalStackLayout>
-                            <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="3" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource TertiaryLight}" Margin="0,5,0,0">
-                                <BoxView HeightRequest="2" Color="{StaticResource Tertiary}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Medium" Text="Show Recent Transactions" TextColor="{DynamicResource Tertiary}"/>
+                            <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="3" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
+                                <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="Show Recent Transactions" TextColor="{DynamicResource Info}"/>
                                 <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
                                     <Image.Source>
-                                        <FontImageSource x:Name="fisRecentTransactionHideShow" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_less}" Size="35" Color="{DynamicResource Tertiary}"/>
+                                        <FontImageSource x:Name="fisRecentTransactionHideShow" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_less}" Size="30" Color="{DynamicResource Info}"/>
                                     </Image.Source>
                                 </Image>
                                 <Grid.GestureRecognizers>
@@ -288,7 +324,7 @@
                         </Image>
                         <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="End" Margin="5,5,5,0">
                             <Image.Source>
-                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.More_vert}" Size="40"  Color="{DynamicResource Primary}" />
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
                             </Image.Source>
                             <Image.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="EnvelopeSavingsMoreOptions" Tapped="EnvelopeSavingsMoreOptions_Tapped" />
@@ -406,7 +442,7 @@
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
-                <Button WidthRequest="{Binding SignOutButtonWidth}" Command="{Binding SignOutCommand}" Style="{DynamicResource buttonClicked}" Text="Sign Out" HeightRequest="50" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,0,5,10" FontSize="20" CornerRadius="25" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
+                <Button WidthRequest="{Binding SignOutButtonWidth}" Command="{Binding SignOutCommand}" Style="{DynamicResource buttonClicked}" Text="Sign Out" HeightRequest="50" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,0,5,20" FontSize="20" CornerRadius="25" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>
