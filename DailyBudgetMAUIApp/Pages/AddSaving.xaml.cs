@@ -22,9 +22,9 @@ public partial class AddSaving : ContentPage
         _ds = ds;
 
         dtpckGoalDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(1);
-
        
 	}
+
     async protected override void OnAppearing()
     {
 

@@ -17,8 +17,8 @@
         <ShellContent  ContentTemplate="{DataTemplate Pages:ErrorPage}"/>
     </ShellItem>
 
-    <TabBar>
-        <Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
+    <TabBar x:Name="MainTabBar">
+        <!--<Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
             <ContentDI:ShellContentDI ContentTemplate="{DataTemplate local:MainPage}" />
         </Tab>
         <Tab Title="Bill" Route="AddBill" Icon="bill.svg">
@@ -32,6 +32,12 @@
         </Tab>
         <Tab Route="AddSaving" Title="Saving" Icon="saving.svg">
             <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddSaving}"/>
+        </Tab>-->
+    </TabBar>
+
+    <TabBar x:Name="SecondaryTabBar">
+        <Tab Title="Transactions" Route="ViewTransactions" Icon="transaction.svg">
+            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewTransactions}"/>
         </Tab>
     </TabBar>
 

@@ -213,7 +213,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 await _ds.UpdateDeviceUserDetails(UserDevice);
                                             }
 
-                                            //TODO: Sign in or update User Session and save to DB
+                                            await _pt.LoadTabBars(App.UserDetails.SubscriptionType, "");
                                             await Application.Current.MainPage.Navigation.PopModalAsync();
                                             await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                                         }

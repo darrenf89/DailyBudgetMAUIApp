@@ -42,7 +42,13 @@ public partial class MainPage : ContentPage
         _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
 
         ProcessSnackBar();
-        
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
+
     }
 
     protected async override void OnAppearing()
@@ -524,7 +530,7 @@ public partial class MainPage : ContentPage
 
             ClickImage.GestureRecognizers.Add(TapGesture);
 
-            grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
+            //grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
 
 
             Image image = new Image
@@ -853,7 +859,7 @@ public partial class MainPage : ContentPage
             
             ClickImage.GestureRecognizers.Add(TapGesture);
 
-            grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
+            //grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
 
 
             Image image = new Image
@@ -1207,7 +1213,7 @@ public partial class MainPage : ContentPage
 
             ClickImage.GestureRecognizers.Add(TapGesture);
 
-            grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
+            //grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
 
 
             Image image = new Image
@@ -1596,7 +1602,7 @@ public partial class MainPage : ContentPage
             await Shell.Current.GoToAsync($"{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}&TransactionID={transaction.TransactionID}",
                 new Dictionary<string, object>
                 {
-                    ["Transaction"] = Transaction
+                    ["Transaction"] = transaction
                 });
         }
     }

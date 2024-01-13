@@ -1,7 +1,9 @@
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
+using DailyBudgetMAUIApp.Handlers;
 using The49.Maui.BottomSheet;
+using CommunityToolkit.Maui.Views;
 
 namespace DailyBudgetMAUIApp.Pages.BottomSheets;
 
@@ -38,9 +40,18 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         this.DismissAsync();
     }
 
-    private void ViewTransactions_Tapped(object sender, TappedEventArgs e)
+    private async void ViewTransactions_Tapped(object sender, TappedEventArgs e)
     {
+        var PopUp = new PopUpPage();
+        App.CurrentPopUp = PopUp;
+        Application.Current.MainPage.ShowPopup(PopUp);
 
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
+        }
+        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewTransactions)}");
     }
 
     private void ViewBills_Tapped(object sender, TappedEventArgs e)

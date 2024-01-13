@@ -60,6 +60,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SelectPayeePage>();
         builder.Services.AddTransient<SelectCategoryPage>();
         builder.Services.AddTransient<BudgetOptionsBottomSheet>();
+        builder.Services.AddTransient<ViewTransactions>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();
@@ -76,6 +77,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SelectPayeePageViewModel>();
         builder.Services.AddTransient<SelectCategoryPageViewModel>();
         builder.Services.AddTransient<BaseViewModel>();
+        builder.Services.AddTransient<ViewTransactionsViewModel>();
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();

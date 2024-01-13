@@ -1,4 +1,5 @@
-﻿using DailyBudgetMAUIApp.Handlers;
+﻿using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using The49.Maui.BottomSheet;
 
@@ -13,6 +14,8 @@ public partial class App : Application
     public static bool HasVisitedCreatePage;
     public static BudgetSettingValues CurrentSettings;
     public static BottomSheet CurrentBottomSheet;
+    public static Popup CurrentPopUp;
+    public static TabBar MainTabBar;
 
     public static int SessionPeriod = 7;
 
