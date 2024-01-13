@@ -44,6 +44,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task NavigateFromPendingIntent(string NavigationID);
         public Task<Picker> SwitchBudget(string page);
         public Task ChangeDefaultBudget(int UserID, int BudgetID, bool Navigate);
+        public Task LoadTabBars(string UserSub, string BudgetType);
 
     }
 }

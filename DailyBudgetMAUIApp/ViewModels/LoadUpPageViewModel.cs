@@ -74,11 +74,12 @@ namespace DailyBudgetMAUIApp.ViewModels
                             };
 
                             await _ds.UpdateDeviceUserDetails(UserDevice);
-                        }                        
+                        }
 
-                        //TODO: Update User Session
+                        await _pt.LoadTabBars(App.UserDetails.SubscriptionType, "");
 
                         await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        return;
                     }
                     else
                     {
@@ -105,6 +106,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         ["Error"] = Error
                     });
             }
+
         }
 
 

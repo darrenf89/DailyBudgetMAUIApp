@@ -162,13 +162,13 @@
 
     <Style TargetType="Border" x:Key="ListViewContent">
         <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
-        <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="Stroke" Value="{StaticResource PrimaryDarkBrush}"/>
         <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="Background" Value="White"/>
     </Style>
 
     <Style TargetType="Border" x:Key="DashboardMainContent">
-        <Setter Property="Margin" Value="10,0,10,15"/>
+        <Setter Property="Margin" Value="10,0,10,20"/>
         <Setter Property="Padding" Value="10,10,10,10"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
         <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>

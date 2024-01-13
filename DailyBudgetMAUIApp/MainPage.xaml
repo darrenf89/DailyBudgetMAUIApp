@@ -73,7 +73,7 @@
                 <Border Style="{DynamicResource DashboardMainContent}" Stroke="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColorLight}}" StrokeThickness="3" Padding="0">
                     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto, Auto, *" Padding="0" Margin="0">
                         <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Padding="20,5,0,5">
-                            <Label  Text="Left of Today's Budget" TextColor="{DynamicResource PrimaryDark}" FontSize="Medium"  FontAttributes="Bold" VerticalOptions="Center"/>
+                            <Label  Text="Left of Today's Budget" TextColor="{DynamicResource PrimaryDark}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="Center"/>
                             <Image VerticalOptions="Center" Margin="2,0,0,0">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="20" Color="{DynamicResource PrimaryDark}"/>
@@ -110,7 +110,7 @@
                         </Label>
                         <gauge:SfRadialGauge  Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" MaximumHeightRequest="100" MaximumWidthRequest="100" Margin="5,0,0,0">
                             <gauge:SfRadialGauge.Axes>
-                                <gauge:RadialAxis StartAngle="150" EndAngle="30" Minimum="0" Maximum="{Binding DefaultBudget.StartDayDailyAmount}" Interval="0" AnimationDuration="6000" EnableLoadingAnimation="True" RadiusFactor="0.95">
+                                <gauge:RadialAxis StartAngle="150" EndAngle="30" Minimum="0" Maximum="{Binding DefaultBudget.StartDayDailyAmount}" Interval="0" AnimationDuration="3000" EnableLoadingAnimation="True" RadiusFactor="0.95">
                                     <gauge:RadialAxis.AxisLineStyle>
                                         <gauge:RadialLineStyle Fill="{StaticResource DangerLight}"/>
                                     </gauge:RadialAxis.AxisLineStyle>
@@ -191,7 +191,7 @@
                 <Border Padding="0" Style="{DynamicResource DashboardMainContent}" >
                     <Grid ColumnDefinitions="45, *, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
                         <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
-                        <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="End" Margin="5,5,5,0">
+                        <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
                             </Image.Source>
@@ -202,7 +202,7 @@
                         <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4" Text="{Binding DefaultBudget.BudgetName}" FontAttributes="Bold" FontSize="Large" Padding="10,5,0,0" TextColor="{StaticResource Primary}" Margin="0"/>
                         <Label Grid.Column="1" Grid.Row="2" Text="{Binding DefaultBudget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" />
                         <Label Text="Current Bank Balance" Grid.Column="1" Grid.Row="3" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
-                        <progressBar:SfLinearProgressBar AnimationDuration="6000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" SecondaryProgressFill="{StaticResource Tertiary}" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,0,10,5" Minimum="0" Maximum="{Binding DefaultBudget.BankBalance}" Progress="{Binding DefaultBudget.LeftToSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
+                        <progressBar:SfLinearProgressBar AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" SecondaryProgressFill="{StaticResource Tertiary}" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,0,10,5" Minimum="0" Maximum="{Binding DefaultBudget.BankBalance}" Progress="{Binding DefaultBudget.LeftToSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
                         <Label Grid.Column="1" Grid.Row="5" Text="Money to Spend" FontSize="Caption" TextColor="{StaticResource Success}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
                         <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="1" Grid.Row="6" Text="{Binding DefaultBudget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="Caption" TextColor="{StaticResource Gray900}" Padding="10,0,0,5" HorizontalTextAlignment="Start"/>
                         <Label Grid.Column="2" Grid.Row="5" Text="Available Money" FontSize="Caption" TextColor="{StaticResource Tertiary}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
@@ -226,7 +226,7 @@
                     <VerticalStackLayout>
                         <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="45,*,*">
                             <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
-                            <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="End" Margin="5,5,5,0">
+                            <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
                                 </Image.Source>
@@ -247,11 +247,11 @@
                             <VerticalStackLayout x:Name="vslRecentTransactions" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" IsVisible="false">
                                 <sfList:SfListView AllowSwiping="True" AutoFitMode="DynamicHeight" ItemsSource="{Binding RecentTransactions}" SelectionMode="None" ItemSpacing="10,5,10,5">
                                     <sfList:SfListView.StartSwipeTemplate>
-                                        <DataTemplate x:Name="StartSwipeTemplate">    
-                                            <Grid BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill" Grid.Column="0">
-                                                <Grid VerticalOptions="Center" HorizontalOptions="Center" ColumnDefinitions="*,*">
-                                                    <Border Grid.Column="0" BackgroundColor="{StaticResouce InfoLight}">
-                                                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0" >
+                                        <DataTemplate x:Name="StartSwipeTemplate">
+                                            <Border Stroke="Transparent" StrokeThickness="0">
+                                                <Grid VerticalOptions="Center" HorizontalOptions="Center" ColumnDefinitions="*,*" RowDefinitions="*" BackgroundColor="Transparent">
+                                                    <Border Grid.Column="0" BackgroundColor="{StaticResource InfoLight}" StrokeThickness="0" Padding="10,10,10,10" Stroke="Transparent">
+                                                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0">
                                                             <Image.Source>
                                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="30"  Color="{DynamicResource Info}" />
                                                             </Image.Source>
@@ -260,8 +260,8 @@
                                                             <TapGestureRecognizer Tapped="EditTransaction_Tapped" CommandParameter="{Binding .}"/>
                                                         </Border.GestureRecognizers>
                                                     </Border>
-                                                    <Border Grid.Column="1" BackgroundColor="{StaticResource DangerLight}"> 
-                                                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0" >
+                                                    <Border Grid.Column="1" BackgroundColor="{StaticResource DangerLight}" StrokeThickness="0" Padding="10,10,10,10" Stroke="Transparent">
+                                                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0">
                                                             <Image.Source>
                                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete_forever }" Size="30"  Color="{DynamicResource Danger}" />
                                                             </Image.Source>
@@ -270,8 +270,8 @@
                                                             <TapGestureRecognizer Tapped="DeleteTransaction_Tapped" CommandParameter="{Binding .}"/>
                                                         </Border.GestureRecognizers>
                                                     </Border>
-                                                </Grid>           
-                                            </Grid>
+                                                </Grid>
+                                            </Border>
                                         </DataTemplate>
                                     </sfList:SfListView.StartSwipeTemplate>
                                     <sfList:SfListView.ItemTemplate>
@@ -302,8 +302,8 @@
                             </VerticalStackLayout>
                             <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="3" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
                                 <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="Show Recent Transactions" TextColor="{DynamicResource Info}"/>
-                                <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
+                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="Show Recent Transactions" TextColor="{DynamicResource Info}"/>
+                                <Image VerticalOptions="Center" Margin="0,0,5,0" Grid.Row="1" Grid.Column="1" >
                                     <Image.Source>
                                         <FontImageSource x:Name="fisRecentTransactionHideShow" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_less}" Size="30" Color="{DynamicResource Info}"/>
                                     </Image.Source>
@@ -322,7 +322,7 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mail}" Size="45"  Color="{DynamicResource Primary}" />
                             </Image.Source>
                         </Image>
-                        <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="End" Margin="5,5,5,0">
+                        <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
                             </Image.Source>
@@ -333,7 +333,7 @@
                         <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4" Text="Your Envelopes" FontAttributes="Bold" FontSize="Large" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0"/>
                         <Label CharacterSpacing="0.1" FontAttributes="Bold" Grid.Column="1" Grid.Row="2" Text="{Binding EnvelopeStats.EnvelopeCurrentString}" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" />
                         <Label Text="Current Envelope Balance" Grid.Column="1" Grid.Row="3" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="Small"/>
-                        <progressBar:SfLinearProgressBar AnimationDuration="6000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" Margin="10,0,10,5" Minimum="0" Maximum="{Binding EnvelopeStats.EnvelopeTotal}" Progress="{Binding EnvelopeStats.EnvelopeCurrent}" />
+                        <progressBar:SfLinearProgressBar AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" Margin="10,0,10,5" Minimum="0" Maximum="{Binding EnvelopeStats.EnvelopeTotal}" Progress="{Binding EnvelopeStats.EnvelopeCurrent}" />
                         <Label Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5" Text="Total Balance Put Away" FontSize="Caption" TextColor="{StaticResource Tertiary}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
                         <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="2" Grid.Row="6" Text="{Binding EnvelopeStats.EnvelopeTotalString}" FontSize="Caption" TextColor="{StaticResource Gray900}" Padding="10,0,10,5" HorizontalTextAlignment="End"/>
                         <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7" Margin="10,5,10,10"/>
@@ -382,8 +382,8 @@
                         </AbsoluteLayout>
                         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
                             <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="See All Savings" TextColor="{DynamicResource Info}"/>
-                            <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
+                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="See All Savings" TextColor="{DynamicResource Info}"/>
+                            <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="1" Grid.Column="1" >
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
                                 </Image.Source>
@@ -404,12 +404,12 @@
 
                             </HorizontalStackLayout>
                         </AbsoluteLayout>
-                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource TertiaryLightLight}" Margin="0,5,0,0">
-                            <BoxView HeightRequest="2" Color="{StaticResource Tertiary}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="See All Outgoins" TextColor="{DynamicResource Tertiary}"/>
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
+                            <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="See All Outgoins" TextColor="{DynamicResource Info}"/>
                             <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
                                 <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Tertiary}"/>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
                                 </Image.Source>
                             </Image>
                             <Grid.GestureRecognizers>
@@ -428,12 +428,12 @@
 
                             </HorizontalStackLayout>
                         </AbsoluteLayout>
-                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource PrimaryLightLight}" Margin="0,5,0,0">
-                            <BoxView HeightRequest="2" Color="{StaticResource Primary}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="See All Extra Income Events" TextColor="{DynamicResource Primary}"/>
-                            <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
+                            <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="See All Extra Income Events" TextColor="{DynamicResource Info}"/>
+                            <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="1" Grid.Column="1" >
                                 <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Primary}"/>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
                                 </Image.Source>
                             </Image>
                             <Grid.GestureRecognizers>

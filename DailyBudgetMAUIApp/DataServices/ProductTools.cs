@@ -7,6 +7,7 @@ using System.Globalization;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Converters;
 using Newtonsoft.Json;
+using Maui.FixesAndWorkarounds;
 using DailyBudgetMAUIApp.Pages;
 
 
@@ -1562,6 +1563,54 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 await Shell.Current.GoToAsync($"{nameof(MainPage)}");
             }
+            
+        }
+
+        public async Task LoadTabBars(string UserSub, string BudgetType)
+        {
+
+            App.MainTabBar.Items.Clear();
+
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Dashboard",
+                Route = "MainPage",
+                Icon = "dashboard.svg",
+                ContentTemplate = new DataTemplate(() => new MainPage(new MainPageViewModel(new RestDataService(), new ProductTools(new RestDataService())), new RestDataService(), new ProductTools(new RestDataService())))
+
+            });
+
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Bill",
+                Route = "AddBill",
+                Icon = "bill.svg",
+                ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Transaction",
+                Route = "AddTransactions",
+                Icon = "transaction.svg",
+                ContentTemplate = new DataTemplate(() => new AddTransaction(new AddTransactionViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Income",
+                Route = "AddIncome",
+                Icon = "income.svg",
+                ContentTemplate = new DataTemplate(() => new AddIncome(new AddIncomeViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Saving",
+                Route = "AddSaving",
+                Icon = "saving.svg",
+                ContentTemplate = new DataTemplate(() => new AddSaving(new AddSavingViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
             
         }
     }

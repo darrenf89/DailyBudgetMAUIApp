@@ -5,9 +5,12 @@
            xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
            CanBeDismissedByTappingOutsideOfPopup="False"
            Color="Transparent">
-    <VerticalStackLayout HeightRequest="300" WidthRequest="200">
-        <ActivityIndicator IsRunning="True" IsVisible="True" VerticalOptions="StartAndExpand" HorizontalOptions="Center" BackgroundColor="Transparent"  Margin="0,100,0,0" Color="{DynamicResource Primary}" Scale="1">
-            </ActivityIndicator>
-            <Label Text="Loading ..." FontAttributes="Bold" FontSize="Medium" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Light}" Margin="0,20,0,0"/>
-        </VerticalStackLayout>
+    <Grid ColumnDefinitions="*" RowDefinitions="*" BackgroundColor="{StaticResource Gray400}" x:Name="MainGrid">
+        <Border HeightRequest="150" x:Name="border" Grid.Row="0" Grid.Column="0" Style="{DynamicResource DashboardMainContent}" StrokeThickness="1" VerticalOptions="Center" HorizontalOptions="Center" StrokeShape="RoundRectangle 10">
+            <VerticalStackLayout>
+                <Label Text="Please wait" FontAttributes="Bold" FontSize="Medium" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0"/>
+                <ActivityIndicator IsRunning="True" IsVisible="True" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,40,0,20" Color="{DynamicResource Primary}" Scale="1.2"/>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
 </xct:Popup>

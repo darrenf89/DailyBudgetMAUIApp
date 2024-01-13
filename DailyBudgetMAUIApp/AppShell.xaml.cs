@@ -27,6 +27,9 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(CreateNewBudget), typeof(CreateNewBudget));
         Routing.RegisterRoute(nameof(LoadingPage), typeof(LoadingPage));
         Routing.RegisterRoute(nameof(LoadingPageTwo), typeof(LoadingPageTwo));
+        Routing.RegisterRoute(nameof(ViewTransactions), typeof(ViewTransactions));
+
+        App.MainTabBar = MainTabBar;
 
         this.BindingContext = this;
     }

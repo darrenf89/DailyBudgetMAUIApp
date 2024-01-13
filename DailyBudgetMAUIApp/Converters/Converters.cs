@@ -231,7 +231,7 @@ namespace DailyBudgetMAUIApp.Converters
         {
 
             Application.Current.Resources.TryGetValue("Success", out var Success);
-            Application.Current.Resources.TryGetValue("DangerDark", out var Danger);
+            Application.Current.Resources.TryGetValue("Danger", out var Danger);
 
             if (value == null) return (Color)Success;
 
