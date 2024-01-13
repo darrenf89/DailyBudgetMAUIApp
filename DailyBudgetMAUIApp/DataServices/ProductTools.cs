@@ -582,11 +582,12 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     PeriodTotalBillOutgoing += Bill.BillCurrentBalance;
 
-                    Budget.DailyBillOutgoing = DailyBillOutgoing;
-                    Budget.LeftToSpendBalance = Budget.LeftToSpendBalance - PeriodTotalBillOutgoing;
-                    Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance - PeriodTotalBillOutgoing;
                 }
             }
+
+            Budget.DailyBillOutgoing = DailyBillOutgoing;
+            Budget.LeftToSpendBalance = Budget.LeftToSpendBalance - PeriodTotalBillOutgoing;
+            Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance - PeriodTotalBillOutgoing;
 
             return "OK";
 
