@@ -5,6 +5,7 @@ using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.Pages;
 

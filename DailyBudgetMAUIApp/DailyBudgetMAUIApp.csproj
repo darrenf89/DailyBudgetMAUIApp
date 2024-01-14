@@ -79,6 +79,7 @@
 		<PackageReference Include="PureWeen.Maui.FixesAndWorkarounds" Version="1.5.0" />
 		<PackageReference Include="Syncfusion.Licensing" Version="24.1.45" />
 		<PackageReference Include="Syncfusion.Maui.Carousel" Version="24.1.45" />
+		<PackageReference Include="Syncfusion.Maui.Charts" Version="24.1.45" />
 		<PackageReference Include="Syncfusion.Maui.Expander" Version="24.1.45" />
 		<PackageReference Include="Syncfusion.Maui.Gauges" Version="24.1.45" />
 		<PackageReference Include="Syncfusion.Maui.ListView" Version="24.1.45" />

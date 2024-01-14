@@ -245,11 +245,11 @@
                             <Label Grid.Column="2" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.IncomeThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
                             <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5" Margin="10,5,10,10"/>
                             <VerticalStackLayout x:Name="vslRecentTransactions" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" IsVisible="false">
-                                <sfList:SfListView AllowSwiping="True" AutoFitMode="DynamicHeight" ItemsSource="{Binding RecentTransactions}" SelectionMode="None" ItemSpacing="10,5,10,5">
+                                <sfList:SfListView x:Name="LVTransactions" AllowSwiping="True" AutoFitMode="DynamicHeight" ItemsSource="{Binding RecentTransactions}" SelectionMode="None" ItemSpacing="10,5,10,5">
                                     <sfList:SfListView.StartSwipeTemplate>
                                         <DataTemplate x:Name="StartSwipeTemplate">
                                             <Border Stroke="Transparent" StrokeThickness="0">
-                                                <Grid VerticalOptions="Center" HorizontalOptions="Center" ColumnDefinitions="*,*" RowDefinitions="*" BackgroundColor="Transparent">
+                                                <Grid VerticalOptions="Center" HorizontalOptions="Center" ColumnDefinitions="50,50" RowDefinitions="*" BackgroundColor="Transparent">
                                                     <Border Grid.Column="0" BackgroundColor="{StaticResource InfoLight}" StrokeThickness="0" Padding="10,10,10,10" Stroke="Transparent">
                                                         <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0">
                                                             <Image.Source>
@@ -280,12 +280,17 @@
                                                 <ViewCell.View>
                                                     <Border Style="{DynamicResource ListViewContent}">
                                                         <Grid BackgroundColor="Transparent" RowDefinitions="60,Auto" ColumnDefinitions="*">
-                                                            <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" ColumnDefinitions="2*,*" >
+                                                            <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" ColumnDefinitions="3*,*,Auto" >
                                                                 <Label Padding="10,5,0,0" Grid.Row="0" Grid.Column="0" HorizontalOptions="Start" Text="{Binding TransactionAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{Binding IsIncome, Converter={StaticResource BoolToColor}}" FontSize="Medium" CharacterSpacing="0"/>
                                                                 <Label Padding="10,0,0,5" Grid.Row="1" Grid.Column="0" HorizontalOptions="Start" Text="{Binding TransactionDate, StringFormat='{0:dd MMMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="Caption" CharacterSpacing="0"/>
-                                                                <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,15,0">
+                                                                <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center" Margin="0,7,10,0">
                                                                     <Image.Source>
                                                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding EventType, Converter={StaticResource EventTypeToGlyph}}" Size="30"  Color="{DynamicResource PrimaryDark}" />
+                                                                    </Image.Source>
+                                                                </Image>
+                                                                <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" HorizontalOptions="End" VerticalOptions="Center" Margin="0,7,10,0">
+                                                                    <Image.Source>
+                                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Double_arrow}" Size="15"  Color="{DynamicResource Gray900}" />
                                                                     </Image.Source>
                                                                 </Image>
                                                             </Grid>

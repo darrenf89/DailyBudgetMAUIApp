@@ -295,8 +295,8 @@ namespace DailyBudgetMAUIApp.Converters
 
             decimal Amount = (decimal)value;
 
-            Application.Current.Resources.TryGetValue("SuccessLight", out var Success);
-            Application.Current.Resources.TryGetValue("DangerLight", out var Danger);
+            Application.Current.Resources.TryGetValue("Success", out var Success);
+            Application.Current.Resources.TryGetValue("Danger", out var Danger);
 
             Color OutputColor;
             if (Amount > 0)

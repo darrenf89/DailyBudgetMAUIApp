@@ -5,6 +5,8 @@
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+             xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              BackgroundColor="{StaticResource Primary}">
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsVisible="False" IsEnabled="False" />
@@ -19,10 +21,28 @@
             <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Medium"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
         </Grid>
     </Shell.TitleView>
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout>
+            <VerticalStackLayout>
+                <Border Style="{DynamicResource DashboardMainContent}">
+                    <chart:SfCartesianChart>
+
+                    </chart:SfCartesianChart>
+                </Border>
+            </VerticalStackLayout>
+            <VerticalStackLayout>
+                <sfList:SfListView x:Name="listView" LoadMoreOption="Auto" LoadMoreCommand="{Binding LoadMoreItemsCommand}" LoadMoreCommandParameter="{Binding Source={x:Reference listView}}" ItemsSource="{Binding Transactions}">
+                    <sfList:SfListView.LoadMoreTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Label Text="Load More Items" TextColor="Black" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" IsVisible="{Binding IsLazyLoading, Converter={StaticResource inverseBoolConverter}, Source={x:Reference Name=listView}}">
+                                </Label>
+                                <sfList:ListViewLoadMoreIndicator IsRunning="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" IsVisible="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" Color="Red" VerticalOptions="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </sfList:SfListView.LoadMoreTemplate>
+                </sfList:SfListView>
+            </VerticalStackLayout>
+        </VerticalStackLayout>        
+    </ScrollView>
 </ContentPage>

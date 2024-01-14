@@ -1566,11 +1566,121 @@ namespace DailyBudgetMAUIApp.DataServices
             
         }
 
-        public async Task LoadTabBars(string UserSub, string BudgetType)
+        public async Task LoadTabBars(string UserSub, DateTime SubExpiryDate ,string BudgetType)
         {
+            int SubLevel = 0;
+            int BudgetLevel = 0;
+
+            if (BudgetType == "Premium")
+            {
+                BudgetLevel = 1;
+            }
+            else if (BudgetType == "PremiumPlus")
+            {
+                BudgetLevel = 2;
+            }
+
+            if (UserSub == "Premium")
+            {
+                SubLevel = 1;
+            }
+            else if (UserSub == "PremiumPlus")
+            {
+                SubLevel = 2;
+            }
 
             App.MainTabBar.Items.Clear();
 
+            if(BudgetType == "Basic")
+            {
+                await LoadBasicTabBar();
+                return;
+            }
+
+            if(SubExpiryDate.AddDays(7) < DateTime.UtcNow)
+            {
+                //TODO: SUB EXPIRED AND BUDGET WILL REVERT WARNING OR CREATE NEW BUDGET 
+
+                BudgetType = SubLevel == 1 ? "Premium" : "Basic";
+                await LoadTabBarBudgetType(BudgetType);
+                return;
+            }
+            else if(SubExpiryDate > DateTime.UtcNow)
+            {
+                //SUB HAS NOT EXPIRED YET AND ALL IS GOOD
+                if (BudgetLevel > SubLevel)
+                {
+                    //TODO: GIVE WARNING THAT BUDGET ISN'T THE RIGHT LEVEL BUDGET WILL REVERT WARNING OR CREATE NEW BUDGET
+                    BudgetType = SubLevel == 1 ? "Premium" : "Basic";
+                    await LoadTabBarBudgetType(BudgetType);
+                    return;
+                }
+                else
+                {
+                    await LoadTabBarBudgetType(BudgetType);
+                    return;
+                }
+            }
+            else
+            {
+                //TODO: SUB EXPIRING AND BUDGET WILL REVERT AFTER X DAYS WARNING
+
+                await LoadTabBarBudgetType(BudgetType);
+                return;
+
+            }
+            
+        }
+
+        private async Task LoadTabBarBudgetType(string BudgetType)
+        {
+            if (BudgetType == "Premium")
+            {
+                await LoadPremiumTabBar();
+            }
+            else if (BudgetType == "PremiumPlus")
+            {
+                await LoadPremiumPlusTabBar();
+            }
+            else
+            {
+                await LoadBasicTabBar();
+            }
+        }
+
+        private async Task LoadPremiumTabBar()
+        {
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Dashboard",
+                Route = "MainPage",
+                Icon = "dashboard.svg",
+                ContentTemplate = new DataTemplate(() => new MainPage(new MainPageViewModel(new RestDataService(), new ProductTools(new RestDataService())), new RestDataService(), new ProductTools(new RestDataService())))
+
+            });
+
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Transaction",
+                Route = "AddTransactions",
+                Icon = "transaction.svg",
+                ContentTemplate = new DataTemplate(() => new AddTransaction(new AddTransactionViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Bill",
+                Route = "AddBill",
+                Icon = "bill.svg",
+                ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+
+
+        }
+
+        private async Task LoadPremiumPlusTabBar()
+        {
             App.MainTabBar.Items.Add(new ShellContentDI()
             {
                 Title = "Dashboard",
@@ -1611,7 +1721,26 @@ namespace DailyBudgetMAUIApp.DataServices
                 Icon = "saving.svg",
                 ContentTemplate = new DataTemplate(() => new AddSaving(new AddSavingViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
-            
+        }
+
+        private async Task LoadBasicTabBar()
+        {
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Dashboard",
+                Route = "MainPage",
+                Icon = "dashboard.svg",
+                ContentTemplate = new DataTemplate(() => new MainPage(new MainPageViewModel(new RestDataService(), new ProductTools(new RestDataService())), new RestDataService(), new ProductTools(new RestDataService())))
+
+            });
+
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Transaction",
+                Route = "AddTransactions",
+                Icon = "transaction.svg",
+                ContentTemplate = new DataTemplate(() => new AddTransaction(new AddTransactionViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
         }
     }
 }

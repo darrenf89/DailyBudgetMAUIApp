@@ -1570,13 +1570,13 @@ public partial class MainPage : ContentPage
     {
 
         if (!vslRecentTransactions.IsVisible)
-        {
+        {           
             vslRecentTransactions.IsVisible = true;
             fisRecentTransactionHideShow.Glyph = "\ue5cf";
             vslRecentTransactions.HeightRequest = 0;
 
             var animation = new Animation(v => vslRecentTransactions.HeightRequest = v, 0, _vm.RecentTransactionsHeight);
-            animation.Commit(this, "ShowRecentTran", 16, 1000, Easing.CubicIn);
+            animation.Commit(this, "ShowRecentTran", 16, 100, Easing.CubicIn);
 
             await MainScrollView.ScrollToAsync(vslRecentTransactions, ScrollToPosition.Start, true);
         }

@@ -112,8 +112,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                     return;
                 }
 
-                var page = new LoadingPage();
-                await Application.Current.MainPage.Navigation.PushModalAsync(page);
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
 
                 if (!string.IsNullOrEmpty(Email))
                 {
@@ -126,7 +127,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                         switch (salt)
                         {
                             case "User not found":
-                                await Application.Current.MainPage.Navigation.PopModalAsync();
+                                await App.CurrentPopUp.CloseAsync();
+                                App.CurrentPopUp = null;
                                 await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 break;
                             case not "":
@@ -135,7 +137,8 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                 if (userDetails == null)
                                 {
-                                    await Application.Current.MainPage.Navigation.PopModalAsync();
+                                    await App.CurrentPopUp.CloseAsync();
+                                    App.CurrentPopUp = null;
                                     await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 }
                                 else
@@ -143,14 +146,16 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     string HashPassword = _pt.GenerateHashedPassword(Password, salt);
                                     if(userDetails.Password != HashPassword)
                                     {
-                                        await Application.Current.MainPage.Navigation.PopModalAsync();
+                                        await App.CurrentPopUp.CloseAsync();
+                                        App.CurrentPopUp = null;
                                         await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                     }
                                     else
                                     {
                                         if (!userDetails.isEmailVerified)
                                         {
-                                            await Application.Current.MainPage.Navigation.PopModalAsync();
+                                            await App.CurrentPopUp.CloseAsync();
+                                            App.CurrentPopUp = null;
                                             bool ValidateEmail = await Application.Current.MainPage.DisplayAlert("Mmmm, can't be doing that!", "You haven't verified your email! Would you like to now so you can log in?", "Verify email","Not now");
                                             if(ValidateEmail)
                                             {
@@ -213,8 +218,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 await _ds.UpdateDeviceUserDetails(UserDevice);
                                             }
 
-                                            await _pt.LoadTabBars(App.UserDetails.SubscriptionType, "");
-                                            await Application.Current.MainPage.Navigation.PopModalAsync();
+                                            await _pt.LoadTabBars(App.UserDetails.SubscriptionType, App.UserDetails.SubscriptionExpiry, App.UserDetails.DefaultBudgetType);
                                             await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                                         }
                                     }
@@ -227,14 +231,16 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     else
                     {
-                        await Application.Current.MainPage.Navigation.PopModalAsync();
+                        await App.CurrentPopUp.CloseAsync();
+                        App.CurrentPopUp = null;
                         await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                     }
                 }
                 else 
                 {
                     IsButtonBusy = false;
-                    await Application.Current.MainPage.Navigation.PopModalAsync();
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
                     await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                 }
 

@@ -17,10 +17,10 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public LoadUpPageViewModel(IProductTools pt, IRestDataService ds)
         {
-
-            CheckUserLoginDetails();
             _pt = pt;
             _ds = ds;
+
+            CheckUserLoginDetails();
         }
 
         [ICommand]
@@ -35,7 +35,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             await Shell.Current.GoToAsync(nameof(RegisterPage));
         }
 
-        private async void CheckUserLoginDetails()
+        private async Task CheckUserLoginDetails()
         {
             try
             {
@@ -48,6 +48,8 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     if (userDetails.SessionExpiry > DateTime.UtcNow) 
                     {
+                        userDetails = _ds.GetUserDetailsAsync(userDetails.Email).Result;
+
                         userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
                         userDetailsStr = JsonConvert.SerializeObject(userDetails);
                         Preferences.Set(nameof(App.UserDetails), userDetailsStr);
@@ -76,7 +78,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                             await _ds.UpdateDeviceUserDetails(UserDevice);
                         }
 
-                        await _pt.LoadTabBars(App.UserDetails.SubscriptionType, "");
+                        await _pt.LoadTabBars(App.UserDetails.SubscriptionType, App.UserDetails.SubscriptionExpiry, App.UserDetails.DefaultBudgetType);
 
                         await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                         return;
