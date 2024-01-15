@@ -6,30 +6,11 @@
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
-             xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
              xmlns:gauge="clr-namespace:Syncfusion.Maui.Gauges;assembly=Syncfusion.Maui.Gauges"
              xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
              xmlns:carousel="clr-namespace:Syncfusion.Maui.Carousel;assembly=Syncfusion.Maui.Carousel"
              xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              Background="{StaticResource Primary}">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <converters:IsBudgetSharedBudgetToBool x:Key="IsBudgetSharedBudgetToBool" />
-            <converters:IsBudgetNotSharedBudgetToBool x:Key="IsBudgetNotSharedBudgetToBool" />
-            <converters:IsBudgetShareRequestToBool x:Key="IsBudgetShareRequestToBool" />
-            <converters:DecimalToCurrencyString x:Key="DecimalToCurrencyString" />
-            <converters:GreaterLessZeroColorLight x:Key="GreaterLessZeroColorLight" />
-            <converters:GreaterLessZeroColor x:Key="GreaterLessZeroColor" />
-            <converters:LeftToSpendDailyAmountHideShow x:Key="LeftToSpendDailyAmountHideShow" />
-            <converters:LeftToSpendBalanceHideShow x:Key="LeftToSpendBalanceHideShow" />
-            <converters:SavingProgressBarMax x:Key="SavingProgressBarMax" />
-            <converters:SavingProgressBarMaxString x:Key="SavingProgressBarMaxString" />
-            <converters:SavingTypeConverter x:Key="SavingTypeConverter" />
-            <converters:DateToNumberOfDays x:Key="DateToNumberOfDays" />
-            <converters:BoolToColor x:Key="BoolToColor" />
-            <converters:EventTypeToGlyph x:Key="EventTypeToGlyph" />            
-        </ResourceDictionary>
-    </ContentPage.Resources>
     <Shell.TitleView>
         <Grid ColumnDefinitions="*,40,40" ColumnSpacing="5">
             <Label Text="{Binding Title}" 

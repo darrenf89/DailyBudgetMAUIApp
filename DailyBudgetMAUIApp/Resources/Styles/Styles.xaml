@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
     xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch">
 
     <xct:InvertedBoolConverter x:Key="BoolConverter"/>
@@ -12,6 +13,22 @@
     <xct:IsStringNotNullOrWhiteSpaceConverter x:Key="IsStringNotNullOrWhiteSpaceConverter" />
     <xct:IsStringNullOrWhiteSpaceConverter x:Key="IsStringNullOrWhiteSpaceConverter" />
     <xct:SelectedItemEventArgsConverter x:Key="SelectedItemEventArgsConverter" />
+    <converters:IsBudgetSharedBudgetToBool x:Key="IsBudgetSharedBudgetToBool" />
+    <converters:IsBudgetNotSharedBudgetToBool x:Key="IsBudgetNotSharedBudgetToBool" />
+    <converters:IsBudgetShareRequestToBool x:Key="IsBudgetShareRequestToBool" />
+    <converters:DecimalToCurrencyString x:Key="DecimalToCurrencyString" />
+    <converters:GreaterLessZeroColorLight x:Key="GreaterLessZeroColorLight" />
+    <converters:GreaterLessZeroColor x:Key="GreaterLessZeroColor" />
+    <converters:LeftToSpendDailyAmountHideShow x:Key="LeftToSpendDailyAmountHideShow" />
+    <converters:LeftToSpendBalanceHideShow x:Key="LeftToSpendBalanceHideShow" />
+    <converters:SavingProgressBarMax x:Key="SavingProgressBarMax" />
+    <converters:SavingProgressBarMaxString x:Key="SavingProgressBarMaxString" />
+    <converters:SavingTypeConverter x:Key="SavingTypeConverter" />
+    <converters:DateToNumberOfDays x:Key="DateToNumberOfDays" />
+    <converters:BoolToColor x:Key="BoolToColor" />
+    <converters:EventTypeToGlyph x:Key="EventTypeToGlyph" />       
+    <converters:TransactionAmountToCurrencyString x:Key="TransactionAmountToCurrencyString" />
+    <converters:RunningTotalToCurrencyString x:Key="RunningTotalToCurrencyString" />
 
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>

@@ -31,13 +31,36 @@
                 </Border>
             </VerticalStackLayout>
             <VerticalStackLayout>
-                <sfList:SfListView x:Name="listView" LoadMoreOption="Auto" LoadMoreCommand="{Binding LoadMoreItemsCommand}" LoadMoreCommandParameter="{Binding Source={x:Reference listView}}" ItemsSource="{Binding Transactions}">
+                <sfList:SfListView x:Name="listView" LoadMoreOption="AutoOnScroll" LoadMoreCommand="{Binding LoadMoreItemsCommand}" LoadMoreCommandParameter="{Binding Source={x:Reference listView}}" ItemsSource="{Binding Transactions}">
+                    <sfList:SfListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <ViewCell.View>
+                                    <Grid BackgroundColor="{StaticResource White}" RowDefinitions="50,Auto" ColumnDefinitions="*">
+                                        <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto" >
+                                            <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Margin="10,0,5,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                                    <Image.Source>
+                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding EventType, Converter={StaticResource EventTypeToGlyph}}" Size="22"  Color="{DynamicResource PrimaryDark}" />
+                                                    </Image.Source>
+                                                </Image>
+                                            </Border>
+                                            <Label Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Start" Text="{Binding Payee}"/>
+                                            <Label Padding="10,5,0,0" Grid.Row="0" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding ., Converter={StaticResource TransactionAmountToCurrencyString}}" TextColor="{StaticResouce Primary}" FontSize="Medium" CharacterSpacing="0"/>
+                                            <Label Padding="10,0,0,5" Grid.Row="1" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding ., Converter={StaticResource RunningTotalToCurrencyString}}" TextColor="{StaticResource PrimaryLight}" FontSize="Caption" CharacterSpacing="0"/>
+                                        </Grid>
+                                        <Grid Grid.Row="1" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto,*">
+                                            
+                                        </Grid>
+                                    </Grid>
+                                </ViewCell.View>
+                            </ViewCell>
+                        </DataTemplate>
+                    </sfList:SfListView.ItemTemplate>
                     <sfList:SfListView.LoadMoreTemplate>
                         <DataTemplate>
                             <Grid>
-                                <Label Text="Load More Items" TextColor="Black" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" IsVisible="{Binding IsLazyLoading, Converter={StaticResource inverseBoolConverter}, Source={x:Reference Name=listView}}">
-                                </Label>
-                                <sfList:ListViewLoadMoreIndicator IsRunning="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" IsVisible="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" Color="Red" VerticalOptions="Center"/>
+                                <sfList:ListViewLoadMoreIndicator IsRunning="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" IsVisible="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" Color="{StaticResource PrimaryDark}" VerticalOptions="Center"/>
                             </Grid>
                         </DataTemplate>
                     </sfList:SfListView.LoadMoreTemplate>

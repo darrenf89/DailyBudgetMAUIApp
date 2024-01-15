@@ -22,6 +22,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private List<Transactions> _transactions;
         [ObservableProperty]
         private int _currentOffset = 0;
+        [ObservableProperty]
+        private Budgets _budget;
+        [ObserableProperty]
+        private int _maxNumberOfTransactions;
 
         public ViewTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -30,26 +34,68 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             Title = $"Check Your Transactions {App.UserDetails.NickName}";
 
-            Transactions = _ds.GetRecentTransactionsOffset(App.DefaultBudgetID, 100, CurrentOffset, "ViewTransactions").Result;
+            Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
+            RunningTotal = Budget.BankBalance;
+            MaxNumberOfTransactions = Budget.AccountInfo.NumberOfTransactions;
+
+            Transactions = _ds.GetCurrentPayPeriodTransactions(App.DefaultBudgetID, "ViewTransactions").Result;
+            CurrentOffset = Transactions.Count();
+            foreach(Transactions T in Transactions)
+            {
+                if(!T.IsTransacted)
+                {
+                    T.RunningTotal = 0;
+                }
+                else
+                {
+                    T.RunningTotal = RunningTotal;
+                    if(T.IsIncome)
+                    {
+                        RunningTotal += T.TransactionAmount;
+                    }
+                    else
+                    {
+                        RunningTotal -= T.TransactionAmount;
+                    }
+                }
+            }
         }
 
         [ICommand]
         async void LoadMoreItems(object obj)
         {
-            CurrentOffset += 1;
-
-            var listView = obj as Syncfusion.Maui.ListView.SfListView;
-            listView.IsLazyLoading = true;
-            await Task.Delay(2500);
-
-            List<Transactions> NewTransactions = await _ds.GetRecentTransactionsOffset(App.DefaultBudgetID, 100, CurrentOffset, "ViewTransactions");
-
-            foreach (Transactions T in NewTransactions)
+            if(Transactions.Count() < MaxNumberOfTransactions)
             {
-                Transactions.Add(T);
-            }
+                var listView = obj as Syncfusion.Maui.ListView.SfListView;
+                listView.IsLazyLoading = true;
+                await Task.Delay(2500);
 
-            listView.IsLazyLoading = false;
+                List<Transactions> NewTransactions = await _ds.GetRecentTransactionsOffset(App.DefaultBudgetID, 10, CurrentOffset, "ViewTransactions");
+                CurrentOffset += 100;
+                foreach (Transactions T in NewTransactions)
+                {
+                    if(!T.IsTransacted)
+                    {
+                        T.RunningTotal = 0;
+                    }
+                    else
+                    {
+                        T.RunningTotal = RunningTotal;
+                        if(T.IsIncome)
+                        {
+                            RunningTotal += T.TransactionAmount;
+                        }
+                        else
+                        {
+                            RunningTotal -= T.TransactionAmount;
+                        }
+                    }
+
+                    Transactions.Add(T);
+                }
+
+                listView.IsLazyLoading = false;
+            }
         }
     }
 }

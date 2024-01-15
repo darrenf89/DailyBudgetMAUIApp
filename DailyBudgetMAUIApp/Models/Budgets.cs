@@ -83,6 +83,10 @@ namespace DailyBudgetMAUIApp.Models
         public int NumberOfTransactionsToday { get; set; } = 0;
         public decimal TransactionValueThisPeriod { get; set; }
         public decimal IncomeThisPeriod { get; set; }
+        public int NumberOfTransactions { get; set; }
+        public int NumberOfBills { get; set; }
+        public int NumberOfIncomeEvents { get; set; }
+        public int NumberOfSavings { get; set; }
 
     }
 

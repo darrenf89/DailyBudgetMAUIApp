@@ -796,4 +796,62 @@ namespace DailyBudgetMAUIApp.Converters
         }
 
     }
+
+    public class TransactionAmountToCurrencyString : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            Transactions T = (Transactions)value;
+            string TString = "";
+
+            if(T._isIncome)
+            {
+                TString = "+ ";
+            }
+            else
+            {
+                TString = "- ";
+            }
+
+            TString += T.TransactionAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+
+            return TString;
+            
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class RunningTotalToCurrencyString : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            Transactions T = (Transactions)value;
+
+
+            if(!T.IsTransacted)
+            {
+                return "Pending";
+            }
+            else
+            {
+                return T.RunningTotal.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+            }
+            
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
 }
