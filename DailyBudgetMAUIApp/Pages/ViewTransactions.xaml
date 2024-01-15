@@ -25,42 +25,47 @@
         <VerticalStackLayout>
             <VerticalStackLayout>
                 <Border Style="{DynamicResource DashboardMainContent}">
-                    <chart:SfCartesianChart>
+                    <chart:SfCartesianChart HeightRequest="200">
 
                     </chart:SfCartesianChart>
                 </Border>
             </VerticalStackLayout>
-            <VerticalStackLayout>
-                <sfList:SfListView x:Name="listView" LoadMoreOption="AutoOnScroll" LoadMoreCommand="{Binding LoadMoreItemsCommand}" LoadMoreCommandParameter="{Binding Source={x:Reference listView}}" ItemsSource="{Binding Transactions}">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" x:Name="BudgetDetailsGrid">
+                <Label Margin="30,0,0,0" Grid.Row="0" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+                <Label Margin="30,0,0,0" Grid.Row="2" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding BalanceAfterPending, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Medium" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+                <Label Margin="30,0,0,10" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Current Balance" TextColor="White" FontSize="Small" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+                <Label Margin="30,0,0,0" Grid.Row="3" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Balance After Pending" TextColor="White" FontSize="Small" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+                <Label Margin="0,0,30,25" Grid.Row="3" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Left To Spend Today" TextColor="White" FontSize="Small" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
+                <Label Margin="0,0,30,0" Grid.Row="2" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.LeftToSpendDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Medium" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
+                <Label Margin="0,0,30,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Left To Spend This Period" TextColor="White" FontSize="Small" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
+                <Label Margin="0,0,30,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
+            </Grid>
+            <VerticalStackLayout HeightRequest="{Binding LVHeight}">
+                <sfList:SfListView x:Name="listView" AllowSwiping="True" AutoFitMode="DynamicHeight" LoadMoreOption="AutoOnScroll" LoadMoreCommand="{Binding LoadMoreItemsCommand}" LoadMoreCommandParameter="{Binding Source={x:Reference listView}}" ItemsSource="{Binding Transactions}">
                     <sfList:SfListView.ItemTemplate>
                         <DataTemplate>
-                            <ViewCell>
-                                <ViewCell.View>
-                                    <Grid BackgroundColor="{StaticResource White}" RowDefinitions="50,Auto" ColumnDefinitions="*">
-                                        <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto" >
-                                            <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Margin="10,0,5,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
-                                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
-                                                    <Image.Source>
-                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding EventType, Converter={StaticResource EventTypeToGlyph}}" Size="22"  Color="{DynamicResource PrimaryDark}" />
-                                                    </Image.Source>
-                                                </Image>
-                                            </Border>
-                                            <Label Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Start" Text="{Binding Payee}"/>
-                                            <Label Padding="10,5,0,0" Grid.Row="0" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding ., Converter={StaticResource TransactionAmountToCurrencyString}}" TextColor="{StaticResouce Primary}" FontSize="Medium" CharacterSpacing="0"/>
-                                            <Label Padding="10,0,0,5" Grid.Row="1" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding ., Converter={StaticResource RunningTotalToCurrencyString}}" TextColor="{StaticResource PrimaryLight}" FontSize="Caption" CharacterSpacing="0"/>
-                                        </Grid>
-                                        <Grid Grid.Row="1" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto,*">
-                                            
-                                        </Grid>
+                            <VerticalStackLayout>
+                                <Grid BackgroundColor="Transparent" RowDefinitions="Auto,Auto" ColumnDefinitions="*">
+                                    <Grid BackgroundColor="{Binding IsTransacted,Converter={StaticResource BoolToColorDisabled}}" Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,*" >
+                                        <Border BackgroundColor="White" Margin="15,0,0,0" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" HeightRequest="24" WidthRequest="24" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
+                                            <Border.Shadow>
+                                                <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+                                            </Border.Shadow>
+                                            <Image  HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="12" Source="{Binding EventType, Converter={StaticResource TransactionTypePngConverter}}"/>
+                                        </Border>
+                                        <Label FontSize="Medium" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Start" Text="{Binding ., Converter={StaticResource TransactionDisplayName}}" Margin="20,0,0,0" TextColor="{StaticResource Gray900}"/>
+                                        <Label Padding="10,10,20,0" Grid.Row="0" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding ., Converter={StaticResource TransactionAmountToCurrencyString}}" TextColor="{Binding IsIncome, Converter={StaticResource BoolToColor}}" FontSize="Medium" CharacterSpacing="0"/>
+                                        <Label Padding="10,0,20,10" Grid.Row="1" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding ., Converter={StaticResource RunningTotalToCurrencyString}}" TextColor="{StaticResource Gray400}" FontSize="Caption" CharacterSpacing="0"/>
                                     </Grid>
-                                </ViewCell.View>
-                            </ViewCell>
+                                </Grid>
+                                <BoxView HeightRequest="1" Color="{StaticResource Gray100}" Margin="0,0,0,0" />
+                            </VerticalStackLayout>
                         </DataTemplate>
                     </sfList:SfListView.ItemTemplate>
                     <sfList:SfListView.LoadMoreTemplate>
                         <DataTemplate>
                             <Grid>
-                                <sfList:ListViewLoadMoreIndicator IsRunning="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" IsVisible="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" Color="{StaticResource PrimaryDark}" VerticalOptions="Center"/>
+                                <sfList:ListViewLoadMoreIndicator IsRunning="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" IsVisible="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" Color="White" VerticalOptions="Center"/>
                             </Grid>
                         </DataTemplate>
                     </sfList:SfListView.LoadMoreTemplate>

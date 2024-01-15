@@ -2084,7 +2084,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public Task<List<Transactions>> GetCurrentPayPeriodTransactions(int BudgetID, string page)
+        public async Task<List<Transactions>> GetCurrentPayPeriodTransactions(int BudgetID, string page)
         {
             List<Transactions> transactions = new List<Transactions>();
 

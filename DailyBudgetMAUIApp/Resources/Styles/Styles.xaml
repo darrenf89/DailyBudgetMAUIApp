@@ -29,6 +29,9 @@
     <converters:EventTypeToGlyph x:Key="EventTypeToGlyph" />       
     <converters:TransactionAmountToCurrencyString x:Key="TransactionAmountToCurrencyString" />
     <converters:RunningTotalToCurrencyString x:Key="RunningTotalToCurrencyString" />
+    <converters:TransactionDisplayName x:Key="TransactionDisplayName" />
+    <converters:TransactionTypePngConverter x:Key="TransactionTypePngConverter" />
+    <converters:BoolToColorDisabled x:Key="BoolToColorDisabled" />
 
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>
@@ -726,7 +729,7 @@
                     </VisualState>
                     <VisualState x:Name="Pressed">
                         <VisualState.Setters>
-                            <Setter Property="Scale" Value="0.5" />
+                            <Setter Property="Scale" Value="0.9" />
                             <Setter Property="TranslationY" Value="0"/>
                             <Setter Property="Opacity" Value="0.4"/>
                         </VisualState.Setters>

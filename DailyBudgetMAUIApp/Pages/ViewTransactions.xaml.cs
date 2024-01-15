@@ -31,6 +31,8 @@ public partial class ViewTransactions : ContentPage
     {
         base.OnNavigatedTo(args);
 
+        _vm.LVHeight = 580;
+
         if (App.CurrentPopUp != null)
         {
             await App.CurrentPopUp.CloseAsync();

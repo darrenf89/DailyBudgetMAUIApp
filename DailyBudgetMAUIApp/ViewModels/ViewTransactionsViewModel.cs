@@ -5,6 +5,7 @@ using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -19,46 +20,65 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private ChartClass _payPeriodTransactions;
         [ObservableProperty]
-        private List<Transactions> _transactions;
+        private ObservableCollection<Transactions> _transactions = new ObservableCollection<Transactions>();
         [ObservableProperty]
         private int _currentOffset = 0;
         [ObservableProperty]
         private Budgets _budget;
-        [ObserableProperty]
+        [ObservableProperty]
         private int _maxNumberOfTransactions;
+        [ObservableProperty]
+        private decimal _balanceAfterPending;
+        [ObservableProperty]
+        private double _lVHeight;
 
         public ViewTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
             _ds = ds;
             _pt = pt;
 
+            
+
             Title = $"Check Your Transactions {App.UserDetails.NickName}";
 
             Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-            RunningTotal = Budget.BankBalance;
+            RunningTotal = Budget.BankBalance.GetValueOrDefault();
+            BalanceAfterPending = Budget.BankBalance.GetValueOrDefault();
             MaxNumberOfTransactions = Budget.AccountInfo.NumberOfTransactions;
 
-            Transactions = _ds.GetCurrentPayPeriodTransactions(App.DefaultBudgetID, "ViewTransactions").Result;
-            CurrentOffset = Transactions.Count();
-            foreach(Transactions T in Transactions)
+            List<Transactions> LoadTransactions = _ds.GetCurrentPayPeriodTransactions(App.DefaultBudgetID, "ViewTransactions").Result;    
+            
+            foreach(Transactions T in LoadTransactions)
             {
                 if(!T.IsTransacted)
                 {
                     T.RunningTotal = 0;
+                    if (T.IsIncome)
+                    {
+                        BalanceAfterPending -= T.TransactionAmount.GetValueOrDefault();
+                    }
+                    else
+                    {
+                        BalanceAfterPending += T.TransactionAmount.GetValueOrDefault();
+                    }
                 }
                 else
                 {
                     T.RunningTotal = RunningTotal;
                     if(T.IsIncome)
                     {
-                        RunningTotal += T.TransactionAmount;
+                        RunningTotal -= T.TransactionAmount.GetValueOrDefault();
                     }
                     else
                     {
-                        RunningTotal -= T.TransactionAmount;
+                        RunningTotal += T.TransactionAmount.GetValueOrDefault();
                     }
                 }
+
+                Transactions.Add(T);
             }
+
+            CurrentOffset = Transactions.Count();
         }
 
         [ICommand]
@@ -71,7 +91,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 await Task.Delay(2500);
 
                 List<Transactions> NewTransactions = await _ds.GetRecentTransactionsOffset(App.DefaultBudgetID, 10, CurrentOffset, "ViewTransactions");
-                CurrentOffset += 100;
+                CurrentOffset += 10;
                 foreach (Transactions T in NewTransactions)
                 {
                     if(!T.IsTransacted)
@@ -83,15 +103,15 @@ namespace DailyBudgetMAUIApp.ViewModels
                         T.RunningTotal = RunningTotal;
                         if(T.IsIncome)
                         {
-                            RunningTotal += T.TransactionAmount;
+                            RunningTotal -= T.TransactionAmount.GetValueOrDefault();
                         }
                         else
                         {
-                            RunningTotal -= T.TransactionAmount;
+                            RunningTotal += T.TransactionAmount.GetValueOrDefault();
                         }
-                    }
 
-                    Transactions.Add(T);
+                        Transactions.Add(T);
+                    }                    
                 }
 
                 listView.IsLazyLoading = false;

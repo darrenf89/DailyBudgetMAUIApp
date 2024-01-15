@@ -29,6 +29,8 @@ namespace DailyBudgetMAUIApp.Models
         public bool _isClosed;
         [ObservableProperty]
         public decimal? _regularBillValue;
+        [ObservableProperty]
+        public string _billPayee;
 
 
     }

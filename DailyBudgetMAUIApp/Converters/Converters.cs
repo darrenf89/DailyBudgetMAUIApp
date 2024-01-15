@@ -764,30 +764,31 @@ namespace DailyBudgetMAUIApp.Converters
 
             string EventType = (string)value;
 
-            if(EventType == "IncomeEvent")
+            string ReturnGlyph = "\uf17e";
+
+            if (EventType == "IncomeEvent")
             {
-                return "\ue8e5"; 
+                ReturnGlyph = "\ue8e5"; 
             }
             else if (EventType == "Bill")
             {
-                return "\uef6e";
+                ReturnGlyph = "\uef6e";
             }
             else if (EventType == "PayDay")
             {
-                return "\uef63";
+                ReturnGlyph = "\uef63";
             }
             else if (EventType == "Envelope")
             {
-                return "\ue158";
+                ReturnGlyph = "\ue158";
             }
             else if (EventType == "Saving")
             {
-                return "\ue2eb";
+                ReturnGlyph = "\ue2eb";
             }
-            else
-            {
-                return "\uf17e";
-            }
+
+            return ReturnGlyph;
+
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -846,6 +847,122 @@ namespace DailyBudgetMAUIApp.Converters
                 return T.RunningTotal.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
             }
             
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class TransactionTypePngConverter : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            string EventType = (string)value;
+
+            string ReturnGlyph = "transaction.svg";
+
+            if (EventType == "IncomeEvent")
+            {
+                ReturnGlyph = "income.svg";
+            }
+            else if (EventType == "Bill")
+            {
+                ReturnGlyph = "bill.svg";
+            }
+            else if (EventType == "PayDay")
+            {
+                ReturnGlyph = "pay.svg";
+            }
+            else if (EventType == "Envelope")
+            {
+                ReturnGlyph = "envelope.svg";
+            }
+            else if (EventType == "Saving")
+            {
+                ReturnGlyph = "saving.svg";
+            }
+
+            return ReturnGlyph;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class TransactionDisplayName : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            Transactions T = (Transactions)value;
+
+            if (!string.IsNullOrEmpty(T.Payee))
+            {
+                return T.Payee;
+            }
+            else
+            {
+                if (T.EventType == "IncomeEvent")
+                {
+                    return "An Income";
+                }
+                else if (T.EventType == "Bill")
+                {
+                    return "An Outgoing";
+                }
+                else if (T.EventType == "PayDay")
+                {
+                    return "Pay Day!";
+                }
+                else if (T.EventType == "Envelope")
+                {
+                    return "An Envelope Spending";
+                }
+                else if (T.EventType == "Saving")
+                {
+                    return "A Saving Spending";
+                }
+                else
+                {
+                    return "A Transaction";
+                }
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class BoolToColorDisabled : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
+
+            if (value == null) return null;
+
+            bool IsTransacted = (bool)value;
+
+            if (IsTransacted)
+            {
+                return Color.FromArgb("#FFFFFFFF");
+            }
+            else
+            {
+                return (Color)Gray100;
+            }
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

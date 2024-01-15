@@ -31,7 +31,7 @@ public partial class AddTransaction : ContentPage
     async protected override void OnAppearing()
     {
         base.OnAppearing();
-
+        
         if (_vm.BudgetID == 0)
         {
             _vm.BudgetID = App.DefaultBudgetID;
@@ -42,6 +42,7 @@ public partial class AddTransaction : ContentPage
             if(_vm.Transaction == null)
             {
                 _vm.Transaction = new Transactions();
+                _vm.Transaction.EventType = "Transaction";
                 _vm.Title = "Add a New Transaction";
                 btnAddTransaction.IsVisible = true;
                 _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date;
@@ -288,7 +289,7 @@ public partial class AddTransaction : ContentPage
             _vm.Transaction.SavingName = "";
             _vm.Transaction.SavingID = 0;
             _vm.Transaction.SavingsSpendType = "";
-            _vm.Transaction.EventType = "";
+            _vm.Transaction.EventType = "Transaction";
         }
         else
         {
