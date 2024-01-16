@@ -82,6 +82,31 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ICommand]
+        async void EditTransaction(Transactions T)
+        {
+            bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
+            if (EditTransaction)
+            {
+                await Shell.Current.GoToAsync($"{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}&TransactionID={transaction.TransactionID}",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = transaction
+                    });
+            }
+        }
+
+        [ICommand]
+        async void DeleteTransaction(Transactions T)
+        {
+            bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
+            if (DeleteTransaction)
+            {
+                Transactions transaction = (Transactions)e.Parameter;
+                await _ds.DeleteTransaction(T.TransactionID);
+            }
+        }
+
+        [ICommand]
         async void LoadMoreItems(object obj)
         {
             if(Transactions.Count() < MaxNumberOfTransactions)
