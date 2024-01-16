@@ -798,6 +798,48 @@ namespace DailyBudgetMAUIApp.Converters
 
     }
 
+    public class EventTypeToString : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return "\uf17e";
+
+            string EventType = (string)value;
+
+            if (EventType == "IncomeEvent")
+            {
+                return "An Income";
+            }
+            else if (EventType == "Bill")
+            {
+                return "An Outgoing";
+            }
+            else if (EventType == "PayDay")
+            {
+                return "Pay Day!";
+            }
+            else if (EventType == "Envelope")
+            {
+                return "An Envelope Spending";
+            }
+            else if (EventType == "Saving")
+            {
+                return "A Saving Spending";
+            }
+            else
+            {
+                return "A Transaction";
+            }
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
     public class TransactionAmountToCurrencyString : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -963,6 +1005,72 @@ namespace DailyBudgetMAUIApp.Converters
             {
                 return (Color)Gray100;
             }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+    public class IsSpendCategoryStringText : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (string.IsNullOrEmpty((string)value))
+            {
+                return "Not From Savings";
+            }
+            else
+            {
+                return (string)value;
+            }
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class IsCategoryStringText : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (string.IsNullOrEmpty((string)value))
+            {
+                return "No Category";
+            }
+            else
+            {
+                return (string)value;
+            }
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class IsNoteStringText : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (string.IsNullOrEmpty((string)value))
+            {
+                return "No Note";
+            }
+            else
+            {
+                return (string)value;
+            }
+
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -32,7 +32,11 @@
     <converters:TransactionDisplayName x:Key="TransactionDisplayName" />
     <converters:TransactionTypePngConverter x:Key="TransactionTypePngConverter" />
     <converters:BoolToColorDisabled x:Key="BoolToColorDisabled" />
-
+    <converters:IsCategoryStringText x:Key="IsCategoryStringText" />
+    <converters:IsNoteStringText x:Key="IsNoteStringText" />
+    <converters:IsSpendCategoryStringText x:Key="IsSpendCategoryStringText" />
+    <converters:EventTypeToString x:Key="EventTypeToString" />
+    
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>
         <Setter Property="FontSize" Value="Micro"/>

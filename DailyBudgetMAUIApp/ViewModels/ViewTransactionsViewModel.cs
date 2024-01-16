@@ -6,6 +6,7 @@ using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using DailyBudgetMAUIApp.Pages;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -55,11 +56,11 @@ namespace DailyBudgetMAUIApp.ViewModels
                     T.RunningTotal = 0;
                     if (T.IsIncome)
                     {
-                        BalanceAfterPending -= T.TransactionAmount.GetValueOrDefault();
+                        BalanceAfterPending += T.TransactionAmount.GetValueOrDefault();
                     }
                     else
                     {
-                        BalanceAfterPending += T.TransactionAmount.GetValueOrDefault();
+                        BalanceAfterPending -= T.TransactionAmount.GetValueOrDefault();
                     }
                 }
                 else
@@ -79,31 +80,6 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
 
             CurrentOffset = Transactions.Count();
-        }
-
-        [ICommand]
-        async void EditTransaction(Transactions T)
-        {
-            bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
-            if (EditTransaction)
-            {
-                await Shell.Current.GoToAsync($"{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}&TransactionID={transaction.TransactionID}",
-                    new Dictionary<string, object>
-                    {
-                        ["Transaction"] = transaction
-                    });
-            }
-        }
-
-        [ICommand]
-        async void DeleteTransaction(Transactions T)
-        {
-            bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
-            if (DeleteTransaction)
-            {
-                Transactions transaction = (Transactions)e.Parameter;
-                await _ds.DeleteTransaction(T.TransactionID);
-            }
         }
 
         [ICommand]

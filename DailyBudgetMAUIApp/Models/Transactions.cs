@@ -39,5 +39,7 @@ namespace DailyBudgetMAUIApp.Models
         public string _eventType;
         [ObservableProperty]
         public decimal? _runningTotal;
+        [ObservableProperty]
+        public bool _isVisible;
     }
 }

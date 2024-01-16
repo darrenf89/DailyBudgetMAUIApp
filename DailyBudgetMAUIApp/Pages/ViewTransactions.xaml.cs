@@ -5,7 +5,10 @@ using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
+using Syncfusion.Maui.ListView;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Syncfusion.Maui.DataSource;
+using Syncfusion.Maui.DataSource.Extensions;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -26,9 +29,8 @@ public partial class ViewTransactions : ContentPage
         this.BindingContext = viewModel;
         _vm = viewModel;
 
-        listview.ItemTapped += ListView_ItemTapped;
-        listView.DataSource.SortDescriptors.Add(new SortDescriptor { PropertyName = "TransactionDate", Direction = ListSortDirection.Descending });
-        listView.DataSource.GroupDescriptor.Comparer.Add(new CustomGroupComparer());
+        listView.ItemTapped += ListView_ItemTapped;
+        //listView.DataSource.SortDescriptors.Add(new SortDescriptor { PropertyName = "TransactionDate", Direction = ListSortDirection.Ascending });
         listView.DataSource.GroupDescriptors.Add(new GroupDescriptor()
         {
             PropertyName = "TransactionDate",
@@ -44,8 +46,8 @@ public partial class ViewTransactions : ContentPage
                     return item.TransactionDate.GetValueOrDefault().Date;
                 }
                 
-            }
-            Comparer = new CustomGroupComparer()
+            },
+            Comparer = new CustomGroupComparer()           
         });
 
 
@@ -73,40 +75,70 @@ public partial class ViewTransactions : ContentPage
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
     }
 
-    private void ListView_ItemTapped(object sender, ItemTappedEventArgs e)
+    private async void ListView_ItemTapped(object sender, Syncfusion.Maui.ListView.ItemTappedEventArgs e)
     {
-        var tappedItemData = (Transactions)sender;
+
+        var ListView = (SfListView)sender;
+        Transactions tappedTransaction = (Transactions)e.DataItem;
+
+        if (tappedItem == tappedTransaction)
+        {            
+            return;
+        }
+
         if (tappedItem != null && tappedItem.IsVisible)
         {
             tappedItem.IsVisible = false;
         }
 
-        if (tappedItem == tappedItemData)
-        {
-            tappedItem = null;
-            return;
-        }
-
-        tappedItem = tappedItemData;
+        tappedItem = tappedTransaction;
         tappedItem.IsVisible = true;
+
+        ListView.RefreshView();
+        ListView.RefreshItem();
     }
 
+    private async void EditTransaction_Tapped(object sender, TappedEventArgs e)
+    {
+        Transactions T = (Transactions)e.Parameter;
+
+        bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
+        if (EditTransaction)
+        {
+            await Shell.Current.GoToAsync($"{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={T.TransactionID}",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = T
+                });
+        }
+    }
+
+    private async void DeleteTransaction_Tapped(object sender, TappedEventArgs e)
+    {
+        Transactions T = (Transactions)e.Parameter;
+
+        bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
+        if (DeleteTransaction)
+        {
+            await _ds.DeleteTransaction(T.TransactionID);
+        }
+    }
 }
 
 public class CustomGroupComparer : IComparer<GroupResult>
 {
     public int Compare(GroupResult x, GroupResult y)
     {
-        DateTime xDate = (DateTIme)x.Key;
-        DateTime yDate = (DateTIme)y.Key;
+        DateTime xDate = (DateTime)x.Key;
+        DateTime yDate = (DateTime)y.Key;
 
         if (xDate > yDate)
         {
-            return 1;
+            return -1;
         }
         else if (xDate < yDate)
         {
-            return -1;
+            return 1;
         }
 
         return 0;
