@@ -18,6 +18,7 @@ public partial class ViewTransactions : ContentPage
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
     private Transactions tappedItem;
+    private double CurrentScrollX = 0;
 
     public ViewTransactions(ViewTransactionsViewModel viewModel, IRestDataService ds, IProductTools pt)
 	{
@@ -30,7 +31,7 @@ public partial class ViewTransactions : ContentPage
         _vm = viewModel;
 
         listView.ItemTapped += ListView_ItemTapped;
-        //listView.DataSource.SortDescriptors.Add(new SortDescriptor { PropertyName = "TransactionDate", Direction = ListSortDirection.Ascending });
+        listView.DataSource.SortDescriptors.Add(new SortDescriptor { PropertyName = "TransactionDate", Direction = ListSortDirection.Descending });
         listView.DataSource.GroupDescriptors.Add(new GroupDescriptor()
         {
             PropertyName = "TransactionDate",
@@ -50,14 +51,19 @@ public partial class ViewTransactions : ContentPage
             Comparer = new CustomGroupComparer()           
         });
 
-
+        ListViewScrollView ListViewScrollBar = listView.GetScrollView();
+        ListViewScrollBar.Scrolled += ListViewScrollview_Scrolled;
     }
 
     protected async override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
 
-        _vm.LVHeight = 580;
+    }
+
+    protected async override void OnAppearing()
+    {
+        base.OnAppearing();
 
         if (App.CurrentPopUp != null)
         {
@@ -94,8 +100,11 @@ public partial class ViewTransactions : ContentPage
         tappedItem = tappedTransaction;
         tappedItem.IsVisible = true;
 
-        ListView.RefreshView();
         ListView.RefreshItem();
+        ListView.RefreshView();
+
+        int index = listView.DataSource.DisplayItems.IndexOf(tappedTransaction); 
+        listView.ItemsLayout.ScrollToRowIndex(index, Microsoft.Maui.Controls.ScrollToPosition.Center, false);
     }
 
     private async void EditTransaction_Tapped(object sender, TappedEventArgs e)
@@ -122,6 +131,30 @@ public partial class ViewTransactions : ContentPage
         {
             await _ds.DeleteTransaction(T.TransactionID);
         }
+    }
+
+    private void ListViewScrollview_Scrolled(object sender, ScrolledEventArgs e)
+    {
+        double CurrentChartHeight = ChartContent.Height;
+        double FinishedScrollX = (double)e.ScrollX;
+
+        if(CurrentScrollX == FinishedScrollX)
+        {
+            return;
+        }
+
+        double HeightDifference = CurrentScrollX - FinishedScrollX;
+
+        if(HeightDifference < 0 && ChartContent.Height > 0)
+        {
+            ChartContent.HeightRequest = ChartContent.HeightRequest + HeightDifference > 0 ? ChartContent.HeightRequest + HeightDifference : 0;
+        }
+        else if (HeightDifference > 0 && ChartContent.Height < _vm.ChartContentHeight)
+        {
+            ChartContent.HeightRequest = ChartContent.HeightRequest + HeightDifference < _vm.ChartContentHeight ? ChartContent.HeightRequest + HeightDifference : _vm.ChartContentHeight;
+        }
+
+        CurrentScrollX = FinishedScrollX;
     }
 }
 

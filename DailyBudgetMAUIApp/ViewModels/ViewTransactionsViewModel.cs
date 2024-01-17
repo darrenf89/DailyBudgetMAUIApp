@@ -30,16 +30,17 @@ namespace DailyBudgetMAUIApp.ViewModels
         private int _maxNumberOfTransactions;
         [ObservableProperty]
         private decimal _balanceAfterPending;
-        [ObservableProperty]
-        private double _lVHeight;
+        [OBservableProperty]
+        private double _chartContentHeight;
 
         public ViewTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
             _ds = ds;
             _pt = pt;
-
             
 
+            ChartContentHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) * 0.3;
+            
             Title = $"Check Your Transactions {App.UserDetails.NickName}";
 
             Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
@@ -80,6 +81,12 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
 
             CurrentOffset = Transactions.Count();
+        }
+
+        [ICommand]
+        async void FilterItems()
+        {
+
         }
 
         [ICommand]

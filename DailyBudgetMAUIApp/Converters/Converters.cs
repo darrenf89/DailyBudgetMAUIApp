@@ -808,11 +808,11 @@ namespace DailyBudgetMAUIApp.Converters
 
             if (EventType == "IncomeEvent")
             {
-                return "An Income";
+                return "Got an income";
             }
             else if (EventType == "Bill")
             {
-                return "An Outgoing";
+                return "Paid for a bill";
             }
             else if (EventType == "PayDay")
             {
@@ -820,15 +820,15 @@ namespace DailyBudgetMAUIApp.Converters
             }
             else if (EventType == "Envelope")
             {
-                return "An Envelope Spending";
+                return "Took from an envelope";
             }
             else if (EventType == "Saving")
             {
-                return "A Saving Spending";
+                return "Spent some saving";
             }
             else
             {
-                return "A Transaction";
+                return "Made a transaction";
             }
 
         }
@@ -955,11 +955,11 @@ namespace DailyBudgetMAUIApp.Converters
             {
                 if (T.EventType == "IncomeEvent")
                 {
-                    return "An Income";
+                    return "Got an income";
                 }
                 else if (T.EventType == "Bill")
                 {
-                    return "An Outgoing";
+                    return "Paid for a bill";
                 }
                 else if (T.EventType == "PayDay")
                 {
@@ -967,15 +967,15 @@ namespace DailyBudgetMAUIApp.Converters
                 }
                 else if (T.EventType == "Envelope")
                 {
-                    return "An Envelope Spending";
+                    return "Took from an envelope";
                 }
                 else if (T.EventType == "Saving")
                 {
-                    return "A Saving Spending";
+                    return "Spent some saving";
                 }
                 else
                 {
-                    return "A Transaction";
+                    return "Made a transaction";
                 }
             }
         }
@@ -1003,7 +1003,7 @@ namespace DailyBudgetMAUIApp.Converters
             }
             else
             {
-                return (Color)Gray100;
+                return Color.FromArgb("#99E1E1E1");;
             }
         }
 
@@ -1019,7 +1019,7 @@ namespace DailyBudgetMAUIApp.Converters
         {
             if (string.IsNullOrEmpty((string)value))
             {
-                return "Not From Savings";
+                return "Taken from bank";
             }
             else
             {
@@ -1041,7 +1041,7 @@ namespace DailyBudgetMAUIApp.Converters
 
             if (string.IsNullOrEmpty((string)value))
             {
-                return "No Category";
+                return "No category selected";
             }
             else
             {
@@ -1064,7 +1064,7 @@ namespace DailyBudgetMAUIApp.Converters
 
             if (string.IsNullOrEmpty((string)value))
             {
-                return "No Note";
+                return "No note entered";
             }
             else
             {
