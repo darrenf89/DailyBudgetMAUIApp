@@ -30,7 +30,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         private int _maxNumberOfTransactions;
         [ObservableProperty]
         private decimal _balanceAfterPending;
-        [OBservableProperty]
+        [ObservableProperty]
         private double _chartContentHeight;
 
         public ViewTransactionsViewModel(IProductTools pt, IRestDataService ds)
