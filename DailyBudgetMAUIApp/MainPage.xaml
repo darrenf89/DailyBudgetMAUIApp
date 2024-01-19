@@ -10,7 +10,9 @@
              xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
              xmlns:carousel="clr-namespace:Syncfusion.Maui.Carousel;assembly=Syncfusion.Maui.Carousel"
              xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
-             Background="{StaticResource Primary}">
+             Background="{StaticResource Primary}"
+             NavigationPage.HasNavigationBar="True"
+             NavigationPage.HasBackButton="False">
     <Shell.TitleView>
         <Grid ColumnDefinitions="*,40,40" ColumnSpacing="5">
             <Label Text="{Binding Title}" 

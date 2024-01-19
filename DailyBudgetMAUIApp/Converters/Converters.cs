@@ -1003,7 +1003,7 @@ namespace DailyBudgetMAUIApp.Converters
             }
             else
             {
-                return Color.FromArgb("#99E1E1E1");;
+                return Color.FromArgb("#F2E1E1E1");;
             }
         }
 

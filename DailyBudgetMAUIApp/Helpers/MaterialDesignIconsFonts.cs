@@ -2240,5 +2240,6 @@ namespace DailyBudgetMAUIApp.Helpers
         public const string Format_list_bulleted_add = "\uf849";
         public const string Rebase_edit = "\uf846";
         public const string Movie_edit = "\uf840";
+        public const string Sentiment_sad = "\uf6a3";
     }
 }

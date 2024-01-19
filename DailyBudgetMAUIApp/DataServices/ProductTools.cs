@@ -1558,10 +1558,15 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 await App.CurrentBottomSheet.DismissAsync();
                 App.CurrentBottomSheet = null;
-            }            
+            }        
+            
             if(navigate)
             {
-                await Shell.Current.GoToAsync($"{nameof(MainPage)}");
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+
+                await Shell.Current.GoToAsync($"///{nameof(LoadUpPage)}");
             }
             
         }

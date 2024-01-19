@@ -7,7 +7,8 @@ using CommunityToolkit.Maui.Views;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using DailyBudgetMAUIApp.Pages;
-
+using DailyBudgetMAUIApp.Pages.BottomSheets;
+using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -32,15 +33,30 @@ namespace DailyBudgetMAUIApp.ViewModels
         private decimal _balanceAfterPending;
         [ObservableProperty]
         private double _chartContentHeight;
+        [ObservableProperty]
+        private double _maxChartContentHeight;
+        [ObservableProperty]
+        private double _sFListHeight;
+        [ObservableProperty]
+        private double _screenWidth;
+        [ObservableProperty]
+        private double _screenHeight;
+        [ObservableProperty]
+        private string _scrollDirection;
+        [ObservableProperty]
+        private int _scrollCount;
 
         public ViewTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
             _ds = ds;
             _pt = pt;
-            
 
-            ChartContentHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) * 0.3;
-            
+            ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
+            ScreenWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density);
+            ChartContentHeight = ScreenHeight * 0.25;
+            MaxChartContentHeight = ChartContentHeight + 10;
+            SFListHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 389;
+
             Title = $"Check Your Transactions {App.UserDetails.NickName}";
 
             Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
@@ -84,19 +100,13 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ICommand]
-        async void FilterItems()
-        {
-
-        }
-
-        [ICommand]
         async void LoadMoreItems(object obj)
         {
             if(Transactions.Count() < MaxNumberOfTransactions)
             {
                 var listView = obj as Syncfusion.Maui.ListView.SfListView;
                 listView.IsLazyLoading = true;
-                await Task.Delay(2500);
+                await Task.Delay(2000);
 
                 List<Transactions> NewTransactions = await _ds.GetRecentTransactionsOffset(App.DefaultBudgetID, 10, CurrentOffset, "ViewTransactions");
                 CurrentOffset += 10;

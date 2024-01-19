@@ -9,6 +9,10 @@ using Syncfusion.Maui.ListView;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Syncfusion.Maui.DataSource;
 using Syncfusion.Maui.DataSource.Extensions;
+using Syncfusion.Maui.ListView.Helpers;
+using System.Globalization;
+using System.Collections.Specialized;
+using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -18,7 +22,22 @@ public partial class ViewTransactions : ContentPage
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
     private Transactions tappedItem;
-    private double CurrentScrollX = 0;
+    private double CurrentScrollY;
+
+    public FilterModel _filters;
+    public FilterModel Filters
+    {
+        get => _filters;
+        set
+        {
+            if(_filters != value)
+            {
+                _filters = value;
+                listView.DataSource.Filter = FilterContacts;
+                listView.DataSource.RefreshFilter();
+            }
+        }
+    }
 
     public ViewTransactions(ViewTransactionsViewModel viewModel, IRestDataService ds, IProductTools pt)
 	{
@@ -52,24 +71,15 @@ public partial class ViewTransactions : ContentPage
         });
 
         ListViewScrollView ListViewScrollBar = listView.GetScrollView();
-        ListViewScrollBar.Scrolled += ListViewScrollview_Scrolled;
+        ListViewScrollBar.Scrolled += ListViewScrollView_Scrolled;
     }
 
-    protected async override void OnNavigatedTo(NavigatedToEventArgs args)
-    {
-        base.OnNavigatedTo(args);
-
-    }
-
-    protected async override void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
 
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
-        }
+        AbsMain.SetLayoutBounds(vslChart, new Rect(0, 0, _vm.ScreenWidth, _vm.ChartContentHeight + 10));
+        AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, _vm.ChartContentHeight + 10, _vm.ScreenWidth, _vm.ScreenHeight));
     }
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
@@ -88,7 +98,7 @@ public partial class ViewTransactions : ContentPage
         Transactions tappedTransaction = (Transactions)e.DataItem;
 
         if (tappedItem == tappedTransaction)
-        {            
+        {
             return;
         }
 
@@ -133,28 +143,180 @@ public partial class ViewTransactions : ContentPage
         }
     }
 
-    private void ListViewScrollview_Scrolled(object sender, ScrolledEventArgs e)
+    private async void ListViewScrollView_Scrolled(object sender, ScrolledEventArgs e)
     {
-        double CurrentChartHeight = ChartContent.Height;
-        double FinishedScrollX = (double)e.ScrollX;
+        _vm.SFListHeight = _vm.ScreenHeight - vslHeader.Height - 200;
 
-        if(CurrentScrollX == FinishedScrollX)
+        double HeightDifference = CurrentScrollY - (double)e.ScrollY;
+        double YChangeAmount = HeightDifference / 2;
+        double vslYCoord = vslTransactionData.Y;
+
+        if(HeightDifference > 1 || HeightDifference < -1)
         {
-            return;
+            if (HeightDifference < 0)
+            {
+                if (_vm.ScrollDirection == "DOWN")
+                {
+                    if (vslYCoord > 0)
+                    {
+                        double NewYCoord = vslYCoord + YChangeAmount < 0 ? 0 : (vslYCoord + YChangeAmount);
+                        AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, NewYCoord, _vm.ScreenWidth, _vm.ScreenHeight));
+
+                        if (NewYCoord == 0)
+                        {
+                            FilterOption.IsVisible = true;                            
+                        }
+                    }
+
+                }
+                else
+                {
+                    _vm.ScrollDirection = "DOWN";
+                }
+            }
+            else if (HeightDifference > 0 && (double)e.ScrollY < (_vm.MaxChartContentHeight - 10) * 2)
+            {
+                int DisplayCount = listView.DataSource.Items.Count;
+                int ItemCount = _vm.Transactions.Count;
+
+                if (DisplayCount == ItemCount)
+                {
+                    if(_vm.ScrollDirection == "UP")
+                    { 
+                        if((double)e.ScrollY < 40)
+                        {
+                            double NewYCoord = (_vm.MaxChartContentHeight);
+                            AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, NewYCoord, _vm.ScreenWidth, _vm.ScreenHeight));
+                            FilterOption.IsVisible = false;
+                        }
+                        else if (vslYCoord < (_vm.MaxChartContentHeight))
+                        {
+                            double NewYCoord = vslYCoord + YChangeAmount > (_vm.MaxChartContentHeight) ? (_vm.MaxChartContentHeight) : (vslYCoord + YChangeAmount);
+                            AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, NewYCoord, _vm.ScreenWidth, _vm.ScreenHeight));
+                            if (NewYCoord >= (_vm.MaxChartContentHeight - 20))
+                            {
+                                FilterOption.IsVisible = false;
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        _vm.ScrollDirection = "UP";
+                    }
+                }
+            }            
         }
 
-        double HeightDifference = CurrentScrollX - FinishedScrollX;
+        CurrentScrollY = (double)e.ScrollY;
+    }
 
-        if(HeightDifference < 0 && ChartContent.Height > 0)
+    private async void Content_Loaded(object sender, EventArgs e)
+    {
+        if (App.CurrentPopUp != null)
         {
-            ChartContent.HeightRequest = ChartContent.HeightRequest + HeightDifference > 0 ? ChartContent.HeightRequest + HeightDifference : 0;
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
         }
-        else if (HeightDifference > 0 && ChartContent.Height < _vm.ChartContentHeight)
+    }
+
+    private void SearchAmount_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+        entSearchAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
+        entSearchAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSearchAmount.Text);
+
+        if (listView.DataSource != null)
         {
-            ChartContent.HeightRequest = ChartContent.HeightRequest + HeightDifference < _vm.ChartContentHeight ? ChartContent.HeightRequest + HeightDifference : _vm.ChartContentHeight;
+            listView.DataSource.Filter = FilterContacts;
+            listView.DataSource.RefreshFilter();
+        }
+    }
+
+    private bool FilterContacts(object obj)
+    {
+        Transactions T = (Transactions)obj;
+        bool IsFilter = true;
+
+        if(!string.IsNullOrEmpty(entSearchAmount.Text))
+        {
+            decimal Amount = (decimal)_pt.FormatCurrencyNumber(entSearchAmount.Text);
+            if(Amount != 0)
+            {
+                if(Amount != T.TransactionAmount)
+                {
+                    return false;
+                }
+            }
         }
 
-        CurrentScrollX = FinishedScrollX;
+        if(Filters != null)
+        {
+            if(Filters.DateFilter != null)
+            {
+                if (T.TransactionDate < Filters.DateFilter.DateFrom || T.TransactionDate > Filters.DateFilter.DateTo)
+                {
+                    return false;
+                }
+            }
+
+            if(Filters.CategoryFilter != null || Filters.CategoryFilter.Count == 0)
+            {
+                if(!Filters.CategoryFilter.Contains(T.CategoryID.GetValueOrDefault()))
+                {
+                    return false;
+                }
+            }
+
+            if(Filters.PayeeFilter != null || Filters.PayeeFilter.Count == 0)
+            {
+                if (!Filters.PayeeFilter.Contains(T.Payee))
+                {
+                    return false;
+                }
+            }
+
+            if(Filters.SavingFilter != null || Filters.SavingFilter.Count == 0)
+            {
+                if (!Filters.SavingFilter.Contains(T.SavingID.GetValueOrDefault()))
+                {
+                    return false;
+                }
+            }
+
+            if(Filters.TransactionEventTypeFilter != null || Filters.TransactionEventTypeFilter.Count == 0)
+            {
+                if (!Filters.TransactionEventTypeFilter.Contains(T.EventType))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return IsFilter;
+    }
+
+    private void SearchAmount_Tapped(object sender, TappedEventArgs e)
+    {
+        entSearchAmount.Focus();
+    }
+
+    private async void FilterItems_Tapped(object sender, TappedEventArgs e)
+    {
+        ViewTransactionFilterBottomSheet page = new ViewTransactionFilterBottomSheet(Filters);
+
+        page.Detents = new DetentsCollection()
+        {
+            new MediumDetent(),
+            new ContentDetent()
+        };
+
+        page.HasBackdrop = true;
+        page.CornerRadius = 0;
+
+        App.CurrentBottomSheet = page;
+
+        await page.ShowAsync();
     }
 }
 

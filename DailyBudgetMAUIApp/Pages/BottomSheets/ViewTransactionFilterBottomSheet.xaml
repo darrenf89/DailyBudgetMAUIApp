@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<the49:BottomSheet xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                   x:Class="DailyBudgetMAUIApp.Pages.BottomSheets.ViewTransactionFilterBottomSheet"
+                   xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
+                   xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+                   xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+                   Padding="0,0,0,0" 
+                   BackgroundColor="White"
+                   x:DataType="the49:BottomSheet">
+    <VerticalStackLayout x:Name="MainVSL">
+        <BoxView WidthRequest="60" HeightRequest="6" Color="{DynamicResource Primary}" HorizontalOptions="Center" Margin="0,10,0,10"/>
+        <Label Margin="10,10,0,0" HorizontalOptions="Start" VerticalOptions="Center" x:Name="lblTitle" Grid.Column="0" Grid.Row="0" FontSize="Title" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
+        <ScrollView x:Name="MainScrollView" Margin="10,0,10,0">
+            <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" x:Name="grdFilters" >
+                <BoxView HeightRequest="1" Grid.Row="0" Grid.Column="0" Color="{DynamicResource Gray900}" Margin="0,10,0,10"/>
+            </Grid>
+        </ScrollView>
+        <Button x:Name="ApplyFilter" Text="Apply Filter" Clicked="ApplyFilter_Clicked"/>
+    </VerticalStackLayout>
+</the49:BottomSheet>

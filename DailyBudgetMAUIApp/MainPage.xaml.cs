@@ -48,7 +48,6 @@ public partial class MainPage : ContentPage
             await App.CurrentPopUp.CloseAsync();
             App.CurrentPopUp = null;
         }
-
     }
 
     protected async override void OnAppearing()
@@ -379,7 +378,7 @@ public partial class MainPage : ContentPage
 
     private async void VerifyBudgetShare_Tapped(object sender, TappedEventArgs e)
     {
-        var popup = new PopUpOTP(+_vm.DefaultBudget.AccountInfo.BudgetShareRequestID, new PopUpOTPViewModel(new RestDataService()), "ShareBudget", new ProductTools(new RestDataService()), new RestDataService());
+        var popup = new PopUpOTP(_vm.DefaultBudget.AccountInfo.BudgetShareRequestID, new PopUpOTPViewModel(new RestDataService()), "ShareBudget", new ProductTools(new RestDataService()), new RestDataService());
         var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
         if ((string)result.ToString() != "User Closed")

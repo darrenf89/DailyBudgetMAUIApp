@@ -10,7 +10,7 @@
     xmlns:ContentDI="clr-namespace:Maui.FixesAndWorkarounds;assembly=PureWeen.Maui.FixesAndWorkarounds">
 
     <ShellItem Route="LoadUpPage" FlyoutItemIsVisible="False">
-        <ShellContent ContentTemplate="{DataTemplate Pages:LoadUpPage}"/>
+        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:LoadUpPage}"/>
     </ShellItem>
 
     <ShellItem Route="ErrorPage" FlyoutItemIsVisible="False">
