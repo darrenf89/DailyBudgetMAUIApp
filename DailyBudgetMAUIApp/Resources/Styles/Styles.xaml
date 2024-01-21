@@ -36,6 +36,7 @@
     <converters:IsNoteStringText x:Key="IsNoteStringText" />
     <converters:IsSpendCategoryStringText x:Key="IsSpendCategoryStringText" />
     <converters:EventTypeToString x:Key="EventTypeToString" />
+    <converters:PayeeText x:Key="PayeeText" />
     
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>

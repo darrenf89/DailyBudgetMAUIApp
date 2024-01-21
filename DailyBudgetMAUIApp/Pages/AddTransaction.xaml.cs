@@ -28,6 +28,15 @@ public partial class AddTransaction : ContentPage
         _ds = ds;
     }
 
+    private async void Content_Loaded(object sender, EventArgs e)
+    {
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
+    }
+
     async protected override void OnAppearing()
     {
         base.OnAppearing();

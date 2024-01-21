@@ -12,6 +12,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 {
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     [QueryProperty(nameof(BillID), nameof(BillID))]
+    [QueryProperty(nameof(Bill), nameof(Bill))]
     public partial class AddBillViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -39,7 +40,6 @@ namespace DailyBudgetMAUIApp.ViewModels
             _ds = ds;
 
             Title = "Add a New Outgoing";
-            Bill = new Bills();
 
             MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date.AddDays(1);
 
@@ -150,31 +150,37 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public string CalculateRegularBillValue()
         {
-            if(Bill.BillAmount == 0 || Bill.BillAmount == null || Bill.BillCurrentBalance >= Bill.BillAmount || Bill.BillDueDate == null || Bill.BillDueDate.GetValueOrDefault().Date <= _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
-            {
-                return "Please update details!";
-            }
-            else
-            {
-                decimal DailySavingValue = new();
-                TimeSpan Difference = (TimeSpan)(Bill.BillDueDate.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date);
-                int NumberOfDays = (int)Difference.TotalDays;
-                decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
-                if(NumberOfDays != 0)
+            if(Bill != null)
+            {            
+                if(Bill.BillAmount == 0 || Bill.BillAmount == null || Bill.BillCurrentBalance >= Bill.BillAmount || Bill.BillDueDate == null || Bill.BillDueDate.GetValueOrDefault().Date <= _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
                 {
-                    DailySavingValue = RemainingBillAmount / NumberOfDays;
-                    DailySavingValue = Math.Round(DailySavingValue, 2);
+                    return "Please update details!";
                 }
                 else
                 {
-                    DailySavingValue = 0;
+                    decimal DailySavingValue = new();
+                    TimeSpan Difference = (TimeSpan)(Bill.BillDueDate.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date);
+                    int NumberOfDays = (int)Difference.TotalDays;
+                    decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
+                    if(NumberOfDays != 0)
+                    {
+                        DailySavingValue = RemainingBillAmount / NumberOfDays;
+                        DailySavingValue = Math.Round(DailySavingValue, 2);
+                    }
+                    else
+                    {
+                        DailySavingValue = 0;
+                    }
+
+                    Bill.RegularBillValue = DailySavingValue;
+
+                    return DailySavingValue.ToString("c", CultureInfo.CurrentCulture);
                 }
-
-                Bill.RegularBillValue = DailySavingValue;
-
-                return DailySavingValue.ToString("c", CultureInfo.CurrentCulture);
             }
-
+            else
+            {
+                return "Please update details!";
+            }
         }
     }
 }

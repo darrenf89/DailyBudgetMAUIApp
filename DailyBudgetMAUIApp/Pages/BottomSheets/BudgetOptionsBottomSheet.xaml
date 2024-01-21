@@ -155,6 +155,9 @@
                                 <TapGestureRecognizer x:Name="ViewIncomes" Tapped="ViewIncomes_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
+
+                        </VerticalStackLayout>
                     </FlexLayout>
                     <BoxView Color="{StaticResource Secondary}" Margin="20,0,20,0" HeightRequest="2"/>
                 </VerticalStackLayout>

@@ -400,7 +400,7 @@ public partial class MainPage : ContentPage
     }
     private void YourTransactionsOption_Tapped(object sender, TappedEventArgs e)
     {
-        BudgetOptionsBottomSheet page = new BudgetOptionsBottomSheet(_vm.DefaultBudget, new ProductTools(new RestDataService()),new RestDataService());
+        TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet();
 
         page.Detents = new DetentsCollection()
         {
@@ -408,7 +408,7 @@ public partial class MainPage : ContentPage
         };
 
         page.HasBackdrop = true;
-        page.CornerRadius = 30;
+        page.CornerRadius = 0;
 
         App.CurrentBottomSheet = page;
 
@@ -426,7 +426,7 @@ public partial class MainPage : ContentPage
         };
 
         page.HasBackdrop = true;
-        page.CornerRadius = 30;
+        page.CornerRadius = 0;
 
         App.CurrentBottomSheet = page;
 
@@ -443,7 +443,7 @@ public partial class MainPage : ContentPage
         };
 
         page.HasBackdrop = true;
-        page.CornerRadius = 30;
+        page.CornerRadius = 0;
 
         App.CurrentBottomSheet = page;
 
@@ -1543,7 +1543,7 @@ public partial class MainPage : ContentPage
         };
 
         page.HasBackdrop = true;
-        page.CornerRadius = 30;
+        page.CornerRadius = 0;
 
         App.CurrentBottomSheet = page;
 

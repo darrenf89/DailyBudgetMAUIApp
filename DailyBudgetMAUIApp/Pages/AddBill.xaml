@@ -121,7 +121,7 @@
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                             <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="0" Grid.Row="1">
-                                <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed"/>
+                                <handlers:BorderlessEntry ReturnType="Next" Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed" TextColor="{DynamicResource Gray900}"/>
                             </Border>
                             <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="1" Grid.Row="1">
@@ -151,7 +151,7 @@
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                             <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
-                                <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entOfEveryMonthValue" Keyboard="Numeric" TextChanged="OfEveryMonthValue_Changed" TextColor="{DynamicResource Gray900}"/>
+                                <handlers:BorderlessEntry ReturnType="Next" Margin="20,0,0,0" x:Name="entOfEveryMonthValue" Keyboard="Numeric" TextChanged="OfEveryMonthValue_Changed" TextColor="{DynamicResource Gray900}"/>
                             </Border>
                         </Grid>
                         <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validatorOfEveryMonthDuration">
@@ -171,7 +171,7 @@
                     <VerticalStackLayout Margin="0,10,0,5">
                         <Label Text="Total Amount Due" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White">
-                            <handlers:BorderlessEntry TextColor="{DynamicResource Danger}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entAmountDue" TextChanged="AmountDue_Changed" Keyboard="Numeric" />
+                            <handlers:BorderlessEntry ReturnType="Next" TextColor="{DynamicResource Danger}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entAmountDue" TextChanged="AmountDue_Changed" Keyboard="Numeric" />
                         </Border>
                         <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorBillAmount">
                             <Image>
@@ -185,7 +185,7 @@
                     <VerticalStackLayout Margin="0,10,0,5">
                         <Label Text="Current Saved" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White">
-                            <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entCurrentSaved" TextChanged="CurrentSaved_Changed" Keyboard="Numeric" />
+                            <handlers:BorderlessEntry ReturnType="Done" TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entCurrentSaved" TextChanged="CurrentSaved_Changed" Keyboard="Numeric" />
                         </Border>
                         <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorBillBalance">
                             <Image>
@@ -213,6 +213,13 @@
                     <Label Text="Daily Amount Required" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
                     <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
                         <Label x:Name="lblRegularBillValue" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"  VerticalOptions="Center"/>
+                    </Border>
+                    <Label Text="Payee" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
+                        <Label x:Name="lblPayee" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"  VerticalOptions="Center" Text="{Binding Bill.BillPayee, Converter={StaticResource PayeeText}}"/>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="SelectPayee" Tapped="SelectPayee_Tapped"/>
+                        </Border.GestureRecognizers>
                     </Border>
                 </VerticalStackLayout>
             </Border>

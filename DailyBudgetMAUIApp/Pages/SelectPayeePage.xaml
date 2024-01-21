@@ -22,7 +22,8 @@
                     <VerticalStackLayout Margin="0,5,0,5">
                         <HorizontalStackLayout>
                             <VerticalStackLayout>
-                                <handlers:BorderlessEntry MaxLength="15" TextChanged="entPayee_TextChanged" x:Name="entPayee" Placeholder="Pick who you are going to pay!" FontSize="20" Margin="10,0,10,0" TextColor="{DynamicResource Tertiary}" PlaceholderColor="{DynamicResource Tertiary}" HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding Transaction.Payee}"/>
+                                <handlers:BorderlessEntry IsVisible="False" MaxLength="15" TextChanged="entPayee_TextChanged" x:Name="entTransactionPayee" Placeholder="Pick who you are going to pay!" FontSize="20" Margin="10,0,10,0" TextColor="{DynamicResource Tertiary}" PlaceholderColor="{DynamicResource Tertiary}" HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding Transaction.Payee}"/>
+                                <handlers:BorderlessEntry IsVisible="False" MaxLength="15" TextChanged="entPayee_TextChanged" x:Name="entBillPayee" Placeholder="Pick who you are going to pay!" FontSize="20" Margin="10,0,10,0" TextColor="{DynamicResource Tertiary}" PlaceholderColor="{DynamicResource Tertiary}" HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding Bill.BillPayee}"/>
                                 <BoxView HeightRequest="3" Color="{DynamicResource Tertiary}" x:Name="bvHeader" Margin="20,0,20,0"/>
                             </VerticalStackLayout>
                             <Button x:Name="btnClearPayee" Padding="0" BackgroundColor="Transparent" Clicked="ClearEntPayee_Clicked" HorizontalOptions="End" Style="{StaticResource TitleButtons}" Margin="0,0,10,0" >

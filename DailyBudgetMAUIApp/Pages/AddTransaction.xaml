@@ -6,9 +6,10 @@
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch">
+             xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
+             Loaded="Content_Loaded">
     <ContentPage.Resources>
-        <ResourceDictionary>
+        <ResourceDictionary>            
             <converters:IsSpendFromSavingText x:Key="IsSpendFromSavingText" />
             <converters:IsFutureDatedTransactionText x:Key="IsFutureDatedTransactionText" />
             <converters:IsPayeeText x:Key="IsPayeeText" />

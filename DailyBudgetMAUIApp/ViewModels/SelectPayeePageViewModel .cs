@@ -18,7 +18,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private int _budgetID;
         [ObservableProperty]
-        private Transactions _transaction;
+        private Transactions _transaction = new Transactions();
+        [ObservableProperty]
+        private Bills _bill = new Bills();
         [ObservableProperty]
         private bool _payeeDoesntExists;
         [ObservableProperty]
@@ -27,6 +29,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string _filteredListEmptyText = "You have not set up any Payee's go ahead and do that!";
         [ObservableProperty]
         private string _selectedPayee;
+        [ObservableProperty]
+        private string _pageType;
 
 
         public double ScreenWidth { get; }

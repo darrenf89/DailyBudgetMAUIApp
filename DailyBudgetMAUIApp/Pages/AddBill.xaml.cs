@@ -35,10 +35,19 @@ public partial class AddBill : ContentPage
 
         if (_vm.BillID == 0)
         {
-            _vm.Bill = new Bills();
-            _vm.Title = "Add a New Outgoing";
-            btnAddBill.IsVisible = true;
+            if(_vm.Bill == null)
+            {
+                _vm.Bill = new Bills();
+                _vm.Title = "Add a New Outgoing";
+                btnAddBill.IsVisible = true;
+            }   
+            else
+            {
+                _vm.Title = $"Update Outgoing {_vm.Bill.BillName}";
+                btnUpdateBill.IsVisible = true;
 
+                LoadExistingBill();
+            }
         }
         else
         {
@@ -46,34 +55,7 @@ public partial class AddBill : ContentPage
             _vm.Title = $"Update Outgoing {_vm.Bill.BillName}";
             btnUpdateBill.IsVisible = true;
 
-            SelectBillType.IsVisible = false;
-            if (_vm.Bill.IsRecuring)
-            {
-                BillTypeSelected.IsVisible = true;
-                lblSelectedBillTitle.Text = "You are adding a recurring outgoing";
-                lblSelectedBillParaOne.Text = "For most of your bills! Phone, car, Netflix, the list goes on ...";
-                lblSelectedBillParaTwo.Text = "Tell us how much, when the next bill is due and how often it occurs";
-
-                brdBillDetails.IsVisible = true;
-                brdBillTypes.IsVisible = true;
-
-                _vm.BillRecurringText = "Recurring";
-
-                UpdateSelectedOption(_vm.Bill.BillType);
-                _vm.BillTypeText = _vm.Bill.BillType;
-            }
-            else
-            {
-                BillTypeSelected.IsVisible = true;
-                lblSelectedBillTitle.Text = "You are adding a one off outgoing";
-                lblSelectedBillParaOne.Text = "For those one off bills, owe someone money?";
-                lblSelectedBillParaTwo.Text = "Tell us how much and when the bill is due";
-
-                brdBillDetails.IsVisible = true;
-                brdBillTypes.IsVisible = false;
-
-                _vm.BillRecurringText = "OneOff";
-            }
+            LoadExistingBill();
         }
 
         double AmountDue = (double?)_vm.Bill.BillAmount ?? 0;
@@ -87,6 +69,38 @@ public partial class AddBill : ContentPage
 
         base.OnAppearing();
 
+    }
+
+    private void LoadExistingBill()
+    {
+        SelectBillType.IsVisible = false;
+        if (_vm.Bill.IsRecuring)
+        {
+            BillTypeSelected.IsVisible = true;
+            lblSelectedBillTitle.Text = "You are adding a recurring outgoing";
+            lblSelectedBillParaOne.Text = "For most of your bills! Phone, car, Netflix, the list goes on ...";
+            lblSelectedBillParaTwo.Text = "Tell us how much, when the next bill is due and how often it occurs";
+
+            brdBillDetails.IsVisible = true;
+            brdBillTypes.IsVisible = true;
+
+            _vm.BillRecurringText = "Recurring";
+
+            UpdateSelectedOption(_vm.Bill.BillType);
+            _vm.BillTypeText = _vm.Bill.BillType;
+        }
+        else
+        {
+            BillTypeSelected.IsVisible = true;
+            lblSelectedBillTitle.Text = "You are adding a one off outgoing";
+            lblSelectedBillParaOne.Text = "For those one off bills, owe someone money?";
+            lblSelectedBillParaTwo.Text = "Tell us how much and when the bill is due";
+
+            brdBillDetails.IsVisible = true;
+            brdBillTypes.IsVisible = false;
+
+            _vm.BillRecurringText = "OneOff";
+        }
     }
 
     private void btnRecurringBill_Clicked(object sender, EventArgs e)
@@ -497,5 +511,27 @@ public partial class AddBill : ContentPage
         validatorBillName.IsVisible = false;
 
         _vm.IsPageValid = true;
+    }
+
+    private async void SelectPayee_Tapped(object sender, TappedEventArgs e)
+    {
+        HideKeyBoard();
+
+        SaveBillTypeOptions();
+
+        var page = new SelectPayeePage(_vm.BudgetID, _vm.Bill, new RestDataService(), new ProductTools(new RestDataService()), new SelectPayeePageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
+        await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+    }
+
+    private void HideKeyBoard()
+    {
+        entAmountDue.IsEnabled = false;
+        entAmountDue.IsEnabled = true;
+        entCurrentSaved.IsEnabled = false;
+        entCurrentSaved.IsEnabled = true;
+        entEverynthValue.IsEnabled = false;
+        entEverynthValue.IsEnabled = true;
+        entOfEveryMonthValue.IsEnabled = false;
+        entOfEveryMonthValue.IsEnabled = true;
     }
 }

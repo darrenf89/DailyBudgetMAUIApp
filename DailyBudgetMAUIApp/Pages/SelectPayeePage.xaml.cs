@@ -12,12 +12,10 @@ public partial class SelectPayeePage : ContentPage
 
 	public SelectPayeePage(int BudgetID, Transactions Transaction, IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel)
 	{
-        if(Transaction.Payee == null)
+        if (Transaction.Payee == null)
         {
             Transaction.Payee = "";
         }
-
-
 
         _ds = ds;
         _pt = pt;
@@ -31,6 +29,33 @@ public partial class SelectPayeePage : ContentPage
         _vm.BudgetID = BudgetID;
         _vm.SelectedPayee = Transaction.Payee;
 
+        _vm.PageType = "Transaction";
+        entTransactionPayee.IsVisible = true;
+
+    }
+
+    public SelectPayeePage(int BudgetID, Bills Bill, IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel)
+    {
+        if (Bill.BillPayee == null)
+        {
+            Bill.BillPayee = "";
+        }
+
+        _ds = ds;
+        _pt = pt;
+
+        InitializeComponent();
+
+        this.BindingContext = viewModel;
+        _vm = viewModel;
+        
+        _vm.Bill = Bill;
+        _vm.BudgetID = BudgetID;
+        _vm.SelectedPayee = Bill.BillPayee;
+
+        _vm.PageType = "Bill";
+        entBillPayee.IsVisible = true;
+
     }
 
 
@@ -42,23 +67,49 @@ public partial class SelectPayeePage : ContentPage
         _vm.PayeeList = _ds.GetPayeeList(_vm.BudgetID).Result;
 
         LoadHeader();
-        LoadPayeeList(_vm.Transaction.Payee);
+        if(_vm.PageType == "Bill")
+        {
+            LoadPayeeList(_vm.Bill.BillPayee);
+        }
+        else if(_vm.PageType == "Transaction")
+        {
+            LoadPayeeList(_vm.Transaction.Payee);
+        }    
+        
     }
 
 
     private void LoadHeader()
     {
-        if(string.IsNullOrEmpty(_vm.Transaction.Payee))
+        if (_vm.PageType == "Bill")
         {
-            entPayee.WidthRequest = _vm.EntryWidth;
-            bvHeader.WidthRequest = _vm.EntryWidth;
-            btnClearPayee.IsVisible = false;
+            if (string.IsNullOrEmpty(_vm.Bill.BillPayee))
+            {
+                entBillPayee.WidthRequest = _vm.EntryWidth;
+                bvHeader.WidthRequest = _vm.EntryWidth;
+                btnClearPayee.IsVisible = false;
+            }
+            else
+            {
+                entBillPayee.WidthRequest = _vm.EntryButtonWidth;
+                bvHeader.WidthRequest = _vm.EntryButtonWidth;
+                btnClearPayee.IsVisible = true;
+            }
         }
-        else
+        else if (_vm.PageType == "Transaction")
         {
-            entPayee.WidthRequest = _vm.EntryButtonWidth;
-            bvHeader.WidthRequest = _vm.EntryButtonWidth;
-            btnClearPayee.IsVisible = true;
+            if (string.IsNullOrEmpty(_vm.Transaction.Payee))
+            {
+                entTransactionPayee.WidthRequest = _vm.EntryWidth;
+                bvHeader.WidthRequest = _vm.EntryWidth;
+                btnClearPayee.IsVisible = false;
+            }
+            else
+            {
+                entTransactionPayee.WidthRequest = _vm.EntryButtonWidth;
+                bvHeader.WidthRequest = _vm.EntryButtonWidth;
+                btnClearPayee.IsVisible = true;
+            }
         }
 
         _vm.PayeeDoesntExists = !_vm.PayeeList.Contains(_vm.Transaction.Payee) && _vm.Transaction.Payee != "";
@@ -210,23 +261,39 @@ public partial class SelectPayeePage : ContentPage
         bool result = await DisplayAlert($"Select {Payee}", $"Are you sure you want to Select {Payee} as the Payee?", "Yes, continue", "No, go back!");
         if (result)
         {
-            entPayee.IsEnabled = false;
-            entPayee.IsEnabled = true;
-            entPayee.Unfocus();
+            entBillPayee.IsEnabled = false;
+            entBillPayee.IsEnabled = true;
+            entBillPayee.Unfocus();
+            entTransactionPayee.IsEnabled = false;
+            entTransactionPayee.IsEnabled = true;
+            entTransactionPayee.Unfocus();
 
-            if(string.IsNullOrEmpty(_vm.Transaction.Category))
+            if (_vm.PageType == "Transaction")
             {
-                Categories LastCategory = await _ds.GetPayeeLastCategory(_vm.BudgetID, Payee);
-                _vm.Transaction.Category = LastCategory.CategoryName;
-                _vm.Transaction.CategoryID = LastCategory.CategoryID;
+                if (string.IsNullOrEmpty(_vm.Transaction.Category))
+                {
+                    Categories LastCategory = await _ds.GetPayeeLastCategory(_vm.BudgetID, Payee);
+                    _vm.Transaction.Category = LastCategory.CategoryName;
+                    _vm.Transaction.CategoryID = LastCategory.CategoryID;
+                }
+
+                _vm.Transaction.Payee = Payee;
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = _vm.Transaction
+                });
+            }
+            else if (_vm.PageType == "Bill")
+            {
+                _vm.Bill.BillPayee = Payee;
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
+                new Dictionary<string, object>
+                {
+                    ["Bill"] = _vm.Bill
+                });
             }
 
-            _vm.Transaction.Payee = Payee;
-            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
-            new Dictionary<string, object>
-            {
-                ["Transaction"] = _vm.Transaction
-            });
         }
 
 
@@ -234,51 +301,108 @@ public partial class SelectPayeePage : ContentPage
 
     private async void BackButton_Clicked(object sender, EventArgs e)
     {
-        _vm.Transaction.Payee = "";
+        entTransactionPayee.IsEnabled = false;
+        entTransactionPayee.IsEnabled = true;
+        entTransactionPayee.Unfocus();
+        entBillPayee.IsEnabled = false;
+        entBillPayee.IsEnabled = true;
+        entBillPayee.Unfocus();
 
-        entPayee.IsEnabled = false;
-        entPayee.IsEnabled = true;
-        entPayee.Unfocus();
-
-        await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}", 
-        new Dictionary<string,object>
+        if (_vm.PageType == "Transaction")
         {
-            ["Transaction"] = _vm.Transaction
-        });
-    }
-
-    private void ClearEntPayee_Clicked(object sender, EventArgs e)
-    {
-        _vm.Transaction.Payee = "";
-        LoadHeader();
-        LoadPayeeList(_vm.Transaction.Payee);
-
-        entPayee.IsEnabled = false;
-        entPayee.IsEnabled = true;
-        entPayee.Unfocus();
-
-    }
-
-    private async void AddNewPayee_Clicked(object sender, EventArgs e)
-    {
-        bool result = await DisplayAlert("Add New Payee", $"Are you sure you want to add {_vm.Transaction.Payee} as a new Payee?", "Yes, continue", "No, go back!");
-        if (result)
-        {
-            entPayee.IsEnabled = false;
-            entPayee.IsEnabled = true;
-            entPayee.Unfocus();
+            _vm.Transaction.Payee = "";
 
             await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
             new Dictionary<string, object>
             {
-                ["Transaction"] = _vm.Transaction
+            ["Transaction"] = _vm.Transaction
             });
         }
+        else if (_vm.PageType == "Bill")
+        {
+            _vm.Bill.BillPayee = "";
+
+            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
+            new Dictionary<string, object>
+            {
+                ["Bill"] = _vm.Bill
+            });
+        }
+
+
+    }
+
+    private void ClearEntPayee_Clicked(object sender, EventArgs e)
+    {
+        if(_vm.PageType == "Bill")
+        {
+            _vm.Bill.BillPayee = "";
+            LoadHeader();
+            LoadPayeeList(_vm.Bill.BillPayee);
+
+            entBillPayee.IsEnabled = false;
+            entBillPayee.IsEnabled = true;
+            entBillPayee.Unfocus();
+        }
+        else if(_vm.PageType == "Transaction")
+        {
+            _vm.Transaction.Payee = "";
+            LoadHeader();
+            LoadPayeeList(_vm.Transaction.Payee);
+
+            entTransactionPayee.IsEnabled = false;
+            entTransactionPayee.IsEnabled = true;
+            entTransactionPayee.Unfocus();
+        }
+    }
+
+    private async void AddNewPayee_Clicked(object sender, EventArgs e)
+    {
+        if(_vm.PageType == "Bill")
+        {
+            bool result = await DisplayAlert("Add New Payee", $"Are you sure you want to add {_vm.Bill.BillPayee} as a new Payee?", "Yes, continue", "No, go back!");
+            if (result)
+            {
+                entBillPayee.IsEnabled = false;
+                entBillPayee.IsEnabled = true;
+                entBillPayee.Unfocus();
+
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
+                new Dictionary<string, object>
+                {
+                    ["Bill"] = _vm.Bill
+                });
+            }
+        }
+        else if(_vm.PageType == "Transaction")
+        {
+            bool result = await DisplayAlert("Add New Payee", $"Are you sure you want to add {_vm.Transaction.Payee} as a new Payee?", "Yes, continue", "No, go back!");
+            if (result)
+            {
+                entTransactionPayee.IsEnabled = false;
+                entTransactionPayee.IsEnabled = true;
+                entTransactionPayee.Unfocus();
+
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = _vm.Transaction
+                });
+            }
+        }
+ 
     }
 
     private void entPayee_TextChanged(object sender, TextChangedEventArgs e)
     {
         LoadHeader();
-        LoadPayeeList(_vm.Transaction.Payee);
+        if (_vm.PageType == "Bill")
+        {
+            LoadPayeeList(_vm.Bill.BillPayee);
+        }
+        else if (_vm.PageType == "Transaction")
+        {
+            LoadPayeeList(_vm.Transaction.Payee);
+        }
     }
 }
