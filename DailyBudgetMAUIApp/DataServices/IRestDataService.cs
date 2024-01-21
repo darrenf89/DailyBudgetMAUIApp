@@ -48,6 +48,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> UpdateSaving(Savings Saving);
         public Task<string> PatchSaving(int SavingID, List<PatchDoc> PatchDoc);
         public Task<string> DeleteSaving(int SavingID);
+        public Task<List<Savings>> GetAllBudgetSavings(int BudgetID);
         public Task<IncomeEvents> GetIncomeFromID(int IncomeID);
         public Task<string> SaveNewIncome(IncomeEvents income, int BudgetID);
         public Task<string> UpdateIncome(IncomeEvents Income);
@@ -58,6 +59,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<Transactions> TransactTransaction(int TransactionID);
         public Task<string> UpdateTransaction(Transactions Transaction);
         public Task<string> DeleteTransaction(int TransactionID);
+        public Task<List<string>> GetBudgetEventTypes(int BudgetID);
         public Task<Transactions> GetTransactionFromID(int TransactionID);
         public Task<Budgets> GetAllBudgetTransactions(int BudgetID);
         public Task<List<Transactions>> GetRecentTransactions(int BudgetID, int NumberOf, string page);

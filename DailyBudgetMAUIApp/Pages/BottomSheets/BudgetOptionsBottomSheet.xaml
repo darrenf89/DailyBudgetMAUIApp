@@ -133,6 +133,19 @@
                             <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
                                 <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
                                     <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mail}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Small" Text="View Envelopes" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="ViewEnvelopes" Tapped="ViewEnvelopes_Tapped"/>
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Trending_up}" Size="22" Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>

@@ -1531,6 +1531,55 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<List<Savings>> GetAllBudgetSavings(int BudgetID)
+        {
+            List<Savings> Savings = new List<Savings>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/getallbudgetsavings/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            Savings = serializer.Deserialize<List<Savings>>(reader);
+                        }
+
+                        return Savings;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "GetAllBudgetSavings", "GetAllBudgetSavings");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "GetAllBudgetSavings", "GetAllBudgetSavings");
+                return null;
+            }
+        }
+
         public async Task<IncomeEvents> GetIncomeFromID(int IncomeID)
         {
             IncomeEvents Income = new IncomeEvents();
@@ -1931,6 +1980,55 @@ namespace DailyBudgetMAUIApp.DataServices
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to get Delete Transaction in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<List<string>> GetBudgetEventTypes(int BudgetID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            List<string> EventTypes = new List<string>();
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getbudgeteventtypes/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            EventTypes = serializer.Deserialize<List<string>>(reader);
+                        }
+                        return EventTypes;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "GetBudgetEventTypes", "GetBudgetEventTypes");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+
+                HandleError(ex, "GetBudgetEventTypes", "GetBudgetEventTypes");
+                return null;
             }
         }
 

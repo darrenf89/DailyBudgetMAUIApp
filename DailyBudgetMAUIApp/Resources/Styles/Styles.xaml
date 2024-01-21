@@ -384,12 +384,14 @@
 
     <Style TargetType="Button" x:Key="buttonClicked">
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{DynamicResource Info}"/>
-        <Setter Property="BackgroundColor" Value="{DynamicResource InfoLight}" />
+        <Setter Property="FontSize" Value="Caption"/>
+        <Setter Property="TextColor" Value="{DynamicResource White}"/>
+        <Setter Property="BackgroundColor" Value="{DynamicResource Info}" />
         <Setter Property="BorderColor" Value="Transparent"/>
         <Setter Property="BorderWidth" Value="0"/>
-        <Setter Property="Padding" Value="6,0,10,0"/>
-        <Setter Property="Margin" Value="0,0,10,0"/>
+        <Setter Property="Padding" Value="10,2,10,2"/>
+        <Setter Property="Margin" Value="5,0,5,10"/>
+        <Setter Property="MaximumHeightRequest" Value="44" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -459,12 +461,14 @@
     </Style>
 
     <Style TargetType="Button" x:Key="buttonUnclicked">
-        <Setter Property="TextColor" Value="{DynamicResource Gray400}"/>
+        <Setter Property="TextColor" Value="{DynamicResource Info}"/>
+        <Setter Property="FontSize" Value="Caption"/>
         <Setter Property="BackgroundColor" Value="{DynamicResource White}" />
-        <Setter Property="BorderColor" Value="{DynamicResource Gray400}"/>
+        <Setter Property="BorderColor" Value="{DynamicResource Info}"/>
         <Setter Property="BorderWidth" Value="1"/>
-        <Setter Property="Padding" Value="6,0,10,0"/>
-        <Setter Property="Margin" Value="0,0,10,0"/>
+        <Setter Property="Padding" Value="10,2,10,2"/>
+        <Setter Property="Margin" Value="5,0,5,10"/>
+        <Setter Property="MaximumHeightRequest" Value="44" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">

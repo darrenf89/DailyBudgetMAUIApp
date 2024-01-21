@@ -236,7 +236,7 @@ public partial class ViewTransactions : ContentPage
     private bool FilterContacts(object obj)
     {
         Transactions T = (Transactions)obj;
-        bool IsFilter = true;
+        bool IsFilter = false;
 
         if(!string.IsNullOrEmpty(entSearchAmount.Text))
         {
@@ -260,35 +260,35 @@ public partial class ViewTransactions : ContentPage
                 }
             }
 
-            if(Filters.CategoryFilter != null || Filters.CategoryFilter.Count == 0)
+            if(Filters.CategoryFilter != null)
             {
-                if(!Filters.CategoryFilter.Contains(T.CategoryID.GetValueOrDefault()))
+                if(Filters.CategoryFilter.Contains(T.CategoryID.GetValueOrDefault()))
                 {
-                    return false;
+                    IsFilter = true;
                 }
             }
 
-            if(Filters.PayeeFilter != null || Filters.PayeeFilter.Count == 0)
+            if(Filters.PayeeFilter != null)
             {
-                if (!Filters.PayeeFilter.Contains(T.Payee))
+                if (Filters.PayeeFilter.Contains(T.Payee))
                 {
-                    return false;
+                    IsFilter = true;
                 }
             }
 
-            if(Filters.SavingFilter != null || Filters.SavingFilter.Count == 0)
+            if(Filters.SavingFilter != null)
             {
-                if (!Filters.SavingFilter.Contains(T.SavingID.GetValueOrDefault()))
+                if (Filters.SavingFilter.Contains(T.SavingID.GetValueOrDefault()))
                 {
-                    return false;
+                    IsFilter = true;
                 }
             }
 
-            if(Filters.TransactionEventTypeFilter != null || Filters.TransactionEventTypeFilter.Count == 0)
+            if(Filters.TransactionEventTypeFilter != null)
             {
-                if (!Filters.TransactionEventTypeFilter.Contains(T.EventType))
+                if (Filters.TransactionEventTypeFilter.Contains(T.EventType))
                 {
-                    return false;
+                    IsFilter = true;
                 }
             }
         }
@@ -306,9 +306,13 @@ public partial class ViewTransactions : ContentPage
         ViewTransactionFilterBottomSheet page = new ViewTransactionFilterBottomSheet(Filters);
 
         page.Detents = new DetentsCollection()
-        {
+        {            
+            new FullscreenDetent(),
             new MediumDetent(),
-            new ContentDetent()
+            new ContentDetent
+            {
+                IsDefault = true
+            }
         };
 
         page.HasBackdrop = true;

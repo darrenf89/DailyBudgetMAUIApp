@@ -35,10 +35,17 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
         bool result = await Shell.Current.DisplayAlert("Create new Envelope?", "Are you sure you want to create a new envelope?", "Yes", "No");
         if (result)
         {
-            if (App.CurrentBottomSheet != null)
+            try
             {
-                await App.CurrentBottomSheet.DismissAsync();
-                App.CurrentBottomSheet = null;
+                if (App.CurrentBottomSheet != null)
+                {
+                    await this.DismissAsync();
+                    App.CurrentBottomSheet = null;
+                }
+            }
+            catch (Exception)
+            {
+
             }
 
             await Shell.Current.GoToAsync($"{nameof(AddSaving)}?SavingType=Envelope");

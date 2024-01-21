@@ -94,10 +94,17 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         bool result = await Shell.Current.DisplayAlert("Create a new budget?", "Are you sure you want to create a new budget?", "Yes", "No");
         if(result)
         {
-            if (App.CurrentBottomSheet != null)
+            try
             {
-                await App.CurrentBottomSheet.DismissAsync();
-                App.CurrentBottomSheet = null;
+                if (App.CurrentBottomSheet != null)
+                {
+                    await this.DismissAsync();
+                    App.CurrentBottomSheet = null;
+                }
+            }
+            catch(Exception)
+            {
+
             }
 
             Budgets NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email);
@@ -122,5 +129,10 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         SwitchBudgetPicker = await _pt.SwitchBudget("Budget Options");
         MainVSL.Children.Add(SwitchBudgetPicker);
         SwitchBudgetPicker.Focus();
+    }
+
+    private void ViewEnvelopes_Tapped(object sender, TappedEventArgs e)
+    {
+
     }
 }

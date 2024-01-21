@@ -2,6 +2,17 @@
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using The49.Maui.BottomSheet;
+using Microsoft.Maui;
+using System.Drawing;
+
+#if IOS
+using UIKit;
+using Foundation;
+#endif
+
+#if ANDROID
+using Microsoft.Maui.Controls.Compatibility.Platform.Android;
+#endif
 
 namespace DailyBudgetMAUIApp;
 
@@ -13,8 +24,8 @@ public partial class App : Application
     public static DateTime SessionLastUpdate;
     public static bool HasVisitedCreatePage;
     public static BudgetSettingValues CurrentSettings;
-    public static BottomSheet CurrentBottomSheet;
-    public static Popup CurrentPopUp;
+    public static BottomSheet CurrentBottomSheet = null;
+    public static Popup CurrentPopUp = null;
     public static TabBar MainTabBar;
 
     public static int SessionPeriod = 7;
@@ -40,28 +51,46 @@ public partial class App : Application
                 handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
 #elif __IOS__
                 handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+                handler.PlatformView.Layer.BorderWidth = 0;
                 handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
 #endif
             }
         });
 
-        Microsoft.Maui.Handlers.DatePickerHandler.Mapper.AppendToMapping(nameof(BorderlessPicker), (handler, view) =>
+        Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping(nameof(BorderlessPicker), (handler, view) =>
         {
 
             if (view is BorderlessPicker)
             {
 #if ANDROID
-
                 handler.PlatformView.Background = null;
                 handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Colors.Transparent.ToAndroid());
 #elif __IOS__
-                handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;                
+                handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+                handler.PlatformView.Layer.BorderWidth = 0;
+                handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;             
+#endif
+            }
+        });
+
+        Microsoft.Maui.Handlers.DatePickerHandler.Mapper.AppendToMapping(nameof(BorderlessDatePicker), (handler, view) =>
+        {
+            if (view is BorderlessDatePicker)
+            {
+#if ANDROID
+                handler.PlatformView.Background = null;
+                handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Colors.Transparent.ToAndroid());
+#elif __IOS__
+                handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+                handler.PlatformView.Layer.BorderWidth = 0;
 #endif
             }
         });
 
         //MainPage = new AppShell();
-	}
+    }
 
     protected override Window CreateWindow(IActivationState activationState) 
     { 

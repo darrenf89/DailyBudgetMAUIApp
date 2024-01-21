@@ -120,7 +120,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 return Number;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return 0;
             }
@@ -135,7 +135,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 return position;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return input.Length;
             }
