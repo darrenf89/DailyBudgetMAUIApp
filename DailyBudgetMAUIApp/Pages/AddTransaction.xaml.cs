@@ -54,7 +54,7 @@ public partial class AddTransaction : ContentPage
                 _vm.Transaction.EventType = "Transaction";
                 _vm.Title = "Add a New Transaction";
                 btnAddTransaction.IsVisible = true;
-                _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date;
+                _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
             }
             else
             {
@@ -235,7 +235,7 @@ public partial class AddTransaction : ContentPage
         if(!_vm.IsFutureDatedTransaction)
         {
             entTransactionDate.MinimumDate = new DateTime();
-            _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date;
+            _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
         }
         else
         {

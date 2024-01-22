@@ -190,7 +190,12 @@ public partial class MainPage : ContentPage
             brdIncomeCarousel.IsVisible = false;
         }
 
-        _vm.RecentTransactions = await _ds.GetRecentTransactions(_vm.DefaultBudgetID, 6, "MainPage");
+        List<Transactions> RecentTrans = await _ds.GetRecentTransactions(_vm.DefaultBudgetID, 6, "MainPage");
+        foreach(Transactions T in RecentTrans)
+        {
+            _vm.RecentTransactions.Add(T);
+        }
+        
     }
 
     private async void ProcessSnackBar()
@@ -1613,7 +1618,17 @@ public partial class MainPage : ContentPage
         {
             Transactions transaction = (Transactions)e.Parameter;
             await _ds.DeleteTransaction(transaction.TransactionID);
-            _vm.RecentTransactions = await _ds.GetRecentTransactions(_vm.DefaultBudgetID, 6, "MainPageDelete");
+
+            _vm.RecentTransactions.Clear();
+
+            List<Transactions> RecentTrans = await _ds.GetRecentTransactions(_vm.DefaultBudgetID, 6, "MainPage");
+            foreach (Transactions T in RecentTrans)
+            {
+                _vm.RecentTransactions.Add(T);
+            }
+
+            LVTransactions.RefreshItem();
+            LVTransactions.RefreshView();
         }
     }
 }

@@ -28,7 +28,31 @@
         <VerticalStackLayout x:Name="vslChart">
             <Border Style="{DynamicResource DashboardMainContent}" x:Name="ChartContent" HeightRequest="{Binding ChartContentHeight}" Margin="10,0,10,10">
                 <chart:SfCartesianChart>
+                    <chart:SfCartesianChart.XAxes>
+                        <chart:CategoryAxis ShowMajorGridLines="False">
+                            <chart:CategoryAxis.AxisLineStyle>
+                                <chart:ChartLineStyle StrokeWidth ="2" Stroke="{StaticResource Primary}"/>
+                            </chart:CategoryAxis.AxisLineStyle>
 
+                        </chart:CategoryAxis>
+                    </chart:SfCartesianChart.XAxes>
+                    <chart:SfCartesianChart.YAxes>
+                        <chart:NumericalAxis ShowMajorGridLines="False" ShowMinorGridLines="False">
+
+                        </chart:NumericalAxis>
+                    </chart:SfCartesianChart.YAxes>
+                    <chart:StackingColumnSeries ItemsSource="{Binding TransactionChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" GroupingLabel="Amounts">
+
+                    </chart:StackingColumnSeries>
+                    <chart:StackingColumnSeries ItemsSource="{Binding BillChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" GroupingLabel="Amounts">
+
+                    </chart:StackingColumnSeries>
+                    <chart:StackingColumnSeries ItemsSource="{Binding SavingsChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" GroupingLabel="Amounts">
+
+                    </chart:StackingColumnSeries>
+                    <chart:StackingColumnSeries ItemsSource="{Binding EnvelopeChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" GroupingLabel="Amounts">
+
+                    </chart:StackingColumnSeries>
                 </chart:SfCartesianChart>
             </Border>
         </VerticalStackLayout>

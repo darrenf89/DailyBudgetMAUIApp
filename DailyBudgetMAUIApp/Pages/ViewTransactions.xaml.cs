@@ -13,6 +13,7 @@ using Syncfusion.Maui.ListView.Helpers;
 using System.Globalization;
 using System.Collections.Specialized;
 using The49.Maui.BottomSheet;
+using System.Runtime.CompilerServices;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -141,6 +142,14 @@ public partial class ViewTransactions : ContentPage
         {
             await _ds.DeleteTransaction(T.TransactionID);
         }
+
+        if(_vm.Transactions.Contains(T))
+        {
+            _vm.Transactions.Remove(T);
+        }
+
+        listView.RefreshItem();
+        listView.RefreshView();
     }
 
     private async void ListViewScrollView_Scrolled(object sender, ScrolledEventArgs e)
@@ -237,32 +246,14 @@ public partial class ViewTransactions : ContentPage
     {
         Transactions T = (Transactions)obj;
         bool IsFilter = false;
-
-        if(!string.IsNullOrEmpty(entSearchAmount.Text))
-        {
-            decimal Amount = (decimal)_pt.FormatCurrencyNumber(entSearchAmount.Text);
-            if(Amount != 0)
-            {
-                if(Amount != T.TransactionAmount)
-                {
-                    return false;
-                }
-            }
-        }
+        bool IsFilterApplied = false;
 
         if(Filters != null)
         {
-            if(Filters.DateFilter != null)
-            {
-                if (T.TransactionDate < Filters.DateFilter.DateFrom || T.TransactionDate > Filters.DateFilter.DateTo)
-                {
-                    return false;
-                }
-            }
-
             if(Filters.CategoryFilter != null)
             {
-                if(Filters.CategoryFilter.Contains(T.CategoryID.GetValueOrDefault()))
+                IsFilterApplied = true;
+                if (Filters.CategoryFilter.Contains(T.CategoryID.GetValueOrDefault()))
                 {
                     IsFilter = true;
                 }
@@ -270,6 +261,7 @@ public partial class ViewTransactions : ContentPage
 
             if(Filters.PayeeFilter != null)
             {
+                IsFilterApplied = true;
                 if (Filters.PayeeFilter.Contains(T.Payee))
                 {
                     IsFilter = true;
@@ -278,6 +270,7 @@ public partial class ViewTransactions : ContentPage
 
             if(Filters.SavingFilter != null)
             {
+                IsFilterApplied = true;
                 if (Filters.SavingFilter.Contains(T.SavingID.GetValueOrDefault()))
                 {
                     IsFilter = true;
@@ -286,11 +279,56 @@ public partial class ViewTransactions : ContentPage
 
             if(Filters.TransactionEventTypeFilter != null)
             {
+                IsFilterApplied = true;
                 if (Filters.TransactionEventTypeFilter.Contains(T.EventType))
                 {
                     IsFilter = true;
                 }
             }
+
+            if(IsFilterApplied && !IsFilter)
+            {
+                return false;
+            }
+
+            if (Filters.DateFilter != null)
+            {
+                IsFilterApplied = true;
+                if (T.TransactionDate < Filters.DateFilter.DateFrom || T.TransactionDate > Filters.DateFilter.DateTo)
+                {
+                    return false;
+                }
+                else
+                {
+                    IsFilter = true;
+                }
+            }
+        }
+
+        if (!string.IsNullOrEmpty(entSearchAmount.Text))
+        {
+            decimal Amount = (decimal)_pt.FormatCurrencyNumber(entSearchAmount.Text);
+            if (Amount != 0)
+            {
+                IsFilterApplied = true;
+                if (Amount != T.TransactionAmount)
+                {
+                    return false;
+                }
+                else
+                {
+                    IsFilter = true;
+                }
+            }
+            else
+            {
+                IsFilter = true;
+            }
+        }
+
+        if(!IsFilterApplied)
+        {
+            return true;
         }
 
         return IsFilter;

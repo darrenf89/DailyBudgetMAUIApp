@@ -1,14 +1,10 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using Microsoft.Toolkit.Mvvm.Input;
-using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Handlers;
-using CommunityToolkit.Maui.Views;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using DailyBudgetMAUIApp.Pages;
-using DailyBudgetMAUIApp.Pages.BottomSheets;
-using The49.Maui.BottomSheet;
+using Syncfusion.Maui.Charts;
+using System.Transactions;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -42,9 +38,19 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private double _screenHeight;
         [ObservableProperty]
+        private double _zeroAmount = 0;
+        [ObservableProperty]
         private string _scrollDirection;
         [ObservableProperty]
         private int _scrollCount;
+        [ObservableProperty]
+        private List<ChartClass> _transactionChart = new List<ChartClass>();
+        [ObservableProperty]
+        private List<ChartClass> _billChart = new List<ChartClass>();
+        [ObservableProperty]
+        private List<ChartClass> _savingsChart = new List<ChartClass>();
+        [ObservableProperty]
+        private List<ChartClass> _envelopeChart = new List<ChartClass>();
 
         public ViewTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -97,6 +103,76 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
 
             CurrentOffset = Transactions.Count();
+
+            LoadChartData(LoadTransactions);
+        }
+
+        private void LoadChartData(List<Transactions> Transactions)
+        {
+
+            Transactions? EarliestTransaction = Transactions.OrderBy(t => t.TransactionDate).FirstOrDefault();
+            if(EarliestTransaction != null)
+            {
+                //DateTime FirstDate = EarliestTransaction.TransactionDate.GetValueOrDefault().Date;
+                DateTime FirstDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(-7);
+                int NumberOfDays = Convert.ToInt32(Math.Ceiling((_pt.GetBudgetLocalTime(DateTime.UtcNow).Date - FirstDate).TotalDays));
+
+                for (int i = 0; i <= NumberOfDays; i++) 
+                {
+                    DateTime CurrentDate = FirstDate.AddDays(i).Date;
+                    string CurrentDateString = CurrentDate.ToString("dd\\/MM");
+
+                    decimal TransactionAmount = 0;
+                    decimal BillAmount = 0;
+                    decimal SavingAmount = 0;
+                    decimal EnvelopeAmount = 0;
+
+                    foreach(Transactions T in Transactions.Where(t => t.TransactionDate >= CurrentDate && t.TransactionDate < CurrentDate.AddDays(1) && !t.IsIncome && t.IsTransacted).ToList())
+                    {
+                        if(T.IsSpendFromSavings)
+                        {
+                            if (T.SavingsSpendType == "EnvelopeSaving")
+                            {
+                                EnvelopeAmount += T.TransactionAmount.GetValueOrDefault();
+                            }
+                            else
+                            {
+                                SavingAmount += T.TransactionAmount.GetValueOrDefault();
+                            }
+                        }
+                        else if(T.EventType == "Bill")
+                        {
+                            BillAmount += T.TransactionAmount.GetValueOrDefault();
+                        }
+                        else
+                        {
+                            TransactionAmount += T.TransactionAmount.GetValueOrDefault();
+                        }
+                    }
+
+                    TransactionChart.Add(new ChartClass
+                    {
+                        XAxesString = CurrentDateString,
+                        YAxesDouble = Convert.ToDouble(TransactionAmount)
+                    });
+                    BillChart.Add(new ChartClass
+                    {
+                        XAxesString = CurrentDateString,
+                        YAxesDouble = Convert.ToDouble(BillAmount)
+                    });
+                    SavingsChart.Add(new ChartClass
+                    {
+                        XAxesString = CurrentDateString,
+                        YAxesDouble = Convert.ToDouble(SavingAmount)
+                    });
+                    EnvelopeChart.Add(new ChartClass
+                    {
+                        XAxesString = CurrentDateString,
+                        YAxesDouble = Convert.ToDouble(EnvelopeAmount)
+                    });
+                }
+            }
+            
         }
 
         [ICommand]

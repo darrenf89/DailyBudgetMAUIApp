@@ -149,33 +149,65 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
     {
         if(Filter != null)
         {
-            if(Filter.DateFilter != null)
+            if(Filter.DateFilter == null)
             {
-
+                chbDateRange.IsChecked = false;
             }
 
             if(Filter.PayeeFilter != null)
             {
                 SelectedPayees.AddRange(Filter.PayeeFilter);
+                if(SelectedPayees.Count() == 0)
+                {
+                    chbPayee.IsChecked = false;
+                }
                 SelectedFilters += SelectedPayees.Count();
+            }
+            else
+            {
+                chbPayee.IsChecked = false;
             }
 
             if(Filter.CategoryFilter != null)
             {
                 SelectedCategories.AddRange(Filter.CategoryFilter);
+                if (SelectedCategories.Count() == 0)
+                {
+                    chbCategories.IsChecked = false;
+                }
                 SelectedFilters += SelectedCategories.Count();
             }
-            
-            if(Filter.SavingFilter != null)
+            else
             {
-                SelectedSavings.AddRange(Filter.SavingFilter);
-                SelectedFilters += SelectedSavings.Count();
+                chbCategories.IsChecked = false;
             }
 
-            if(Filter.TransactionEventTypeFilter != null)
+            if (Filter.SavingFilter != null)
+            {
+                SelectedSavings.AddRange(Filter.SavingFilter);
+                if (SelectedSavings.Count() == 0)
+                {
+                    chbSavings.IsChecked = false;
+                }
+                SelectedFilters += SelectedSavings.Count();
+            }
+            else
+            {
+                chbSavings.IsChecked = false;
+            }
+
+            if (Filter.TransactionEventTypeFilter != null)
             {
                 SelectedEventTypes.AddRange(Filter.TransactionEventTypeFilter);
+                if (SelectedEventTypes.Count() == 0)
+                {
+                    chbEventTypes.IsChecked = false;
+                }
                 SelectedFilters += SelectedEventTypes.Count();
+            }
+            else
+            {
+                chbEventTypes.IsChecked = false;
             }
         }
     }

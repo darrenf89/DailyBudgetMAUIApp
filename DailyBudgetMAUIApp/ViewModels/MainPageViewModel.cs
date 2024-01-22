@@ -6,6 +6,7 @@ using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using System.Windows.Input;
 using Syncfusion.Maui.Carousel;
+using System.Collections.ObjectModel;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -46,7 +47,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private SfCarousel _incomeCarousel;
         [ObservableProperty]
-        private List<Transactions> _recentTransactions;
+        private ObservableCollection<Transactions> _recentTransactions = new ObservableCollection<Transactions>();
         [ObservableProperty]
         private double _recentTransactionsHeight = 452;
 
