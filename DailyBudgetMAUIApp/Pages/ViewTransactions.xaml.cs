@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Collections.Specialized;
 using The49.Maui.BottomSheet;
 using System.Runtime.CompilerServices;
+using Syncfusion.Maui.Charts;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -81,6 +82,37 @@ public partial class ViewTransactions : ContentPage
 
         AbsMain.SetLayoutBounds(vslChart, new Rect(0, 0, _vm.ScreenWidth, _vm.ChartContentHeight + 10));
         AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, _vm.ChartContentHeight + 10, _vm.ScreenWidth, _vm.ScreenHeight));
+
+        //StackingAreaSeries series1 = new StackingAreaSeries()
+        //{
+        //    XBindingPath = "XAxesString",
+        //    YBindingPath = "YAxesDouble",
+        //    ItemsSource = _vm.TransactionChart
+        //};
+
+        //StackingAreaSeries series2 = new StackingAreaSeries()
+        //{
+        //    XBindingPath = "XAxesString",
+        //    YBindingPath = "YAxesDouble",
+        //    ItemsSource = _vm.BillChart
+        //};
+        //StackingAreaSeries series3 = new StackingAreaSeries()
+        //{
+        //    XBindingPath = "XAxesString",
+        //    YBindingPath = "YAxesDouble",
+        //    ItemsSource = _vm.SavingsChart
+        //};
+        //StackingAreaSeries series4 = new StackingAreaSeries()
+        //{
+        //    XBindingPath = "XAxesString",
+        //    YBindingPath = "YAxesDouble",
+        //    ItemsSource = _vm.EnvelopeChart
+        //};
+        //Chart.Series.Add(series1);
+        //Chart.Series.Add(series2);
+        //Chart.Series.Add(series3);
+        //Chart.Series.Add(series4);
+
     }
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
@@ -347,7 +379,7 @@ public partial class ViewTransactions : ContentPage
         {            
             new FullscreenDetent(),
             new MediumDetent(),
-            new ContentDetent
+            new FixedContentDetent
             {
                 IsDefault = true
             }

@@ -112,7 +112,7 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
                 MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
                 MainAbs.SetLayoutBounds(BtnApply, new Rect(0, NewHeight, ScreenWidth, AbsoluteLayout.AutoSize));
             }
-            else if(Sender.SelectedDetent is ContentDetent)
+            else if(Sender.SelectedDetent is FixedContentDetent)
             {
                 MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
                 MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));

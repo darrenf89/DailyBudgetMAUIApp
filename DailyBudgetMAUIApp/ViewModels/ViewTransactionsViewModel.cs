@@ -30,6 +30,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private double _chartContentHeight;
         [ObservableProperty]
+        private double _chartContentWidth;
+        [ObservableProperty]
         private double _maxChartContentHeight;
         [ObservableProperty]
         private double _sFListHeight;
@@ -51,6 +53,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private List<ChartClass> _savingsChart = new List<ChartClass>();
         [ObservableProperty]
         private List<ChartClass> _envelopeChart = new List<ChartClass>();
+        [ObservableProperty]
+        private List<Brush> _chartBrushes = new List<Brush>();
 
         public ViewTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -59,6 +63,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             ScreenWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density);
+            ChartContentWidth = ScreenWidth - 20;
             ChartContentHeight = ScreenHeight * 0.25;
             MaxChartContentHeight = ChartContentHeight + 10;
             SFListHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 389;
@@ -105,6 +110,19 @@ namespace DailyBudgetMAUIApp.ViewModels
             CurrentOffset = Transactions.Count();
 
             LoadChartData(LoadTransactions);
+            LoadChartBrushed();
+
+        }
+
+        private void LoadChartBrushed()
+        {
+            Application.Current.Resources.TryGetValue("PrimaryBrush", out var PrimaryBrush);
+            Application.Current.Resources.TryGetValue("PrimaryDarkBrush", out var PrimaryDarkBrush);
+            Application.Current.Resources.TryGetValue("PrimaryLightBrush", out var PrimaryLightBrush);
+            Application.Current.Resources.TryGetValue("PrimaryLightLightBrush", out var PrimaryLightLightBrush);
+
+
+            ChartBrushes = App.ChartBrush;
         }
 
         private void LoadChartData(List<Transactions> Transactions)
@@ -114,7 +132,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             if(EarliestTransaction != null)
             {
                 //DateTime FirstDate = EarliestTransaction.TransactionDate.GetValueOrDefault().Date;
-                DateTime FirstDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(-7);
+                DateTime FirstDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(-12);
                 int NumberOfDays = Convert.ToInt32(Math.Ceiling((_pt.GetBudgetLocalTime(DateTime.UtcNow).Date - FirstDate).TotalDays));
 
                 for (int i = 0; i <= NumberOfDays; i++) 

@@ -4,6 +4,7 @@ using DailyBudgetMAUIApp.Models;
 using The49.Maui.BottomSheet;
 using Microsoft.Maui;
 using System.Drawing;
+using Color = Microsoft.Maui.Graphics.Color;
 
 #if IOS
 using UIKit;
@@ -27,6 +28,7 @@ public partial class App : Application
     public static BottomSheet CurrentBottomSheet = null;
     public static Popup CurrentPopUp = null;
     public static TabBar MainTabBar;
+    public static List<Brush> ChartBrush;
 
     public static int SessionPeriod = 7;
 
@@ -34,6 +36,7 @@ public partial class App : Application
 	{
         Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mjk4ODg4NEAzMjM0MmUzMDJlMzBtUDY3VFhTeER1WTJyd3VWaG9zQ3BaakFhOUZ1bDdGRDFET0p3VUkwNk5JPQ==");
 		InitializeComponent();
+        LoadChartBrush();
 
         Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping(nameof(Button), (handler, view) =>
         {
@@ -95,5 +98,17 @@ public partial class App : Application
     protected override Window CreateWindow(IActivationState activationState) 
     { 
         return new Window(new AppShell());   
+    }
+
+    private void LoadChartBrush()
+    {
+        ChartBrush = new List<Brush>
+        {
+            new SolidColorBrush(Color.FromArgb("#665191")),
+            new SolidColorBrush(Color.FromArgb("#d45087")),
+            new SolidColorBrush(Color.FromArgb("#ff7c43")),
+            new SolidColorBrush(Color.FromArgb("#ffa600")),
+            new SolidColorBrush(Color.FromArgb("#003f5c"))
+        };
     }
 }

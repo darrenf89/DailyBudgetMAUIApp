@@ -368,7 +368,7 @@ public partial class MainPage : ContentPage
 
         page.Detents = new DetentsCollection()
         {
-            new ContentDetent(),
+            new FixedContentDetent(),
             new FullscreenDetent()
 
         };
@@ -409,7 +409,7 @@ public partial class MainPage : ContentPage
 
         page.Detents = new DetentsCollection()
         {
-            new ContentDetent()
+            new FixedContentDetent()
         };
 
         page.HasBackdrop = true;
@@ -427,7 +427,7 @@ public partial class MainPage : ContentPage
 
         page.Detents = new DetentsCollection()
         {
-            new ContentDetent()
+            new FixedContentDetent()
         };
 
         page.HasBackdrop = true;
@@ -444,7 +444,7 @@ public partial class MainPage : ContentPage
 
         page.Detents = new DetentsCollection()
         {
-            new ContentDetent()
+            new FixedContentDetent()
         };
 
         page.HasBackdrop = true;
@@ -1544,7 +1544,7 @@ public partial class MainPage : ContentPage
 
         page.Detents = new DetentsCollection()
         {
-            new ContentDetent()
+            new FixedContentDetent()
         };
 
         page.HasBackdrop = true;
