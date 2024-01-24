@@ -82,7 +82,7 @@ public partial class AddTransaction : ContentPage
             btnIncomeClicked.IsEnabled = false;
             btnResetTransaction.IsVisible = false;
 
-            if(_vm.Transaction.TransactionDate.Date == _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
+            if(_vm.Transaction.TransactionDate.GetValueOrDefault().Date == _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
             {
                 _vm.IsFutureDatedTransaction = false;
             }
@@ -90,7 +90,7 @@ public partial class AddTransaction : ContentPage
             {
                 _vm.IsFutureDatedTransaction = true;
                 swhTransactionDate.IsEnabled = false;
-                entTransactionDate.MinimumDate = null;
+                entTransactionDate.MinimumDate = default(DateTime);
             }
 
             _vm.IsPayee = !string.IsNullOrEmpty(_vm.Transaction.Payee);

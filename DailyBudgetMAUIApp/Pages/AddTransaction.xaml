@@ -7,7 +7,7 @@
              xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
-             Loaded="Content_Loaded">IsFutureDatedTransaction
+             Loaded="Content_Loaded">
     <ContentPage.Resources>
         <ResourceDictionary>            
             <converters:IsSpendFromSavingText x:Key="IsSpendFromSavingText" />
@@ -64,7 +64,7 @@
                         <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0"  IsToggled="{Binding IsFutureDatedTransaction}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhTransactionDate_Toggled" x:Name="swhTransactionDate"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End" HeightRequest="40">
                             <Label VerticalOptions="Center" HorizontalOptions="End" Text="{Binding IsFutureDatedTransaction, Converter={StaticResource IsFutureDatedTransactionText}}" TextColor="{StaticResource Gray400}"  Grid.Column="1" FontSize="Medium" Padding="0,0,5,0" />
-                            <DatePicker VerticalOptions="Center" HorizontalOptions="End" CharacterSpacing="1" x:Name="entTransactionDate" Date="{Binding Transaction.TransactionDate}" IsVisible="{Binding IsFutureDatedTransaction}"  Format="dd MMMM" TextColor="{StaticResource Primary}" FontSize="Medium" FontAttributes="Bold"/>
+                            <handlers:BorderlessDatePicker VerticalOptions="Center" HorizontalOptions="End" CharacterSpacing="1" x:Name="entTransactionDate" Date="{Binding Transaction.TransactionDate}" IsVisible="{Binding IsFutureDatedTransaction}"  Format="dd MMMM" TextColor="{StaticResource Primary}" FontSize="Medium" FontAttributes="Bold"/>
                         </HorizontalStackLayout>
                     </Grid>
                     <HorizontalStackLayout Margin="0,0,0,0" >

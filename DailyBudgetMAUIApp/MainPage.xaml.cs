@@ -190,6 +190,7 @@ public partial class MainPage : ContentPage
             brdIncomeCarousel.IsVisible = false;
         }
 
+        _vm.RecentTransactions.Clear();
         List<Transactions> RecentTrans = await _ds.GetRecentTransactions(_vm.DefaultBudgetID, 6, "MainPage");
         foreach(Transactions T in RecentTrans)
         {
