@@ -78,8 +78,21 @@ public partial class AddTransaction : ContentPage
             _vm.Title = $"Update your transaction!";
 
             btnUpdateTransaction.IsVisible = true;
+            btnExpenseClicked.IsEnabled = false;
+            btnIncomeClicked.IsEnabled = false;
+            btnResetTransaction.IsVisible = false;
 
-            _vm.IsFutureDatedTransaction = !(_vm.Transaction.TransactionDate.GetValueOrDefault().Date <= _pt.GetBudgetLocalTime(DateTime.UtcNow).Date);
+            if(_vm.Transaction.TransactionDate.Date == _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
+            {
+                _vm.IsFutureDatedTransaction = false;
+            }
+            else
+            {
+                _vm.IsFutureDatedTransaction = true;
+                swhTransactionDate.IsEnabled = false;
+                entTransactionDate.MinimumDate = null;
+            }
+
             _vm.IsPayee = !string.IsNullOrEmpty(_vm.Transaction.Payee);
             _vm.IsSpendCategory = !string.IsNullOrEmpty(_vm.Transaction.Category);
             _vm.IsNote = !string.IsNullOrEmpty(_vm.Transaction.Notes);
@@ -239,7 +252,10 @@ public partial class AddTransaction : ContentPage
         }
         else
         {
-            entTransactionDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date.AddDays(1);
+            if(swhTransactionDate.IsEnabled)
+            {
+                entTransactionDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date.AddDays(1);
+            }
 #if ANDROID
             var handler = entTransactionDate.Handler as IDatePickerHandler;
             handler.PlatformView.PerformClick();

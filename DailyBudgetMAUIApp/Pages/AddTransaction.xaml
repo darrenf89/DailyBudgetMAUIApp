@@ -7,7 +7,7 @@
              xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
-             Loaded="Content_Loaded">
+             Loaded="Content_Loaded">IsFutureDatedTransaction
     <ContentPage.Resources>
         <ResourceDictionary>            
             <converters:IsSpendFromSavingText x:Key="IsSpendFromSavingText" />
@@ -25,7 +25,7 @@
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Save}" Size="30" />
                 </Button.ImageSource>
             </Button>
-            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="ResetTransaction_Clicked" HorizontalOptions="End" Grid.Column="2" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
+            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="ResetTransaction_Clicked" x:Name="btnResetTransaction" HorizontalOptions="End" Grid.Column="2" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
                 <Button.ImageSource>
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Backspace}" Size="30"/>
                 </Button.ImageSource>
@@ -61,7 +61,7 @@
                         <Label Text="Transaction Date" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40">
-                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0"  IsToggled="{Binding IsFutureDatedTransaction}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhTransactionDate_Toggled"/>
+                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0"  IsToggled="{Binding IsFutureDatedTransaction}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhTransactionDate_Toggled" x:Name="swhTransactionDate"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End" HeightRequest="40">
                             <Label VerticalOptions="Center" HorizontalOptions="End" Text="{Binding IsFutureDatedTransaction, Converter={StaticResource IsFutureDatedTransactionText}}" TextColor="{StaticResource Gray400}"  Grid.Column="1" FontSize="Medium" Padding="0,0,5,0" />
                             <DatePicker VerticalOptions="Center" HorizontalOptions="End" CharacterSpacing="1" x:Name="entTransactionDate" Date="{Binding Transaction.TransactionDate}" IsVisible="{Binding IsFutureDatedTransaction}"  Format="dd MMMM" TextColor="{StaticResource Primary}" FontSize="Medium" FontAttributes="Bold"/>
