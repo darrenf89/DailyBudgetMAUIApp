@@ -42,6 +42,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private double _zeroAmount = 0;
         [ObservableProperty]
+        private double _maxYValue = 0;
+        [ObservableProperty]
+        private double _yInterval = 0;
+        [ObservableProperty]
         private string _scrollDirection;
         [ObservableProperty]
         private int _scrollCount;
@@ -171,24 +175,32 @@ namespace DailyBudgetMAUIApp.ViewModels
                     TransactionChart.Add(new ChartClass
                     {
                         XAxesString = CurrentDateString,
-                        YAxesDouble = Convert.ToDouble(TransactionAmount)
+                        YAxesDouble = Convert.ToInt32(TransactionAmount)
                     });
                     BillChart.Add(new ChartClass
                     {
                         XAxesString = CurrentDateString,
-                        YAxesDouble = Convert.ToDouble(BillAmount)
+                        YAxesDouble = Convert.ToInt32(BillAmount)
                     });
                     SavingsChart.Add(new ChartClass
                     {
                         XAxesString = CurrentDateString,
-                        YAxesDouble = Convert.ToDouble(SavingAmount)
+                        YAxesDouble = Convert.ToInt32(SavingAmount)
                     });
                     EnvelopeChart.Add(new ChartClass
                     {
                         XAxesString = CurrentDateString,
-                        YAxesDouble = Convert.ToDouble(EnvelopeAmount)
+                        YAxesDouble = Convert.ToInt32(EnvelopeAmount)
                     });
                 }
+
+                MaxYValue += TransactionChart.Max(t => t.YAxesDouble);
+                MaxYValue += BillChart.Max(t => t.YAxesDouble);
+                MaxYValue += SavingsChart.Max(t => t.YAxesDouble);
+                MaxYValue += EnvelopeChart.Max(t => t.YAxesDouble);
+                MaxYValue = (Math.Round(MaxYValue / 10.0)) * 10;
+
+                YInterval = MaxYValue / 5;
             }
             
         }

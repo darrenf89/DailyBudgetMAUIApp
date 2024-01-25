@@ -54,7 +54,7 @@ public partial class SelectCategoryPage : ContentPage
 
         foreach (Categories Category in _vm.CategoryList)
         {
-            if (!Category.isSubCategory)
+            if (!Category.IsSubCategory)
             {
                 _vm.GroupCategoryList.Add(Category);
             }
@@ -492,7 +492,7 @@ public partial class SelectCategoryPage : ContentPage
         Categories NewCat = new Categories
         {
             CategoryGroupID = CategoryID,
-            isSubCategory = true,
+            IsSubCategory = true,
             CategoryName = name
         };
 
@@ -624,7 +624,7 @@ public partial class SelectCategoryPage : ContentPage
 
         foreach (Categories Category in _vm.CategoryList)
         {
-            if (Category.isSubCategory && GroupCategories.Contains(Category.CategoryGroupID.GetValueOrDefault()))
+            if (Category.IsSubCategory && GroupCategories.Contains(Category.CategoryGroupID.GetValueOrDefault()))
             {
                 _vm.SubCategoryList.Add(Category);
             }
@@ -777,7 +777,7 @@ public partial class SelectCategoryPage : ContentPage
             var TempList = new List<Categories>();
             foreach (int i in FilteredGroupCat)
             {
-                TempList = _vm.CategoryList.Where(c => c.CategoryGroupID == i && !c.isSubCategory).ToList();
+                TempList = _vm.CategoryList.Where(c => c.CategoryGroupID == i && !c.IsSubCategory).ToList();
                 _vm.GroupCategoryList.AddRange(TempList);
             }
         }
@@ -785,7 +785,7 @@ public partial class SelectCategoryPage : ContentPage
         {
             foreach (Categories Category in _vm.CategoryList)
             {
-                if (!Category.isSubCategory)
+                if (!Category.IsSubCategory)
                 {
                     _vm.GroupCategoryList.Add(Category);
                 }
@@ -852,7 +852,7 @@ public partial class SelectCategoryPage : ContentPage
 
         foreach (Categories Category in _vm.CategoryList)
         {
-            if (!Category.isSubCategory)
+            if (!Category.IsSubCategory)
             {
                 _vm.GroupCategoryList.Add(Category);
             }

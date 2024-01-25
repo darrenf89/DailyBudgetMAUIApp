@@ -105,9 +105,9 @@ public partial class App : Application
         ChartBrush = new List<Brush>
         {
             new SolidColorBrush(Color.FromArgb("#665191")),
-            new SolidColorBrush(Color.FromArgb("#d45087")),
-            new SolidColorBrush(Color.FromArgb("#ff7c43")),
             new SolidColorBrush(Color.FromArgb("#ffa600")),
+            new SolidColorBrush(Color.FromArgb("#d45087")),
+            new SolidColorBrush(Color.FromArgb("#ff7c43")),            
             new SolidColorBrush(Color.FromArgb("#003f5c"))
         };
     }

@@ -2,16 +2,18 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
 
-    public partial class ViewCategoriesPageViewModel : BaseViewModel
+    public partial class ViewCategoriesViewModel : BaseViewModel
     {
         [ObservableProperty]
-        private ObserableObject<Categories> _categories;
-                [ObservableProperty]
-        private ObserableObject<Categories> _groupCategories;
+        private ObservableCollection<Categories> _categories;
+        [ObservableProperty]
+        private ObservableCollection<Categories> _groupCategories;
+
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
         
@@ -20,9 +22,9 @@ namespace DailyBudgetMAUIApp.ViewModels
             _ds = ds;
             _pt = pt;
 
-            Categories = (ObservableObject)_ds.GetCategoriesCalculated(App.DefaultBudgetID).Result;
+            //Categories = (ObservableCollection)_ds.GetCategoriesCalculated(App.DefaultBudgetID).Result;
 
-            foreach(Categories cat in Categories.Where(c=>c.!isSubCategory).ToList())
+            foreach (Categories cat in Categories.Where(c =>!c.IsSubCategory).ToList())
             {
                 GroupCategories.Add(cat);
             }

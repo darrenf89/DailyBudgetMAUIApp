@@ -39,6 +39,9 @@
         <Tab Title="Transactions" Route="ViewTransactions" Icon="transaction.svg">
             <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewTransactions}"/>
         </Tab>
+        <Tab Title="Savings" Route="ViewSavings" Icon="saving.svg">
+            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewSavings}"/>
+        </Tab>
     </TabBar>
 
     <ShellItem Route="CreateNewBudget" FlyoutItemIsVisible="False">

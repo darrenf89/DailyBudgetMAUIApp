@@ -134,7 +134,7 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
         Categories = ds.GetCategories(App.DefaultBudgetID).Result;
         CreateCategoryButtons();
-        TotalFilters += Categories.Where(c => c.isSubCategory).Count();
+        TotalFilters += Categories.Where(c => c.IsSubCategory).Count();
 
         Savings = ds.GetAllBudgetSavings(App.DefaultBudgetID).Result;
         CreateSavingsButtons();
@@ -408,7 +408,7 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
         CategoryFlex.Children.Clear();
 
-        foreach(Categories GroupCat in Categories.Where(c => !c.isSubCategory).ToList())
+        foreach(Categories GroupCat in Categories.Where(c => !c.IsSubCategory).ToList())
         {
             VerticalStackLayout VSL = new VerticalStackLayout
             {
@@ -479,7 +479,7 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
                 Padding = new Thickness(0)
             };
 
-            foreach (Categories SubCat in Categories.Where(c => c.isSubCategory && c.CategoryGroupID == GroupCat.CategoryID).ToList())
+            foreach (Categories SubCat in Categories.Where(c => c.IsSubCategory && c.CategoryGroupID == GroupCat.CategoryID).ToList())
             {
                 Button FilterButton = new Button
                 {

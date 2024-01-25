@@ -8,12 +8,12 @@ using System.ComponentModel;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class ViewCategories : ContentPage
+public partial class ViewSavings : ContentPage
 {
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-	private readonly ViewCategoriesViewModel _vm;
-    public ViewCategories(ViewCategoriesViewModel viewModel, IProductTools pt, IRestDataService ds)
+	private readonly ViewSavingsViewModel _vm;
+    public ViewSavings(ViewSavingsViewModel viewModel, IProductTools pt, IRestDataService ds)
 	{
         this.BindingContext = viewModel;
         _vm = viewModel;
@@ -22,19 +22,6 @@ public partial class ViewCategories : ContentPage
 
         InitializeComponent();
 
-        listView.PropertyChanged += listView_PropertyChanged;
-
-    }
-
-    private void listView_PropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == "Width")
-        {
-            var size = Application.Current.MainPage.Width / listView.ItemSize;
-            GridLayout gridLayout = new GridLayout();
-            gridLayout.SpanCount = (int)size;
-            listView.ItemsLayout = gridLayout;
-        }
     }
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
@@ -44,10 +31,5 @@ public partial class ViewCategories : ContentPage
         Application.Current.MainPage.ShowPopup(PopUp);
 
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
-    }
-
-    private void ListViewTapped_Tapped(object sender, TappedEventArgs e)
-    {
-
     }
 }

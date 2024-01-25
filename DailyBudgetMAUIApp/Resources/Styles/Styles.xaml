@@ -166,10 +166,10 @@
         <Setter Property="Padding" Value="10,5,10,5"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
         <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
-        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource White}"/> 
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="20" Opacity="0.8" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="20" Opacity="0.95" />
         </Setter>
     </Style>
 
@@ -208,6 +208,8 @@
         <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
+        <Setter Property="HeightRequest" Value="150"/>
+        <Setter Property="WidthRequest" Value="150"/>
         <Setter Property="Shadow">
             <Shadow Brush="{DynamicResource Primary}" Offset="0,0" Radius="20" Opacity="0.95" />
         </Setter>
@@ -217,11 +219,9 @@
         <Setter Property="Margin" Value="10,25,10,25"/>
         <Setter Property="Padding" Value="5,0,5,0"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 4"/>
-        <Setter Property="Stroke" Value="{StaticResource WhiteBrush}"/>
-        <Setter Property="StrokeThickness" Value="0"/>
+        <Setter Property="Stroke" Value="{StaticResource PrimaryDark}"/>
+        <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
-        <Setter Property="HeightRequest" Value="150"/>
-        <Setter Property="WidthRequest" Value="150"/>
         <Setter Property="Shadow">
             <Shadow Brush="{DynamicResource Gray900}" Offset="0,0" Radius="20" Opacity="0.95" />
         </Setter>

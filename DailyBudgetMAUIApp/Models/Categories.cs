@@ -2,7 +2,7 @@
 
 namespace DailyBudgetMAUIApp.Models
 {
-    public class Categories: ObservableObject
+    public partial class Categories: ObservableObject
     {
         [ObservableProperty]
         public int _categoryID;
@@ -13,7 +13,7 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public int? _categoryGroupID;
         [ObservableProperty]
-        public string _categoryImage;
+        public string _categoryIcon;
         [ObservableProperty]
         public double _categorySpendAllTime;
         [ObservableProperty]

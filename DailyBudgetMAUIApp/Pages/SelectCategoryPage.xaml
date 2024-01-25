@@ -12,12 +12,12 @@
     <ScrollView>
         <VerticalStackLayout MinimumHeightRequest="{Binding MinHeight}">
             <Grid ColumnDefinitions="*" RowDefinitions="80,Auto,Auto,Auto">
-                <Button Margin="0" Padding="5,0,0,0" Grid.Row="0" Grid.Column="0" TextColor="{StaticResource White}" BackgroundColor="{StaticResource White}" Clicked="BackButton_Clicked" HorizontalOptions="Start" Style="{StaticResource TitleButtons}">
+                <Button Margin="0" Padding="0,10,10,0" Grid.Row="0" Grid.Column="0" VerticalOptions="Start" TextColor="{StaticResource White}" BackgroundColor="{StaticResource White}" Clicked="BackButton_Clicked" HorizontalOptions="End" Style="{StaticResource TitleButtons}">
                     <Button.ImageSource>
-                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Close}" Size="40" Color="{DynamicResource Primary}"/>
+                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Highlight_remove}" Size="30" Color="{DynamicResource Primary}"/>
                     </Button.ImageSource>
                 </Button>
-                <Label Grid.Row="0" Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Center" Text="Select a Category!"  TextColor="{DynamicResource Primary}"  FontSize="Large" FontFamily="OpenSansSemibold" FontAttributes="Bold"/>
+                <Label Padding="0,0,0,10" Grid.Row="0" Grid.Column="0" VerticalOptions="End" HorizontalOptions="Center" Text="Select a Category!"  TextColor="{DynamicResource Primary}"  FontSize="Large" FontFamily="OpenSansSemibold" FontAttributes="Bold"/>
                 <VerticalStackLayout  Grid.Row="1" Grid.Column="0" Margin="0,0,0,10">
                     <Border WidthRequest="{Binding PayeeBorderWidth}" Style="{DynamicResource brdSecondary}" >
                         <VerticalStackLayout>

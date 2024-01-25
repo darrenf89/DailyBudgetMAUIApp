@@ -83,6 +83,27 @@ public partial class ViewTransactions : ContentPage
         AbsMain.SetLayoutBounds(vslChart, new Rect(0, 0, _vm.ScreenWidth, _vm.ChartContentHeight + 10));
         AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, _vm.ChartContentHeight + 10, _vm.ScreenWidth, _vm.ScreenHeight));
 
+        //SfCartesianChart Chart = new SfCartesianChart
+        //{
+        //    PaletteBrushes = _vm.ChartBrushes,
+        //    Margin = new Thickness(5,0,5,0)
+        //};
+
+        //NumericalAxis YAxes = new NumericalAxis
+        //{
+        //    ShowMajorGridLines = false,
+        //    ShowMinorGridLines = false
+        //};
+
+        //Chart.YAxes.Add(YAxes);
+
+        //CategoryAxis XAxes = new CategoryAxis
+        //{
+        //    ShowMajorGridLines = false
+        //};
+
+        //Chart.XAxes.Add(XAxes);
+
         //StackingAreaSeries series1 = new StackingAreaSeries()
         //{
         //    XBindingPath = "XAxesString",
@@ -108,10 +129,13 @@ public partial class ViewTransactions : ContentPage
         //    YBindingPath = "YAxesDouble",
         //    ItemsSource = _vm.EnvelopeChart
         //};
+
         //Chart.Series.Add(series1);
         //Chart.Series.Add(series2);
         //Chart.Series.Add(series3);
         //Chart.Series.Add(series4);
+
+        //ChartContent.Content = Chart;
 
     }
 
