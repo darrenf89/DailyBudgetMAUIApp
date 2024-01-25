@@ -1,16 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Security.Cryptography.X509Certificates;
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.Models
 {
-    public class Categories
+    public class Categories: ObservableObject
     {
-        [Key]
-        public int CategoryID { get; set; }
-        public string? CategoryName { get; set; }
-        public bool isSubCategory { get; set; } = true;
-        public int? CategoryGroupID { get; set; }
+        [ObservableProperty]
+        public int _categoryID;
+        [ObservableProperty]
+        public string? _categoryName;
+        [ObservableProperty]        
+        public bool _isSubCategory;
+        [ObservableProperty]
+        public int? _categoryGroupID;
+        [ObservableProperty]
+        public string _categoryImage;
+        [ObservableProperty]
+        public double _categorySpendAllTime;
+        [ObservableProperty]
+        public double _categorySpendPayPeriod;
+
 
     }
 }

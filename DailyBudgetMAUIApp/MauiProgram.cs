@@ -9,6 +9,7 @@ using IeuanWalker.Maui.Switch;
 using Syncfusion.Maui.Core.Hosting;
 using Maui.FixesAndWorkarounds;
 using The49.Maui.BottomSheet;
+using MauiApp1;
 
 
 namespace DailyBudgetMAUIApp;
@@ -46,9 +47,9 @@ public static class MauiProgram
 
         //Pages
         builder.Services.AddTransient<MainPage>();
-		builder.Services.AddTransient<LogonPage>();
+		    builder.Services.AddTransient<LogonPage>();
         builder.Services.AddTransient<LoadUpPage>();
-		builder.Services.AddTransient<RegisterPage>();
+		    builder.Services.AddTransient<RegisterPage>();
         builder.Services.AddTransient<ErrorPage>();
         builder.Services.AddTransient<AddBill>();
         builder.Services.AddTransient<AddTransaction>();
@@ -60,6 +61,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SelectPayeePage>();
         builder.Services.AddTransient<SelectCategoryPage>();
         builder.Services.AddTransient<ViewTransactions>();
+        builder.Services.AddTransient<ViewCategories>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();
@@ -77,6 +79,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SelectCategoryPageViewModel>();
         builder.Services.AddTransient<BaseViewModel>();
         builder.Services.AddTransient<ViewTransactionsViewModel>();
+        builder.Services.AddTransient<ViewCategoriesViewModel>(); 
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();

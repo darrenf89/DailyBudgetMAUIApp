@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DailyBudgetMAUIApp.Pages.ViewCategories"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+             xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:data="clr-namespace:Syncfusion.Maui.DataSource;assembly=Syncfusion.Maui.DataSource"
+             BackgroundColor="{StaticResource Primary}"
+             x:Name="Content"
+             Loaded="Content_Loaded">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+    </Shell.BackButtonBehavior>
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="25,*">
+            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" x:Name="HomeButton" Clicked="HomeButton_Clicked" HorizontalOptions="Center" Grid.Column="0" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Home}" Size="35" />
+                </Button.ImageSource>
+            </Button>
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Medium"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
+        </Grid>
+    </Shell.TitleView>
+    <HorizontalStackLayout x:Name="hslTabs">
+
+    </HorizontalStackLayout>
+    <VerticalStackLayout x:Name="vslViewCategories">
+        <VerticalStackLayout x:Name="BarChart">
+        
+        </VerticalStackLayout>
+        <sfList:SfListView BackgroundColor="White" SelectionMode="" x:Name="listView" AllowSwiping="False" AutoFitMode="" LoadMoreOption="Auto" LoadMoreCommand="{Binding LoadMoreItemsCommand}" LoadMoreCommandParameter="{Binding Source={x:Reference listView}}" ItemsSource="{Binding GroupCategories}">
+            <sfList:SfListView.EmptyView>
+                
+            </sfList:SfListView.EmptyView>
+            <sfList:SfListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <ViewCell.View>
+                            <Border Style="brdCardViewSquare">
+                                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,*,Auto,Auto">
+                                    <Image Grid.Column="1" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Start">
+                                    </Image>
+                                    <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategoryName}" />
+                                    <Image Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" HorizontalOptions="Center" VerticalOptions="Center">
+                                    </Image>
+                                    <Label Grid.Column="0" Grid.Row="2" HorizontalOptions="End" VerticalOptions="Center" Text="Amount spent |"/> 
+                                    <Label Grid.Column="1" Grid.Row="2" HorizontalOptions="Start" VerticalOptions="Center" Text="{Binding CategorySpendPayPeriod}" />
+                                    <Label Grid.Column="0" Grid.Row="3" HorizontalOptions="End" VerticalOptions="Center" Text="Amount spent all time |"/> 
+                                    <Label Grid.Column="1" Grid.Row="3" HorizontalOptions="Start" VerticalOptions="Center" Text="{Binding CategorySpendAllTime}"/>
+                                </Grid>
+                            </Border>
+                            </VerticalStackLayout>
+                        </ViewCell.View>
+                    </ViewCell>
+                </DataTemplate>
+            </sfList:SfListView.ItemTemplate>
+            <sfList:SfListView.LoadMoreTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <sfList:ListViewLoadMoreIndicator IsRunning="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" IsVisible="{Binding IsLazyLoading, Source={x:Reference Name=listView}}" Color="White" VerticalOptions="Center"/>
+                    </Grid>
+                </DataTemplate>
+            </sfList:SfListView.LoadMoreTemplate>
+        </sfList:SfListView>
+    </VerticalStackLayout>
+</ContentPage>

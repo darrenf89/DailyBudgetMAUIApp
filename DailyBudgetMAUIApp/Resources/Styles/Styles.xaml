@@ -201,6 +201,18 @@
         <Setter Property="Background" Value="{DynamicResource White}"/>
     </Style>
 
+    <Style TargetType="Border" x:Key="brdCardViewSquare">
+        <Setter Property="Margin" Value="10,0,10,20"/>
+        <Setter Property="Padding" Value="10,10,10,10"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
+        <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource White}"/>
+        <Setter Property="Shadow">
+            <Shadow Brush="{DynamicResource Primary}" Offset="0,0" Radius="20" Opacity="0.95" />
+        </Setter>
+    </Style>
+
     <Style TargetType="Border" x:Key="AddEditTransContentTwo">
         <Setter Property="Margin" Value="10,25,10,25"/>
         <Setter Property="Padding" Value="5,0,5,0"/>
@@ -208,8 +220,10 @@
         <Setter Property="Stroke" Value="{StaticResource WhiteBrush}"/>
         <Setter Property="StrokeThickness" Value="0"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
+        <Setter Property="HeightRequest" Value="150"/>
+        <Setter Property="WidthRequest" Value="150"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Primary}" Offset="0,0" Radius="20" Opacity="0.95" />
+            <Shadow Brush="{DynamicResource Gray900}" Offset="0,0" Radius="20" Opacity="0.95" />
         </Setter>
     </Style>
 

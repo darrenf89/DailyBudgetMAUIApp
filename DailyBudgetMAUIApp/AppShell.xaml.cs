@@ -28,6 +28,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(LoadingPage), typeof(LoadingPage));
         Routing.RegisterRoute(nameof(LoadingPageTwo), typeof(LoadingPageTwo));
         Routing.RegisterRoute(nameof(ViewTransactions), typeof(ViewTransactions));
+        Routing.RegisterRoute(nameof(ViewCategories), typeof(ViewCategories)); 
 
         App.MainTabBar = MainTabBar;
 
