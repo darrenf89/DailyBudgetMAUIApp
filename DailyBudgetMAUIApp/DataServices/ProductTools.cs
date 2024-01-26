@@ -988,7 +988,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     budget.MoneyAvailableBalance = budget.BankBalance;
 
                     status = status == "OK" ? BudgetDailyCycleBudgetValuesUpdate(ref budget) : status;
-
+                    TRANSACT TRASTIONS TODAY HERE
                     if (status == "OK")
                     {
                         //IF PAY DAY THEN UPDATE THE START PAY PERIOD STATS
