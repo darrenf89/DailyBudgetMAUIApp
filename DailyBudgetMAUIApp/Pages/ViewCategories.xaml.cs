@@ -39,9 +39,12 @@ public partial class ViewCategories : ContentPage
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
     {
-        var PopUp = new PopUpPage();
-        App.CurrentPopUp = PopUp;
-        Application.Current.MainPage.ShowPopup(PopUp);
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
     }

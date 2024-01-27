@@ -71,7 +71,7 @@
                             <RowDefinition />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        <handlers:BorderlessEntry 
+                        <Entry
                             Margin="0,15,0,0"
                             Loaded="txtReturnData_Loaded"   
                             HorizontalOptions="Center"
@@ -90,7 +90,7 @@
                                     Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused, ValidateOnValueChanged"
                                     IsValid="{Binding ReturnDataRequired}" />
                             </Entry.Behaviors>
-                        </handlers:BorderlessEntry>
+                        </Entry>
                         <HorizontalStackLayout 
                             WidthRequest="{Binding EntryWidth}"
                             IsVisible="{Binding ReturnDataRequired, Converter={StaticResource BoolConverter}}"

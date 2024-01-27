@@ -109,6 +109,11 @@ public partial class AddTransaction : ContentPage
         }
 
         UpdateExpenseIncomeSelected();
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
     }
 
     private void UpdateExpenseIncomeSelected()
@@ -221,8 +226,14 @@ public partial class AddTransaction : ContentPage
                 string status = _ds.UpdateTransaction(_vm.Transaction).Result;
                 if (status == "OK")
                 {
-                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
-
+                    if(_vm.NavigatedFrom == "ViewTransactions")
+                    {
+                        await Shell.Current.GoToAsync($"//{nameof(ViewTransactions)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
+                    }
+                    else
+                    {
+                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
+                    }
                 }
             }
         }

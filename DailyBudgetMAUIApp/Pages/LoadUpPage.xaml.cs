@@ -8,7 +8,6 @@ public partial class LoadUpPage : ContentPage
 	{
 		InitializeComponent();
 		this.BindingContext = viewModel;
-		App.CurrentPopUp = null;
-		App.CurrentBottomSheet = null;
-	}
+
+    }
 }

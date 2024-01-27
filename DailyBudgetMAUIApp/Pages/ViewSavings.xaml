@@ -26,13 +26,14 @@
         <Grid>
 
         </Grid>
-        <sfList:SfListView BackgroundColor="White" SelectionMode="None" x:Name="listView" AllowSwiping="False" ItemsSource="{Binding GroupCategories}">
+        <sfList:SfListView BackgroundColor="White" SelectionMode="None" x:Name="listView" AllowSwiping="False" ItemsSource="{Binding Savings}">
             <sfList:SfListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <ViewCell.View>
-                            <Border Style="{StaticResource brdCardViewSquare}">
+                            <Border Style="{StaticResource brdCardViewRectange}">
                                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,*,Auto,Auto">
+                                    
                                 </Grid>
                             </Border>
                         </ViewCell.View>

@@ -69,6 +69,11 @@ public partial class AddBill : ContentPage
 
         base.OnAppearing();
 
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
     }
 
     private void LoadExistingBill()

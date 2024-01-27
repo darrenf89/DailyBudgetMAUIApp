@@ -164,6 +164,11 @@ public partial class CreateNewBudget : ContentPage
                 vslIncomeList.IsVisible = true;
             }
 
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
 
         }
         catch (Exception ex)
@@ -178,6 +183,18 @@ public partial class CreateNewBudget : ContentPage
         }
 
     }
+
+    protected async override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
+    }
+
     private async void UpdateStageDisplay()
     {
         ClearBudgetValidator();
@@ -578,8 +595,12 @@ public partial class CreateNewBudget : ContentPage
 
     private async void FinaliseBudgetButton_Clicked(object sender, EventArgs e)
     {
-        //var popup = new PopUpPage();
-        //Application.Current.MainPage.ShowPopup(popup);
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
         if (ValidateFinaliseBudget())
         {
@@ -751,17 +772,38 @@ public partial class CreateNewBudget : ContentPage
 
     private async void AddBillsNewBudget_Clicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync($"{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}");
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
+
+        await Shell.Current.GoToAsync($"{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}&NavigatedFrom=CreateNewBudget");
     }
 
     private async void AddSavingsNewBudget_Clicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync($"{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}");
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
+
+        await Shell.Current.GoToAsync($"{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}&NavigatedFrom=CreateNewBudget");
     }
 
     private async void AddIncomeNewBudget_Clicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync($"{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&SavingID={0}");
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
+
+        await Shell.Current.GoToAsync($"{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={0}&NavigatedFrom=CreateNewBudget");
     }
 
     private async void BankBalanceInfo(object sender, EventArgs e)
@@ -1268,10 +1310,16 @@ public partial class CreateNewBudget : ContentPage
 
     private async void EditBudgetOutgoings_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
         var Bill = (Bills)e.Parameter;
 
-        await Shell.Current.GoToAsync($"{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={Bill.BillID}");
+        await Shell.Current.GoToAsync($"{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=CreateNewBudget");
     }
 
     private void OutgoingViewCell_Appearing(object sender, EventArgs e)
@@ -1303,13 +1351,21 @@ public partial class CreateNewBudget : ContentPage
 
     private async void EditBudgetSavings_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
+
         var Saving = (Savings)e.Parameter;
 
-        await Shell.Current.GoToAsync($"{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={Saving.SavingID}");
+        await Shell.Current.GoToAsync($"{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=CreateNewBudget");
     }
 
     private async void DeleteBudgetSavings_Tapped(object sender, TappedEventArgs e)
     {
+
         var Saving = (Savings)e.Parameter;
 
         bool result = await DisplayAlert("Savings", "Are you sure you want to delete your Saving " + Saving.SavingsName.ToString(), "Yes, continue", "Cancel");
@@ -1428,9 +1484,16 @@ public partial class CreateNewBudget : ContentPage
 
     private async void EditBudgetIncome_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
+
         var Income = (IncomeEvents)e.Parameter;
 
-        await Shell.Current.GoToAsync($"{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={Income.IncomeEventID}");
+        await Shell.Current.GoToAsync($"{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=CreateNewBudget");
     }
 
     private async void DeleteBudgetIncome_Tapped(object sender, TappedEventArgs e)

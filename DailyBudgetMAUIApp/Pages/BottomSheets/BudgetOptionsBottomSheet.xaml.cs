@@ -42,9 +42,12 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
     private async void ViewTransactions_Tapped(object sender, TappedEventArgs e)
     {
-        var PopUp = new PopUpPage();
-        App.CurrentPopUp = PopUp;
-        Application.Current.MainPage.ShowPopup(PopUp);
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
         if (App.CurrentBottomSheet != null)
         {

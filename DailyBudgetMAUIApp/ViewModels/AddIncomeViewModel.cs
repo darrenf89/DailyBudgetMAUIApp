@@ -12,6 +12,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 {
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     [QueryProperty(nameof(IncomeID), nameof(IncomeID))]
+    [QueryProperty(nameof(NavigatedFrom), nameof(NavigatedFrom))]
     public partial class AddIncomeViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -27,7 +28,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool _isPageValid;
         [ObservableProperty]
         private DateTime _minimumDate = DateTime.UtcNow.Date.AddDays(1);
-
+        [ObservableProperty]
+        private string _navigatedFrom;
 
         public string IncomeTypeText { get; set; } = "";
         public string IncomeActiveText { get; set; } = "";
@@ -71,6 +73,26 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
+        [ICommand]
+        public async void BackButton()
+        {
+            if (NavigatedFrom == "CreateNewBudget")
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+            }
+            else
+            {
+                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+            }
+        }
+
         public async void AddIncome()
         {
             try
@@ -85,7 +107,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
                         {
-                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
                         }
                         else
                         {
@@ -122,7 +144,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
                         {
-                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}//{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
                         }
                         else
                         {

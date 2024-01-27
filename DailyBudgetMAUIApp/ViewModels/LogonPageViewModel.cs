@@ -112,9 +112,12 @@ namespace DailyBudgetMAUIApp.ViewModels
                     return;
                 }
 
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
 
                 if (!string.IsNullOrEmpty(Email))
                 {

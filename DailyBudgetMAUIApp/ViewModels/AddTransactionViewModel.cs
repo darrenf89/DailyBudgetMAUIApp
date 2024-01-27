@@ -14,6 +14,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     [QueryProperty(nameof(TransactionID), nameof(TransactionID))]
     [QueryProperty(nameof(Transaction), nameof(Transaction))]
+    [QueryProperty(nameof(NavigatedFrom), nameof(NavigatedFrom))]
     public partial class AddTransactionViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -35,6 +36,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool _isSpendCategory;
         [ObservableProperty]
         private bool _isNote;
+        [ObservableProperty]
+        private string _navigatedFrom;
+
 
         public AddTransactionViewModel(IProductTools pt, IRestDataService ds)
         {

@@ -988,7 +988,10 @@ namespace DailyBudgetMAUIApp.DataServices
                     budget.MoneyAvailableBalance = budget.BankBalance;
 
                     status = status == "OK" ? BudgetDailyCycleBudgetValuesUpdate(ref budget) : status;
-                    TRANSACT TRASTIONS TODAY HERE
+
+
+                    budget = await TransactTodaysTransactions(budget);
+
                     if (status == "OK")
                     {
                         //IF PAY DAY THEN UPDATE THE START PAY PERIOD STATS
@@ -1029,6 +1032,46 @@ namespace DailyBudgetMAUIApp.DataServices
                     }
                 }
             }
+            return budget;
+        }
+
+        private async Task<Budgets> TransactTodaysTransactions(Budgets budget)
+        {
+            for (int i = budget.Transactions.Count - 1; i >= 0; i--)
+            {
+                Transactions Transaction = budget.Transactions[i];
+                if (!Transaction.IsTransacted)
+                {
+                    if (Transaction.TransactionDate.GetValueOrDefault().Date == GetBudgetLocalTime(DateTime.UtcNow).Date)
+                    {
+                        var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), new ProductTools(new RestDataService()));
+                        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                        if ((string)result.ToString() == "OK")
+                        {
+                            Transaction.IsTransacted = true;
+                            Transact(ref Transaction, ref budget);
+                            budget.Transactions[i] = Transaction;
+                        }
+                        else if ((string)result.ToString() == "Delete")
+                        {
+                            _ds.DeleteTransaction(Transaction.TransactionID);
+                            budget.Transactions.RemoveAt(i);
+                        }
+                        else
+                        {
+                            Transaction = (Transactions)result;
+
+                            if (Transaction.TransactionDate.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date && Transaction.TransactionDate.GetValueOrDefault().Date != GetBudgetLocalTime(DateTime.UtcNow).Date)
+                            {
+                                Transaction.IsTransacted = true;
+                                Transact(ref Transaction, ref budget);
+                            }
+                            budget.Transactions[i] = Transaction;
+                        }
+                    }
+                }
+            }
+
             return budget;
         }
 
@@ -1237,39 +1280,39 @@ namespace DailyBudgetMAUIApp.DataServices
             for (int i = budget.Transactions.Count - 1; i >= 0; i--)
             {
                 Transactions Transaction = budget.Transactions[i];
-
-                if (Transaction.TransactionDate.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
+                if (!Transaction.IsTransacted)
                 {
-
-                    if(Transaction.TransactionDate.GetValueOrDefault().Date < GetBudgetLocalTime(DateTime.UtcNow).Date)
+                    if (Transaction.TransactionDate.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
                     {
-                        var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), new ProductTools(new RestDataService()));
-                        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
-                        if ((string)result.ToString() == "OK")
+                        if (Transaction.TransactionDate.GetValueOrDefault().Date < GetBudgetLocalTime(DateTime.UtcNow).Date)
                         {
-                            Transaction.IsTransacted = true;
-                            Transact(ref Transaction, ref budget);
-                            budget.Transactions[i] = Transaction;
-                        }
-                        else if ((string)result.ToString() == "Delete")
-                        {
-                            _ds.DeleteTransaction(Transaction.TransactionID);
-                            budget.Transactions.RemoveAt(i);
-                        }
-                        else
-                        {
-                            Transaction = (Transactions)result;
-
-                            if (Transaction.TransactionDate.Date <= budget.BudgetValuesLastUpdated.Date && Transaction.TransactionDate.GetValueOrDefault().Date != GetBudgetLocalTime(DateTime.UtcNow).Date)
+                            var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), new ProductTools(new RestDataService()));
+                            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                            if ((string)result.ToString() == "OK")
                             {
                                 Transaction.IsTransacted = true;
                                 Transact(ref Transaction, ref budget);
+                                budget.Transactions[i] = Transaction;
                             }
-                            budget.Transaction[i] = Transaction;
-                        }
-                    }   
-                }
+                            else if ((string)result.ToString() == "Delete")
+                            {
+                                _ds.DeleteTransaction(Transaction.TransactionID);
+                                budget.Transactions.RemoveAt(i);
+                            }
+                            else
+                            {
+                                Transaction = (Transactions)result;
 
+                                if (Transaction.TransactionDate.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date && Transaction.TransactionDate.GetValueOrDefault().Date != GetBudgetLocalTime(DateTime.UtcNow).Date)
+                                {
+                                    Transaction.IsTransacted = true;
+                                    Transact(ref Transaction, ref budget);
+                                }
+                                budget.Transactions[i] = Transaction;
+                            }
+                        }
+                    }
+                }
             }
 
             budget.PayPeriodStats[Index] = Stats;
@@ -1280,13 +1323,13 @@ namespace DailyBudgetMAUIApp.DataServices
 
         private void Transact(ref Transactions T, ref Budgets Budget)
         {
-            if (T.isSpendFromSavings)
+            if (T.IsSpendFromSavings)
             {
-                status = TransactSavingsTransaction(ref T, ref Budget);
+                TransactSavingsTransaction(ref T, ref Budget);
             }
             else
             {
-                status = TransactTransaction(ref T, ref Budget);
+                TransactTransaction(ref T, ref Budget);
             }
         }
 
@@ -1585,7 +1628,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 App.CurrentBottomSheet = null;
             }        
             
-            if(navigate)
+            if(navigate && App.CurrentPopUp == null)
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;

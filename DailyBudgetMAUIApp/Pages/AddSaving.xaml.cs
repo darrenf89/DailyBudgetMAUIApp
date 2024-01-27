@@ -111,7 +111,11 @@ public partial class AddSaving : ContentPage
         }
         
         entSavingAmount.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);
-
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
     }
 
     private async Task<string> ChangeSavingsName()

@@ -24,8 +24,8 @@ public partial class PopupDailyTransaction : Popup
         _vm = viewModel;
         _pt = pt;
 
-        _vm.OriginalDate = _vm.Transaction.TransactionDate;
-        _vm.OriginalAmount = _vm.Transaction.TransactionAmount;
+        _vm.OriginalDate = _vm.Transaction.TransactionDate.GetValueOrDefault();
+        _vm.OriginalAmount = _vm.Transaction.TransactionAmount.GetValueOrDefault();
 
         hslTransactionAmount.IsVisible = true;
         hslTargetDate.IsVisible = true;
@@ -33,7 +33,7 @@ public partial class PopupDailyTransaction : Popup
         double TransactionAmount = (double?)_vm.Transaction.TransactionAmount ?? 0;
         lblTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
 
-        string GoalDate = _vm.Transaction.TransactionDueDate.GetValueOrDefault().ToShortDateString();
+        string GoalDate = _vm.Transaction.TransactionDate.GetValueOrDefault().ToShortDateString();
         lblTargetDate.Text = GoalDate;
    
     }

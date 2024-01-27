@@ -5,6 +5,9 @@
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding BackButtonCommand}" />
+    </Shell.BackButtonBehavior>
     <Shell.TitleView>
         <Grid ColumnDefinitions="*,40,40,5">
             <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="0" Padding="0" FontSize="14"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Start" Grid.Column="0"/>
@@ -94,7 +97,7 @@
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                             <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="0" Grid.Row="1" BackgroundColor="White">
-                                <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed"/>
+                                <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed" TextColor="{DynamicResource Gray900}"/>
                             </Border>
                             <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="1" Grid.Row="1">

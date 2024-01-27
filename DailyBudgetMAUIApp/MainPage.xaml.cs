@@ -127,6 +127,12 @@ public partial class MainPage : ContentPage
         }
 
         await LoadMainDashboardContent();
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
     }
 
     private async Task LoadMainDashboardContent()
@@ -334,8 +340,13 @@ public partial class MainPage : ContentPage
     }
     private async Task UndoCreateBudget(int BudgetID)
     {
-        var popup = new PopUpPage();
-        Application.Current.MainPage.ShowPopup(popup);
+
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
         List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
 

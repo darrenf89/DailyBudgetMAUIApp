@@ -37,9 +37,12 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
         bool result = await Shell.Current.DisplayAlert("Create new Transaction?", "Are you sure you want to create a new Transaction?", "Yes", "No");
         if (result)
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
             try
             {
@@ -60,9 +63,12 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
 
     private async void ViewAllTransactions_Tapped(object sender, TappedEventArgs e)
     {
-        var PopUp = new PopUpPage();
-        App.CurrentPopUp = PopUp;
-        Application.Current.MainPage.ShowPopup(PopUp);
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
         if (App.CurrentBottomSheet != null)
         {

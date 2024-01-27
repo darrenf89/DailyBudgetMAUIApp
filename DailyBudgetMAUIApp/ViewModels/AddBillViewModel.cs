@@ -13,6 +13,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     [QueryProperty(nameof(BillID), nameof(BillID))]
     [QueryProperty(nameof(Bill), nameof(Bill))]
+    [QueryProperty(nameof(NavigatedFrom), nameof(NavigatedFrom))]
     public partial class AddBillViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -28,6 +29,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool _isPageValid;
         [ObservableProperty]
         private DateTime _minimumDate = DateTime.UtcNow.Date.AddDays(1);
+        [ObservableProperty]
+        private string _navigatedFrom;
 
 
         public string BillTypeText { get; set; } = "";
@@ -59,7 +62,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
                         {
-                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
                         }
                         else
                         {
@@ -96,7 +99,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
                         {
-                            await Shell.Current.GoToAsync($"../../{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
                         }
                         else
                         {
@@ -117,6 +120,26 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         ["Error"] = Error
                     });
+            }
+        }
+
+        [ICommand]
+        public async void BackButton()
+        {
+            if(NavigatedFrom == "CreateNewBudget")
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+            }
+            else
+            {
+                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
             }
         }
 

@@ -88,6 +88,12 @@ public partial class AddIncome : ContentPage
         entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
 
         base.OnAppearing();
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
     }
 
     private async void SaveIncome_Clicked(object sender, EventArgs e)

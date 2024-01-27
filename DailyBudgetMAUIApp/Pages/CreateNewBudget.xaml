@@ -720,7 +720,7 @@
                 </HorizontalStackLayout>
                 <Label Text="Dont worry if you don't want to add them now, you can add them at any time!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,25"/>
                 <Border Style="{StaticResource ClearInfoBorder}" x:Name="btnAddIncomeNewBudget" IsVisible="false" WidthRequest="120" HorizontalOptions="Start" Margin="5,0,0,20">
-                    <Button Margin="0" Padding="0" Text="Add Saving" Clicked="AddIncomeNewBudget_Clicked" HorizontalOptions="Center" Style="{StaticResource ClearInfoButton}"  WidthRequest="120"/>
+                    <Button Margin="0" Padding="0" Text="Add Income" Clicked="AddIncomeNewBudget_Clicked" HorizontalOptions="Center" Style="{StaticResource ClearInfoButton}"  WidthRequest="120"/>
                 </Border>
                 <VerticalStackLayout Margin="5,0,5,20">
                     <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="0,0,0,2" HeightRequest="38" WidthRequest="200" HorizontalOptions="Start">

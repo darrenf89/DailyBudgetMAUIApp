@@ -20,12 +20,12 @@
     <Shell.TitleView>
         <Grid ColumnDefinitions="*,40,40,5">
             <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="0" Padding="0" FontSize="14"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Start" Grid.Column="0"/>
-            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="SaveTransaction_Clicked" HorizontalOptions="End" Grid.Column="1" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
+            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="SaveTransaction_Clicked" HorizontalOptions="End" Grid.Column="2" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
                 <Button.ImageSource>
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Save}" Size="30" />
                 </Button.ImageSource>
             </Button>
-            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="ResetTransaction_Clicked" x:Name="btnResetTransaction" HorizontalOptions="End" Grid.Column="2" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
+            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" Clicked="ResetTransaction_Clicked" x:Name="btnResetTransaction" HorizontalOptions="End" Grid.Column="1" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
                 <Button.ImageSource>
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Backspace}" Size="30"/>
                 </Button.ImageSource>
