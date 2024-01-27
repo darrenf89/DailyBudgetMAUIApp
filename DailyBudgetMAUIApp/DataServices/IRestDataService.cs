@@ -25,7 +25,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<int> GetBudgetDaysBetweenPayDay(int BudgetID);
         public Task<BudgetSettingValues> GetBudgetSettingsValues(int BudgetID);
         public Task<BudgetSettings> GetBudgetSettings(int BudgetID);
-        public Task<Budgets> CreateNewBudget(string UserEmail);
+        public Task<Budgets> CreateNewBudget(string UserEmail, string? BudgetType = "Basic");
         public Task<List<lut_CurrencySymbol>> GetCurrencySymbols(string SearchQuery);
         public Task<List<lut_CurrencyPlacement>> GetCurrencyPlacements(string SearchQuery);
         public Task<List<lut_BudgetTimeZone>> GetBudgetTimeZones(string SearchQuery);

@@ -549,7 +549,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public async Task<Budgets> CreateNewBudget(string UserEmail)
+        public async Task<Budgets> CreateNewBudget(string UserEmail, string? BudgetType = "Basic")
         {
             Budgets Budget = new Budgets();
 
@@ -561,7 +561,7 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/createnewbudget/{UserEmail}").Result;
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/createnewbudget/{UserEmail}/{BudgetType}").Result;
                 string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)

@@ -94,27 +94,50 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
     private async void CreateNewBudget_Tapped(object sender, TappedEventArgs e)
     {
-        bool result = await Shell.Current.DisplayAlert("Create a new budget?", "Are you sure you want to create a new budget?", "Yes", "No");
-        if(result)
+        string? SubType = "Basic";
+        string BudgetType = "";
+
+        if (!string.IsNullOrEmpty(App.UserDetails.SubscriptionType))
         {
-            try
-            {
-                if (App.CurrentBottomSheet != null)
-                {
-                    await this.DismissAsync();
-                    App.CurrentBottomSheet = null;
-                }
-            }
-            catch(Exception)
-            {
-
-            }
-
-            Budgets NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email);
-            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
-
+            SubType = App.UserDetails.SubscriptionType;
         }
-       
+
+        string action = "Basic";
+
+        if(SubType == "Premium")
+        {
+            action = await Shell.Current.DisplayActionSheet("What type of budget would you like to create?", "Cancel", null, "Basic", "Premium");
+        }
+        else if (SubType == "PremiumPlus")
+        {
+            action = await Shell.Current.DisplayActionSheet("What type of budget would you like to create?", "Cancel", null, "Basic", "Premium", "PremiumPlus");
+        }        
+
+        if(action != "Cancel")
+        {
+            BudgetType = action;
+
+            bool result = await Shell.Current.DisplayAlert("Create a new budget?", $"Are you sure you want to create a new {BudgetType} budget?", "Yes", "No");
+            if (result)
+            {
+                try
+                {
+                    if (App.CurrentBottomSheet != null)
+                    {
+                        await this.DismissAsync();
+                        App.CurrentBottomSheet = null;
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
+
+                Budgets NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email, BudgetType);
+                await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
+
+            }
+        }
     }
 
     private void EditShareBudget_Tapped(object sender, TappedEventArgs e)

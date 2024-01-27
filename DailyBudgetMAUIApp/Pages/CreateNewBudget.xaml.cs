@@ -40,7 +40,13 @@ public partial class CreateNewBudget : ContentPage
             base.OnNavigatedTo(args);
             if (_vm.BudgetID == 0)
             {
-                _vm.BudgetID = _ds.CreateNewBudget(App.UserDetails.Email).Result.BudgetID;
+                string BudgetType = "Basic";
+                if (!string.IsNullOrEmpty(App.UserDetails.SubscriptionType))
+                {
+                    BudgetType = App.UserDetails.SubscriptionType;
+                }
+
+                _vm.BudgetID = _ds.CreateNewBudget(App.UserDetails.Email, BudgetType).Result.BudgetID;
 
 
                 if (_vm.BudgetID != 0 || _vm.NavigatedFrom != null)
