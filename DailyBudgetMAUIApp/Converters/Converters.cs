@@ -1115,19 +1115,19 @@ namespace DailyBudgetMAUIApp.Converters
 
             if (SavingsType == "TargetAmount")
             {
-                return "Save an amount every day";
+                return "Hit goal with same amount every day";
             }
             else if (SavingsType == "TargetDate")
             {
-                return "Save enough by a date";
+                return "Hit goal by a date";
             }
             else if (SavingsType == "SavingsBuilder")
             {
-                return "Keep building savings every day";
+                return "Keep building every day";
             }
             else
             {
-                return "Put Money in an envelope";
+                return "Put Money away in an envelope";
             }
         }
 
@@ -1222,19 +1222,19 @@ namespace DailyBudgetMAUIApp.Converters
 
             if (saving.SavingsType == "TargetDate")
             {
-                return "\ue878";
+                return "date.svg";
             }
             else if(saving.SavingsType == "SavingsBuilder")
             {
-                return "\ue84f";
+                return "builder.svg";
             }
             else if (saving.SavingsType == "TargetAmount")
             {
-                return "\ueaf1";
+                return "dollar.svg";
             }
             else
             {
-                return "\ueaf1";
+                return "income.svg";
             }
         }
 

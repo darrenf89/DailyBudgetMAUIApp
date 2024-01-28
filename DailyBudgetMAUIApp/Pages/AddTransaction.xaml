@@ -127,7 +127,7 @@
                         <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding Transaction.IsSpendFromSavings}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="SavingSpend_Toggled" x:Name="swhSavingSpend"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label HorizontalOptions="End" Text="{Binding Transaction.IsSpendFromSavings, Converter={StaticResource IsSpendFromSavingText}}" TextColor="{StaticResource Gray400}"  FontSize="Medium" Padding="0,0,5,0"/>
-                            <Label IsVisible="{Binding Transaction.IsSpendFromSavings}" HorizontalOptions="End" Text="{Binding Transaction.SavingName}" TextColor="{StaticResource Primary}" FontSize="Medium" Padding="0,0,0,0" FontAttributes="Bold">
+                            <Label x:Name="lblSavingsName" IsVisible="{Binding Transaction.IsSpendFromSavings}" HorizontalOptions="End" Text="{Binding Transaction.SavingName}" TextColor="{StaticResource Primary}" FontSize="Medium" Padding="0,0,0,0" FontAttributes="Bold">
                                 <Label.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="ChangeSelectedSaving_Tapped" />
                                 </Label.GestureRecognizers>

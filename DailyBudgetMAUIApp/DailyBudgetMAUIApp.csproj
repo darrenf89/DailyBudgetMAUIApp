@@ -131,6 +131,9 @@
 	  <Compile Update="Pages\BottomSheets\BudgetOptionsBottomSheet.xaml.cs">
 	    <DependentUpon>BudgetOptionsBottomSheet.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\ViewBills.xaml.cs">
+	    <DependentUpon>ViewBills.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\ViewSavings.xaml.cs">
 	    <DependentUpon>ViewSavings.xaml</DependentUpon>
 	  </Compile>
@@ -204,6 +207,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\BottomSheets\ShareBudget.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\ViewBills.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewSavings.xaml">

@@ -298,7 +298,7 @@ namespace DailyBudgetMAUIApp.DataServices
             status = status == "OK" ? UpdateBudgetCreateBillsSpend(ref Budget) : status;
 
             Budget.LastUpdated = DateTime.UtcNow;
-            int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
+            int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
             Budget.LeftToSpendDailyAmount = (Budget.LeftToSpendBalance ?? 0) / DaysToPayDay;
             Budget.StartDayDailyAmount = Budget.LeftToSpendDailyAmount;
 

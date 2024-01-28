@@ -62,28 +62,40 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                Saving.LastUpdatedValue = Saving.CurrentBalance;
-                string SuccessCheck = _ds.SaveNewSaving(Saving, BudgetID).Result;
-                if (SuccessCheck == "OK")
+                bool result = await Shell.Current.DisplayAlert($"Add a new saving {Saving.SavingsName}?", $"Are you sure you want to add a new saving {Saving.SavingsName}?", "Yes", "Cancel");
+                if (result)
                 {
-                    var stack = Application.Current.MainPage.Navigation.NavigationStack;
-                    int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
-                    if (count >= 2)
+                    Saving.LastUpdatedValue = Saving.CurrentBalance;
+                    string SuccessCheck = _ds.SaveNewSaving(Saving, BudgetID).Result;
+                    if (SuccessCheck == "OK")
                     {
-                        if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                        if (NavigatedFrom == "CreateNewBudget")
                         {
-                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                            if (App.CurrentPopUp == null)
+                            {
+                                var PopUp = new PopUpPage();
+                                App.CurrentPopUp = PopUp;
+                                Application.Current.MainPage.ShowPopup(PopUp);
+                            }
+
+                            await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                        }
+                        else if (NavigatedFrom == "ViewSavings")
+                        {
+                            if (App.CurrentPopUp == null)
+                            {
+                                var PopUp = new PopUpPage();
+                                App.CurrentPopUp = PopUp;
+                                Application.Current.MainPage.ShowPopup(PopUp);
+                            }
+
+                            await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
                         }
                         else
                         {
                             await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                         }
                     }
-                    else
-                    {
-                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
-                    }
-
                 }
             }
             catch (Exception ex)
@@ -111,6 +123,17 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
             }
+            else if (NavigatedFrom == "ViewSavings")
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
+            }
             else
             {
                 await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
@@ -121,25 +144,38 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                string SuccessCheck = _ds.UpdateSaving(Saving).Result;
-                if (SuccessCheck == "OK")
+                bool result = await Shell.Current.DisplayAlert($"Update {Saving.SavingsName}?", $"Are you sure you want to update {Saving.SavingsName}?", "Yes", "Cancel");
+                if (result)
                 {
-                    var stack = Application.Current.MainPage.Navigation.NavigationStack;
-                    int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
-                    if (count >= 2)
+                    string SuccessCheck = _ds.UpdateSaving(Saving).Result;
+                    if (SuccessCheck == "OK")
                     {
-                        if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                        if (NavigatedFrom == "CreateNewBudget")
                         {
-                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                            if (App.CurrentPopUp == null)
+                            {
+                                var PopUp = new PopUpPage();
+                                App.CurrentPopUp = PopUp;
+                                Application.Current.MainPage.ShowPopup(PopUp);
+                            }
+
+                            await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                        }
+                        else if (NavigatedFrom == "ViewSavings")
+                        {
+                            if (App.CurrentPopUp == null)
+                            {
+                                var PopUp = new PopUpPage();
+                                App.CurrentPopUp = PopUp;
+                                Application.Current.MainPage.ShowPopup(PopUp);
+                            }
+
+                            await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
                         }
                         else
                         {
                             await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                         }
-                    }
-                    else
-                    {
-                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                     }
                 }
             }

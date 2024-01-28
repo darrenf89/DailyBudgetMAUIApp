@@ -45,6 +45,15 @@ public partial class AddSaving : ContentPage
             _vm.Title = "Add a New Saving";
             btnAddSaving.IsVisible = true;
 
+            if(_vm.NavigatedFrom == "ViewSavings")
+            {
+                _vm.SavingType = "Regular";
+            }
+            else if(_vm.NavigatedFrom == "ViewEnvelopes")
+            {
+                _vm.SavingType = "Envelope";
+            }
+
             if(_vm.SavingType == "Envelope")
             {
                 _vm.SavingRecurringText = "Envelope";
@@ -111,6 +120,16 @@ public partial class AddSaving : ContentPage
         }
         
         entSavingAmount.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);
+
+        if(_vm.NavigatedFrom=="ViewSavings")
+        {
+            vslOption1Select.IsEnabled = false;
+            vslOption2Select.IsEnabled = false;
+            vslOption3Select.IsEnabled = false;
+
+            UpdateSelectedOptionDisabled(_vm.Saving.SavingsType);          
+        }
+
         if (App.CurrentPopUp != null)
         {
             await App.CurrentPopUp.CloseAsync();
@@ -203,6 +222,58 @@ public partial class AddSaving : ContentPage
     private void Option3Select_Tapped(object sender, TappedEventArgs e)
     {
         UpdateSelectedOption("TargetAmount");
+    }
+
+    private void UpdateSelectedOptionDisabled(string option)
+    {
+        Application.Current.Resources.TryGetValue("Secondary", out var Secondary);
+        Application.Current.Resources.TryGetValue("Light", out var Light);
+        Application.Current.Resources.TryGetValue("White", out var White);
+        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+
+        if (option == "TargetDate")
+        {
+            vslOption1Select.BackgroundColor = (Color)Secondary;
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+
+            lblOption1.FontAttributes = FontAttributes.Bold;
+            lblOption2.FontAttributes = FontAttributes.None;
+            lblOption3.FontAttributes = FontAttributes.None;
+
+            lblOption1.TextColor = (Color)White;
+            lblOption2.TextColor = (Color)Gray900;
+            lblOption3.TextColor = (Color)Gray900;
+        }
+        else if (option == "SavingsBuilder")
+        {
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption2Select.BackgroundColor = (Color)Secondary;
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+
+            lblOption1.FontAttributes = FontAttributes.None;
+            lblOption2.FontAttributes = FontAttributes.Bold;
+            lblOption3.FontAttributes = FontAttributes.None;
+
+            lblOption1.TextColor = (Color)Gray900;
+            lblOption2.TextColor = (Color)White;
+            lblOption3.TextColor = (Color)Gray900;
+        }
+        else if (option == "TargetAmount")
+        {
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption3Select.BackgroundColor = (Color)Secondary;
+
+            lblOption1.FontAttributes = FontAttributes.None;
+            lblOption2.FontAttributes = FontAttributes.None;
+            lblOption3.FontAttributes = FontAttributes.Bold;
+
+            lblOption1.TextColor = (Color)Gray900;
+            lblOption2.TextColor = (Color)Gray900;
+            lblOption3.TextColor = (Color)White;
+        }
+
     }
 
     private void UpdateSelectedOption(string option)

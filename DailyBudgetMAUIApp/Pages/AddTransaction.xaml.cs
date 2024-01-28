@@ -72,7 +72,8 @@ public partial class AddTransaction : ContentPage
                 {
                     SavingSavingHeader.IsVisible = true;
                     EnvelopeSavingHeader.IsVisible = false;
-                    swhSpendCategory.IsEnabled = false;                    
+                    swhSavingSpend.IsEnabled = false;
+                    lblSavingsName.IsEnabled = false;
                 }
             }
 
@@ -121,6 +122,7 @@ public partial class AddTransaction : ContentPage
             SavingSavingHeader.IsVisible = true;
             EnvelopeSavingHeader.IsVisible = false;
             swhSavingSpend.IsEnabled = false;
+            lblSavingsName.IsEnabled = false;
         }
 
         if(_vm.Transaction.EventType == "IncomeEvent")
@@ -220,7 +222,14 @@ public partial class AddTransaction : ContentPage
                 _vm.Transaction = _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID).Result;
                 if (_vm.Transaction.TransactionID != 0)
                 {
-                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Transaction Added&SnackID={_vm.Transaction.TransactionID}");
+                    if (_vm.NavigatedFrom == "ViewSavings")
+                    {
+                        await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
+                    }
+                    else
+                    {
+                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Transaction Added&SnackID={_vm.Transaction.TransactionID}");
+                    }
                 }
             }
         }
@@ -250,7 +259,11 @@ public partial class AddTransaction : ContentPage
                 {
                     if(_vm.NavigatedFrom == "ViewTransactions")
                     {
-                        await Shell.Current.GoToAsync($"//{nameof(ViewTransactions)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
+                        await Shell.Current.GoToAsync($"///{nameof(ViewTransactions)}");
+                    }
+                    else if (_vm.NavigatedFrom == "ViewSavings")
+                    {
+                        await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
                     }
                     else
                     {

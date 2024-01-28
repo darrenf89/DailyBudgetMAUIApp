@@ -13,21 +13,26 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
         [ObservableProperty]
         private ObservableCollection<Savings> _savings = new ObservableCollection<Savings>();
-        
+        [ObservableProperty]
+        private Budgets _budget;
+        [ObservableProperty]
+        private decimal _totalSavings;
+        [ObservableProperty]
+        private decimal _payDaySavings;
+        [ObservableProperty]
+        private double _screenHeight;
+        [ObservableProperty]
+        private double _signOutButtonWidth;
+
+
         public ViewSavingsViewModel(IProductTools pt, IRestDataService ds)
         {
             _ds = ds;
             _pt = pt;
 
-            List<Savings> S = _ds.GetBudgetRegularSaving(App.DefaultBudgetID).Result;
-            foreach(Savings saving in S)
-            {
-                Savings.Add(saving);
-            }
-
             Title = $"Check Your Savings {App.UserDetails.NickName}";
+            ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
         }
-
     }
-
 }
+ 
