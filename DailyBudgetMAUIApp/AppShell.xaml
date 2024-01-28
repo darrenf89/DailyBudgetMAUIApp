@@ -18,40 +18,15 @@
     </ShellItem>
 
     <TabBar x:Name="MainTabBar">
-        <!--<Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate local:MainPage}" />
-        </Tab>
-        <Tab Title="Bill" Route="AddBill" Icon="bill.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddBill}"/>
-        </Tab>
-        <Tab Route="AddTransactions" Title="Transaction" Icon="transaction.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddTransaction}"/>
-        </Tab>
-        <Tab Route="AddIncome" Title="Income" Icon="income.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddIncome}"/>
-        </Tab>
-        <Tab Route="AddSaving" Title="Saving" Icon="saving.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddSaving}"/>
-        </Tab>-->
+
     </TabBar>
 
-    <TabBar x:Name="SecondaryTabBar">
-        <Tab Title="Transactions" Route="ViewTransactions" Icon="transaction.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewTransactions}"/>
-        </Tab>
-        <Tab Title="Savings" Route="ViewSavings" Icon="saving.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewSavings}"/>
-        </Tab>
+    <TabBar x:Name="ViewTabBar">
+
     </TabBar>
 
     <ShellItem Route="CreateNewBudget" FlyoutItemIsVisible="False">
         <ShellContent  ContentTemplate="{DataTemplate Pages:CreateNewBudget}"/>
     </ShellItem>
 
-    <FlyoutItem Title="Add a Bill" Route="AddBill" FlyoutItemIsVisible="False">
-        <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>
-    </FlyoutItem>
-
-    <MenuItem Text="Logout" Command="{Binding LogoutCommand}"/>
-    
 </Shell>

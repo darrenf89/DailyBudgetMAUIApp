@@ -32,6 +32,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ViewSavings), typeof(ViewSavings));
 
         App.MainTabBar = MainTabBar;
+        App.ViewTabBar = ViewTabBar;
 
         this.BindingContext = this;
     }

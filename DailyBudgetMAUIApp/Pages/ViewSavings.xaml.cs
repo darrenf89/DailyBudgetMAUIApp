@@ -24,6 +24,17 @@ public partial class ViewSavings : ContentPage
 
     }
 
+    protected async override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
+    }
+
     private async void HomeButton_Clicked(object sender, EventArgs e)
     {
         if (App.CurrentPopUp == null)
@@ -34,5 +45,25 @@ public partial class ViewSavings : ContentPage
         }
 
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
+    }
+
+    private void EditSaving_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private void SpendSaving_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private void DeleteSavings_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private void MoveBalance_Tapped(object sender, TappedEventArgs e)
+    {
+
     }
 }

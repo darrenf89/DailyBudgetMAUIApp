@@ -10,6 +10,7 @@ using IeuanWalker.Maui.Switch.Events;
 using IeuanWalker.Maui.Switch.Helpers;
 using System.Windows.Input;
 using CommunityToolkit.Maui.ApplicationModel;
+using Microsoft.Maui.Layouts;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -66,6 +67,13 @@ public partial class AddTransaction : ContentPage
                 _vm.IsSpendCategory = !string.IsNullOrEmpty(_vm.Transaction.Category);
                 _vm.IsNote = !string.IsNullOrEmpty(_vm.Transaction.Notes);
                 _vm.Transaction.IsSpendFromSavings = !string.IsNullOrEmpty(_vm.Transaction.SavingName);
+
+                if(_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
+                {
+                    SavingSavingHeader.IsVisible = true;
+                    EnvelopeSavingHeader.IsVisible = false;
+                    swhSpendCategory.IsEnabled = false;                    
+                }
             }
 
         }
@@ -106,6 +114,20 @@ public partial class AddTransaction : ContentPage
         {
             int StringLength = edtNotes.Text.Length;
             lblNoteCharacterLeft.Text = $"{250 - StringLength} characters remaining";
+        }
+
+        if (_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
+        {
+            SavingSavingHeader.IsVisible = true;
+            EnvelopeSavingHeader.IsVisible = false;
+            swhSavingSpend.IsEnabled = false;
+        }
+
+        if(_vm.Transaction.EventType == "IncomeEvent")
+        {
+            swhSavingSpend.IsEnabled = false;
+            SavingSwitch.IsVisible = false;
+            SavingHeader.IsVisible = false;
         }
 
         UpdateExpenseIncomeSelected();
@@ -398,11 +420,23 @@ public partial class AddTransaction : ContentPage
         bool result = await DisplayAlert("Transaction Reset", "Are you sure you want to Reset the details of this transaction", "Yes, continue", "Cancel");
         if (result)
         {
-            _vm.IsFutureDatedTransaction = false;
-            _vm.IsPayee = false;
-            _vm.IsSpendCategory = false;
-            _vm.IsNote = false;
-            _vm.Transaction.IsSpendFromSavings = false;
+
+            if (_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
+            {
+                swhSavingSpend.IsEnabled = false;
+                _vm.IsFutureDatedTransaction = false;
+                _vm.IsPayee = false;
+                _vm.IsSpendCategory = false;
+                _vm.IsNote = false;
+            }
+            else
+            {            
+                _vm.IsFutureDatedTransaction = false;
+                _vm.IsPayee = false;
+                _vm.IsSpendCategory = false;
+                _vm.IsNote = false;
+                _vm.Transaction.IsSpendFromSavings = false;
+            }
 
             double TransactionAmount = (double)0;
             entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
@@ -430,8 +464,19 @@ public partial class AddTransaction : ContentPage
         edtNotes.IsEnabled = false;
         edtNotes.IsEnabled = true;
 
-        var page = new SelectCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-        await Navigation.PushModalAsync(page, true);
+        if (_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
+        {
+            bool result = await Shell.Current.DisplayAlert("Sorry can't do that", "To change the savings that you want to spend you need to go back and start again!","Ok","Cancel");
+            if(result)
+            {
+                await Shell.Current.GoToAsync($"///{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
+            }
+        }
+        else
+        {
+            var page = new SelectCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
+            await Navigation.PushModalAsync(page, true);
+        }
     }
 
     private async void ChangeSelectedSaving_Tapped(object sender, TappedEventArgs e)

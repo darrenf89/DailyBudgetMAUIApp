@@ -28,6 +28,7 @@ public partial class App : Application
     public static BottomSheet CurrentBottomSheet = null;
     public static Popup CurrentPopUp = null;
     public static TabBar MainTabBar;
+    public static TabBar ViewTabBar;
     public static List<Brush> ChartBrush;
 
     public static int SessionPeriod = 7;

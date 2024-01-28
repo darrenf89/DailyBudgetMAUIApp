@@ -37,6 +37,11 @@
     <converters:IsSpendCategoryStringText x:Key="IsSpendCategoryStringText" />
     <converters:EventTypeToString x:Key="EventTypeToString" />
     <converters:PayeeText x:Key="PayeeText" />
+    <converters:SavingsTypeToText x:Key="SavingsTypeToText"/>
+    <converters:IsSavingsBuilder x:Key="IsSavingsBuilder"/>
+    <converters:IsSavingsTargetAmount x:Key="IsSavingsTargetAmount"/>
+    <converters:IsSavingsTargetDate x:Key="IsSavingsTargetDate"/>
+    <converters:SavingToGlyph x:Key="SavingToGlyph"/>
     
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>
@@ -214,16 +219,15 @@
             <Shadow Brush="{DynamicResource Primary}" Offset="0,0" Radius="20" Opacity="0.95" />
         </Setter>
     </Style>
-    
+
     <Style TargetType="Border" x:Key="brdCardViewRectange">
-        <Setter Property="Margin" Value="10,0,10,20"/>
-        <Setter Property="Padding" Value="10,10,10,10"/>
+        <Setter Property="Padding" Value="5,10,5,10"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
         <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
-        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Primary}" Offset="0,0" Radius="20" Opacity="0.95" />
+            <Shadow Brush="{DynamicResource Gray900}" Offset="0,0" Opacity="0.95" Radius="20" />
         </Setter>
     </Style>
     

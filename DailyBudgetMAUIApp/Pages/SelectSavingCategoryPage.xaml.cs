@@ -67,6 +67,12 @@ public partial class SelectSavingCategoryPage : ContentPage
     async protected override void OnAppearing()
     {
        base.OnAppearing();
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
     }
 
     private void LoadSavingList()

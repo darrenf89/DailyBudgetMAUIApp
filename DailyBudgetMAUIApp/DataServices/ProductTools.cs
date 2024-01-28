@@ -1683,7 +1683,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 //SUB HAS NOT EXPIRED YET AND ALL IS GOOD
                 if (BudgetLevel > SubLevel)
                 {
-                    //TODO: GIVE WARNING THAT BUDGET ISN'T THE RIGHT LEVEL BUDGET WILL REVERT WARNING OR CREATE NEW BUDGET
+                    //TODO: GIVE WARNING THAT BUDGET ISN'T THE RIGHT LEVEL AND BUDGET WILL REVERT WARNING OR CREATE NEW BUDGET
                     BudgetType = SubLevel == 1 ? "Premium" : "Basic";
                     await LoadTabBarBudgetType(BudgetType);
                     return;
@@ -1748,8 +1748,13 @@ namespace DailyBudgetMAUIApp.DataServices
                 ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
-
-
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Transaction",
+                Route = "ViewTransactions",
+                Icon = "transaction.svg",
+                ContentTemplate = new DataTemplate(() => new ViewTransactions(new ViewTransactionsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new RestDataService(), new ProductTools(new RestDataService())))
+            });
         }
 
         private async Task LoadPremiumPlusTabBar()
@@ -1794,6 +1799,22 @@ namespace DailyBudgetMAUIApp.DataServices
                 Icon = "saving.svg",
                 ContentTemplate = new DataTemplate(() => new AddSaving(new AddSavingViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
+
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Transaction",
+                Route = "ViewTransactions",
+                Icon = "transaction.svg",
+                ContentTemplate = new DataTemplate(() => new ViewTransactions(new ViewTransactionsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new RestDataService(), new ProductTools(new RestDataService())))
+            });
+
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Savings",
+                Route = "ViewSavings",
+                Icon = "saving.svg",
+                ContentTemplate = new DataTemplate(() => new ViewSavings(new ViewSavingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
         }
 
         private async Task LoadBasicTabBar()
@@ -1814,6 +1835,15 @@ namespace DailyBudgetMAUIApp.DataServices
                 Icon = "transaction.svg",
                 ContentTemplate = new DataTemplate(() => new AddTransaction(new AddTransactionViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
+
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Transaction",
+                Route = "ViewTransactions",
+                Icon = "transaction.svg",
+                ContentTemplate = new DataTemplate(() => new ViewTransactions(new ViewTransactionsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new RestDataService(), new ProductTools(new RestDataService())))
+            });
+
         }
     }
 }

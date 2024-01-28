@@ -86,7 +86,7 @@
                             </Label>
                         </HorizontalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout Margin="0,0,0,0">
+                    <HorizontalStackLayout Margin="0,0,0,0" x:Name="CatHeader">
                         <Image>
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Category}" Size="25" Color="{DynamicResource Primary}"/>
@@ -94,27 +94,37 @@
                         </Image>
                         <Label Text="Category" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
-                    <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40">
-                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding IsSpendCategory}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhSpendCategory_Toggled"/>
+                    <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40" x:Name="CatSwitch">
+                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding IsSpendCategory}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhSpendCategory_Toggled" x:Name="swhSpendCategory"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label HorizontalOptions="End" Text="{Binding IsSpendCategory, Converter={StaticResource IsSpendCategoryText}}" TextColor="{StaticResource Gray400}"  FontSize="Medium" Padding="0,0,5,0"/>
                             <Label HorizontalOptions="End" IsVisible="{Binding IsSpendCategory}" Text="{Binding Transaction.Category}" TextColor="{StaticResource Primary}"  FontSize="Medium" Padding="0,0,5,0" FontAttributes="Bold">
                                 <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="ChangeSelectedCategory_Tapped" />
+                                    <TapGestureRecognizer Tapped="ChangeSelectedCategory_Tapped" x:Name="ChangeSelectedCategory"/>
                                 </Label.GestureRecognizers>
                             </Label>
                         </HorizontalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout Margin="0,0,0,0">
-                        <Image>
-                            <Image.Source>
-                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mark_as_unread}" Size="25" Color="{DynamicResource Primary}"/>
-                            </Image.Source>
-                        </Image>
-                        <Label Text="Take From Envelope" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
+                    <HorizontalStackLayout Margin="0,0,0,0" x:Name="SavingHeader">
+                        <HorizontalStackLayout IsVisible="false" x:Name="SavingSavingHeader">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Savings}" Size="25" Color="{DynamicResource Primary}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Spend savings" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout x:Name="EnvelopeSavingHeader">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mark_as_unread}" Size="25" Color="{DynamicResource Primary}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Take From Envelope" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
+                        </HorizontalStackLayout>
                     </HorizontalStackLayout>
-                    <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" RowDefinitions="40" HeightRequest="40">
-                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding Transaction.IsSpendFromSavings}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="SavingSpend_Toggled" />
+                    <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" RowDefinitions="40" HeightRequest="40" x:Name="SavingSwitch">
+                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding Transaction.IsSpendFromSavings}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="SavingSpend_Toggled" x:Name="swhSavingSpend"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label HorizontalOptions="End" Text="{Binding Transaction.IsSpendFromSavings, Converter={StaticResource IsSpendFromSavingText}}" TextColor="{StaticResource Gray400}"  FontSize="Medium" Padding="0,0,5,0"/>
                             <Label IsVisible="{Binding Transaction.IsSpendFromSavings}" HorizontalOptions="End" Text="{Binding Transaction.SavingName}" TextColor="{StaticResource Primary}" FontSize="Medium" Padding="0,0,0,0" FontAttributes="Bold">

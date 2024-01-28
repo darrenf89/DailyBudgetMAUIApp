@@ -1103,4 +1103,144 @@ namespace DailyBudgetMAUIApp.Converters
         }
 
     }
+
+    public class SavingsTypeToText : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return "Put Money in an envelope";
+
+            string SavingsType = (string)value;
+
+            if (SavingsType == "TargetAmount")
+            {
+                return "Save an amount every day";
+            }
+            else if (SavingsType == "TargetDate")
+            {
+                return "Save enough by a date";
+            }
+            else if (SavingsType == "SavingsBuilder")
+            {
+                return "Keep building savings every day";
+            }
+            else
+            {
+                return "Put Money in an envelope";
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+    public class IsSavingsBuilder : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            Savings saving = (Savings)value;
+
+            if (saving.SavingsType == "SavingsBuilder")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class IsSavingsTargetAmount : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            Savings saving = (Savings)value;
+
+            if (saving.SavingsType == "TargetAmount")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class IsSavingsTargetDate : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            Savings saving = (Savings)value;
+
+            if (saving.SavingsType == "TargetDate")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class SavingToGlyph : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            Savings saving = (Savings)value;
+
+            if (saving.SavingsType == "TargetDate")
+            {
+                return "\ue878";
+            }
+            else if(saving.SavingsType == "SavingsBuilder")
+            {
+                return "\ue84f";
+            }
+            else if (saving.SavingsType == "TargetAmount")
+            {
+                return "\ueaf1";
+            }
+            else
+            {
+                return "\ueaf1";
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
 }

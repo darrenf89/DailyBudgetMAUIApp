@@ -74,6 +74,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<List<Categories>> GetCategories(int BudgetID);
         public Task<Categories> AddNewSubCategory(int BudgetID, Categories Category);
         public Task<List<Savings>> GetBudgetEnvelopeSaving(int BudgetID);
+        public Task<List<Savings>> GetBudgetRegularSaving(int BudgetID); 
         public Task<string> ShareBudgetRequest(ShareBudgetRequest BudgetShare);
         public Task<FirebaseDevices> RegisterNewFirebaseDevice(FirebaseDevices NewDevice);
         public Task<FirebaseDevices> UpdateDeviceUserDetails(FirebaseDevices NewDevice);

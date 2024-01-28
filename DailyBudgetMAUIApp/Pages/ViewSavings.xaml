@@ -7,7 +7,7 @@
              xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
              xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:data="clr-namespace:Syncfusion.Maui.DataSource;assembly=Syncfusion.Maui.DataSource"
-             BackgroundColor="{StaticResource Primary}"
+             BackgroundColor="{StaticResource White}"
              x:Name="Content">
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsVisible="False" IsEnabled="False" />
@@ -23,19 +23,121 @@
         </Grid>
     </Shell.TitleView>
     <VerticalStackLayout>
-        <Grid>
-
+        <Grid BackgroundColor="{StaticResource Primary}" HeightRequest="20">
+            
         </Grid>
-        <sfList:SfListView BackgroundColor="White" SelectionMode="None" x:Name="listView" AllowSwiping="False" ItemsSource="{Binding Savings}">
+        <sfList:SfListView BackgroundColor="Transparent" SelectionMode="None" x:Name="listView" AllowSwiping="False" ItemsSource="{Binding Savings}" AutoFitMode="Height" Margin="0,10,0,10" >
             <sfList:SfListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <ViewCell.View>
-                            <Border Style="{StaticResource brdCardViewRectange}">
-                                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,*,Auto,Auto">
-                                    
-                                </Grid>
-                            </Border>
+                            <VerticalStackLayout Padding="20,10,20,10">
+                                <Border Style="{StaticResource brdCardViewRectange}">
+                                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto">
+                                        <Border VerticalOptions="Start" BackgroundColor="White" Margin="5,5,15,0" Grid.Row="0" Grid.RowSpan="5" Grid.Column="0" HeightRequest="30" WidthRequest="30" StrokeShape="RoundRectangle 15" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
+                                            <Border.Shadow>
+                                                <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
+                                            </Border.Shadow>
+                                            <Image HorizontalOptions="Center" VerticalOptions="Center">
+                                                <Image.Source>
+                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding ., Converter={StaticResource SavingToGlyph}}" Size="18" Color="{StaticResource Primary}" />
+                                                </Image.Source>
+                                            </Image>
+                                        </Border>
+                                        <Label Margin="0,0,0,0" Padding="0" VerticalOptions="Start" Text="{Binding SavingsName}" TextColor="{StaticResource Primary}" FontSize="Large" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
+                                        <Label Margin="0,0,0,10" FontAttributes="Bold" Padding="0" Text="{Binding SavingsType, Converter={StaticResource SavingsTypeToText}}" TextColor="{StaticResource Tertiary}" FontSize="Medium" Grid.Column="1" Grid.Row="1" IsVisible="{Binding IsSavingsClosed, Converter={StaticResource BoolConverter}}"/>
+                                        <Label Margin="0,0,0,10" Text="Goal completed" FontAttributes="Bold" TextColor="{StaticResource Tertiary}" FontSize="Medium" Grid.Column="1" Grid.Row="1" IsVisible="{Binding IsSavingsClosed}"/>
+                                        <VerticalStackLayout IsVisible="{Binding IsSavingsClosed, Converter={StaticResource BoolConverter}}" Grid.Row="2" Grid.Column="1">
+                                            <Grid  ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" IsVisible="{Binding ., Converter={StaticResource IsSavingsTargetAmount}}">
+                                                <Label FontSize="Caption" Grid.Column="0" Grid.Row="0" TextColor="{StaticResource Info}" Text="Saving goal |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label FontAttributes="Bold" Text="{Binding SavingsGoal, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="0" Grid.Row="1" FontSize="Caption" TextColor="{StaticResource Info}" Text="Current saved |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="1" Grid.Row="1" FontAttributes="Bold" Text="{Binding CurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="0" Grid.Row="2" FontSize="Caption" TextColor="{StaticResource Info}" Text="Saved each day |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="1" Grid.Row="2" FontAttributes="Bold" Text="{Binding RegularSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="0" Grid.Row="3" FontSize="Caption" TextColor="{StaticResource Info}" Text="Date Achieved |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="1" Grid.Row="3" FontAttributes="Bold" Text="{Binding GoalDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                            </Grid>
+                                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" IsVisible="{Binding ., Converter={StaticResource IsSavingsTargetDate}}">
+                                                <Label FontSize="Caption" Grid.Column="0" Grid.Row="0" TextColor="{StaticResource Info}" Text="Saving goal |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label FontAttributes="Bold" Text="{Binding SavingsGoal, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="0" Grid.Row="1" FontSize="Caption" TextColor="{StaticResource Info}" Text="Current saved |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="1" Grid.Row="1" FontAttributes="Bold" Text="{Binding CurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="0" Grid.Row="2" FontSize="Caption" TextColor="{StaticResource Info}" Text="Saved each day |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="1" Grid.Row="2" FontAttributes="Bold" Text="{Binding RegularSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="0" Grid.Row="3" FontSize="Caption" TextColor="{StaticResource Info}" Text="Estimated completion date |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="1" Grid.Row="3" FontAttributes="Bold" Text="{Binding GoalDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                            </Grid>
+                                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" IsVisible="{Binding ., Converter={StaticResource IsSavingsBuilder}}">
+                                                <Label Grid.Column="0" Grid.Row="0" FontSize="Caption" TextColor="{StaticResource Info}" Text="Current saved |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="1" Grid.Row="0" FontAttributes="Bold" Text="{Binding CurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="0" Grid.Row="1" FontSize="Caption" TextColor="{StaticResource Info}" Text="Saved each day |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="1" Grid.Row="1" FontAttributes="Bold" Text="{Binding RegularSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                            </Grid>
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout IsVisible="{Binding IsSavingsClosed}" Grid.Row="2" Grid.Column="1">
+                                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                                                <Label Grid.Column="0" Grid.Row="0" FontSize="Caption" TextColor="{StaticResource Info}" Text="Current saved |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Grid.Column="1" Grid.Row="0" FontAttributes="Bold" Text="{Binding CurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                            </Grid>
+                                        </VerticalStackLayout>
+                                        <FlexLayout Wrap="Wrap" AlignItems="Start" JustifyContent="SpaceBetween" Margin="0,20,20,0" Direction="Row" Grid.Row="3" Grid.Column="1">
+                                            <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="50">
+                                                <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                                    <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                                        <Image.Source>
+                                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="22" Color="{DynamicResource Primary}"/>
+                                                        </Image.Source>
+                                                    </Image>
+                                                </Border>
+                                                <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Edit"/>
+                                                <VerticalStackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="EditSaving_Tapped" CommandParameter="{Binding .}"/>
+                                                </VerticalStackLayout.GestureRecognizers>
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="50">
+                                                <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                                    <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                                        <Image.Source>
+                                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Add}" Size="22" Color="{DynamicResource Primary}"/>
+                                                        </Image.Source>
+                                                    </Image>
+                                                </Border>
+                                                <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Spend"/>
+                                                <VerticalStackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="SpendSaving_Tapped" CommandParameter="{Binding .}"/>
+                                                </VerticalStackLayout.GestureRecognizers>
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="50">
+                                                <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                                    <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                                        <Image.Source>
+                                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete_forever}" Size="22" Color="{DynamicResource Primary}"/>
+                                                        </Image.Source>
+                                                    </Image>
+                                                </Border>
+                                                <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Delete"/>
+                                                <VerticalStackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="DeleteSavings_Tapped" CommandParameter="{Binding .}"/>
+                                                </VerticalStackLayout.GestureRecognizers>
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="50">
+                                                <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                                    <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                                        <Image.Source>
+                                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Balance}" Size="22" Color="{DynamicResource Primary}"/>
+                                                        </Image.Source>
+                                                    </Image>
+                                                </Border>
+                                                <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Move balance"/>
+                                                <VerticalStackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="MoveBalance_Tapped" CommandParameter="{Binding .}"/>
+                                                </VerticalStackLayout.GestureRecognizers>
+                                            </VerticalStackLayout>
+                                        </FlexLayout>
+                                    </Grid>
+                                </Border>
+                            </VerticalStackLayout>
                         </ViewCell.View>
                     </ViewCell>
                 </DataTemplate>
