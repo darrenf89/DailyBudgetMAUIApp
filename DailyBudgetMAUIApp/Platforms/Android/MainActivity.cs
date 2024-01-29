@@ -52,12 +52,6 @@ public class MainActivity : MauiAppCompatActivity
         CreateNotificationChannel();
     }
 
-    protected override void OnCreate(Bundle savedInstanceState)
-    {
-        base.OnCreate(savedInstanceState);
-        
-    }
-
     private void CreateNotificationChannel()
     {
         if(OperatingSystem.IsOSPlatformVersionAtLeast("android",26))

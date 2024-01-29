@@ -151,6 +151,13 @@ public partial class ViewTransactions : ContentPage
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
     }
 
+    protected override void OnSizeAllocated(double width, double height)
+    {
+        base.OnSizeAllocated(width, height);
+        //_vm.SFListHeight = _vm.ScreenHeight - App.TabBarHeight - (vslHeader.Height + 64);
+
+    }
+
     private async void ListView_ItemTapped(object sender, Syncfusion.Maui.ListView.ItemTappedEventArgs e)
     {
 

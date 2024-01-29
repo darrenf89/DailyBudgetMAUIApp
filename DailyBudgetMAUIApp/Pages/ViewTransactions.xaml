@@ -15,7 +15,7 @@
         <BackButtonBehavior IsVisible="False" IsEnabled="False" />
     </Shell.BackButtonBehavior>
     <Shell.TitleView>
-        <Grid ColumnDefinitions="25,*">
+        <Grid ColumnDefinitions="25,*" x:Name="TitleView">
             <Button TextColor="White" BackgroundColor="{StaticResource Primary}" x:Name="HomeButton" Clicked="HomeButton_Clicked" HorizontalOptions="Center" Grid.Column="0" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
                 <Button.ImageSource>
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Home}" Size="35" />

@@ -121,7 +121,7 @@ public partial class AddSaving : ContentPage
         
         entSavingAmount.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);
 
-        if(_vm.NavigatedFrom=="ViewSavings")
+        if(_vm.NavigatedFrom=="ViewSavings" && _vm.SavingID != 0)
         {
             vslOption1Select.IsEnabled = false;
             vslOption2Select.IsEnabled = false;

@@ -38,6 +38,7 @@ public static class MauiProgram
             {
 #if __ANDROID__
                 handlers.AddHandler(typeof(RefreshView), typeof(Handlers.CustomRefreshViewHandler));
+                handlers.AddHandler(typeof(Shell), typeof(DailyBudgetMAUIApp.Platforms.Android.Renderers.MyShellRenderer));
 #endif
             });
 
@@ -46,9 +47,9 @@ public static class MauiProgram
 
         //Pages
         builder.Services.AddTransient<MainPage>();
-		    builder.Services.AddTransient<LogonPage>();
+		builder.Services.AddTransient<LogonPage>();
         builder.Services.AddTransient<LoadUpPage>();
-		    builder.Services.AddTransient<RegisterPage>();
+		builder.Services.AddTransient<RegisterPage>();
         builder.Services.AddTransient<ErrorPage>();
         builder.Services.AddTransient<AddBill>();
         builder.Services.AddTransient<AddTransaction>();

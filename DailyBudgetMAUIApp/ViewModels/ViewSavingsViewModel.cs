@@ -12,7 +12,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
         [ObservableProperty]
-        private List<Savings> _savings = new List<Savings>();
+        private ObservableCollection<Savings> _savings = new ObservableCollection<Savings>();
         [ObservableProperty]
         private Budgets _budget;
         [ObservableProperty]
@@ -32,6 +32,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             Title = $"Check Your Savings {App.UserDetails.NickName}";
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
+
         }
     }
 }
