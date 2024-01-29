@@ -12,7 +12,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
         [ObservableProperty]
-        private ObservableCollection<Savings> _savings = new ObservableCollection<Savings>();
+        private List<Savings> _savings = new List<Savings>();
         [ObservableProperty]
         private Budgets _budget;
         [ObservableProperty]

@@ -45,4 +45,27 @@ public partial class ViewBills : ContentPage
 
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
     }
+
+    private async void EditBill_Tapped(object sender, TappedEventArgs e)
+    {
+    
+    }
+    private async void CloseBill_Tapped(object sender, TappedEventArgs e)
+    {
+    
+    }
+    private async void UpdateBill_Tapped(object sender, TappedEventArgs e)
+    {
+    
+    }
+
+    private async void UpdateAmount_Tapped(object sender, TappedEventArgs e)
+    {
+    
+    }    
+
+    private async void AddNewBill_Clicked(object sender, EventArgs e)
+    {
+
+    }
 }

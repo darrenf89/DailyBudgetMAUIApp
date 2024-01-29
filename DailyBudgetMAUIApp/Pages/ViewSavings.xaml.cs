@@ -147,7 +147,7 @@ public partial class ViewSavings : ContentPage
 
     private async void MoveBalance_Tapped(object sender, TappedEventArgs e)
     {
-
+        
     }
 
     private async void AddNewSaving_Clicked(object sender, EventArgs e)
