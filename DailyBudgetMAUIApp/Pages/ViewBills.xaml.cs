@@ -24,14 +24,40 @@ public partial class ViewBills : ContentPage
 
     protected async override void OnAppearing()
     {
+        _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
+        List<Bills> B = _ds.GetBudgetBills(App.DefaultBudgetID, "ViewBills").Result;
 
+        _vm._totalBills = 0;
+        _vm.Budget.DailyBillOutgoing = 0;
+        _vm.Bills.Clear();
+        
+        foreach (Bills bill in B)
+        {
+            _vm.TotalSavings += bill.BillCurrentBalance.GetValueOrDefault();
+            _vm.Budget.DailyBillOutgoing += bill.RegularBillValue.GetValueOrDefault();
+            _vm.Bills.Add(bill);
+        }
+
+        double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
+        _vm.SignOutButtonWidth = ScreenWidth - 60;
+
+        _vm.BillsPerPayPeriod = _vm.Budget.DailyBillOutgoing * Budget.AproxDaysBetweenPay;
+
+        listView.RefreshItem();
+        listView.RefreshView();
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
     }
 
     protected override void OnSizeAllocated(double width, double height)
     {
         base.OnSizeAllocated(width, height);
 
-        listView.HeightRequest = _vm.ScreenHeight - BudgetDetailsGrid.Height - TitleView.Height - 150;
+        // listView.HeightRequest = _vm.ScreenHeight - BudgetDetailsGrid.Height - TitleView.Height - 150;
     }
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
@@ -48,24 +74,163 @@ public partial class ViewBills : ContentPage
 
     private async void EditBill_Tapped(object sender, TappedEventArgs e)
     {
-    
+        var Bill = (Savings)e.Parameter;
+
+        bool result = await Shell.Current.DisplayAlert($"Edit {Bill.BillName}?", $"Are you sure you want to edit {Bill.BillName}?", "Yes", "Cancel");
+
+        if(result)
+        {
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Shell.Current.GoToAsync($"/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&SavingID={Bill.BillID}&NavigatedFrom=ViewBills");
+        }   
     }
     private async void CloseBill_Tapped(object sender, TappedEventArgs e)
     {
-    
+        var Bill = (Bills)e.Parameter;
+        bool result = await Shell.Current.DisplayAlert($"Close outgoing {Bill.BillName}?", $"Are you sure you want to close {Bill.BillName}?", "Yes", "Cancel");
+
+        if (result)
+        {
+            List<PatchDoc> PatchDocs = new List<PatchDoc>();
+            PatchDoc IsClosed = new PatchDoc
+            {
+                op = "replace",
+                path = "/IsClosed",
+                value = true
+            };
+
+            PatchDocs.Add(IsClosed);
+
+            await _ds.PatchBill(Bill.BillID, PatchDocs);
+        }
     }
-    private async void UpdateBill_Tapped(object sender, TappedEventArgs e)
+
+    private async void UpdateDate_Tapped(object sender, TappedEventArgs e)
     {
-    
+        var Bill = (Bills)e.Parameter;
+
+        string Description = "Update the outgoing due date!";
+        string DescriptionSub = "Outoing not when you expected, you can update the outgoing due date to any date in the future. We will do the rest!";
+        var popup = new PopUpPageVariableInput("Outgoing due date", Description, DescriptionSub, "", Bill.BillDueDate, "DateTime");
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+        if(!string.IsNullOrEmpty((string)result))
+        {
+            Bill.BillDueDate = (DateTime)result;
+
+            List<PatchDoc> PatchDocs = new List<PatchDoc>();
+            PatchDoc BillDueDate = new PatchDoc
+            {
+                op = "replace",
+                path = "/BillDueDate",
+                value = Bill.BillDueDate
+            };
+
+            PatchDocs.Add(BillDueDate);
+
+            decimal DailySavingValue = new();
+            TimeSpan Difference = (TimeSpan)(Bill.BillDueDate.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date);
+            int NumberOfDays = (int)Difference.TotalDays;
+            decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
+            if(NumberOfDays != 0)
+            {
+                DailySavingValue = RemainingBillAmount / NumberOfDays;
+                DailySavingValue = Math.Round(DailySavingValue, 2);
+            }
+            else
+            {
+                DailySavingValue = 0;
+            }
+
+            Bill.RegularBillValue = DailySavingValue;
+
+            List<PatchDoc> PatchDocs = new List<PatchDoc>();
+            PatchDoc RegularBillValue = new PatchDoc
+            {
+                op = "replace",
+                path = "/RegularBillValue",
+                value = Bill.RegularBillValue
+            };
+
+            PatchDocs.Add(RegularBillValue);
+
+            await _ds.PatchBill(Bill.BillID, PatchDocs);
+        }
     }
 
     private async void UpdateAmount_Tapped(object sender, TappedEventArgs e)
     {
-    
+        var Bill = (Bills)e.Parameter;
+
+        string Description = "Update the outgoing amount!";
+        string DescriptionSub = "Outoing not as much as you expected, you can update the outgoing amount and we will do the rest!";
+        var popup = new PopUpPageVariableInput("Outgoing amount", Description, DescriptionSub, "", Bill.BillAmount, "Currency");
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+        if(!string.IsNullOrEmpty((string)result))
+        {
+            Bill.BillAmount = (decimal)result;
+
+            List<PatchDoc> PatchDocs = new List<PatchDoc>();
+            PatchDoc BillAmount = new PatchDoc
+            {
+                op = "replace",
+                path = "/BillAmount",
+                value = Bill.BillAmount
+            };
+
+            PatchDocs.Add(BillAmount);
+
+            decimal DailySavingValue = new();
+            TimeSpan Difference = (TimeSpan)(Bill.BillDueDate.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date);
+            int NumberOfDays = (int)Difference.TotalDays;
+            decimal RemainingBillAmount = Bill.BillAmount - Bill.BillCurrentBalance ?? 0;
+            if(NumberOfDays != 0)
+            {
+                DailySavingValue = RemainingBillAmount / NumberOfDays;
+                DailySavingValue = Math.Round(DailySavingValue, 2);
+            }
+            else
+            {
+                DailySavingValue = 0;
+            }
+
+            Bill.RegularBillValue = DailySavingValue;
+
+            List<PatchDoc> PatchDocs = new List<PatchDoc>();
+            PatchDoc RegularBillValue = new PatchDoc
+            {
+                op = "replace",
+                path = "/RegularBillValue",
+                value = Bill.RegularBillValue
+            };
+
+            PatchDocs.Add(RegularBillValue);
+
+            await _ds.PatchBill(Bill.BillID, PatchDocs);
+        }    
     }    
 
     private async void AddNewBill_Clicked(object sender, EventArgs e)
     {
+        bool result = await Shell.Current.DisplayAlert($"Add a new outgoing?", $"Are you sure you want to add a new outgoing?", "Yes", "Cancel");
 
+        if (result)
+        {
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Shell.Current.GoToAsync($"/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewBills");
+        }
     }
 }

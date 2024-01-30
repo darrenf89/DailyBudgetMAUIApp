@@ -26,8 +26,15 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Renderers
             int resourceId = resources.GetIdentifier("navigation_bar_height", "dimen", "android");
             if (resourceId > 0)
             {
-                App.TabBarHeight = resources.GetDimensionPixelSize(resourceId) / DeviceDisplay.Current.MainDisplayInfo.Density;
+                App.NavBarHeight = resources.GetDimensionPixelSize(resourceId) / DeviceDisplay.Current.MainDisplayInfo.Density;
             }
+
+            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0)
+            {
+                App.StatusBarHeight = resources.GetDimensionPixelSize(resourceId) / DeviceDisplay.Current.MainDisplayInfo.Density;
+            }
+
         }
 
         protected override IShellBottomNavViewAppearanceTracker CreateBottomNavViewAppearanceTracker(ShellItem shellItem)
@@ -46,7 +53,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Renderers
         public override void SetAppearance(BottomNavigationView bottomView, IShellAppearanceElement appearance)
         {            
             base.SetAppearance(bottomView, appearance);
-            App.TabBarHeight = bottomView.Height;
+            //App.TabBarHeight = bottomView.Height;
         }
     }
 

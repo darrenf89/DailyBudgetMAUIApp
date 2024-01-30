@@ -43,6 +43,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> UpdateBill(Bills Bill);
         public Task<string> PatchBill(int BillID, List<PatchDoc> PatchDoc);
         public Task<string> DeleteBill(int BillID);
+        public Task<List<Bills>> GetBudgetBills(int BudgetID, string page);
         public Task<Savings> GetSavingFromID(int SavingID);
         public Task<string> SaveNewSaving(Savings Saving, int BudgetID);
         public Task<string> UpdateSaving(Savings Saving);

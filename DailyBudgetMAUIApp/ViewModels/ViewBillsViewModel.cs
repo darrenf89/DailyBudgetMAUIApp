@@ -19,6 +19,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private double _screenHeight;
         [ObservableProperty]
         private double _signOutButtonWidth;
+        [ObservableProperty]
+        private decimal _totalBills;
+        [ObservableProperty]
+        private decimal _billsPerPayPeriod;
 
 
         public ViewBillsViewModel(IProductTools pt, IRestDataService ds)

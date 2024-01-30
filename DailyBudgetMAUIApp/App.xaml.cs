@@ -31,7 +31,7 @@ public partial class App : Application
     public static TabBar ViewTabBar;
     public static List<Brush> ChartBrush;
     public static double NavBarHeight;
-    public static double TabBarHeight;
+    public static double StatusBarHeight;
 
     public static int SessionPeriod = 7;
 

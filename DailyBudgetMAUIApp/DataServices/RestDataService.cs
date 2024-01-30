@@ -1292,7 +1292,6 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<string> DeleteBill(int BillID)
         {
-
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
                 throw new HttpRequestException("Connectivity");
@@ -1333,6 +1332,56 @@ namespace DailyBudgetMAUIApp.DataServices
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to delete bill in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public Task<List<Bills>> GetBudgetBills(int BudgetID, string page)
+        {
+            List<Bills> Bills = new List<Bills>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/bills/getbudgetbills/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            Bills = serializer.Deserialize<List<Bills>>(reader);
+                        }
+
+                        return Bills;
+                                                
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+                        
+                        HandleError(new Exception(error.ErrorMessage), page, "GetAllBudgetSavings");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, page, "GetAllBudgetSavings");
+                return null;
             }
         }
 
