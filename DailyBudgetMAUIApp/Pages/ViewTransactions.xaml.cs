@@ -154,7 +154,7 @@ public partial class ViewTransactions : ContentPage
     protected override void OnSizeAllocated(double width, double height)
     {
         base.OnSizeAllocated(width, height);
-        //_vm.SFListHeight = _vm.ScreenHeight - App.TabBarHeight - (vslHeader.Height + 64);
+        _vm.SFListHeight = _vm.ScreenHeight - vslHeader.Height - App.NavBarHeight - App.StatusBarHeight - TitleView.Height - 49;
 
     }
 
@@ -220,7 +220,7 @@ public partial class ViewTransactions : ContentPage
 
     private async void ListViewScrollView_Scrolled(object sender, ScrolledEventArgs e)
     {
-        _vm.SFListHeight = _vm.ScreenHeight - vslHeader.Height - 200;
+        _vm.SFListHeight = _vm.ScreenHeight - vslHeader.Height - App.NavBarHeight - App.StatusBarHeight - TitleView.Height - 49;
 
         double HeightDifference = CurrentScrollY - (double)e.ScrollY;
         double YChangeAmount = HeightDifference / 2;
