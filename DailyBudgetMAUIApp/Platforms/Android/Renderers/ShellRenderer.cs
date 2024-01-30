@@ -29,7 +29,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Renderers
                 App.NavBarHeight = resources.GetDimensionPixelSize(resourceId) / DeviceDisplay.Current.MainDisplayInfo.Density;
             }
 
-            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            resourceId = resources.GetIdentifier("status_bar_height", "dimen", "android");
             if (resourceId > 0)
             {
                 App.StatusBarHeight = resources.GetDimensionPixelSize(resourceId) / DeviceDisplay.Current.MainDisplayInfo.Density;

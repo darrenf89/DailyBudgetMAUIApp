@@ -42,6 +42,10 @@
     <converters:IsSavingsTargetAmount x:Key="IsSavingsTargetAmount"/>
     <converters:IsSavingsTargetDate x:Key="IsSavingsTargetDate"/>
     <converters:SavingToGlyph x:Key="SavingToGlyph"/>
+    <converters:RecurringBillDetails x:Key="RecurringBillDetails"/>
+    <converters:BillDueDate x:Key="BillDueDate"/>
+    <converters:BillTypeConverter x:Key="BillTypeConverter"/>
+    <converters:BillToGlyph x:Key="BillToGlyph"/>
     
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>

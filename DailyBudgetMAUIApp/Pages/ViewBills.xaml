@@ -28,13 +28,13 @@
                 <VerticalStackLayout>
                     <Grid BackgroundColor="{StaticResource Primary}" ColumnDefinitions="*,*" RowDefinitions="28,30,22,32,Auto" x:Name="BudgetDetailsGrid">
                         <Label Margin="30,0,0,0" Grid.Row="0" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
-                        <Label Margin="30,0,0,0" Grid.Row="2" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding TotalBills, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Medium" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+                        <Label Margin="30,0,0,0" Grid.Row="2" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.DailyBillOutgoing, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Medium" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
                         <Label Margin="30,0,0,10" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Left to spend" TextColor="White" FontSize="Caption" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
-                        <Label Margin="30,0,0,5" Grid.Row="3" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Total outgoing balance" TextColor="White" FontSize="Caption" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
-                        <Label Margin="0,0,30,5" Grid.Row="3" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Approx outgoings per pay" TextColor="White" FontSize="Caption" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
+                        <Label Margin="30,0,0,5" Grid.Row="3" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Outgoings per day" TextColor="White" FontSize="Caption" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+                        <Label Margin="0,0,30,5" Grid.Row="3" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Approx per pay period" TextColor="White" FontSize="Caption" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
                         <Label Margin="0,0,30,0" Grid.Row="2" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding BillsPerPayPeriod, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Medium" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
-                        <Label Margin="0,0,30,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Outgoings owed each day" TextColor="White" FontSize="Caption" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
-                        <Label Margin="0,0,30,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.DailyBillOutgoing, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
+                        <Label Margin="0,0,30,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Total outgoing balance" TextColor="White" FontSize="Caption" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
+                        <Label Margin="0,0,30,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding TotalBills, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
                         <BoxView HeightRequest="8" Color="{StaticResource White}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"/>
                     </Grid>
                 </VerticalStackLayout>
@@ -53,16 +53,16 @@
                     <ViewCell.View>
                         <VerticalStackLayout Padding="20,10,20,10">
                             <Border Style="{StaticResource brdCardViewRectange}">
-                                <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto">
+                                <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
                                     <Border VerticalOptions="Start" BackgroundColor="White" Margin="5,5,15,0" Grid.Row="0" Grid.RowSpan="5" Grid.Column="0" HeightRequest="30" WidthRequest="30" StrokeShape="RoundRectangle 15" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
                                         <Border.Shadow>
                                             <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
                                         </Border.Shadow>
-                                        <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="{Binding ., Converter={StaticResource SavingToGlyph}}"/>
+                                        <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="{Binding ., Converter={StaticResource BillToGlyph}}"/>
                                     </Border>
-                                    <Label Margin="0,0,0,0" Padding="0" VerticalOptions="Start" Text="{Binding BillName}" TextColor="{StaticResource Primary}" FontSize="Large" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
+                                    <Label Margin="0,0,0,8" Padding="0" VerticalOptions="Start" Text="{Binding BillName}" TextColor="{StaticResource Primary}" FontSize="Large" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
                                     <Label Margin="0,0,0,0" FontAttributes="Bold" Padding="0" Text="{Binding IsRecuring, Converter={StaticResource BillTypeConverter}}" TextColor="{StaticResource Tertiary}" FontSize="Medium" Grid.Column="1" Grid.Row="1"/>
-                                    <Label IsVisible="{Binding IsRecuring}" Margin="0,4,0,0" FontAttributes="Bold" Padding="0" Text="{Binding ., Converter={StaticResource RecurringBillDetails}}" TextColor="{StaticResource Gray400}" FontSize="Medium" Grid.Column="1" Grid.Row="2"/>
+                                    <Label IsVisible="{Binding IsRecuring}" Margin="0,2,0,0" FontAttributes="Bold" Padding="0" Text="{Binding ., Converter={StaticResource RecurringBillDetails}}" TextColor="{StaticResource Gray400}" FontSize="Small" Grid.Column="1" Grid.Row="2"/>
                                     <VerticalStackLayout Grid.Row="3" Grid.Column="1" Margin="0,10,0,0">
                                         <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
                                             <HorizontalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
@@ -127,7 +127,7 @@
                                                     </Image.Source>
                                                 </Image>
                                             </Border>
-                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Update Date"/>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Update date"/>
                                             <VerticalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer CommandParameter="{Binding .}" Tapped="UpdateDate_Tapped"/>
                                             </VerticalStackLayout.GestureRecognizers>
@@ -139,11 +139,11 @@
                                                 </Border.Shadow>
                                                 <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
                                                     <Image.Source>
-                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Monetization_on}" Size="22" Color="{DynamicResource Primary}"/>
+                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Attach_money}" Size="22" Color="{DynamicResource Primary}"/>
                                                     </Image.Source>
                                                 </Image>
                                             </Border>
-                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Update Amount"/>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Update amount"/>
                                             <VerticalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer CommandParameter="{Binding .}" Tapped="UpdateAmount_Tapped"/>
                                             </VerticalStackLayout.GestureRecognizers>

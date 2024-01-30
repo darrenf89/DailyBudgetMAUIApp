@@ -1335,7 +1335,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public Task<List<Bills>> GetBudgetBills(int BudgetID, string page)
+        public async Task<List<Bills>> GetBudgetBills(int BudgetID, string page)
         {
             List<Bills> Bills = new List<Bills>();
 

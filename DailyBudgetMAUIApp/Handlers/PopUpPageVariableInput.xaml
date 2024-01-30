@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+           x:Class="DailyBudgetMAUIApp.Handlers.PopUpPageVariableInput"
+           xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+           xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+           xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+           CanBeDismissedByTappingOutsideOfPopup="False"
+           Color="Transparent">
+    <AbsoluteLayout 
+        x:Name="AbsLayout">
+        <ImageButton x:Name="btnClose" Clicked="Close_Window" WidthRequest="22" HeightRequest="22" Background="{DynamicResource Gray400}" CornerRadius="11" ZIndex="99">
+            <ImageButton.Source>
+                <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Cancel}" Color="White"/>
+            </ImageButton.Source>
+        </ImageButton>
+        <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0">
+            <Border BackgroundColor="{DynamicResource White}" Margin="15,120,15,0" HorizontalOptions="Start" VerticalOptions="Center"  WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16">
+                <VerticalStackLayout>
+                    <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0"/>
+                    <Label  x:Name="lblDescription" FontAttributes="Bold" FontSize="Caption" VerticalOptions="Center" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray400}" Margin="30,15,30,0" />
+                    <Label IsVisible="{Binding IsSubDesc}" x:Name="lblDescriptionSub" FontAttributes="Bold" FontSize="Caption" VerticalOptions="Center"  HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray400}" Margin="30,15,30,0" />
+                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*">
+                        <Entry TextColor="{StaticResource Gray900}" IsVisible="False" Margin="30,15,30,0" HorizontalOptions="Center" WidthRequest="{Binding EntryWidth}" Text="{Binding StringInput}" x:Name="txtStringInput" Keyboard="Text" Style="{StaticResource LogonEntry}" MaxLength="20" Grid.Row="0" HeightRequest="50" FontSize="20"/>
+                        <handlers:BorderlessDatePicker TextColor="{StaticResource Gray900}" IsVisible="False" Margin="30,15,30,0" HorizontalOptions="Center" WidthRequest="{Binding EntryWidth}" Date="{Binding DateTimeInput}" x:Name="pckDateTimeInput" Grid.Row="0" HeightRequest="50" FontSize="20"/>
+                        <Entry HorizontalOptions="Center" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" IsVisible="False" TextChanged="txtCurrencyInput_TextChanged" Margin="30,15,30,0"  WidthRequest="{Binding EntryWidth}" x:Name="entCurrencyInput" Keyboard="Numeric" Grid.Row="0" HeightRequest="50" FontSize="20"/>
+                        <HorizontalStackLayout  WidthRequest="{Binding EntryWidth}" IsVisible="{Binding ReturnDataError}" HorizontalOptions="Center" Padding="0" Margin="0" Grid.Row="1">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label VerticalOptions="Center" x:Name="lblErrorMessage" Margin="10,0,0,0" WidthRequest="{Binding EntryWidth}" Style="{StaticResource ErrorMessage}"/>
+                        </HorizontalStackLayout>
+                        <Button Margin="0,10,0,30" WidthRequest="{Binding EntryWidth}" Grid.Row="2" Text="Save" Clicked="Close_Popup" HorizontalOptions="Center" Style="{StaticResource PrimaryDarkButton}"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </AbsoluteLayout>
+</xct:Popup>

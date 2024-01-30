@@ -1759,10 +1759,10 @@ namespace DailyBudgetMAUIApp.DataServices
             App.ViewTabBar.Items.Add(new ShellContentDI()
             {
                 Title = "Outgoings",
-                Route = "Viewbills",
+                Route = "ViewBills",
                 Icon = "bill.svg",
-                ContentTemplate = new DataTemplate(() => new ViewTransactions(new ViewTransactionsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new RestDataService(), new ProductTools(new RestDataService())))
-            });        
+                ContentTemplate = new DataTemplate(() => new ViewBills(new ViewBillsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
         }
 
         private async Task LoadPremiumPlusTabBar()
@@ -1827,9 +1827,9 @@ namespace DailyBudgetMAUIApp.DataServices
             App.ViewTabBar.Items.Add(new ShellContentDI()
             {
                 Title = "Outgoings",
-                Route = "Viewbills",
+                Route = "ViewBills",
                 Icon = "bill.svg",
-                ContentTemplate = new DataTemplate(() => new ViewTransactions(new ViewTransactionsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new RestDataService(), new ProductTools(new RestDataService())))
+                ContentTemplate = new DataTemplate(() => new ViewBills(new ViewBillsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
         }
 
@@ -1871,9 +1871,9 @@ namespace DailyBudgetMAUIApp.DataServices
             App.ViewTabBar.Items.Add(new ShellContentDI()
             {
                 Title = "Outgoings",
-                Route = "Viewbills",
+                Route = "ViewBills",
                 Icon = "bill.svg",
-                ContentTemplate = new DataTemplate(() => new ViewTransactions(new ViewTransactionsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new RestDataService(), new ProductTools(new RestDataService())))
+                ContentTemplate = new DataTemplate(() => new ViewBills(new ViewBillsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
         }

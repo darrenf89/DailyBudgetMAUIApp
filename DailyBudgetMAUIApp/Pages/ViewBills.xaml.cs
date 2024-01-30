@@ -27,13 +27,13 @@ public partial class ViewBills : ContentPage
         _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
         List<Bills> B = _ds.GetBudgetBills(App.DefaultBudgetID, "ViewBills").Result;
 
-        _vm._totalBills = 0;
+        _vm.TotalBills = 0;
         _vm.Budget.DailyBillOutgoing = 0;
         _vm.Bills.Clear();
         
         foreach (Bills bill in B)
         {
-            _vm.TotalSavings += bill.BillCurrentBalance.GetValueOrDefault();
+            _vm.TotalBills += bill.BillCurrentBalance;
             _vm.Budget.DailyBillOutgoing += bill.RegularBillValue.GetValueOrDefault();
             _vm.Bills.Add(bill);
         }
@@ -41,7 +41,7 @@ public partial class ViewBills : ContentPage
         double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         _vm.SignOutButtonWidth = ScreenWidth - 60;
 
-        _vm.BillsPerPayPeriod = _vm.Budget.DailyBillOutgoing * Budget.AproxDaysBetweenPay;
+        _vm.BillsPerPayPeriod = _vm.Budget.DailyBillOutgoing * _vm.Budget.AproxDaysBetweenPay ?? 1;
 
         listView.RefreshItem();
         listView.RefreshView();
@@ -74,7 +74,7 @@ public partial class ViewBills : ContentPage
 
     private async void EditBill_Tapped(object sender, TappedEventArgs e)
     {
-        var Bill = (Savings)e.Parameter;
+        var Bill = (Bills)e.Parameter;
 
         bool result = await Shell.Current.DisplayAlert($"Edit {Bill.BillName}?", $"Are you sure you want to edit {Bill.BillName}?", "Yes", "Cancel");
 
@@ -87,7 +87,7 @@ public partial class ViewBills : ContentPage
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            await Shell.Current.GoToAsync($"/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&SavingID={Bill.BillID}&NavigatedFrom=ViewBills");
+            await Shell.Current.GoToAsync($"/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=ViewBills");
         }   
     }
     private async void CloseBill_Tapped(object sender, TappedEventArgs e)
@@ -108,6 +108,8 @@ public partial class ViewBills : ContentPage
             PatchDocs.Add(IsClosed);
 
             await _ds.PatchBill(Bill.BillID, PatchDocs);
+            _vm.Bills.Remove(Bill);
+            listView.RefreshItem();
         }
     }
 
@@ -117,10 +119,10 @@ public partial class ViewBills : ContentPage
 
         string Description = "Update the outgoing due date!";
         string DescriptionSub = "Outoing not when you expected, you can update the outgoing due date to any date in the future. We will do the rest!";
-        var popup = new PopUpPageVariableInput("Outgoing due date", Description, DescriptionSub, "", Bill.BillDueDate, "DateTime");
+        var popup = new PopUpPageVariableInput("Outgoing due date", Description, DescriptionSub, "", Bill.BillDueDate, "DateTime", new PopUpPageVariableInputViewModel());
         var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
-        if(!string.IsNullOrEmpty((string)result))
+        if(!string.IsNullOrEmpty(result.ToString()))
         {
             Bill.BillDueDate = (DateTime)result;
 
@@ -150,7 +152,6 @@ public partial class ViewBills : ContentPage
 
             Bill.RegularBillValue = DailySavingValue;
 
-            List<PatchDoc> PatchDocs = new List<PatchDoc>();
             PatchDoc RegularBillValue = new PatchDoc
             {
                 op = "replace",
@@ -161,6 +162,8 @@ public partial class ViewBills : ContentPage
             PatchDocs.Add(RegularBillValue);
 
             await _ds.PatchBill(Bill.BillID, PatchDocs);
+
+            listView.RefreshItem();
         }
     }
 
@@ -170,10 +173,10 @@ public partial class ViewBills : ContentPage
 
         string Description = "Update the outgoing amount!";
         string DescriptionSub = "Outoing not as much as you expected, you can update the outgoing amount and we will do the rest!";
-        var popup = new PopUpPageVariableInput("Outgoing amount", Description, DescriptionSub, "", Bill.BillAmount, "Currency");
+        var popup = new PopUpPageVariableInput("Outgoing amount", Description, DescriptionSub, "", Bill.BillAmount, "Currency", new PopUpPageVariableInputViewModel());
         var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
-        if(!string.IsNullOrEmpty((string)result))
+        if (!string.IsNullOrEmpty(result.ToString()))
         {
             Bill.BillAmount = (decimal)result;
 
@@ -203,7 +206,6 @@ public partial class ViewBills : ContentPage
 
             Bill.RegularBillValue = DailySavingValue;
 
-            List<PatchDoc> PatchDocs = new List<PatchDoc>();
             PatchDoc RegularBillValue = new PatchDoc
             {
                 op = "replace",
@@ -214,6 +216,8 @@ public partial class ViewBills : ContentPage
             PatchDocs.Add(RegularBillValue);
 
             await _ds.PatchBill(Bill.BillID, PatchDocs);
+
+            listView.RefreshItem();
         }    
     }    
 

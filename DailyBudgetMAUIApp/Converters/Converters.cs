@@ -1243,4 +1243,29 @@ namespace DailyBudgetMAUIApp.Converters
             return null;
         }
     }
+
+    public class BillToGlyph : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            Bills bill = (Bills)value;
+
+            if (bill.IsRecuring)
+            {
+                return "recurring.svg";
+            }
+            else
+            {
+                return "one.svg";
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
 }

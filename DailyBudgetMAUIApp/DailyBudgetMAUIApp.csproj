@@ -107,6 +107,9 @@
 	  <Compile Update="Handlers\PopUpOTP.xaml.cs">
 	    <DependentUpon>PopUpOTP.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Handlers\PopUpPageVariableInput.xaml.cs">
+	    <DependentUpon>PopUpPageVariableInput.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\BottomSheets\TransactionOptionsBottomSheet.xaml.cs">
 	    <DependentUpon>TransactionOptionsBottomSheet.xaml</DependentUpon>
 	  </Compile>
@@ -159,6 +162,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Handlers\PopUpOTP.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Handlers\PopUpPageVariableInput.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\AddBill.xaml">
