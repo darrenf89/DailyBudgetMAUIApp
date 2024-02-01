@@ -20,6 +20,7 @@ public partial class ViewSavings : ContentPage
 
         InitializeComponent();
 
+
     }
 
     protected async override void OnAppearing()
@@ -48,6 +49,7 @@ public partial class ViewSavings : ContentPage
 
         listView.RefreshItem();
         listView.RefreshView();
+
 
         if (App.CurrentPopUp != null)
         {

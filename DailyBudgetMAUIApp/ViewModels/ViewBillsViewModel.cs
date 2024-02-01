@@ -23,6 +23,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private decimal _totalBills;
         [ObservableProperty]
         private decimal _billsPerPayPeriod;
+        [ObservableProperty]
+        private double _minHeight;
 
 
         public ViewBillsViewModel(IProductTools pt, IRestDataService ds)

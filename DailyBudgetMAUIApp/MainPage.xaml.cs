@@ -577,7 +577,7 @@ public partial class MainPage : ContentPage
                 Margin = new Thickness(0)
             };
             lblTitle.SetBinding(Label.TextProperty, "SavingsName");
-            grid.AddWithSpan(lblTitle, 0, 1, 1, 1);
+            grid.AddWithSpan(lblTitle, 0, 1, 1, 2);
 
             Label lblSavingType = new Label
             {
@@ -906,7 +906,7 @@ public partial class MainPage : ContentPage
                 Margin = new Thickness(0)
             };
             lblTitle.SetBinding(Label.TextProperty, "BillName");
-            grid.AddWithSpan(lblTitle, 0, 1, 1, 1);
+            grid.AddWithSpan(lblTitle, 0, 1, 1, 2);
 
             Label lblSavingType = new Label
             {
@@ -1260,7 +1260,7 @@ public partial class MainPage : ContentPage
                 Margin = new Thickness(0)
             };
             lblTitle.SetBinding(Label.TextProperty, "IncomeName");
-            grid.AddWithSpan(lblTitle, 0, 1, 1, 1);
+            grid.AddWithSpan(lblTitle, 0, 1, 1, 2);
 
             Label lblSavingType = new Label
             {

@@ -18,12 +18,14 @@ public partial class ViewBills : ContentPage
         _pt = pt;
         _ds = ds;
 
+
         InitializeComponent();
 
     }
 
     protected async override void OnAppearing()
     {
+
         _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
         List<Bills> B = _ds.GetBudgetBills(App.DefaultBudgetID, "ViewBills").Result;
 

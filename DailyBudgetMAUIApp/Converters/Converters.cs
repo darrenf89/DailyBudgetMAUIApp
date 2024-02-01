@@ -1268,4 +1268,29 @@ namespace DailyBudgetMAUIApp.Converters
             return null;
         }
     }
+
+    public class IsBorrowPayTextConverter : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            bool IsBorrowPay = (bool)value;
+
+            if (IsBorrowPay)
+            {
+                return "Borrow from next pay";
+            }
+            else
+            {
+                return "Use current balance only";
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
 }

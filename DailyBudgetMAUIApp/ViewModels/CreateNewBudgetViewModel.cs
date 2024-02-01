@@ -53,6 +53,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private lut_NumberFormat _selectedNumberFormats;
         [ObservableProperty]
         private lut_BudgetTimeZone _selectedTimeZone;
+        [ObservableProperty]
+        private bool _isBorrowPay;
 
         public string PayDayTypeText { get; set; }
         public string PayAmountText { get; set; }
@@ -214,7 +216,20 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     decimal Balance = (decimal)_pt.FormatCurrencyNumber(BankBalanceText);
 
-                    if(Balance != Budget.BankBalance)
+                    if (IsBorrowPay != Budget.IsBorrowPay)
+                    {
+                        UpdateBudgetFlag = true;
+                        Budget.IsBorrowPay = IsBorrowPay;
+                        PatchDoc IsBorrow = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/IsBorrowPay",
+                            value = Budget.IsBorrowPay
+                        };
+                        BudgetUpdate.Add(IsBorrow);
+                    }
+
+                    if (Balance != Budget.BankBalance)
                     {
                         UpdateBudgetFlag = true;
                         Budget.BankBalance = Balance;

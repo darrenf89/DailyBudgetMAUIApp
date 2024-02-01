@@ -23,6 +23,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private double _screenHeight;
         [ObservableProperty]
         private double _signOutButtonWidth;
+        [ObservableProperty]
+        private double _minHeight;
 
 
         public ViewSavingsViewModel(IProductTools pt, IRestDataService ds)
@@ -32,6 +34,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             Title = $"Check Your Savings {App.UserDetails.NickName}";
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
+            
 
         }
     }

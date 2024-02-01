@@ -299,6 +299,14 @@ namespace DailyBudgetMAUIApp.DataServices
 
             Budget.LastUpdated = DateTime.UtcNow;
             int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
+
+            //If Budget is Borrow Pay add Next Pay day value to MaB and Lts
+            if(Budget.IsBorrowPay)
+            {
+                Budget.MoneyAvailableBalance += Budget.PaydayAmount;
+                Budget.LeftToSpendBalance += Budget.PaydayAmount;
+            }
+
             Budget.LeftToSpendDailyAmount = (Budget.LeftToSpendBalance ?? 0) / DaysToPayDay;
             Budget.StartDayDailyAmount = Budget.LeftToSpendDailyAmount;
 
@@ -1013,6 +1021,8 @@ namespace DailyBudgetMAUIApp.DataServices
                         {
                             _ds.UpdatePayPeriodStats(budget.PayPeriodStats[i]);
                         }
+
+                        
 
                         //SAVE BUDGET UPDATES - BEFORE CHECK IT HASNT ALREADY BEEN UPDATED
                         DateTime BudgetUpdatedCheck = await _ds.GetBudgetValuesLastUpdatedAsync(budget.BudgetID, "DailyChecks");

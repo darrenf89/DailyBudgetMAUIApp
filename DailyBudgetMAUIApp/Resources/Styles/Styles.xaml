@@ -46,7 +46,8 @@
     <converters:BillDueDate x:Key="BillDueDate"/>
     <converters:BillTypeConverter x:Key="BillTypeConverter"/>
     <converters:BillToGlyph x:Key="BillToGlyph"/>
-    
+    <converters:IsBorrowPayTextConverter x:Key="IsBorrowPayTextConverter"/>
+
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>
         <Setter Property="FontSize" Value="Micro"/>

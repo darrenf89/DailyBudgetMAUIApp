@@ -43,8 +43,8 @@ public partial class AddBill : ContentPage
             }   
             else
             {
-                _vm.Title = $"Update Outgoing {_vm.Bill.BillName}";
-                btnUpdateBill.IsVisible = true;
+                _vm.Title = "Add a New Outgoing";
+                btnAddBill.IsVisible = true;
 
                 LoadExistingBill();
             }

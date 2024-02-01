@@ -9,6 +9,9 @@ using CommunityToolkit.Maui.ApplicationModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Maui.Controls.Internals;
+using IeuanWalker.Maui.Switch.Events;
+using IeuanWalker.Maui.Switch;
+using IeuanWalker.Maui.Switch.Helpers;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -137,6 +140,8 @@ public partial class CreateNewBudget : ContentPage
             entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
             double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
             entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
+
+            _vm.IsBorrowPay = _vm.Budget.IsBorrowPay;
 
             dtpckPayDay.Date = _vm.Budget.NextIncomePayday ?? default;
             dtpckPayDay.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
@@ -1540,6 +1545,27 @@ public partial class CreateNewBudget : ContentPage
             hslIsAcceptTerms.BackgroundColor = (Color)White;
             lblIsAcceptTerms.TextColor = (Color)Gray900;
         }
+    }
+
+    static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
+    {
+        Application.Current.Resources.TryGetValue("Primary", out var Primary);
+        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
+        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
+
+        //Switch Color Animation
+        Color fromSwitchColor = e.IsToggled ? (Color)Primary : (Color)Gray400;
+        Color toSwitchColor = e.IsToggled ? (Color)Gray400 : (Color)Primary;
+
+        //BackGroundColor Animation
+        Color fromColor = e.IsToggled ? (Color)Tertiary : (Color)PrimaryLight;
+        Color toColor = e.IsToggled ? (Color)PrimaryLight : (Color)Tertiary;
+
+        double t = e.Percentage * 0.01;
+
+        customSwitch.KnobBackgroundColor = ColorAnimationUtil.ColorAnimation(fromSwitchColor, toSwitchColor, t);
+        customSwitch.BackgroundColor = ColorAnimationUtil.ColorAnimation(fromColor, toColor, t);
     }
 
 }
