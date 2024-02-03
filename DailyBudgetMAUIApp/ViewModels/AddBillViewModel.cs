@@ -31,6 +31,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private DateTime _minimumDate = DateTime.UtcNow.Date.AddDays(1);
         [ObservableProperty]
         private string _navigatedFrom;
+        [ObservableProperty]
+        private string _billName;
+        [ObservableProperty]
+        private string _billPayee;
 
 
         public string BillTypeText { get; set; } = "";
@@ -55,6 +59,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                 string SuccessCheck = _ds.SaveNewBill(Bill,BudgetID).Result;
                 if(SuccessCheck == "OK")
                 {
+                    Bill.BillName = "";
+                    Bill.BillPayee = "";
                     if (NavigatedFrom == "CreateNewBudget")
                     {
                         if (App.CurrentPopUp == null)
@@ -63,7 +69,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                             App.CurrentPopUp = PopUp;
                             Application.Current.MainPage.ShowPopup(PopUp);
                         }
-
                         await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
                     }
                     else if (NavigatedFrom == "ViewBills")
@@ -81,6 +86,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                     }
+                    
                 }
             }
             catch (Exception ex)
@@ -101,6 +107,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                 string SuccessCheck = _ds.UpdateBill(Bill).Result;
                 if(SuccessCheck == "OK")
                 {
+                    Bill.BillName = "";
+                    Bill.BillPayee = "";
                     if (NavigatedFrom == "CreateNewBudget")
                     {
                         if (App.CurrentPopUp == null)
@@ -143,6 +151,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         public async void BackButton()
         {
+            Bill.BillName = "";
+            Bill.BillPayee = "";
             if (NavigatedFrom == "CreateNewBudget")
             {
                 if (App.CurrentPopUp == null)
@@ -184,6 +194,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 if (result != null || (string)result != "")
                 {
                     Bill.BillName = (string)result;
+                    BillName = Bill.BillName;
                 }
 
             }

@@ -16,6 +16,8 @@ namespace DailyBudgetMAUIApp.Models
         public string? _sharedByUserEmail;
         [ObservableProperty]
         public bool _isVerified;
+        [ObservableProperty]
+        public DateTime _requestInitiated = DateTime.UtcNow;
 
     }
 }

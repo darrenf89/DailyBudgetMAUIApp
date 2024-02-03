@@ -40,6 +40,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string _navigatedFrom;
 
 
+
         public AddTransactionViewModel(IProductTools pt, IRestDataService ds)
         {
             _pt = pt;

@@ -50,7 +50,14 @@ namespace DailyBudgetMAUIApp.ViewModels
         private ObservableCollection<Transactions> _recentTransactions = new ObservableCollection<Transactions>();
         [ObservableProperty]
         private double _recentTransactionsHeight = 452;
-
+        [ObservableProperty]
+        private decimal _maxBankBalance = 0;
+        [ObservableProperty]
+        private decimal _transactionAmount;
+        [ObservableProperty]
+        private double _quickTransactionWidth;
+        [ObservableProperty]
+        private double _quickTransactionInputWidth;
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {
@@ -59,8 +66,9 @@ namespace DailyBudgetMAUIApp.ViewModels
             double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             ProgressBarWidthRequest = ScreenWidth - 85;
             SignOutButtonWidth = ScreenWidth - 30;
+            QuickTransactionWidth = ScreenWidth - 180;
+            QuickTransactionInputWidth = QuickTransactionWidth - 70;
             ProgressBarCarWidthRequest = ScreenWidth - 115;
-
         }
 
         [ICommand]

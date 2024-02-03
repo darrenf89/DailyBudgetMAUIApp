@@ -28,6 +28,8 @@ public partial class AddBill : ContentPage
 
     async protected override void OnAppearing()
     {
+        base.OnAppearing();
+
         if (_vm.BudgetID == 0)
         {
             _vm.BudgetID = App.DefaultBudgetID;
@@ -38,6 +40,8 @@ public partial class AddBill : ContentPage
             if(_vm.Bill == null)
             {
                 _vm.Bill = new Bills();
+                _vm.Bill.BillPayee = "";
+                _vm.Bill.BillName = "";
                 _vm.Title = "Add a New Outgoing";
                 btnAddBill.IsVisible = true;
             }   
@@ -65,9 +69,17 @@ public partial class AddBill : ContentPage
         entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
 
         double RegularValue = (double?)_vm.Bill.RegularBillValue ?? 0;
-        lblRegularBillValue.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);
+        lblRegularBillValue.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);  
+        
+        if(!string.IsNullOrEmpty(_vm.Bill.BillName))
+        {
+            _vm.BillName = _vm.Bill.BillName;
+        }
 
-        base.OnAppearing();
+        if (!string.IsNullOrEmpty(_vm.Bill.BillPayee))
+        {
+            _vm.BillPayee = _vm.Bill.BillPayee;
+        }
 
         if (App.CurrentPopUp != null)
         {

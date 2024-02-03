@@ -58,7 +58,7 @@ public partial class AddSaving : ContentPage
             {
                 _vm.SavingRecurringText = "Envelope";
                 _vm.Saving.IsRegularSaving = false;
-                UpdateDisplaySelection("Envelope");
+                btnEnvelopeSaving_Clicked(null, null);
             }
             else if(_vm.SavingType == "Regular")
             {
@@ -97,7 +97,7 @@ public partial class AddSaving : ContentPage
             {
                 _vm.SavingRecurringText = "Envelope";
                 _vm.Saving.IsRegularSaving = false;
-                UpdateDisplaySelection("Envelope");
+                btnEnvelopeSaving_Clicked(null, null);
             }
         }
 
@@ -476,6 +476,7 @@ public partial class AddSaving : ContentPage
         }
         else if(option == "Envelope")
         {
+
             SelectSavingType.IsVisible = false;
             SavingTypeSelected.IsVisible = true;
             brdSavingDetails.IsVisible = true;

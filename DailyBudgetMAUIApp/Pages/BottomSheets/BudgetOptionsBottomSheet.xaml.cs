@@ -170,9 +170,36 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
     }
 
-    private void ShareBudget_Tapped(object sender, TappedEventArgs e)
+    private async void ShareBudget_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
+        }
 
+        ShareBudgetRequest SBR = new ShareBudgetRequest
+        {
+            SharedBudgetID = App.DefaultBudgetID,
+            IsVerified = false,
+            SharedByUserEmail = App.UserDetails.Email,
+            RequestInitiated = DateTime.UtcNow
+        };
+
+        ShareBudget page = new ShareBudget(SBR, new RestDataService());
+
+        page.Detents = new DetentsCollection()
+        {
+            new FixedContentDetent(),
+            new FullscreenDetent()
+
+        };
+
+        page.HasBackdrop = true;
+        page.CornerRadius = 30;
+
+        App.CurrentBottomSheet = page;
+        page.ShowAsync();
     }
 
     private async void SwitchBudget_Tapped(object sender, TappedEventArgs e)

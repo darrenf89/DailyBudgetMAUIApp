@@ -46,10 +46,10 @@
     </Shell.TitleView>
     <ScrollView>
         <VerticalStackLayout VerticalOptions="Start">
-            <VerticalStackLayout Margin="20,20,20,4" IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}">
+            <VerticalStackLayout Margin="20,20,20,4" IsVisible="{Binding BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}">
                 <Label 
-                    Text="{Binding Bill.BillName}"
-                    IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"
+                    Text="{Binding BillName}"
+                    IsVisible="{Binding BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"
                     VerticalOptions="Center" 
                     HorizontalOptions="Center"
                     FontSize="Large"
@@ -60,7 +60,7 @@
                 </VerticalStackLayout.GestureRecognizers>
             </VerticalStackLayout>
             <VerticalStackLayout Margin="0,0,0,16">
-                <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Tertiary}" IsVisible="{Binding Bill.BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"/>
+                <BoxView HeightRequest="2" Margin="40,0,40,0" Color="{DynamicResource Tertiary}" IsVisible="{Binding BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"/>
             </VerticalStackLayout>
             <Border Style="{DynamicResource AddEditTransContent}" x:Name="brdBillSelection" Margin="20,5,20,10">
                 <VerticalStackLayout>
@@ -219,7 +219,7 @@
                     </Border>
                     <Label Text="Payee" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
                     <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
-                        <Label x:Name="lblPayee" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"  VerticalOptions="Center" Text="{Binding Bill.BillPayee, Converter={StaticResource PayeeText}}"/>
+                        <Label x:Name="lblPayee" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"  VerticalOptions="Center" Text="{Binding BillPayee, Converter={StaticResource PayeeText}}"/>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer x:Name="SelectPayee" Tapped="SelectPayee_Tapped"/>
                         </Border.GestureRecognizers>

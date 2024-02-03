@@ -36,7 +36,7 @@ namespace DailyBudgetMAUIApp.Converters
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null) return null;
+            if (value == null) return "";
 
             if ((bool)value)
             {
@@ -687,11 +687,11 @@ namespace DailyBudgetMAUIApp.Converters
 
             if (Income.IsInstantActive ?? false)
             {
-                ReturnValue = ReturnValue + "Instant Active Extra Income";
+                ReturnValue = ReturnValue + "| Instant Active ";
             }
             else
             {
-                ReturnValue = ReturnValue + "On Received Extra Income";
+                ReturnValue = ReturnValue + "| On Received";
             }
 
             return ReturnValue;

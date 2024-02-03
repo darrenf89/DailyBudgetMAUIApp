@@ -161,39 +161,39 @@ public partial class MainPage : ContentPage
         SavingCarouselIdent.Children.Clear();
         if (_vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).ToList().Count() != 0)
         {
-            brdSavingCarousel.IsVisible = true;
+            absSaving.IsVisible = true;
             _vm.SavingCarousel = await CreateSavingCarousel();
             SavingCarousel.Children.Add(_vm.SavingCarousel);
         }
         else
         {
-            brdSavingCarousel.IsVisible = false;
+            absSaving.IsVisible = false;
         }
 
         BillCarousel.Children.Clear();
         BillCarouselIdent.Children.Clear();
         if (_vm.DefaultBudget.Bills.Count() != 0)
         {
-            brdBillCarousel.IsVisible = true;
+            absBill.IsVisible = true;
             _vm.BillCarousel = await CreateBillCarousel();
             BillCarousel.Children.Add(_vm.BillCarousel);
         }
         else
         {
-            brdBillCarousel.IsVisible = false;
+            absBill.IsVisible = false;
         }
 
         IncomeCarousel.Children.Clear();
         IncomeCarouselIdent.Children.Clear();
         if (_vm.DefaultBudget.IncomeEvents.Any())
         {
-            brdIncomeCarousel.IsVisible = true;
+            absIncome.IsVisible = true;
             _vm.IncomeCarousel = await CreateIncomeCarousel();
             IncomeCarousel.Children.Add(_vm.IncomeCarousel);
         }
         else
         {
-            brdIncomeCarousel.IsVisible = false;
+            absIncome.IsVisible = false;
         }
 
         _vm.RecentTransactions.Clear();
@@ -202,7 +202,24 @@ public partial class MainPage : ContentPage
         {
             _vm.RecentTransactions.Add(T);
         }
-        
+
+        _vm.MaxBankBalance = _vm.DefaultBudget.BankBalance.GetValueOrDefault();
+        if (_vm.DefaultBudget.IsBorrowPay)
+        {
+            _vm.MaxBankBalance += _vm.DefaultBudget.PaydayAmount.GetValueOrDefault();
+        }
+
+        decimal Amount = 0;
+        entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
+
+    }
+
+    void TransactionAmount_Changed(object sender, TextChangedEventArgs e)
+    {
+        decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+        entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
+        entTransactionAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entTransactionAmount.Text);
+        _vm.TransactionAmount = Amount;
     }
 
     private async void ProcessSnackBar()
@@ -373,7 +390,8 @@ public partial class MainPage : ContentPage
         {
             SharedBudgetID = _vm.DefaultBudgetID,
             IsVerified = false,
-            SharedByUserEmail = App.UserDetails.Email
+            SharedByUserEmail = App.UserDetails.Email,
+            RequestInitiated = DateTime.UtcNow
         };
 
         ShareBudget page = new ShareBudget(SBR, new RestDataService());
@@ -1567,19 +1585,33 @@ public partial class MainPage : ContentPage
         page.ShowAsync();
     }
 
-    private void ExtraInfoDetails_Tapped(object sender, TappedEventArgs e)
+    private void ExtraIncoDetails_Tapped(object sender, TappedEventArgs e)
     {
 
     }
 
-    private void ExtraBillInfo_Tapped(object sender, TappedEventArgs e)
+    private async void ExtraBillInfo_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
+        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewBills)}");
     }
 
-    private void ExtraSavingInfo_Tapped(object sender, TappedEventArgs e)
+    private async void ExtraSavingInfo_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
+        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
     }
 
     private async void SeeMoreTransactions_Tapped(object sender, TappedEventArgs e)
@@ -1642,6 +1674,70 @@ public partial class MainPage : ContentPage
             LVTransactions.RefreshItem();
             LVTransactions.RefreshView();
         }
+    }
+
+    private async void QuickTransaction_Tapped(object sender, TappedEventArgs e)
+    {
+        if (brdTransactionAmount.Opacity == 0)
+        {
+            entTransactionAmount.Focus();
+
+            var a1 = brdTransaction.RotateTo(90, 250, Easing.CubicOut);
+            var a2 = brdTransactionAmount.FadeTo(1, 250, Easing.CubicOut);
+            var a3 = btnTransactionAmount.FadeTo(1, 250, Easing.CubicOut);
+
+            await Task.WhenAll(a1, a2, a3);
+
+            Shadow shadow = new Shadow
+            {
+                Opacity = (float)0.95,
+                Radius = 15
+            };
+
+            brdTransactionAmount.Shadow = shadow;
+        }
+        else
+        {
+            entTransactionAmount.IsEnabled = false;
+            entTransactionAmount.IsEnabled = true;
+
+            var a1 = brdTransaction.RotateTo(0, 250, Easing.CubicOut);
+            var a2 = brdTransactionAmount.FadeTo(0, 250, Easing.CubicOut);
+            var a3 = btnTransactionAmount.FadeTo(0, 250, Easing.CubicOut);
+
+            await Task.WhenAll(a1, a2, a3);
+        }      
+    }
+
+    private async void btnTransactionAmount_Clicked(object sender, EventArgs e)
+    {
+        Transactions T = new Transactions
+        {
+            TransactionAmount = _vm.TransactionAmount,
+            IsSpendFromSavings = false,
+            SavingID = null,
+            SavingName = null,
+            TransactionDate = DateTime.UtcNow,
+            WhenAdded = DateTime.UtcNow,
+            IsIncome = false,
+            Category = null,
+            Payee = null,
+            Notes = null,
+            CategoryID = null,
+            IsTransacted = true,
+            SavingsSpendType = null,
+            EventType = "Transaction"
+        };
+
+        await _ds.SaveNewTransaction(T, App.DefaultBudget.BudgetID);
+        QuickTransaction_Tapped(null, null);
+        _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+        await LoadMainDashboardContent();
+
+        await DisplayAlert("Transaction added", $"Congrats, you have added a quick transaction. You can edit the details of the transaction later", "OK");
+
+
+
     }
 }
 
