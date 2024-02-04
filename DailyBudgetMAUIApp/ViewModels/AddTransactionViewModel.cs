@@ -49,6 +49,46 @@ namespace DailyBudgetMAUIApp.ViewModels
             Title = "Add a New Transaction";            
         }
 
+        [ICommand]
+        public async void BackButton()
+        {
+            if (NavigatedFrom == "ViewTransactions")
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
 
+                await Shell.Current.GoToAsync($"//{nameof(ViewTransactions)}");
+            }
+            else if (NavigatedFrom == "ViewSavings")
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
+            }
+            else if (NavigatedFrom == "ViewEnvelopes")
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
+            }
+            else
+            {
+                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+            }
+        }
     }
 }

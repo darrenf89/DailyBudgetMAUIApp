@@ -14,6 +14,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     [QueryProperty(nameof(SavingID), nameof(SavingID))]
     [QueryProperty(nameof(SavingType), nameof(SavingType))]
     [QueryProperty(nameof(NavigatedFrom), nameof(NavigatedFrom))]
+    [QueryProperty(nameof(Saving), nameof(Saving))]
     public partial class AddSavingViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -66,8 +67,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                 if (result)
                 {
                     Saving.LastUpdatedValue = Saving.CurrentBalance;
-                    string SuccessCheck = _ds.SaveNewSaving(Saving, BudgetID).Result;
-                    if (SuccessCheck == "OK")
+                    int SavingID = _ds.SaveNewSaving(Saving, BudgetID).Result;
+                    if (SavingID != 0)
                     {
                         if (NavigatedFrom == "CreateNewBudget")
                         {
@@ -91,9 +92,20 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                             await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
                         }
+                        else if (NavigatedFrom == "ViewEnvelopes")
+                        {
+                            if (App.CurrentPopUp == null)
+                            {
+                                var PopUp = new PopUpPage();
+                                App.CurrentPopUp = PopUp;
+                                Application.Current.MainPage.ShowPopup(PopUp);
+                            }
+
+                            await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
+                        }
                         else
                         {
-                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                            await Shell.Current.GoToAsync($"{nameof(MainPage)}?SnackBar=Saving Added&SnackID={SavingID}");
                         }
                     }
                 }
@@ -134,6 +146,17 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
             }
+            else if (NavigatedFrom == "ViewEnvelopes")
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
+            }
             else
             {
                 await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
@@ -171,6 +194,17 @@ namespace DailyBudgetMAUIApp.ViewModels
                             }
 
                             await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
+                        }
+                        else if (NavigatedFrom == "ViewEnvelopes")
+                        {
+                            if (App.CurrentPopUp == null)
+                            {
+                                var PopUp = new PopUpPage();
+                                App.CurrentPopUp = PopUp;
+                                Application.Current.MainPage.ShowPopup(PopUp);
+                            }
+
+                            await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
                         }
                         else
                         {

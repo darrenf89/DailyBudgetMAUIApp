@@ -47,6 +47,8 @@
     <converters:BillTypeConverter x:Key="BillTypeConverter"/>
     <converters:BillToGlyph x:Key="BillToGlyph"/>
     <converters:IsBorrowPayTextConverter x:Key="IsBorrowPayTextConverter"/>
+    <converters:IncomeTypeConverter x:Key="IncomeTypeConverter"/>
+    <converters:RecurringIncomeDetails x:Key="RecurringIncomeDetails"/>
 
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>

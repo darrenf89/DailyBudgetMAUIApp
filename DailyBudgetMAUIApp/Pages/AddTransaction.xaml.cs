@@ -226,9 +226,13 @@ public partial class AddTransaction : ContentPage
                     {
                         await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
                     }
+                    else if (_vm.NavigatedFrom == "ViewEnvelopes")
+                    {
+                        await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
+                    }
                     else
                     {
-                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Transaction Added&SnackID={_vm.Transaction.TransactionID}");
+                        await Shell.Current.GoToAsync($"{nameof(MainPage)}?SnackBar=Transaction Added&SnackID={_vm.Transaction.TransactionID}");
                     }
                 }
             }
@@ -265,9 +269,13 @@ public partial class AddTransaction : ContentPage
                     {
                         await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
                     }
+                    else if (_vm.NavigatedFrom == "ViewEnvelopes")
+                    {
+                        await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
+                    }
                     else
                     {
-                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
+                        await Shell.Current.GoToAsync($"{nameof(MainPage)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
                     }
                 }
             }

@@ -76,6 +76,8 @@ namespace DailyBudgetMAUIApp.Models
         private AccountInfo _accountInfo = new AccountInfo();
         [ObservableProperty]
         private bool _isBorrowPay = true;
+        [ObservableProperty]
+        private decimal _currentActiveIncome = 0;
     }
 
     public class AccountInfo

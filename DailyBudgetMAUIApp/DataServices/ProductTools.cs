@@ -455,7 +455,7 @@ namespace DailyBudgetMAUIApp.DataServices
             if (Budget != null)
             {
                 DateTime Today = GetBudgetLocalTime(DateTime.UtcNow).Date;
-
+                Budget.CurrentActiveIncome = 0;
                 foreach (IncomeEvents Income in Budget.IncomeEvents)
                 {
                     if (!Income.IsClosed)
@@ -471,10 +471,12 @@ namespace DailyBudgetMAUIApp.DataServices
                                 Income.IncomeActiveDate = DateTime.UtcNow;
                                 Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance + Income.IncomeAmount;
                                 Budget.LeftToSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
+                                Budget.CurrentActiveIncome += Income.IncomeAmount;
                                 while (NextIncomeDate.Date < NextPayDay.Date)
                                 {
                                     Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance + Income.IncomeAmount;
                                     Budget.LeftToSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
+                                    Budget.CurrentActiveIncome += Income.IncomeAmount;
                                     //TODO: Add a Transaction into transactions
                                     NextIncomeDate = CalculateNextDate(NextIncomeDate, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
                                 }
@@ -1773,6 +1775,14 @@ namespace DailyBudgetMAUIApp.DataServices
                 Icon = "bill.svg",
                 ContentTemplate = new DataTemplate(() => new ViewBills(new ViewBillsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
+
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Incomes",
+                Route = "ViewIncomes",
+                Icon = "income.svg",
+                ContentTemplate = new DataTemplate(() => new ViewIncomes(new ViewIncomesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
         }
 
         private async Task LoadPremiumPlusTabBar()
@@ -1841,6 +1851,22 @@ namespace DailyBudgetMAUIApp.DataServices
                 Icon = "bill.svg",
                 ContentTemplate = new DataTemplate(() => new ViewBills(new ViewBillsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
+
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Envelopes",
+                Route = "ViewEnvelopes",
+                Icon = "envelope.svg",
+                ContentTemplate = new DataTemplate(() => new ViewEnvelopes(new ViewEnvelopesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Incomes",
+                Route = "ViewIncomes",
+                Icon = "income.svg",
+                ContentTemplate = new DataTemplate(() => new ViewIncomes(new ViewIncomesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
         }
 
         private async Task LoadBasicTabBar()
@@ -1884,6 +1910,14 @@ namespace DailyBudgetMAUIApp.DataServices
                 Route = "ViewBills",
                 Icon = "bill.svg",
                 ContentTemplate = new DataTemplate(() => new ViewBills(new ViewBillsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Incomes",
+                Route = "ViewIncomes",
+                Icon = "income.svg",
+                ContentTemplate = new DataTemplate(() => new ViewIncomes(new ViewIncomesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
         }

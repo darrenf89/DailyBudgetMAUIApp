@@ -87,9 +87,20 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
             }
+            else if (NavigatedFrom == "ViewIncomes")
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
+            }
             else
             {
-                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                await Shell.Current.GoToAsync($"{nameof(MainPage)}");
             }
         }
 
@@ -100,23 +111,31 @@ namespace DailyBudgetMAUIApp.ViewModels
                 string SuccessCheck = _ds.SaveNewIncome(Income, BudgetID).Result;
                 if (SuccessCheck == "OK")
                 {
-
-                    var stack = Application.Current.MainPage.Navigation.NavigationStack;
-                    int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
-                    if (count >= 2)
+                    if (NavigatedFrom == "CreateNewBudget")
                     {
-                        if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                        if (App.CurrentPopUp == null)
                         {
-                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.MainPage.ShowPopup(PopUp);
                         }
-                        else
+
+                        await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                    }
+                    else if (NavigatedFrom == "ViewIncomes")
+                    {
+                        if (App.CurrentPopUp == null)
                         {
-                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.MainPage.ShowPopup(PopUp);
                         }
+
+                        await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
                     }
                     else
                     {
-                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        await Shell.Current.GoToAsync($"{nameof(MainPage)}");
                     }
                 }
             }
@@ -138,24 +157,33 @@ namespace DailyBudgetMAUIApp.ViewModels
                 string SuccessCheck = _ds.UpdateIncome(Income).Result;
                 if (SuccessCheck == "OK")
                 {
-                    var stack = Application.Current.MainPage.Navigation.NavigationStack;
-                    int count = Application.Current.MainPage.Navigation.NavigationStack.Count;
-                    if (count >= 2)
+                    if (NavigatedFrom == "CreateNewBudget")
                     {
-                        if (stack[count - 2].ToString() == "DailyBudgetMAUIApp.Pages.CreateNewBudget")
+                        if (App.CurrentPopUp == null)
                         {
-                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}//{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.MainPage.ShowPopup(PopUp);
                         }
-                        else
+
+                        await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                    }
+                    else if (NavigatedFrom == "ViewIncomes")
+                    {
+                        if (App.CurrentPopUp == null)
                         {
-                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.MainPage.ShowPopup(PopUp);
                         }
+
+                        await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
                     }
                     else
                     {
-                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        await Shell.Current.GoToAsync($"{nameof(MainPage)}");
                     }
-                }
+                }                
             }
             catch (Exception ex)
             {

@@ -45,22 +45,23 @@ public partial class AddSaving : ContentPage
             _vm.Title = "Add a New Saving";
             btnAddSaving.IsVisible = true;
 
-            if(_vm.NavigatedFrom == "ViewSavings")
+            if (_vm.NavigatedFrom == "ViewSavings")
             {
                 _vm.SavingType = "Regular";
             }
-            else if(_vm.NavigatedFrom == "ViewEnvelopes")
+            else if (_vm.NavigatedFrom == "ViewEnvelopes")
             {
                 _vm.SavingType = "Envelope";
             }
 
-            if(_vm.SavingType == "Envelope")
+            if (_vm.SavingType == "Envelope")
             {
                 _vm.SavingRecurringText = "Envelope";
                 _vm.Saving.IsRegularSaving = false;
-                btnEnvelopeSaving_Clicked(null, null);
+
+                UpdateDisplaySelection("Envelope");
             }
-            else if(_vm.SavingType == "Regular")
+            else if (_vm.SavingType == "Regular")
             {
                 _vm.SavingRecurringText = "Ongoing";
                 _vm.Saving.IsRegularSaving = true;
@@ -69,10 +70,17 @@ public partial class AddSaving : ContentPage
         }
         else
         {
-            _vm.Saving = _ds.GetSavingFromID(_vm.SavingID).Result;
-            _vm.Title = $"Update Saving {_vm.Saving.SavingsName}";
-
-            btnUpdateSaving.IsVisible = true; 
+            if (_vm.SavingID != -1)
+            {
+                _vm.Saving = _ds.GetSavingFromID(_vm.SavingID).Result;
+                _vm.Title = $"Update Saving {_vm.Saving.SavingsName}";
+                btnUpdateSaving.IsVisible = true;
+            }
+            else
+            {
+                _vm.Title = "Add a New Saving";
+                btnAddSaving.IsVisible = true;
+            }            
 
             if (_vm.Saving.IsRegularSaving)
             {
@@ -97,7 +105,8 @@ public partial class AddSaving : ContentPage
             {
                 _vm.SavingRecurringText = "Envelope";
                 _vm.Saving.IsRegularSaving = false;
-                btnEnvelopeSaving_Clicked(null, null);
+
+                UpdateDisplaySelection("Envelope");
             }
         }
 
@@ -199,14 +208,16 @@ public partial class AddSaving : ContentPage
     }
     private void btnEnvelopeSaving_Clicked(object sender, EventArgs e)
     {
-        ClearAllValidators();        
+        ClearAllValidators();
+
+        pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
 
         _vm.SavingRecurringText = "Envelope";
         _vm.Saving.IsRegularSaving = false;        
 
         UpdateDisplaySelection("Envelope");
 
-        pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
+
     }
 
     private void Option1Select_Tapped(object sender, TappedEventArgs e)
@@ -807,7 +818,14 @@ public partial class AddSaving : ContentPage
     {
         if (_vm.SavingID == 0)
         {
-            pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
+            if (_vm.SavingType == "Envelope")
+            {
+                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
+            }
+            else
+            {
+                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
+            }            
         }
         else
         {

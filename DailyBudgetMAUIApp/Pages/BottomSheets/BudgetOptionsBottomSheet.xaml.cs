@@ -92,9 +92,21 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
     }
 
-    private void ViewIncomes_Tapped(object sender, TappedEventArgs e)
+    private async void ViewIncomes_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
+        }
+        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewIncomes)}");
     }
 
     private void EditPayInfo_Tapped(object sender, TappedEventArgs e)
@@ -209,9 +221,22 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         SwitchBudgetPicker.Focus();
     }
 
-    private void ViewEnvelopes_Tapped(object sender, TappedEventArgs e)
+    private async void ViewEnvelopes_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
+        }
+
+        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewEnvelopes)}");
     }
 
     private void UpgradeBudget_Tapped(object sender, TappedEventArgs e)

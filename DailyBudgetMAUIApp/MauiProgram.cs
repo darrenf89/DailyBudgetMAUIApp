@@ -64,6 +64,8 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewCategories>();
         builder.Services.AddTransient<ViewSavings>();
         builder.Services.AddTransient<ViewBills>();
+        builder.Services.AddTransient<ViewEnvelopes>();
+        builder.Services.AddTransient<ViewIncomes>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();
@@ -84,6 +86,8 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewCategoriesViewModel>();
         builder.Services.AddTransient<ViewSavingsViewModel>();
         builder.Services.AddTransient<ViewBillsViewModel>();
+        builder.Services.AddTransient<ViewEnvelopesViewModel>();
+        builder.Services.AddTransient<ViewIncomesViewModel>();
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();
@@ -103,7 +107,7 @@ public static class MauiProgram
         builder.Services.AddTransient<BudgetOptionsBottomSheet>();
         builder.Services.AddTransient<ShareBudget>();
         builder.Services.AddTransient<EnvelopeOptionsBottomSheet>();
-
+        builder.Services.AddTransient<TransactionOptionsBottomSheet>();
 
 #if WINDOWS
         SetWindowHandlers(); 

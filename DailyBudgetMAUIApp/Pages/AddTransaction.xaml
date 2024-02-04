@@ -17,6 +17,9 @@
             <converters:IsNoteText x:Key="IsNoteText" />
         </ResourceDictionary>
     </ContentPage.Resources>
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding BackButtonCommand}" />
+    </Shell.BackButtonBehavior>
     <Shell.TitleView>
         <Grid ColumnDefinitions="*,40,40,5">
             <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="0" Padding="0" FontSize="14"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Start" Grid.Column="0"/>

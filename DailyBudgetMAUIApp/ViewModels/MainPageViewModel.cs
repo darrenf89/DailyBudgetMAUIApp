@@ -29,9 +29,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool _isRefreshing;
         [ObservableProperty]
-        private string _snackBar = "";
+        private string _snackBar;
         [ObservableProperty]
-        private int _snackID = 0;
+        private int _snackID;
         [ObservableProperty]
         private double _progressBarWidthRequest;
         [ObservableProperty]

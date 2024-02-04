@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 namespace DailyBudgetMAUIApp.ViewModels
 {
 
-    public partial class ViewSavingsViewModel : BaseViewModel
+    public partial class ViewEnvelopesViewModel : BaseViewModel
     {
 
         private readonly IProductTools _pt;
@@ -16,9 +16,13 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private Budgets _budget;
         [ObservableProperty]
-        private decimal _totalSavings;
+        private decimal _envelopeBalance;
         [ObservableProperty]
-        private decimal _payDaySavings;
+        private decimal _envelopeTotal;
+        [ObservableProperty]
+        private decimal _regularValue;
+        [ObservableProperty]
+        private int _daysToPayDay;
         [ObservableProperty]
         private double _screenHeight;
         [ObservableProperty]
@@ -27,12 +31,12 @@ namespace DailyBudgetMAUIApp.ViewModels
         private double _minHeight;
 
 
-        public ViewSavingsViewModel(IProductTools pt, IRestDataService ds)
+        public ViewEnvelopesViewModel(IProductTools pt, IRestDataService ds)
         {
             _ds = ds;
             _pt = pt;
 
-            Title = $"Check Your Envelopes {App.UserDetails.NickName}";
+            Title = $"Check Your Savings {App.UserDetails.NickName}";
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             
 

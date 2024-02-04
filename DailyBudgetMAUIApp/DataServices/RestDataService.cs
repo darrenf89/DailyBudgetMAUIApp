@@ -1435,7 +1435,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public async Task<string> SaveNewSaving(Savings Saving, int BudgetID)
+        public async Task<int> SaveNewSaving(Savings Saving, int BudgetID)
         {
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
@@ -1452,7 +1452,8 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return "OK";
+                    int SavingID = System.Text.Json.JsonSerializer.Deserialize<int>(content, _jsonSerialiserOptions);
+                    return SavingID;
                 }
                 else
                 {
@@ -1828,6 +1829,55 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<List<IncomeEvents>> GetBudgetIncomes(int BudgetID, string page)
+        {
+            List<IncomeEvents> IncomeEvents = new List<IncomeEvents>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/incomes/getbudgetincomeevents/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            IncomeEvents = serializer.Deserialize<List<IncomeEvents>>(reader);
+                        }
+
+                        return IncomeEvents;
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), page, "GetBudgetIncomes");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, page, "GetBudgetIncomes");
+                return null;
+            }
+        }
         public async Task<string> UpdateBudgetValues(int budgetID)
         {
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)

@@ -41,8 +41,6 @@ public partial class MainPage : ContentPage
         base.OnNavigatedTo(args);
         _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
 
-        ProcessSnackBar();
-
         if (App.CurrentPopUp != null)
         {
             await App.CurrentPopUp.CloseAsync();
@@ -52,8 +50,9 @@ public partial class MainPage : ContentPage
 
     protected async override void OnAppearing()
     {
-
         base.OnAppearing();
+
+        ProcessSnackBar();
 
         _vm.DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID), 1);
         if (_vm.DefaultBudgetID != 0)
@@ -204,6 +203,7 @@ public partial class MainPage : ContentPage
         }
 
         _vm.MaxBankBalance = _vm.DefaultBudget.BankBalance.GetValueOrDefault();
+        _vm.MaxBankBalance += _vm.DefaultBudget.CurrentActiveIncome;
         if (_vm.DefaultBudget.IsBorrowPay)
         {
             _vm.MaxBankBalance += _vm.DefaultBudget.PaydayAmount.GetValueOrDefault();
@@ -286,74 +286,128 @@ public partial class MainPage : ContentPage
         }
         else
         {
-            if(_vm.SnackBar == "Budget Created")
-            {
-                text=$"Hurrrrah, you have created a budget!";
-                actionButtonText="Undo";
-                int BudgetID = _vm.SnackID;
-                action = async () => await UndoCreateBudget(BudgetID);
-                duration = TimeSpan.FromSeconds(10);
+            CancellationTokenSource source = new CancellationTokenSource();
+            CancellationToken token = source.Token;
 
-                await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
-            }
+            switch (_vm.SnackBar)
+            {       
+                case "Budget Created":
 
-            if(_vm.SnackBar == "Transaction Updated")
-            {
-                CancellationTokenSource source = new CancellationTokenSource();
-                CancellationToken token = source.Token;
+                    text = $"Hurrrrah, you have created a budget!";
+                    actionButtonText = "Undo";
+                    int BudgetID = _vm.SnackID;
+                    action = async () => await UndoCreateBudget(BudgetID);
+                    duration = TimeSpan.FromSeconds(10);
 
-                text = $"Nice one, transaction updated!";
-                actionButtonText = "Ok";
-                action = async() =>
-                {
-                    source.Cancel();
-                };
-                duration = TimeSpan.FromSeconds(10);
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+                    break;
 
-                var SnackBar = Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions);
-                await SnackBar.Show(token);
+                case "Transaction Updated":
 
-                _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+                    text = $"Nice one, transaction updated!";
+                    actionButtonText = "Ok";
+                    action = async () =>
+                    {
+                        source.Cancel();
+                    };
+                    duration = TimeSpan.FromSeconds(10);
 
-                App.DefaultBudget = _vm.DefaultBudget;
-                _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
-                App.SessionLastUpdate = DateTime.UtcNow;
-            }
+                    var SnackBar = Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions);
+                    await SnackBar.Show(token);
 
 
-            if (_vm.SnackBar == "Transaction Added")
-            {
-                text = $"Sweet, transaction created!";
-                actionButtonText = "Undo";
-                int TransactionID = _vm.SnackID;
-                action = async () => await UndoAddTransaction(TransactionID);
-                duration = TimeSpan.FromSeconds(10);
+                    break;
 
-                await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+                case "Transaction Added":
 
-                _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+                    text = $"Sweet, transaction created!";
+                    actionButtonText = "Undo";
+                    int TransactionID = _vm.SnackID;
+                    action = async () => await UndoAddNew(TransactionID, "Transaction");
+                    duration = TimeSpan.FromSeconds(10);
 
-                App.DefaultBudget = _vm.DefaultBudget;
-                _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
-                App.SessionLastUpdate = DateTime.UtcNow;
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+
+                    break;
+
+                case "Saving Added":
+
+                    text = $"Congrats, you have a new saving goal";
+                    actionButtonText = "Undo";
+                    int SavingID = _vm.SnackID;
+                    action = async () => await UndoAddNew(SavingID, "Saving");
+                    duration = TimeSpan.FromSeconds(10);
+
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+
+                    break;
+
+                case "Bill Added":
+
+                    text = $"Ah no not another Outgoing!";
+                    actionButtonText = "Ok";
+                    action = async () =>
+                    {
+                        source.Cancel();
+                    };
+                    duration = TimeSpan.FromSeconds(10);
+
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+
+                    break;
+
+                case "Income Added":
+
+                    text = $"Congrats, you have added a new income";
+                    actionButtonText = "Ok";
+                    action = async () =>
+                    {
+                        source.Cancel();
+                    };
+                    duration = TimeSpan.FromSeconds(10);
+
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+
+                    break;
+
+                default:
+                    break;
             }
 
             _vm.SnackBar = "";
             _vm.SnackID = 0;
         }
     }
-    private async Task UndoAddTransaction(int TransactionID)
+    private async Task UndoAddNew(int ID, string Type)
     {
-        Transactions Transaction = await _ds.GetTransactionFromID(TransactionID);
-        Transaction.TransactionID = 0;
+        if (Type == "Transaction")
+        {
+            Transactions Transaction = await _ds.GetTransactionFromID(ID);
+            Transaction.TransactionID = 0;
 
-        await _ds.DeleteTransaction(TransactionID);
+            await _ds.DeleteTransaction(ID);
 
-        await Shell.Current.GoToAsync($"{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}",
-                new Dictionary<string, object>
-                {
-                    ["Transaction"] = Transaction
-                });
+            await Shell.Current.GoToAsync($"{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = Transaction
+                    });
+        }
+        else if (Type == "Saving")
+        {
+            Savings saving = await _ds.GetSavingFromID(ID);
+            saving.SavingID = 0;
+
+            await _ds.DeleteSaving(ID);
+
+            await Shell.Current.GoToAsync($"//{nameof(AddSaving)}?BudgetID={_vm.DefaultBudgetID}&SavingID={-1}",
+                    new Dictionary<string, object>
+                    {
+                        ["Saving"] = saving
+                    });
+        }
+
+
     }
     private async Task UndoCreateBudget(int BudgetID)
     {
@@ -433,6 +487,7 @@ public partial class MainPage : ContentPage
     {
 
     }
+
     private void YourTransactionsOption_Tapped(object sender, TappedEventArgs e)
     {
         TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet();
@@ -1585,9 +1640,21 @@ public partial class MainPage : ContentPage
         page.ShowAsync();
     }
 
-    private void ExtraIncoDetails_Tapped(object sender, TappedEventArgs e)
+    private async void ExtraIncoDetails_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
+        }
+        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewIncomes)}");
     }
 
     private async void ExtraBillInfo_Tapped(object sender, TappedEventArgs e)
@@ -1680,8 +1747,6 @@ public partial class MainPage : ContentPage
     {
         if (brdTransactionAmount.Opacity == 0)
         {
-            entTransactionAmount.Focus();
-
             var a1 = brdTransaction.RotateTo(90, 250, Easing.CubicOut);
             var a2 = brdTransactionAmount.FadeTo(1, 250, Easing.CubicOut);
             var a3 = btnTransactionAmount.FadeTo(1, 250, Easing.CubicOut);

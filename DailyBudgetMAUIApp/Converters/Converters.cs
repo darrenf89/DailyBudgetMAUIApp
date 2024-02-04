@@ -1127,7 +1127,7 @@ namespace DailyBudgetMAUIApp.Converters
             }
             else
             {
-                return "Put Money away in an envelope";
+                return "Put money in envelopes";
             }
         }
 

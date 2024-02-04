@@ -1,4 +1,6 @@
+using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using The49.Maui.BottomSheet;
@@ -52,8 +54,21 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
         }
     }
 
-    private void ViewAllEnvelopes_Tapped(object sender, TappedEventArgs e)
+    private async void ViewAllEnvelopes_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
+        }
+
+        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewEnvelopes)}");
     }
 }
