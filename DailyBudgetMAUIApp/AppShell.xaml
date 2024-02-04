@@ -29,4 +29,8 @@
         <ShellContent  ContentTemplate="{DataTemplate Pages:CreateNewBudget}"/>
     </ShellItem>
 
+    <ShellItem Route="ViewCategories" FlyoutItemIsVisible="True">
+        <ShellContent ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
+    </ShellItem>
+
 </Shell>

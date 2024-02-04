@@ -1,10 +1,6 @@
 ﻿using DailyBudgetMAUIApp.Models;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DailyBudgetMAUIApp.Converters
 {
@@ -1285,6 +1281,58 @@ namespace DailyBudgetMAUIApp.Converters
             else
             {
                 return "Use current balance only";
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class CategoryIDToBool : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            int CatID = (int)value;
+
+            if (CatID == -1)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class CategoryIDToColor : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
+            Application.Current.Resources.TryGetValue("Success", out var Success);
+
+            if (value == null) return null;
+
+            int CatID = (int)value;
+
+            if (CatID == -1)
+            {
+                return (Color)Success;
+            }
+            else
+            {
+                return (Color)PrimaryLight;
             }
         }
 

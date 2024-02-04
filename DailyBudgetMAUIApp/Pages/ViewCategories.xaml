@@ -8,7 +8,8 @@
              xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:data="clr-namespace:Syncfusion.Maui.DataSource;assembly=Syncfusion.Maui.DataSource"
              BackgroundColor="{StaticResource Primary}"
-             x:Name="Content">
+             x:Name="Content"
+             Shell.TabBarIsVisible="False">
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsVisible="False" IsEnabled="False" />
     </Shell.BackButtonBehavior>
@@ -22,46 +23,66 @@
             <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Medium"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
         </Grid>
     </Shell.TitleView>
-    <VerticalStackLayout>        
-        <HorizontalStackLayout x:Name="hslTabs">
+    <sfList:SfListView IsStickyHeader="True" BackgroundColor="White" SelectionMode="None" x:Name="listView" AllowSwiping="False" ItemsSource="{Binding Categories}" ItemSize="170" AutoFitMode="DynamicHeight" IsScrollingEnabled="True">
+        <sfList:SfListView.HeaderTemplate>
+            <DataTemplate>
+                <AbsoluteLayout BackgroundColor="{StaticResource Primary}">
+                    <Border HorizontalOptions="Center" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="0,0" IsVisible="{Binding ChartUpdating}" Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="20,0,20,20" Padding="0">
+                        <ActivityIndicator IsRunning="{Binding ChartUpdating}" IsVisible="{Binding ChartUpdating}" VerticalOptions="Center" HorizontalOptions="Center" Margin="0" Color="{DynamicResource Primary}" Scale="1.2"/>
+                    </Border>
+                    <VerticalStackLayout AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" WidthRequest="{Binding ScreenWidth}" >
+                        <Border Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="0,0,0,20" Padding="0">
+                            <chart:SfCircularChart Margin="5,0,5,0">
+                                <chart:SfCircularChart.Legend>
+                                    <chart:ChartLegend Placement="Right"/>
+                                </chart:SfCircularChart.Legend>
+                                <chart:SfCircularChart.Title>
+                                    <Label Text="{Binding ChartTitle}" FontAttributes="Bold" TextColor="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center" Padding="0,5,0,0" FontSize="Medium"/>
+                                </chart:SfCircularChart.Title>
+                                <chart:PieSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="True">
+                                </chart:PieSeries>
+                            </chart:SfCircularChart>
+                        </Border>
+                        <HorizontalStackLayout x:Name="hslTabs">
 
-        </HorizontalStackLayout>
-        <VerticalStackLayout x:Name="vslViewCategories">
-            <VerticalStackLayout x:Name="BarChart">
-        
-            </VerticalStackLayout>
-            <sfList:SfListView BackgroundColor="White" SelectionMode="None" x:Name="listView" AllowSwiping="False" ItemsSource="{Binding GroupCategories}">
-                <sfList:SfListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <ViewCell.View>
-                                <Border Style="{StaticResource brdCardViewSquare}">
-                                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,*,Auto,Auto">
-                                        <Image Grid.Column="1" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Start">
+                        </HorizontalStackLayout>
+                        <BoxView HeightRequest="8" Color="{StaticResource White}" />
+                    </VerticalStackLayout>
+                </AbsoluteLayout>
+            </DataTemplate>
+        </sfList:SfListView.HeaderTemplate>
+        <sfList:SfListView.ItemTemplate>
+            <DataTemplate>
+                <ViewCell>
+                    <ViewCell.View>
+                        <VerticalStackLayout Padding="10">
+                            <Border Style="{StaticResource brdCardViewSquare}">
+                                <Grid ColumnDefinitions="*" RowDefinitions="Auto,*,Auto,Auto">
+                                    <Label Grid.Column="0" Grid.Row="0" HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategoryName}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource Gray900}"/>
+                                    <Border Grid.Column="0" Grid.Row="1" WidthRequest="75" HeightRequest="75" StrokeThickness="0" BackgroundColor="{Binding CategoryID,Converter={StaticResource CategoryIDToColor}}" StrokeShape="RoundRectangle 30">
+                                        <Image  HorizontalOptions="Center" VerticalOptions="Center" >
                                             <Image.Source>
-                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40" Color="{DynamicResource PrimaryDark}"/>
+                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding CategoryIcon, Converter={StaticResource IconNameConverter}}" Size="50" Color="{DynamicResource White}"/>
                                             </Image.Source>
                                         </Image>
-                                        <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategoryName}" />
-                                        <Image Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" HorizontalOptions="Center" VerticalOptions="Center">
-                                            <Image.Source>
-                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding CategoryIcon}" Size="100" Color="{DynamicResource PrimaryDark}"/>
-                                            </Image.Source>
-                                        </Image>
-                                        <Label Grid.Column="0" Grid.Row="2" HorizontalOptions="End" VerticalOptions="Center" Text="Amount spent |" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
-                                        <Label Grid.Column="1" Grid.Row="2" HorizontalOptions="Start" VerticalOptions="Center" Text="{Binding CategorySpendPayPeriod, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" />
-                                        <Label Grid.Column="0" Grid.Row="3" HorizontalOptions="End" VerticalOptions="Center" Text="Amount spent all time |" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
-                                        <Label Grid.Column="1" Grid.Row="3" HorizontalOptions="Start" VerticalOptions="Center" Text="{Binding CategorySpendAllTime, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0"/>
-                                    </Grid>
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer CommandParameter="{Binding .}" x:Name="ListViewTapped" Tapped="ListViewTapped_Tapped"/>
-                                    </Border.GestureRecognizers>
-                                </Border>
-                            </ViewCell.View>
-                        </ViewCell>
-                    </DataTemplate>
-                </sfList:SfListView.ItemTemplate>
-            </sfList:SfListView>
-        </VerticalStackLayout>
-    </VerticalStackLayout>
+                                    </Border>
+                                    <HorizontalStackLayout Grid.Column="0" Grid.Row="2" HorizontalOptions="Center" IsVisible="{Binding CategoryID, Converter={StaticResource CategoryIDToBool}}">
+                                        <Label HorizontalOptions="Center" VerticalOptions="Center" Text="Spend pay period | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="Micro"/>
+                                        <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategorySpendPayPeriod, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="Micro"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout Grid.Column="0" Grid.Row="3" HorizontalOptions="Center" IsVisible="{Binding CategoryID, Converter={StaticResource CategoryIDToBool}}">
+                                        <Label HorizontalOptions="Center" VerticalOptions="Center" Text="Spend all time | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="Micro"/>
+                                        <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategorySpendAllTime, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="Micro"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer CommandParameter="{Binding .}" x:Name="ListViewTapped" Tapped="ListViewTapped_Tapped"/>
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </VerticalStackLayout>
+                    </ViewCell.View>
+                </ViewCell>
+            </DataTemplate>
+        </sfList:SfListView.ItemTemplate>
+    </sfList:SfListView>
 </ContentPage>

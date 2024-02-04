@@ -3,8 +3,6 @@ using DailyBudgetMAUIApp.Models;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using Syncfusion.Maui.Charts;
-using System.Transactions;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {

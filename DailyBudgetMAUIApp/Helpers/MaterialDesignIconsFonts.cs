@@ -14,6 +14,7 @@ namespace DailyBudgetMAUIApp.Helpers
     //  you should also change the fields from 'const' to 'public static readonly'
     static class MaterialDesignIconsFonts
     {
+
         public const string Icon1 = "\u0030";
         public const string Icon2 = "\u0031";
         public const string Icon3 = "\u0032";

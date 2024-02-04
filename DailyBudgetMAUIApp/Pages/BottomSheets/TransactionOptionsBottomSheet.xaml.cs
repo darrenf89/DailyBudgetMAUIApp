@@ -78,9 +78,21 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewTransactions)}");
     }
 
-    private void ViewCategories_Tapped(object sender, TappedEventArgs e)
+    private async void ViewCategories_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
+        }
+        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewCategories)}");
     }
 
     private void ViewPayees_Tapped(object sender, TappedEventArgs e)

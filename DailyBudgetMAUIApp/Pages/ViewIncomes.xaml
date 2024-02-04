@@ -43,7 +43,7 @@
         <sfList:SfListView.FooterTemplate>
             <DataTemplate>
                 <Grid RowDefinitions="Auto" ColumnDefinitions="*" BackgroundColor="{StaticResource Primary}" >
-                    <Button x:Name="AddNewIncome" Clicked="AddNewIncome_Clicked" WidthRequest="{Binding SignOutButtonWidth}" Grid.Row="0" Grid.Column="0" Style="{DynamicResource buttonClicked}" Text="Add new Income Event" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,10,5,10" FontSize="18" CornerRadius="20" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
+                    <Button x:Name="AddNewIncome" Clicked="AddNewIncome_Clicked" WidthRequest="{Binding SignOutButtonWidth}" Grid.Row="0" Grid.Column="0" Style="{DynamicResource buttonClicked}" Text="Add new income event" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,10,5,10" FontSize="18" CornerRadius="20" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
                 </Grid>
             </DataTemplate>
         </sfList:SfListView.FooterTemplate>

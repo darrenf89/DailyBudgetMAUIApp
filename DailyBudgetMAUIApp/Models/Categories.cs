@@ -15,10 +15,8 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public string _categoryIcon;
         [ObservableProperty]
-        public double _categorySpendAllTime;
+        public decimal _categorySpendAllTime;
         [ObservableProperty]
-        public double _categorySpendPayPeriod;
-
-
+        public decimal _categorySpendPayPeriod;
     }
 }

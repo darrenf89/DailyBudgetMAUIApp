@@ -75,6 +75,8 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<Categories> GetPayeeLastCategory(int BudgetID, string PayeeName);
         public Task<List<Categories>> GetCategories(int BudgetID);
         public Task<Categories> AddNewSubCategory(int BudgetID, Categories Category);
+        public Task<List<Categories>> GetAllHeaderCategoryDetailsFull(int BudgetID);
+        public Task<List<Categories>> GetHeaderCategoryDetailsFull(int CategoryID, int BudgetID);
         public Task<List<Savings>> GetBudgetEnvelopeSaving(int BudgetID);
         public Task<List<Savings>> GetBudgetRegularSaving(int BudgetID); 
         public Task<string> ShareBudgetRequest(ShareBudgetRequest BudgetShare);

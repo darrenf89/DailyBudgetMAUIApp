@@ -2776,6 +2776,97 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<List<Categories>> GetAllHeaderCategoryDetailsFull(int BudgetID)
+        {
+            List<Categories>? categories = new List<Categories>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getallheadercategorydetailsfull/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            categories = serializer.Deserialize<List<Categories>>(reader);
+                        }
+
+                        return categories;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "ViewCategories", "GetAllHeaderCategoryDetailsFull");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "ViewCategories", "GetAllHeaderCategoryDetailsFull");
+                return null;
+            }
+        }
+        public async Task<List<Categories>> GetHeaderCategoryDetailsFull(int CategoryID, int BudgetID)
+        {
+            List<Categories>? categories = new List<Categories>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getheadercategorydetailsfull/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            categories = serializer.Deserialize<List<Categories>>(reader);
+                        }
+
+                        return categories;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "ViewCategories", "GetHeaderCategoryDetailsFull");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "ViewCategories", "GetHeaderCategoryDetailsFull");
+                return null;
+            }
+        }
+
         public async Task<List<Savings>> GetBudgetEnvelopeSaving(int BudgetID)
         {
             List<Savings>? Savings = new List<Savings>();

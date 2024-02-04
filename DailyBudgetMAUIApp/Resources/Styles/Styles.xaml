@@ -49,6 +49,9 @@
     <converters:IsBorrowPayTextConverter x:Key="IsBorrowPayTextConverter"/>
     <converters:IncomeTypeConverter x:Key="IncomeTypeConverter"/>
     <converters:RecurringIncomeDetails x:Key="RecurringIncomeDetails"/>
+    <converters:IconNameConverter x:Key="IconNameConverter"/>
+    <converters:CategoryIDToBool x:Key="CategoryIDToBool"/>
+    <converters:CategoryIDToColor x:Key="CategoryIDToColor"/>
 
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>
@@ -214,16 +217,16 @@
     </Style>
 
     <Style TargetType="Border" x:Key="brdCardViewSquare">
-        <Setter Property="Margin" Value="10,0,10,20"/>
-        <Setter Property="Padding" Value="10,10,10,10"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="10"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 3"/>
         <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
-        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
-        <Setter Property="HeightRequest" Value="150"/>
-        <Setter Property="WidthRequest" Value="150"/>
+        <Setter Property="HeightRequest" Value="170"/>
+        <Setter Property="WidthRequest" Value="170"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Primary}" Offset="0,0" Radius="20" Opacity="0.95" />
+            <Shadow Brush="{DynamicResource Gray900Brush}" Offset="0,0" Radius="20" Opacity="0.95" />
         </Setter>
     </Style>
 
