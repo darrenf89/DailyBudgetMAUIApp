@@ -1,4 +1,5 @@
-﻿using DailyBudgetMAUIApp.Models;
+﻿using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Models;
 using System.Globalization;
 
 namespace DailyBudgetMAUIApp.Converters
@@ -11,22 +12,10 @@ namespace DailyBudgetMAUIApp.Converters
 
             string Icon = (string)value;
 
-            switch(Icon)
-            {
-                case "Today":
-                    return "\ue8df";
-                case "Spa":
-                    return "\ueb4c";
-                case "Track_changes":
-                    return "\ue8e1";
-                case "Receipt_long":
-                    return "\uef6e";
-                case "Add":
-                    return "\ue145";
-                default:
-                    return "";
+            ProductTools pt = new ProductTools(new RestDataService());
 
-            }
+            return pt.GetIcon(Icon).Result;
+
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -14,7 +14,7 @@
     </ShellItem>
 
     <ShellItem Route="ErrorPage" FlyoutItemIsVisible="False">
-        <ShellContent  ContentTemplate="{DataTemplate Pages:ErrorPage}"/>
+        <ContentDI:ShellContentDI  ContentTemplate="{DataTemplate Pages:ErrorPage}"/>
     </ShellItem>
 
     <TabBar x:Name="MainTabBar">
@@ -30,7 +30,7 @@
     </ShellItem>
 
     <ShellItem Route="ViewCategories" FlyoutItemIsVisible="True">
-        <ShellContent ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
+        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
     </ShellItem>
 
 </Shell>

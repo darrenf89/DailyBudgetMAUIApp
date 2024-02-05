@@ -9,6 +9,8 @@ using DailyBudgetMAUIApp.Converters;
 using Newtonsoft.Json;
 using Maui.FixesAndWorkarounds;
 using DailyBudgetMAUIApp.Pages;
+using DailyBudgetMAUIApp.Helpers;
+using System.Reflection;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -1920,6 +1922,28 @@ namespace DailyBudgetMAUIApp.DataServices
                 ContentTemplate = new DataTemplate(() => new ViewIncomes(new ViewIncomesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
+        }
+
+        public async Task<Dictionary<string, string>> GetIcons()
+        {
+            MaterialDesignIconsFonts obj = new MaterialDesignIconsFonts();
+
+            return obj.GetType().GetFields(BindingFlags.Public | BindingFlags.Static)
+                      .Where(f => f.FieldType == typeof(string))
+                      .ToDictionary(f => f.Name.Replace("_", " "),
+                                    f => (string)f.GetValue(null));
+        }
+
+        public async Task<string> GetIcon(string Name)
+        {
+            MaterialDesignIconsFonts obj = new MaterialDesignIconsFonts();
+
+            string Icon =  obj.GetType().GetFields(BindingFlags.Public | BindingFlags.Static)
+                          .Where(f => f.FieldType == typeof(string) && f.Name.Replace("_", " ") == Name)
+                          .Select(f => (string)f.GetValue(null))
+                          .FirstOrDefault();
+
+            return Icon;
         }
     }
 }

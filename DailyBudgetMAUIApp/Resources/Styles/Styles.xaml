@@ -52,6 +52,7 @@
     <converters:IconNameConverter x:Key="IconNameConverter"/>
     <converters:CategoryIDToBool x:Key="CategoryIDToBool"/>
     <converters:CategoryIDToColor x:Key="CategoryIDToColor"/>
+    <converters:PlayPauseGlyph x:Key="PlayPauseGlyph"/>
 
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>

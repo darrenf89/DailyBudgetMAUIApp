@@ -45,6 +45,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<Picker> SwitchBudget(string page);
         public Task ChangeDefaultBudget(int UserID, int BudgetID, bool Navigate);
         public Task LoadTabBars(string UserSub, DateTime SubExpiry, string BudgetType);
-
+        public Task<Dictionary<string, string>> GetIcons();
+        public Task<string> GetIcon(string Name);
     }
 }

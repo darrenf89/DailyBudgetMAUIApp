@@ -27,20 +27,52 @@
         <sfList:SfListView.HeaderTemplate>
             <DataTemplate>
                 <AbsoluteLayout BackgroundColor="{StaticResource Primary}">
-                    <Border HorizontalOptions="Center" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="0,0" IsVisible="{Binding ChartUpdating}" Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="20,0,20,20" Padding="0">
+                    <Button x:Name="btnPlayPause" Clicked="btnPlayPause_Clicked" BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="0,1" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
+                        <Button.ImageSource>
+                            <FontImageSource x:Name="PlayPause" FontFamily="MaterialDesignIcons" Glyph="{Binding IsPlaying, Converter={StaticResource PlayPauseGlyph}}" Size="40" Color="{DynamicResource Tertiary}"/>
+                        </Button.ImageSource>
+                    </Button>
+                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="1,1" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
+                        <Button.ImageSource>
+                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Fullscreen}" Size="40" Color="{DynamicResource Tertiary}"/>
+                        </Button.ImageSource>
+                    </Button>
+                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="-0.03,0.4" Margin="0,0,0,0" Style="{StaticResource TitleButtons}">
+                        <Button.ImageSource>
+                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Arrow_left}" Size="40" Color="{DynamicResource Gray400}"/>
+                        </Button.ImageSource>
+                    </Button>
+                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="1.03,0.4" Margin="0,0,0,0" Style="{StaticResource TitleButtons}">
+                        <Button.ImageSource>
+                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Arrow_right}" Size="40" Color="{DynamicResource Gray400}"/>
+                        </Button.ImageSource>
+                    </Button>
+                    <Border HorizontalOptions="Center" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="0,0" IsVisible="{Binding ChartUpdating}" Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="10,0,10,20" Padding="0">
                         <ActivityIndicator IsRunning="{Binding ChartUpdating}" IsVisible="{Binding ChartUpdating}" VerticalOptions="Center" HorizontalOptions="Center" Margin="0" Color="{DynamicResource Primary}" Scale="1.2"/>
                     </Border>
                     <VerticalStackLayout AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" WidthRequest="{Binding ScreenWidth}" >
                         <Border Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="0,0,0,20" Padding="0">
-                            <chart:SfCircularChart Margin="5,0,5,0">
+                            <chart:SfCircularChart Margin="5,0,5,0" BackgroundColor="Transparent">
+                                <chart:SfCircularChart.GestureRecognizers>
+                                    <SwipeGestureRecognizer Direction="Left" Swiped="SwipeGestureRecognizer_Swiped"/>
+                                    <SwipeGestureRecognizer Direction="Right" Swiped="SwipeGestureRecognizer_Swiped"/>
+                                </chart:SfCircularChart.GestureRecognizers>
                                 <chart:SfCircularChart.Legend>
-                                    <chart:ChartLegend Placement="Right"/>
+                                    <chart:ChartLegend Placement="Right">
+                                        <chart:ChartLegend.ItemTemplate>
+                                            <DataTemplate>
+                                                <HorizontalStackLayout ZIndex="99">
+                                                    <RoundRectangle CornerRadius="2" HeightRequest="8" WidthRequest="8" Margin="0,0,2,5" Background="{Binding IconBrush}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                                    <Label Text="{Binding Text}" Margin="0,0,30,5" FontSize="Micro" TextColor="{StaticResource Gray900}" HorizontalOptions="Center" VerticalOptions="Center" CharacterSpacing="0"/>
+                                                </HorizontalStackLayout>
+                                            </DataTemplate>
+                                        </chart:ChartLegend.ItemTemplate>
+                                    </chart:ChartLegend>
                                 </chart:SfCircularChart.Legend>
                                 <chart:SfCircularChart.Title>
-                                    <Label Text="{Binding ChartTitle}" FontAttributes="Bold" TextColor="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center" Padding="0,5,0,0" FontSize="Medium"/>
+                                    <Label Text="{Binding ChartTitle}" FontAttributes="Bold" TextColor="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center" Padding="0,10,0,5" FontSize="Medium"/>
                                 </chart:SfCircularChart.Title>
-                                <chart:PieSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="True">
-                                </chart:PieSeries>
+                                <chart:PieSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="True" Radius="0.9"/>
                             </chart:SfCircularChart>
                         </Border>
                         <HorizontalStackLayout x:Name="hslTabs">

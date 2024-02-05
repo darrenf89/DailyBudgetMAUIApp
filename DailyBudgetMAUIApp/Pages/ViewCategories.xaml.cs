@@ -2,15 +2,37 @@ using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.ViewModels;
+using Syncfusion.Maui.Charts;
 using Syncfusion.Maui.ListView;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using The49.Maui.BottomSheet;
 
 
 namespace DailyBudgetMAUIApp.Pages;
 
 public partial class ViewCategories : ContentPage
 {
+    //public ObservableCollection<Categories> _addCategoryList;
+    //public ObservableCollection<Categories> AddCategoryList
+    //{
+    //    get => _addCategoryList;
+    //    set
+    //    {
+    //        if (_addCategoryList != value)
+    //        {
+    //            _addCategoryList = value;
+    //            _vm.Categories.Clear();
+    //            foreach(Categories C in AddCategoryList)
+    //            {
+    //                _vm.Categories.Add(C);
+    //            }
+    //        }
+    //    }
+    //}
+
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
 	private readonly ViewCategoriesViewModel _vm;
@@ -36,7 +58,7 @@ public partial class ViewCategories : ContentPage
             _vm.ChartUpdating = false;
         };
         timer.Start();
-
+        _vm.IsPlaying = true;
     }
 
     protected override void OnNavigatingFrom(NavigatingFromEventArgs args)
@@ -49,31 +71,8 @@ public partial class ViewCategories : ContentPage
     {
         base.OnAppearing();
 
-        _vm.Categories.Clear();
-
-        List<Categories> CategoryList = _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID).Result;
-
-        foreach (Categories cat in CategoryList)
-        {
-            _vm.Categories.Add(cat);
-
-            ChartClass Value = new ChartClass
-            {
-                XAxesString = cat.CategoryName,
-                YAxesDouble = (double)cat.CategorySpendPayPeriod
-            };
-
-            _vm.CategoriesChart.Add(Value);
-        }
-
-        Categories AddCat = new Categories
-        {
-            CategoryName = "Add new category",
-            CategoryID = -1,
-            CategoryIcon = "Add"
-        };
-
-        _vm.Categories.Add(AddCat);
+        listView.RefreshView();
+        listView.RefreshItem();
 
         if (App.CurrentPopUp != null)
         {
@@ -157,10 +156,68 @@ public partial class ViewCategories : ContentPage
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
     }
 
-    private void ListViewTapped_Tapped(object sender, TappedEventArgs e)
+    private async void ListViewTapped_Tapped(object sender, TappedEventArgs e)
     {
+        Categories Category = (Categories)e.Parameter;
 
+        if(Category.CategoryID == -1)
+        {
+            AddNewCategoryBottomSheet page = new AddNewCategoryBottomSheet(_vm.Categories, new ProductTools(new RestDataService()));
+
+            page.Detents = new DetentsCollection()
+            {
+                new FullscreenDetent(),
+                new MediumDetent(),
+                new FixedContentDetent
+                {
+                    IsDefault = true
+                }
+            };
+
+            page.HasBackdrop = true;
+            page.CornerRadius = 0;
+
+            App.CurrentBottomSheet = page;
+
+            await page.ShowAsync();
+        }
+        else
+        {
+
+        }
     }
 
+    private async void SwipeGestureRecognizer_Swiped(object sender, SwipedEventArgs e)
+    {
+        _vm.ChartUpdating = true;
 
+        switch (e.Direction)
+        {
+            case SwipeDirection.Left:
+                await SwitchChart();
+                break;
+            case SwipeDirection.Right:
+                await SwitchChart();
+                break;
+        }
+
+        await Task.Delay(2000);
+        _timer.Stop();
+        _timer.Start();
+        _vm.ChartUpdating = false;
+    }
+
+    private void btnPlayPause_Clicked(object sender, EventArgs e)
+    {
+        if(_vm.IsPlaying)
+        {
+            _vm.IsPlaying = false;
+            _timer.Stop();
+        }
+        else
+        {
+            _vm.IsPlaying = true;
+            _timer.Start();
+        }
+    }
 }

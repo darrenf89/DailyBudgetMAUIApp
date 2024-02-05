@@ -1341,4 +1341,29 @@ namespace DailyBudgetMAUIApp.Converters
             return null;
         }
     }
+
+    public class PlayPauseGlyph : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            bool IsPlaying = (bool)value;
+
+            if (IsPlaying)
+            {   
+                return "\ue034";
+            }
+            else
+            {
+                return "\ue037";
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
 }

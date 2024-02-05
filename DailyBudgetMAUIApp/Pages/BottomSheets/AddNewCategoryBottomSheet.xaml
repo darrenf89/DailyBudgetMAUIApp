@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<the49:BottomSheet xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                   x:Class="DailyBudgetMAUIApp.Pages.BottomSheets.AddNewCategoryBottomSheet"
+                   xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
+                   xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+                   xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+                   xmlns:checkBox="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+                   Padding="0,0,0,0" 
+                   BackgroundColor="White"
+                   x:DataType="the49:BottomSheet">
+    <VerticalStackLayout x:Name="AllContent">
+        <AbsoluteLayout x:Name="MainAbs">
+            <VerticalStackLayout x:Name="MainVSL" AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,0,0,60">
+                <VerticalStackLayout>
+                    <BoxView WidthRequest="60" HeightRequest="6" Color="{DynamicResource PrimaryLightLight}" HorizontalOptions="Center" Margin="0,10,0,15"/>
+                    <Label CharacterSpacing="1.5" Margin="20,10,0,0" HorizontalOptions="Start" VerticalOptions="Center" x:Name="lblTitle" Grid.Column="0" Grid.Row="0" FontSize="Title" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
+                    <BoxView HeightRequest="1" Grid.Row="0" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,10,0,5"/>
+                </VerticalStackLayout>
+                <ScrollView x:Name="MainScrollView" Margin="0">
+                    <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" x:Name="grdFilters" >
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Margin="8,0,20,0">
+                            <Grid VerticalOptions="Center" ColumnDefinitions="Auto,*,*" RowDefinitions="*">
+                                <Label Grid.Column="1" Grid.Row="0" Text="Category Name" Margin="20,5,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                                <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">
+                                    <Image.Source>
+                                        <FontImageSource x:Name="CategoryNameIcon" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_less}" Size="30"  Color="{DynamicResource Info}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="acrCategoryName" Tapped="acrCategoryName_Tapped" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                            <VerticalStackLayout Margin="20,5,10,0" x:Name="CategoryName" HorizontalOptions="Fill">
+                                <Grid ColumnDefinitions="Auto,*" RowDefinitions="*">
+                                    <Image Grid.Column="0" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Badge}" Size="30"  Color="{DynamicResource Primary}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Entry VerticalOptions="Center" x:Name="entCategoryName" Grid.Row="0" Grid.Column="1" FontSize="Medium" Placeholder="Enter a category name" TextColor="{StaticResource Gray900}" Margin="5,0,0,0"/>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                        <BoxView HeightRequest="1" Grid.Row="1" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Margin="8,0,20,0">
+                            <Grid VerticalOptions="Center" ColumnDefinitions="Auto,*,*" RowDefinitions="*">
+                                <Label Grid.Column="1" Grid.Row="0" Text="Category Icon" Margin="20,5,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                                <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">
+                                    <Image.Source>
+                                        <FontImageSource x:Name="CategoryIconIcon" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_less}" Size="30"  Color="{DynamicResource Info}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="acrCategoryIcon" Tapped="acrCategoryIcon_Tapped" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                            <VerticalStackLayout Margin="20,5,10,0" x:Name="CategoryIcon" HorizontalOptions="Fill">
+                                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                                    <Image Grid.Column="0" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Search}" Size="30"  Color="{DynamicResource Primary}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Entry x:Name="entIconSearch" TextChanged="entIconSearch_TextChanged" VerticalOptions="Center" Grid.Row="0" Grid.Column="1" FontSize="Medium" Placeholder="Search for an icon" TextColor="{StaticResource Gray900}" Margin="5,0,0,0"/>
+                                    <FlexLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                                        
+                                    </FlexLayout>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                        <BoxView HeightRequest="1" Grid.Row="3" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
+                    </Grid>
+                </ScrollView>
+            </VerticalStackLayout>
+            <VerticalStackLayout x:Name="BtnApply" AbsoluteLayout.LayoutFlags="PositionProportional" HeightRequest="60">
+                <Button Padding="0,10,0,10" FontSize="Small" x:Name="SaveCategory" Clicked="AddCategory_Clicked" Text="Create new category" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Info}" Margin="10,0,10,0" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
+            </VerticalStackLayout>
+        </AbsoluteLayout>
+    </VerticalStackLayout>
+</the49:BottomSheet>

@@ -72,67 +72,18 @@ public partial class ViewTransactions : ContentPage
         ListViewScrollBar.Scrolled += ListViewScrollView_Scrolled;
     }
 
-    protected override void OnAppearing()
+    protected async override void OnAppearing()
     {
         base.OnAppearing();
 
         AbsMain.SetLayoutBounds(vslChart, new Rect(0, 0, _vm.ScreenWidth, _vm.ChartContentHeight + 10));
         AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, _vm.ChartContentHeight + 10, _vm.ScreenWidth, _vm.ScreenHeight));
 
-        //SfCartesianChart Chart = new SfCartesianChart
-        //{
-        //    PaletteBrushes = _vm.ChartBrushes,
-        //    Margin = new Thickness(5,0,5,0)
-        //};
-
-        //NumericalAxis YAxes = new NumericalAxis
-        //{
-        //    ShowMajorGridLines = false,
-        //    ShowMinorGridLines = false
-        //};
-
-        //Chart.YAxes.Add(YAxes);
-
-        //CategoryAxis XAxes = new CategoryAxis
-        //{
-        //    ShowMajorGridLines = false
-        //};
-
-        //Chart.XAxes.Add(XAxes);
-
-        //StackingAreaSeries series1 = new StackingAreaSeries()
-        //{
-        //    XBindingPath = "XAxesString",
-        //    YBindingPath = "YAxesDouble",
-        //    ItemsSource = _vm.TransactionChart
-        //};
-
-        //StackingAreaSeries series2 = new StackingAreaSeries()
-        //{
-        //    XBindingPath = "XAxesString",
-        //    YBindingPath = "YAxesDouble",
-        //    ItemsSource = _vm.BillChart
-        //};
-        //StackingAreaSeries series3 = new StackingAreaSeries()
-        //{
-        //    XBindingPath = "XAxesString",
-        //    YBindingPath = "YAxesDouble",
-        //    ItemsSource = _vm.SavingsChart
-        //};
-        //StackingAreaSeries series4 = new StackingAreaSeries()
-        //{
-        //    XBindingPath = "XAxesString",
-        //    YBindingPath = "YAxesDouble",
-        //    ItemsSource = _vm.EnvelopeChart
-        //};
-
-        //Chart.Series.Add(series1);
-        //Chart.Series.Add(series2);
-        //Chart.Series.Add(series3);
-        //Chart.Series.Add(series4);
-
-        //ChartContent.Content = Chart;
-
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
     }
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
