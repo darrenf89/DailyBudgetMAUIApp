@@ -2728,6 +2728,56 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<int> AddNewCategory(int BudgetID, DefaultCategories Category)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                int CategoryID;
+
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<DefaultCategories>(Category, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/categories/addnewcategory/{BudgetID}", request).Result;
+
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            CategoryID = serializer.Deserialize<int>(reader);
+                        }
+
+                        return CategoryID;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "AddNewCategory", "AddNewCategory");
+                        return 0;
+                    }
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "AddNewCategory", "AddNewCategory");
+                return 0;
+            }
+        }
+
         public async Task<Categories> AddNewSubCategory(int BudgetID, Categories Category)
         {
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)

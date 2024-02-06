@@ -36,7 +36,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             _ds = ds;
             _pt = pt;
 
-            Title = $"Check Your Savings {App.UserDetails.NickName}";
+            Title = $"Check your envelopes {App.UserDetails.NickName}";
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             
 

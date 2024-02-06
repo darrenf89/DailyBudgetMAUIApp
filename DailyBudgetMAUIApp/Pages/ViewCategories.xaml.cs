@@ -87,7 +87,7 @@ public partial class ViewCategories : ContentPage
         if(_vm.CurrentChart == "PayPeriod")
         {
             _vm.CurrentChart = "AllTime";
-            _vm.ChartTitle = "Spend per category all time";
+            _vm.ChartTitle = "All time";
 
             _vm.CategoriesChart.Clear();
 
@@ -108,7 +108,7 @@ public partial class ViewCategories : ContentPage
         else if(_vm.CurrentChart == "AllTime")
         {
             _vm.CurrentChart = "PayPeriod";
-            _vm.ChartTitle = "Spend per category this period";
+            _vm.ChartTitle = "Current period";
 
             _vm.CategoriesChart.Clear();
 
@@ -162,16 +162,11 @@ public partial class ViewCategories : ContentPage
 
         if(Category.CategoryID == -1)
         {
-            AddNewCategoryBottomSheet page = new AddNewCategoryBottomSheet(_vm.Categories, new ProductTools(new RestDataService()));
+            AddNewCategoryBottomSheet page = new AddNewCategoryBottomSheet(_vm.Categories, new ProductTools(new RestDataService()), new RestDataService());
 
             page.Detents = new DetentsCollection()
             {
-                new FullscreenDetent(),
-                new MediumDetent(),
-                new FixedContentDetent
-                {
-                    IsDefault = true
-                }
+                new FullscreenDetent()
             };
 
             page.HasBackdrop = true;
@@ -220,4 +215,6 @@ public partial class ViewCategories : ContentPage
             _timer.Start();
         }
     }
+
+
 }

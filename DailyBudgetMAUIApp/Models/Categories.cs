@@ -19,4 +19,16 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public decimal _categorySpendPayPeriod;
     }
+
+    public class DefaultCategories
+    {
+        public string CatName { get; set; }
+        public string CategoryIcon { get; set; }
+        public List<SubCategories> SubCategories { get; set; }
+    }
+
+    public class SubCategories
+    {
+        public string SubCatName { get; set; }
+    }
 }

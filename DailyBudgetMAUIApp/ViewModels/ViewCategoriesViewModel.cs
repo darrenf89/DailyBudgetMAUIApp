@@ -46,7 +46,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             ChartContentWidth = ScreenWidth - 20;
             ChartContentHeight = ScreenHeight * 0.25;
             MaxChartContentHeight = ChartContentHeight + 10;
-            ChartTitle = "Spend per category this period";
+            ChartTitle = "Current period";
 
             Title = $"Check Your Categories {App.UserDetails.NickName}";
             ChartBrushes = App.ChartBrush;

@@ -27,12 +27,12 @@
         <sfList:SfListView.HeaderTemplate>
             <DataTemplate>
                 <AbsoluteLayout BackgroundColor="{StaticResource Primary}">
-                    <Button x:Name="btnPlayPause" Clicked="btnPlayPause_Clicked" BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="0,1" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
+                    <Button x:Name="btnPlayPause" Clicked="btnPlayPause_Clicked" BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="-0.02,0" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
                         <Button.ImageSource>
                             <FontImageSource x:Name="PlayPause" FontFamily="MaterialDesignIcons" Glyph="{Binding IsPlaying, Converter={StaticResource PlayPauseGlyph}}" Size="40" Color="{DynamicResource Tertiary}"/>
                         </Button.ImageSource>
                     </Button>
-                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="1,1" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
+                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="1,0" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
                         <Button.ImageSource>
                             <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Fullscreen}" Size="40" Color="{DynamicResource Tertiary}"/>
                         </Button.ImageSource>
@@ -51,7 +51,7 @@
                         <ActivityIndicator IsRunning="{Binding ChartUpdating}" IsVisible="{Binding ChartUpdating}" VerticalOptions="Center" HorizontalOptions="Center" Margin="0" Color="{DynamicResource Primary}" Scale="1.2"/>
                     </Border>
                     <VerticalStackLayout AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" WidthRequest="{Binding ScreenWidth}" >
-                        <Border Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="0,0,0,20" Padding="0">
+                        <Border Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="0,0,0,10" Padding="0">
                             <chart:SfCircularChart Margin="5,0,5,0" BackgroundColor="Transparent">
                                 <chart:SfCircularChart.GestureRecognizers>
                                     <SwipeGestureRecognizer Direction="Left" Swiped="SwipeGestureRecognizer_Swiped"/>
@@ -75,7 +75,8 @@
                                 <chart:PieSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="True" Radius="0.9"/>
                             </chart:SfCircularChart>
                         </Border>
-                        <HorizontalStackLayout x:Name="hslTabs">
+                        <BoxView HeightRequest="2" Color="{StaticResource White}" />
+                        <HorizontalStackLayout x:Name="hslTabs" HeightRequest="60">
 
                         </HorizontalStackLayout>
                         <BoxView HeightRequest="8" Color="{StaticResource White}" />
