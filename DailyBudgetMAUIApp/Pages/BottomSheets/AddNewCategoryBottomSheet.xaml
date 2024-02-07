@@ -100,14 +100,14 @@
                     </Grid>
                 </ScrollView>
             </VerticalStackLayout>
-            <VerticalStackLayout x:Name="BtnApply" AbsoluteLayout.LayoutFlags="PositionProportional" HeightRequest="60">
-                <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validator">
+            <VerticalStackLayout x:Name="BtnApply" AbsoluteLayout.LayoutFlags="PositionProportional">
+                <HorizontalStackLayout IsVisible="false" Margin="5,5,0,20" x:Name="validator" VerticalOptions="Center" HorizontalOptions="Center">
                     <Image>
                         <Image.Source>
-                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="35" Color="{DynamicResource Danger}"/>
                         </Image.Source>
                     </Image>
-                    <Label x:Name="lblValidator" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    <Label x:Name="lblValidator" Style="{StaticResource ErrorMessage}" HorizontalTextAlignment="Center" VerticalOptions="Center" Padding="0" Margin="5,0,0,0" FontSize="Medium"/>
                 </HorizontalStackLayout>
                 <Button Padding="0,10,0,10" FontSize="Small" x:Name="SaveCategory" Clicked="AddCategory_Clicked" Text="Create new category" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Info}" Margin="10,0,10,0" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
             </VerticalStackLayout>

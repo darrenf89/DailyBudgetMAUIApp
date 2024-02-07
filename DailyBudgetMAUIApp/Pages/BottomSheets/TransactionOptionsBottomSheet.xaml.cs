@@ -1,8 +1,6 @@
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
-using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
 using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp.Pages.BottomSheets;

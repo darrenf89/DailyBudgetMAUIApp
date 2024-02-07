@@ -76,7 +76,7 @@
                             </chart:SfCircularChart>
                         </Border>
                         <BoxView HeightRequest="2" Color="{StaticResource White}" />
-                        <HorizontalStackLayout x:Name="hslTabs" HeightRequest="60">
+                        <HorizontalStackLayout x:Name="hslTabs" HeightRequest="45">
 
                         </HorizontalStackLayout>
                         <BoxView HeightRequest="8" Color="{StaticResource White}" />

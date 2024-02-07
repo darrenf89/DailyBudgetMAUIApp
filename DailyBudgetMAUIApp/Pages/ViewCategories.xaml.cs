@@ -15,23 +15,23 @@ namespace DailyBudgetMAUIApp.Pages;
 
 public partial class ViewCategories : ContentPage
 {
-    //public ObservableCollection<Categories> _addCategoryList;
-    //public ObservableCollection<Categories> AddCategoryList
-    //{
-    //    get => _addCategoryList;
-    //    set
-    //    {
-    //        if (_addCategoryList != value)
-    //        {
-    //            _addCategoryList = value;
-    //            _vm.Categories.Clear();
-    //            foreach(Categories C in AddCategoryList)
-    //            {
-    //                _vm.Categories.Add(C);
-    //            }
-    //        }
-    //    }
-    //}
+    public List<Categories> _addCategoryList = new List<Categories>();
+    public List<Categories> AddCategoryList
+    {
+        get => _addCategoryList;
+        set
+        {
+            if (_addCategoryList != value)
+            {
+                _addCategoryList = value;
+                _vm.Categories.Clear();
+                foreach (Categories c in AddCategoryList)
+                {
+                    _vm.Categories.Add(c);
+                }
+            }
+        }
+    }
 
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;

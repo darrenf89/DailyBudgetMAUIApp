@@ -13,7 +13,7 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
     public double ScreenHeight { get; set; }
-    public ObservableCollection<Categories> Categories { get; set; }
+    public List<Categories> Categories { get; set; } = new List<Categories>();
     public Dictionary<string, string> Icons = new Dictionary<string, string>();
     private Dictionary<string, Button> IconsButtons = new Dictionary<string, Button>();
     public List<string> SubCategories = new List<string>();
@@ -41,7 +41,8 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
 
         lblTitle.Text = $"Create a new category";
 
-        this.Categories = Categories;
+        this.Categories.Clear();
+        this.Categories.AddRange(Categories);
 
         this.PropertyChanged += ViewTransactionFilterBottomSheet_PropertyChanged;
 
@@ -85,17 +86,20 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
 
     private async void AddCategory_Clicked(object sender, EventArgs e)
     {
-        if(string.IsNullOrEmpty(entCategoryName.Text))
+        validator.IsVisible = false;
+        lblValidator.Text = "";
+
+        if (string.IsNullOrEmpty(entCategoryName.Text))
         {
             validator.IsVisible = true;
-            lblValidator.Text = "You have to get the category a name";
+            lblValidator.Text = "You have to give the category a name";
             return;
         }
 
         if (string.IsNullOrEmpty(SelectedIcon))
         {
             validator.IsVisible = true;
-            lblValidator.Text = "You have to get the category an icon";
+            lblValidator.Text = "You have to give the category an icon";
             return;
         }
 
@@ -109,7 +113,8 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
         DefaultCategories cat = new DefaultCategories
         {
             CatName = entCategoryName.Text,
-            CategoryIcon = SelectedIcon
+            CategoryIcon = SelectedIcon,
+            SubCategories = new List<SubCategories>()
         };
 
         foreach(string s in SubCategories)
@@ -145,10 +150,9 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
         Categories.Add(AddNewCat);
 
         ViewCategories CurrentPage = (ViewCategories)Shell.Current.CurrentPage;
-        ViewCategoriesViewModel ViewModel = (ViewCategoriesViewModel)CurrentPage.BindingContext;
-        ViewModel.Categories.Clear();
-        ViewModel.Categories = Categories;
-
+        CurrentPage.AddCategoryList.Clear();
+        //CurrentPage.AddCategoryList = new List<Categories>();
+        CurrentPage.AddCategoryList = Categories;
 
         if (App.CurrentBottomSheet != null)
         {
@@ -240,7 +244,10 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
     }
 
     private void ToggleIconButtons(string Icon)
-    {        
+    {
+        validator.IsVisible = false;
+        lblValidator.Text = "";
+
         Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
         Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
         Application.Current.Resources.TryGetValue("Info", out var Info);
@@ -316,6 +323,15 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
 
     private async void AddSubCat_Clicked(object sender, EventArgs e)
     {
+        validator.IsVisible = false;
+        lblValidator.Text = "";
+
+        if (string.IsNullOrEmpty(entSubCategory.Text))
+        {
+            validator.IsVisible = true;
+            lblValidator.Text = "You have to give the sub category a name";
+            return;
+        }
 
         bool IsAddSub = await Application.Current.MainPage.DisplayAlert($"Add new sub category?", $"Are you sure you want to add {entSubCategory.Text} as a sub category?", "Yes", "No");
         if (IsAddSub)
@@ -329,7 +345,7 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
             {
                 Style = (Style)StandardInputBorderOptionSelect,
                 Stroke = (Color)Info,
-                Margin = new Thickness(5,0,15,0)
+                Margin = new Thickness(5,0,15,5)
             };
 
             HorizontalStackLayout hsl = new HorizontalStackLayout();
