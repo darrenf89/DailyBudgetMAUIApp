@@ -18,7 +18,7 @@
                     <BoxView HeightRequest="1" Grid.Row="0" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,10,0,5"/>
                 </VerticalStackLayout>
                 <ScrollView x:Name="MainScrollView" Margin="0">
-                    <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" x:Name="grdFilters" Margin="0,0,0,600">
+                    <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" x:Name="grdFilters" Margin="0,0,0,300">
                         <VerticalStackLayout Grid.Row="0" Grid.Column="0" Margin="8,0,20,0">
                             <Grid VerticalOptions="Center" ColumnDefinitions="Auto,*,*" RowDefinitions="*">
                                 <Label Grid.Column="1" Grid.Row="0" Text="Category Name" Margin="20,5,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
@@ -97,18 +97,18 @@
                             </VerticalStackLayout>
                         </VerticalStackLayout>
                         <BoxView HeightRequest="1" Grid.Row="5" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
+                        <HorizontalStackLayout Grid.Column="0" Grid.Row="6" IsVisible="false" Margin="5,5,0,20" x:Name="validator" VerticalOptions="Center" HorizontalOptions="Center">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="20" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label x:Name="lblValidator" Style="{StaticResource ErrorMessage}" WidthRequest="300" HorizontalTextAlignment="Start" HorizontalOptions="Start" VerticalOptions="Center" Padding="0" Margin="0,0,0,0" FontSize="Small"/>
+                        </HorizontalStackLayout>
                     </Grid>
                 </ScrollView>
             </VerticalStackLayout>
-            <VerticalStackLayout x:Name="BtnApply" AbsoluteLayout.LayoutFlags="PositionProportional">
-                <HorizontalStackLayout IsVisible="false" Margin="5,5,0,20" x:Name="validator" VerticalOptions="Center" HorizontalOptions="Center">
-                    <Image>
-                        <Image.Source>
-                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="35" Color="{DynamicResource Danger}"/>
-                        </Image.Source>
-                    </Image>
-                    <Label x:Name="lblValidator" Style="{StaticResource ErrorMessage}" HorizontalTextAlignment="Center" VerticalOptions="Center" Padding="0" Margin="5,0,0,0" FontSize="Medium"/>
-                </HorizontalStackLayout>
+            <VerticalStackLayout x:Name="BtnApply" AbsoluteLayout.LayoutFlags="PositionProportional" >
                 <Button Padding="0,10,0,10" FontSize="Small" x:Name="SaveCategory" Clicked="AddCategory_Clicked" Text="Create new category" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Info}" Margin="10,0,10,0" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
             </VerticalStackLayout>
         </AbsoluteLayout>

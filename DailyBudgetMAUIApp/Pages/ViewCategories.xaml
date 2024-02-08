@@ -7,6 +7,7 @@
              xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
              xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:data="clr-namespace:Syncfusion.Maui.DataSource;assembly=Syncfusion.Maui.DataSource"
+             xmlns:carousel="clr-namespace:Syncfusion.Maui.Carousel;assembly=Syncfusion.Maui.Carousel"
              BackgroundColor="{StaticResource Primary}"
              x:Name="Content"
              Shell.TabBarIsVisible="False">
@@ -27,32 +28,45 @@
         <sfList:SfListView.HeaderTemplate>
             <DataTemplate>
                 <AbsoluteLayout BackgroundColor="{StaticResource Primary}">
-                    <Button x:Name="btnPlayPause" Clicked="btnPlayPause_Clicked" BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="-0.02,0" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
+                    <Button x:Name="btnPlayPause" Clicked="btnPlayPause_Clicked" BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="XProportional" AbsoluteLayout.LayoutBounds="-0.02,40" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
                         <Button.ImageSource>
                             <FontImageSource x:Name="PlayPause" FontFamily="MaterialDesignIcons" Glyph="{Binding IsPlaying, Converter={StaticResource PlayPauseGlyph}}" Size="40" Color="{DynamicResource Tertiary}"/>
                         </Button.ImageSource>
                     </Button>
-                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="1,0" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
+                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="XProportional" AbsoluteLayout.LayoutBounds="1.02,40" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
                         <Button.ImageSource>
                             <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Fullscreen}" Size="40" Color="{DynamicResource Tertiary}"/>
                         </Button.ImageSource>
                     </Button>
-                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="-0.03,0.4" Margin="0,0,0,0" Style="{StaticResource TitleButtons}">
+                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="-0.03,0.53" Margin="0,0,0,0" Style="{StaticResource TitleButtons}">
                         <Button.ImageSource>
                             <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Arrow_left}" Size="40" Color="{DynamicResource Gray400}"/>
                         </Button.ImageSource>
                     </Button>
-                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="1.03,0.4" Margin="0,0,0,0" Style="{StaticResource TitleButtons}">
+                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="1.03,0.53" Margin="0,0,0,0" Style="{StaticResource TitleButtons}">
                         <Button.ImageSource>
                             <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Arrow_right}" Size="40" Color="{DynamicResource Gray400}"/>
                         </Button.ImageSource>
                     </Button>
-                    <Border HorizontalOptions="Center" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="0,0" IsVisible="{Binding ChartUpdating}" Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="10,0,10,20" Padding="0">
+                    <Border HorizontalOptions="Center" ZIndex="99" AbsoluteLayout.LayoutFlags="XProportional" AbsoluteLayout.LayoutBounds="0,45" IsVisible="{Binding ChartUpdating}" Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="10,0,10,20" Padding="0">
                         <ActivityIndicator IsRunning="{Binding ChartUpdating}" IsVisible="{Binding ChartUpdating}" VerticalOptions="Center" HorizontalOptions="Center" Margin="0" Color="{DynamicResource Primary}" Scale="1.2"/>
                     </Border>
                     <VerticalStackLayout AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" WidthRequest="{Binding ScreenWidth}" >
-                        <Border Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="0,0,0,10" Padding="0">
-                            <chart:SfCircularChart Margin="5,0,5,0" BackgroundColor="Transparent">
+                        <HorizontalStackLayout x:Name="hslTabs" HeightRequest="45" VerticalOptions="Center" HorizontalOptions="Center">
+                            <carousel:SfCarousel SelectedIndex="{Binding SelectedIndex}" x:Name="TabCarousel" ItemsSource="{Binding PayPeriods}" ItemHeight="35" VerticalOptions="Center" HorizontalOptions="Center" ScaleOffset="0.6" SwipeEnded="TabCarousel_SwipeEnded" WidthRequest="{Binding TabContentWidth}">
+                                <carousel:SfCarousel.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Stroke="{StaticResource White}" BackgroundColor="{StaticResource White}" StrokeShape="RoundRectangle 2" StrokeThickness="1">
+                                            <HorizontalStackLayout Padding="10,0,10,0" VerticalOptions="Center" HorizontalOptions="Center">
+                                                <Label Text="{Binding .}" TextColor="{StaticResource Primary}" FontSize="Small" FontAttributes="Bold"/>
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </DataTemplate>
+                                </carousel:SfCarousel.ItemTemplate>
+                            </carousel:SfCarousel>
+                        </HorizontalStackLayout>
+                        <Border Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="0,0,0,20" Padding="0">
+                            <chart:SfCircularChart Margin="5,0,5,20" BackgroundColor="Transparent">
                                 <chart:SfCircularChart.GestureRecognizers>
                                     <SwipeGestureRecognizer Direction="Left" Swiped="SwipeGestureRecognizer_Swiped"/>
                                     <SwipeGestureRecognizer Direction="Right" Swiped="SwipeGestureRecognizer_Swiped"/>
@@ -69,16 +83,9 @@
                                         </chart:ChartLegend.ItemTemplate>
                                     </chart:ChartLegend>
                                 </chart:SfCircularChart.Legend>
-                                <chart:SfCircularChart.Title>
-                                    <Label Text="{Binding ChartTitle}" FontAttributes="Bold" TextColor="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center" Padding="0,10,0,5" FontSize="Medium"/>
-                                </chart:SfCircularChart.Title>
                                 <chart:PieSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="True" Radius="0.9"/>
                             </chart:SfCircularChart>
                         </Border>
-                        <BoxView HeightRequest="2" Color="{StaticResource White}" />
-                        <HorizontalStackLayout x:Name="hslTabs" HeightRequest="45">
-
-                        </HorizontalStackLayout>
                         <BoxView HeightRequest="8" Color="{StaticResource White}" />
                     </VerticalStackLayout>
                 </AbsoluteLayout>

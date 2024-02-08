@@ -4,6 +4,7 @@ using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.ViewModels;
+using Syncfusion.Maui.Carousel;
 using Syncfusion.Maui.Charts;
 using Syncfusion.Maui.ListView;
 using System.Collections.ObjectModel;
@@ -54,11 +55,11 @@ public partial class ViewCategories : ContentPage
         {
             _vm.ChartUpdating = true;
             await CycleThroughChart();
-            await Task.Delay(1000);
             _vm.ChartUpdating = false;
         };
         timer.Start();
         _vm.IsPlaying = true;
+
     }
 
     protected override void OnNavigatingFrom(NavigatingFromEventArgs args)
@@ -81,35 +82,14 @@ public partial class ViewCategories : ContentPage
         }
     }
 
-    private async Task SwitchChart()
+    private async Task SwitchChart(int Index)
     {
-        
-        if(_vm.CurrentChart == "PayPeriod")
+        _vm.ChartUpdating = true;
+
+        _vm.ChartTitle = _vm.PayPeriods[Index];
+
+        if (Index == 0)
         {
-            _vm.CurrentChart = "AllTime";
-            _vm.ChartTitle = "All time";
-
-            _vm.CategoriesChart.Clear();
-
-            foreach (Categories cat in _vm.Categories)
-            {
-                if(cat.CategoryID != -1)
-                {
-                    ChartClass Value = new ChartClass
-                    {
-                        XAxesString = cat.CategoryName,
-                        YAxesDouble = (double)cat.CategorySpendAllTime
-                    };
-
-                    _vm.CategoriesChart.Add(Value);
-                }
-            }
-        }
-        else if(_vm.CurrentChart == "AllTime")
-        {
-            _vm.CurrentChart = "PayPeriod";
-            _vm.ChartTitle = "Current period";
-
             _vm.CategoriesChart.Clear();
 
             foreach (Categories cat in _vm.Categories)
@@ -119,18 +99,62 @@ public partial class ViewCategories : ContentPage
                     ChartClass Value = new ChartClass
                     {
                         XAxesString = cat.CategoryName,
-                        YAxesDouble = (double)cat.CategorySpendPayPeriod
+                        YAxesDouble = (double)cat.CategorySpendAllTime
                     };
 
                     _vm.CategoriesChart.Add(Value);
+
+                    cat.CategorySpendPayPeriod = cat.CategorySpendPeriods[Index].SpendTotalAmount;
                 }
             }
         }
+        else
+        {
+            _vm.CategoriesChart.Clear();
+
+            foreach (Categories cat in _vm.Categories)
+            {
+                if (cat.CategoryID != -1)
+                {
+                    ChartClass Value = new ChartClass
+                    {
+                        XAxesString = cat.CategoryName,
+                        YAxesDouble = (double)cat.CategorySpendPeriods[Index - 1].SpendTotalAmount
+                    };
+
+                    _vm.CategoriesChart.Add(Value);
+
+                    cat.CategorySpendPayPeriod = cat.CategorySpendPeriods[Index - 1].SpendTotalAmount;
+                }
+            }
+        }
+
+        await Task.Delay(1000);
+        _timer.Stop();
+        _timer.Start();
+
+        _vm.ChartUpdating = false;
+
     }
 
     private async Task CycleThroughChart()
     {
-        MainThread.BeginInvokeOnMainThread(async () => await SwitchChart());
+        MainThread.BeginInvokeOnMainThread(async () => 
+        {
+            if (_vm.SelectedIndex == (_vm.PayPeriods.Count() - 1))
+            {
+                _vm.SelectedIndex = 0;                
+            }
+            else if(_vm.SelectedIndex == 0)
+            {
+                _vm.SelectedIndex = _vm.PayPeriods.Count() - 1;
+            }
+            else
+            {
+                _vm.SelectedIndex += 1;
+            }
+            await SwitchChart(_vm.SelectedIndex);
+        });
     }
 
     private void listView_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -184,22 +208,25 @@ public partial class ViewCategories : ContentPage
 
     private async void SwipeGestureRecognizer_Swiped(object sender, SwipedEventArgs e)
     {
-        _vm.ChartUpdating = true;
+        
 
         switch (e.Direction)
         {
             case SwipeDirection.Left:
-                await SwitchChart();
+                if(_vm.SelectedIndex < (_vm.PayPeriods.Count()-1))
+                {
+                    _vm.SelectedIndex += 1;
+                    await SwitchChart(_vm.SelectedIndex);
+                }
                 break;
             case SwipeDirection.Right:
-                await SwitchChart();
+                if (_vm.SelectedIndex > 0)
+                {
+                    _vm.SelectedIndex -= 1;
+                    await SwitchChart(_vm.SelectedIndex);
+                }
                 break;
-        }
-
-        await Task.Delay(2000);
-        _timer.Stop();
-        _timer.Start();
-        _vm.ChartUpdating = false;
+        }       
     }
 
     private void btnPlayPause_Clicked(object sender, EventArgs e)
@@ -216,5 +243,13 @@ public partial class ViewCategories : ContentPage
         }
     }
 
+    private void TabCarousel_SwipeEnded(object sender, EventArgs e)
+    {
+        var Carousel = (SfCarousel)sender;
+        int Index = Carousel.SelectedIndex;
 
+        _vm.SelectedIndex = Index;
+        SwitchChart(Index);
+
+    }
 }

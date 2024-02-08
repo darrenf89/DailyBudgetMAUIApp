@@ -18,6 +18,20 @@ namespace DailyBudgetMAUIApp.Models
         public decimal _categorySpendAllTime;
         [ObservableProperty]
         public decimal _categorySpendPayPeriod;
+        [ObservableProperty]
+        public List<SpendPeriods> _categorySpendPeriods = new List<SpendPeriods>();
+    }
+
+    public partial class SpendPeriods: ObservableObject
+    {
+        [ObservableProperty]
+        public DateTime _fromDate;
+        [ObservableProperty]
+        public DateTime _toDate;
+        [ObservableProperty]
+        public decimal _spendTotalAmount;
+        [ObservableProperty]
+        public bool _isCurrentPeriod;
     }
 
     public class DefaultCategories
@@ -25,6 +39,7 @@ namespace DailyBudgetMAUIApp.Models
         public string CatName { get; set; }
         public string CategoryIcon { get; set; }
         public List<SubCategories> SubCategories { get; set; }
+     
     }
 
     public class SubCategories

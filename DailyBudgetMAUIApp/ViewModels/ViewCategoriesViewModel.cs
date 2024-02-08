@@ -23,15 +23,19 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private double _chartContentWidth;
         [ObservableProperty]
+        private double _tabContentWidth;
+        [ObservableProperty]
         private double _maxChartContentHeight;
         [ObservableProperty]
         private string _chartTitle;
         [ObservableProperty]
-        private string _currentChart = "PayPeriod";
-        [ObservableProperty]
         private bool _chartUpdating;
         [ObservableProperty]
         private bool _isPlaying;
+        [ObservableProperty]
+        private List<string> _payPeriods = new List<string>();
+        [ObservableProperty]
+        private int _selectedIndex = 1;
 
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
@@ -44,6 +48,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             ScreenWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density);
             ChartContentWidth = ScreenWidth - 20;
+            TabContentWidth = ScreenWidth - 40;
             ChartContentHeight = ScreenHeight * 0.25;
             MaxChartContentHeight = ChartContentHeight + 10;
             ChartTitle = "Current period";
@@ -77,6 +82,19 @@ namespace DailyBudgetMAUIApp.ViewModels
             };
 
             Categories.Add(AddCat);
+
+            PayPeriods.Add("All Time");
+            foreach(SpendPeriods SP in Categories[0].CategorySpendPeriods)
+            {
+                if(SP.IsCurrentPeriod)
+                {
+                    PayPeriods.Add("Current Period");
+                }
+                else
+                {
+                    PayPeriods.Add($"{SP.FromDate: dd MMM} to {SP.ToDate: dd MMM}");
+                }
+            }
         }
     }
 
