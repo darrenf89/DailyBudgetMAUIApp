@@ -854,9 +854,12 @@ namespace DailyBudgetMAUIApp.DataServices
 
             if(!string.IsNullOrEmpty(Bill.BillPayee))
             {
-                Categories LastCategory = _ds.GetPayeeLastCategory(App.DefaultBudgetID, Bill.BillPayee).Result;
-                BillTransaction.Category = LastCategory.CategoryName;
-                BillTransaction.CategoryID = LastCategory.CategoryID;
+                Categories? LastCategory = _ds.GetPayeeLastCategory(App.DefaultBudgetID, Bill.BillPayee).Result;
+                if(LastCategory != null)
+                {
+                    BillTransaction.Category = LastCategory.CategoryName;
+                    BillTransaction.CategoryID = LastCategory.CategoryID;
+                }
             }
 
             BillTransaction = _ds.SaveNewTransaction(BillTransaction, BudgetID).Result;
