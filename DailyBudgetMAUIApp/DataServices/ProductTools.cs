@@ -1651,7 +1651,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 App.CurrentPopUp = PopUp;
                 Application.Current.MainPage.ShowPopup(PopUp);
 
-                await Shell.Current.GoToAsync($"///{nameof(LoadUpPage)}");
+                await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
             }
             
         }
@@ -1740,7 +1740,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         private async Task LoadPremiumTabBar()
         {
-            App.MainTabBar.Items.Add(new ShellContentDI()
+            App.MainTabBar.Items.Add(new ShellContent()
             {
                 Title = "Dashboard",
                 Route = "MainPage",
@@ -1792,7 +1792,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         private async Task LoadPremiumPlusTabBar()
         {
-            App.MainTabBar.Items.Add(new ShellContentDI()
+            App.MainTabBar.Items.Add(new ShellContent()
             {
                 Title = "Dashboard",
                 Route = "MainPage",
@@ -1876,7 +1876,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         private async Task LoadBasicTabBar()
         {
-            App.MainTabBar.Items.Add(new ShellContentDI()
+            App.MainTabBar.Items.Add(new ShellContent()
             {
                 Title = "Dashboard",
                 Route = "MainPage",

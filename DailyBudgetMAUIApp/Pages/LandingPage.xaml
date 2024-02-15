@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DailyBudgetMAUIApp.Pages.LandingPage"
+             Shell.FlyoutBehavior="Disabled"
+             Shell.TabBarIsVisible="False"
+             Shell.NavBarIsVisible = "False">
+    <Grid>
+        <Image Source="LandingPageBackground.jpg"
+               Aspect="AspectFill" />
+        <VerticalStackLayout VerticalOptions="End">
+            <Label Text="Welcome."  Margin="0,0,0,120" FontSize="Large" TextColor="White" FontFamily="OpenSansSemibold" VerticalOptions="Center" HorizontalOptions="Center" CharacterSpacing="0"/>
+            <Border Style="{StaticResource PictureFrame150Circle}" Margin="0,0,0,130" x:Name="brdImage">
+                <Image Source="justlogoorangetwo.png" Aspect="AspectFill" ></Image>
+            </Border>
+            <HorizontalStackLayout Spacing="35" HorizontalOptions="Center" HeightRequest="40" Margin="0,0,0,20">               
+            </HorizontalStackLayout>
+            <Label Text="We are loading . . ." HeightRequest="80" HorizontalOptions="Center" Margin="0,80,0,100" FontSize="35" VerticalOptions="Center" TextColor="White" FontFamily="OpenSansSemibold" CharacterSpacing="0"/>            
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

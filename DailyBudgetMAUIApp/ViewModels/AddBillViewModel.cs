@@ -84,7 +84,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     else
                     {
-                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
                     }
                     
                 }
@@ -133,7 +133,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     else
                     {
-                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
                     }
                 }
             }

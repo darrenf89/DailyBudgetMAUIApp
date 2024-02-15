@@ -69,7 +69,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             QuickTransactionWidth = ScreenWidth - 180;
             QuickTransactionInputWidth = QuickTransactionWidth - 70;
             ProgressBarCarWidthRequest = ScreenWidth - 115;
-        }
+        }        
 
         [ICommand]
         async void NavigateCreateNewBudget()

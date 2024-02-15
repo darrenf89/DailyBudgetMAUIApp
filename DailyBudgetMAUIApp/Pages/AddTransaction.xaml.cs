@@ -232,7 +232,7 @@ public partial class AddTransaction : ContentPage
                     }
                     else
                     {
-                        await Shell.Current.GoToAsync($"{nameof(MainPage)}?SnackBar=Transaction Added&SnackID={_vm.Transaction.TransactionID}");
+                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
                     }
                 }
             }
@@ -275,7 +275,7 @@ public partial class AddTransaction : ContentPage
                     }
                     else
                     {
-                        await Shell.Current.GoToAsync($"{nameof(MainPage)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
+                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}?ID=1&SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
                     }
                 }
             }

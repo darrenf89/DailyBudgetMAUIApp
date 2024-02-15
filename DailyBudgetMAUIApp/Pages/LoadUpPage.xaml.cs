@@ -10,4 +10,6 @@ public partial class LoadUpPage : ContentPage
 		this.BindingContext = viewModel;
 
     }
+
+
 }

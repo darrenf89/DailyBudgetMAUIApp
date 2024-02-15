@@ -122,6 +122,9 @@
 	  <Compile Update="Pages\CreateNewBudget.xaml.cs">
 	    <DependentUpon>CreateNewBudget.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\LandingPage.xaml.cs">
+	    <DependentUpon>LandingPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\LogonPage.xaml.cs">
 	    <DependentUpon>LogonPage.xaml</DependentUpon>
 	  </Compile>
@@ -201,6 +204,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ErrorPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\LandingPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\LoadUpPage.xaml">
