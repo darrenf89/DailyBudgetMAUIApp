@@ -53,7 +53,7 @@
                     </Border>
                     <VerticalStackLayout AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" WidthRequest="{Binding ScreenWidth}" >
                         <HorizontalStackLayout x:Name="hslTabs" HeightRequest="45" VerticalOptions="Center" HorizontalOptions="Center">
-                            <carousel:SfCarousel SelectedIndex="{Binding SelectedIndex}" x:Name="TabCarousel" ItemsSource="{Binding PayPeriods}" ItemHeight="35" VerticalOptions="Center" HorizontalOptions="Center" ScaleOffset="0.6" SwipeEnded="TabCarousel_SwipeEnded" WidthRequest="{Binding TabContentWidth}">
+                            <carousel:SfCarousel SelectedIndex="{Binding SelectedIndex}" x:Name="TabCarousel" ItemsSource="{Binding PayPeriods}" ItemHeight="35" VerticalOptions="Center" HorizontalOptions="Center" ScaleOffset="0.6" SwipeEnded="TabCarousel_SwipeEnded" WidthRequest="{Binding TabContentWidth}" SelectionChanged="TabCarousel_SelectionChanged">
                                 <carousel:SfCarousel.ItemTemplate>
                                     <DataTemplate>
                                         <Border Stroke="{StaticResource White}" BackgroundColor="{StaticResource White}" StrokeShape="RoundRectangle 2" StrokeThickness="1">
@@ -83,7 +83,7 @@
                                         </chart:ChartLegend.ItemTemplate>
                                     </chart:ChartLegend>
                                 </chart:SfCircularChart.Legend>
-                                <chart:PieSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="True" Radius="0.9"/>
+                                <chart:PieSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
                             </chart:SfCircularChart>
                         </Border>
                         <BoxView HeightRequest="8" Color="{StaticResource White}" />

@@ -58,6 +58,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private double _quickTransactionWidth;
         [ObservableProperty]
         private double _quickTransactionInputWidth;
+        [ObservableProperty]
+        private decimal _futureDailySpend;
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {

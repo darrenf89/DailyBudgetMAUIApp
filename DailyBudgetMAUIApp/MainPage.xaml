@@ -116,6 +116,20 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
+                            <Label Grid.Row="3" Grid.Column="1" Padding="20,0,0,0" FontSize="Caption" Margin="0">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Est. spend from tomorrow:  " TextColor="{StaticResource Gray400}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Row="3" Grid.Column="2" Padding="2,0,0,0" FontSize="Caption" Margin="0">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span FontAttributes="Bold" Text="{Binding FutureDailySpend, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
                             <gauge:SfRadialGauge  Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" MaximumHeightRequest="100" MaximumWidthRequest="100" Margin="5,0,0,0">
                                 <gauge:SfRadialGauge.Axes>
                                     <gauge:RadialAxis StartAngle="150" EndAngle="30" Minimum="0" Maximum="{Binding DefaultBudget.StartDayDailyAmount}" Interval="0" AnimationDuration="3000" EnableLoadingAnimation="True" RadiusFactor="0.95">

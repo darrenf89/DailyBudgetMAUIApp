@@ -127,7 +127,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                 if((string)result.ToString() == "OK")
                                 {                                    
-                                    ReturnUser.SessionExpiry = DateTime.UtcNow.AddDays(0);
+                                    ReturnUser.SessionExpiry = DateTime.UtcNow.AddDays(1);
 
                                     if (Preferences.ContainsKey(nameof(App.UserDetails)))
                                     {
@@ -147,7 +147,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     App.DefaultBudgetID = ReturnUser.DefaultBudgetID;
 
                                     await Application.Current.MainPage.Navigation.PopModalAsync();
-                                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                                    await Shell.Current.GoToAsync($"{nameof(LandingPage)}");
                                 }
                                 else
                                 {

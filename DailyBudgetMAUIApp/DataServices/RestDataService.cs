@@ -2882,7 +2882,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             try
             {
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getheadercategorydetailsfull/{BudgetID}").Result;
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getheadercategorydetailsfull/{CategoryID}/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
 

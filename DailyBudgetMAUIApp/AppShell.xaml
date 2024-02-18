@@ -34,7 +34,11 @@
     </ShellItem>
 
     <ShellItem Route="ViewCategories" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
+    </ShellItem>
+
+    <ShellItem Route="ViewCategory" FlyoutItemIsVisible="True">
+        <ShellContent ContentTemplate="{DataTemplate Pages:ViewCategory}"/>
     </ShellItem>
 
 </Shell>

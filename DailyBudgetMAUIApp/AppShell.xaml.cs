@@ -29,7 +29,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(LoadingPage), typeof(LoadingPage));
         Routing.RegisterRoute(nameof(LoadingPageTwo), typeof(LoadingPageTwo));
         Routing.RegisterRoute(nameof(ViewTransactions), typeof(ViewTransactions));
-        Routing.RegisterRoute(nameof(ViewCategories), typeof(ViewCategories)); 
+        Routing.RegisterRoute(nameof(ViewCategories), typeof(ViewCategories));
+        Routing.RegisterRoute(nameof(ViewCategory), typeof(ViewCategory));
         Routing.RegisterRoute(nameof(ViewSavings), typeof(ViewSavings));
         Routing.RegisterRoute(nameof(ViewBills), typeof(ViewBills));
         Routing.RegisterRoute(nameof(ViewEnvelopes), typeof(ViewEnvelopes));

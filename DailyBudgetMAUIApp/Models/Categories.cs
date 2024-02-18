@@ -1,14 +1,15 @@
-﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using Microsoft.Maui.Layouts;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.Models
 {
-    public partial class Categories: ObservableObject
+    public partial class Categories : ObservableObject
     {
         [ObservableProperty]
         public int _categoryID;
         [ObservableProperty]
         public string? _categoryName;
-        [ObservableProperty]        
+        [ObservableProperty]
         public bool _isSubCategory;
         [ObservableProperty]
         public int? _categoryGroupID;
@@ -20,6 +21,8 @@ namespace DailyBudgetMAUIApp.Models
         public decimal _categorySpendPayPeriod;
         [ObservableProperty]
         public List<SpendPeriods> _categorySpendPeriods = new List<SpendPeriods>();
+        [ObservableProperty]
+        public bool _isEditMode = false;
     }
 
     public partial class SpendPeriods: ObservableObject

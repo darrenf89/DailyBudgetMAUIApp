@@ -107,11 +107,14 @@ public partial class App : Application
     {
         ChartBrush = new List<Brush>
         {
-            new SolidColorBrush(Color.FromArgb("#665191")),
+            new SolidColorBrush(Color.FromArgb("#003f5c")),
             new SolidColorBrush(Color.FromArgb("#ffa600")),
-            new SolidColorBrush(Color.FromArgb("#d45087")),
+            new SolidColorBrush(Color.FromArgb("#2f4b7c")),
             new SolidColorBrush(Color.FromArgb("#ff7c43")),            
-            new SolidColorBrush(Color.FromArgb("#003f5c"))
+            new SolidColorBrush(Color.FromArgb("#665191")),
+            new SolidColorBrush(Color.FromArgb("#f95d6a")),
+            new SolidColorBrush(Color.FromArgb("#a05195")),
+            new SolidColorBrush(Color.FromArgb("#d45087"))
         };
     }
 }

@@ -212,6 +212,9 @@ public partial class MainPage : ContentPage
         decimal Amount = 0;
         entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
 
+        int Days = (int)Math.Ceiling((_vm.DefaultBudget.NextIncomePayday.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
+        _vm.FutureDailySpend = (decimal)(_vm.DefaultBudget.LeftToSpendBalance.GetValueOrDefault() / (Days - 1));
+
     }
 
     void TransactionAmount_Changed(object sender, TextChangedEventArgs e)
@@ -280,7 +283,7 @@ public partial class MainPage : ContentPage
             CharacterSpacing = 0.1
         };
 
-        if (_vm.SnackBar == null || _vm.SnackBar == "")
+        if (string.IsNullOrEmpty(_vm.SnackBar))
         {
 
         }
@@ -376,8 +379,17 @@ public partial class MainPage : ContentPage
 
             _vm.SnackBar = "";
             _vm.SnackID = 0;
+
+            _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+
+            App.DefaultBudget = _vm.DefaultBudget;
+            _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+            App.SessionLastUpdate = DateTime.UtcNow;
+
+            await LoadMainDashboardContent();
         }
     }
+
     private async Task UndoAddNew(int ID, string Type)
     {
         if (Type == "Transaction")
@@ -1740,6 +1752,13 @@ public partial class MainPage : ContentPage
 
             LVTransactions.RefreshItem();
             LVTransactions.RefreshView();
+
+
+            _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+
+            App.DefaultBudget = _vm.DefaultBudget;
+            _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+            App.SessionLastUpdate = DateTime.UtcNow;
         }
     }
 
@@ -1794,14 +1813,13 @@ public partial class MainPage : ContentPage
             EventType = "Transaction"
         };
 
-        await _ds.SaveNewTransaction(T, App.DefaultBudget.BudgetID);
-        QuickTransaction_Tapped(null, null);
-        _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
-        await LoadMainDashboardContent();
+        T = await _ds.SaveNewTransaction(T, App.DefaultBudget.BudgetID);
+        QuickTransaction_Tapped(null, null);      
 
-        await DisplayAlert("Transaction added", $"Congrats, you have added a quick transaction. You can edit the details of the transaction later", "OK");
+        _vm.SnackBar = "Transaction Added";
+        _vm.SnackID = T.TransactionID;
 
-
+        ProcessSnackBar();
 
     }
 }

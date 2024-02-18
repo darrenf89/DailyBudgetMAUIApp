@@ -38,6 +38,7 @@ public partial class ViewCategories : ContentPage
     private readonly IRestDataService _ds;
 	private readonly ViewCategoriesViewModel _vm;
     private readonly IDispatcherTimer _timer;
+
     public ViewCategories(ViewCategoriesViewModel viewModel, IProductTools pt, IRestDataService ds)
 	{
         this.BindingContext = viewModel;
@@ -202,7 +203,7 @@ public partial class ViewCategories : ContentPage
         }
         else
         {
-
+            await Shell.Current.GoToAsync($"{nameof(ViewCategory)}?HeaderCatId={Category.CategoryID}");
         }
     }
 
@@ -243,13 +244,22 @@ public partial class ViewCategories : ContentPage
         }
     }
 
-    private void TabCarousel_SwipeEnded(object sender, EventArgs e)
+    private async void TabCarousel_SwipeEnded(object sender, EventArgs e)
     {
         var Carousel = (SfCarousel)sender;
         int Index = Carousel.SelectedIndex;
 
         _vm.SelectedIndex = Index;
-        SwitchChart(Index);
+        await SwitchChart(Index);
 
+    }
+
+    private async void TabCarousel_SelectionChanged(object sender, Syncfusion.Maui.Core.Carousel.SelectionChangedEventArgs e)
+    {
+        var Carousel = (SfCarousel)sender;
+        int Index = Carousel.SelectedIndex;
+
+        _vm.SelectedIndex = Index;
+        await SwitchChart(Index);
     }
 }

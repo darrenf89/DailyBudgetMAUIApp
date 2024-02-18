@@ -1314,6 +1314,30 @@ namespace DailyBudgetMAUIApp.Converters
             return null;
         }
     }
+    public class CategoryIDToBoolReverse : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            int CatID = (int)value;
+
+            if (CatID == -1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
 
     public class CategoryIDToColor : IValueConverter
     {
@@ -1341,7 +1365,57 @@ namespace DailyBudgetMAUIApp.Converters
             return null;
         }
     }
+    public class SubCategoryIDToColor : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Application.Current.Resources.TryGetValue("InfoLight", out var Info);
+            Application.Current.Resources.TryGetValue("Success", out var Success);
 
+            if (value == null) return null;
+
+            int CatID = (int)value;
+
+            if (CatID == -1)
+            {
+                return (Color)Success;
+            }
+            else
+            {
+                return (Color)Info;
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+    public class SubCatIconConverter : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+
+            if (value == null) return null;
+
+            int CatID = (int)value;
+
+            if (CatID == -1)
+            {
+                return "\ue145";
+            }
+            else
+            {
+                return "\ue3c9";
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
     public class PlayPauseGlyph : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
