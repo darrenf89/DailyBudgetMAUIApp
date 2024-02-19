@@ -259,13 +259,26 @@ public partial class ViewCategory : ContentPage
         await SwitchChart(Index);
     }
 
-    private void EditCategory_Tapped(object sender, TappedEventArgs e)
+    private void DeleteCategory_Tapped(object sender, TappedEventArgs e)
     {
 
     }
 
-    private void DeleteCategory_Tapped(object sender, TappedEventArgs e)
+    private void EditCategory_Tapped(object sender, TappedEventArgs e)
     {
+        Categories cat = (Categories)e.Parameter;
+        cat.IsEditMode = true;
 
+        listView.RefreshItem();
+
+    }
+
+    private void ApplyChanges_Clicked(object sender, EventArgs e)
+    {
+        var Button = (Button)sender;
+        Categories cat = (Categories)Button.BindingContext;
+        cat.IsEditMode = false;
+
+        listView.RefreshItem();
     }
 }

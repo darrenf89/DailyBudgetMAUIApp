@@ -1,9 +1,10 @@
 ﻿using Microsoft.Maui.Layouts;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using DailyBudgetMAUIApp.Handlers;
 
 namespace DailyBudgetMAUIApp.Models
 {
-    public partial class Categories : ObservableObject
+    public partial class Categories : ObservableObject, IIndexable
     {
         [ObservableProperty]
         public int _categoryID;
@@ -23,6 +24,7 @@ namespace DailyBudgetMAUIApp.Models
         public List<SpendPeriods> _categorySpendPeriods = new List<SpendPeriods>();
         [ObservableProperty]
         public bool _isEditMode = false;
+        public int Index { get; set; }
     }
 
     public partial class SpendPeriods: ObservableObject

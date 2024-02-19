@@ -12,8 +12,8 @@
              x:Name="Content"
              Shell.TabBarIsVisible="False">
     <Shell.TitleView>
-        <Grid ColumnDefinitions="*">
-            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="75,0,10,0" Padding="0" FontSize="Large"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Start" Grid.Column="1"/>
+        <Grid ColumnDefinitions="*,75">
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Large"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="0"/>
         </Grid>
     </Shell.TitleView>
     <sfList:SfListView x:Name="listView" AllowSwiping="True" IsStickyHeader="True" BackgroundColor="White" SelectionMode="None" ItemsSource="{Binding Categories}" AutoFitMode="DynamicHeight" IsScrollingEnabled="True">
@@ -58,72 +58,69 @@
                             </carousel:SfCarousel>
                         </HorizontalStackLayout>
                         <Border Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="0,0,0,20" Padding="0">
-                            <chart:SfCircularChart Margin="5,0,5,20" BackgroundColor="Transparent">
-                                <chart:SfCircularChart.GestureRecognizers>
+                            <chart:SfCartesianChart Margin="5,20,5,10" BackgroundColor="Transparent">
+                                <chart:SfCartesianChart.GestureRecognizers>
                                     <SwipeGestureRecognizer Direction="Left" Swiped="SwipeGestureRecognizer_Swiped"/>
                                     <SwipeGestureRecognizer Direction="Right" Swiped="SwipeGestureRecognizer_Swiped"/>
-                                </chart:SfCircularChart.GestureRecognizers>
-                                <chart:SfCircularChart.Legend>
-                                    <chart:ChartLegend Placement="Right">
-                                        <chart:ChartLegend.ItemTemplate>
-                                            <DataTemplate>
-                                                <HorizontalStackLayout ZIndex="99">
-                                                    <RoundRectangle CornerRadius="2" HeightRequest="8" WidthRequest="8" Margin="0,0,2,5" Background="{Binding IconBrush}" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                                    <Label Text="{Binding Text}" Margin="0,0,30,5" FontSize="Micro" TextColor="{StaticResource Gray900}" HorizontalOptions="Center" VerticalOptions="Center" CharacterSpacing="0"/>
-                                                </HorizontalStackLayout>
-                                            </DataTemplate>
-                                        </chart:ChartLegend.ItemTemplate>
-                                    </chart:ChartLegend>
-                                </chart:SfCircularChart.Legend>
-                                <chart:PieSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
-                            </chart:SfCircularChart>
+                                </chart:SfCartesianChart.GestureRecognizers>
+                                <chart:SfCartesianChart.XAxes>
+                                    <chart:CategoryAxis LabelPlacement="BetweenTicks" IsVisible="False" ShowMajorGridLines="False"/>
+                                </chart:SfCartesianChart.XAxes>
+                                <chart:SfCartesianChart.YAxes>
+                                    <chart:NumericalAxis ShowMajorGridLines="False">
+                                        <chart:NumericalAxis.LabelStyle>
+                                            <chart:ChartAxisLabelStyle FontSize="8" TextColor="{StaticResource Gray900}" Margin="0,2,2,0"/>
+                                        </chart:NumericalAxis.LabelStyle>
+                                    </chart:NumericalAxis>
+                                </chart:SfCartesianChart.YAxes>
+                                <chart:ColumnSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" />
+                            </chart:SfCartesianChart>
                         </Border>
                         <BoxView HeightRequest="8" Color="{StaticResource White}" />
                     </VerticalStackLayout>
                 </AbsoluteLayout>
             </DataTemplate>
         </sfList:SfListView.HeaderTemplate>
-        <sfList:SfListView.StartSwipeTemplate>
-            <DataTemplate>
-                <Border Stroke="Transparent" StrokeThickness="0">
-                    <Grid VerticalOptions="Center" HorizontalOptions="Center" ColumnDefinitions="48,48" RowDefinitions="48" BackgroundColor="Transparent">
-                        <Border Grid.Column="0" BackgroundColor="{StaticResource InfoLight}" StrokeThickness="0" Padding="0" Stroke="Transparent">
-                            <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="30"  Color="{DynamicResource Info}" />
-                                </Image.Source>
-                            </Image>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="EditCategory" Tapped="EditCategory_Tapped" CommandParameter="{Binding .}"/>
-                            </Border.GestureRecognizers>
-                        </Border>
-                        <Border Grid.Column="1" BackgroundColor="{StaticResource DangerLight}" StrokeThickness="0" Padding="0" Stroke="Transparent">
-                            <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete_forever }" Size="30"  Color="{DynamicResource Danger}" />
-                                </Image.Source>
-                            </Image>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="DeleteCategory" Tapped="DeleteCategory_Tapped" CommandParameter="{Binding .}"/>
-                            </Border.GestureRecognizers>
-                        </Border>
-                    </Grid>
-                </Border>
-            </DataTemplate>
-        </sfList:SfListView.StartSwipeTemplate>
         <sfList:SfListView.ItemTemplate>
             <DataTemplate>
                 <ViewCell>
                     <ViewCell.View>
                         <VerticalStackLayout Padding="10,5,10,5">
                             <Border Style="{StaticResource brdCardViewRectange}">
-                                <Grid ColumnDefinitions="Auto, *, Auto, Auto" RowDefinitions="24,24">
-                                    <Label IsVisible="{Binding IsEditMode,Converter={StaticResource BoolConverter}}" Padding="10,0,0,0" Grid.RowSpan="2" Grid.Column="0" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Center" Text="{Binding CategoryName}" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}"/>
+                                <Grid ColumnDefinitions="Auto, *" RowDefinitions="24,24">
+                                    <HorizontalStackLayout IsVisible="{Binding IsEditMode,Converter={StaticResource BoolConverter}}" Grid.Column="0" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Center">
+                                        <Border StrokeShape="RoundRectangle 6" HeightRequest="16" WidthRequest="16" VerticalOptions="Center" BackgroundColor="{Binding Index, Converter={StaticResource IndexToChartColor}}" StrokeThickness="0" Margin="10,0,10,0"/>
+                                        <Label VerticalOptions="Center" Text="{Binding CategoryName}" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout Margin="10,0,0,0" Grid.Column="0" Grid.Row="1" HorizontalOptions="Start" VerticalOptions="Center" IsVisible="{Binding IsEditMode,Converter={StaticResource BoolConverter}}">
+                                        <HorizontalStackLayout Margin="0,0,20,0" HorizontalOptions="End" VerticalOptions="Center">
+                                            <Image Background="{DynamicResource White}">
+                                                <Image.Source>
+                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Primary}"/>
+                                                </Image.Source>
+                                            </Image>
+                                            <Label Text="Edit" TextColor="{DynamicResource Primary}" FontAttributes="Bold" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                            <HorizontalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer x:Name="EditCategory" Tapped="EditCategory_Tapped" CommandParameter="{Binding .}"/>
+                                            </HorizontalStackLayout.GestureRecognizers>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Margin="0" HorizontalOptions="End" VerticalOptions="Center">
+                                            <Image Background="{DynamicResource White}">
+                                                <Image.Source>
+                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete}" Size="12" Color="{DynamicResource Primary}"/>
+                                                </Image.Source>
+                                            </Image>
+                                            <Label Text="Delete" TextColor="{DynamicResource Primary}" FontAttributes="Bold" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                            <HorizontalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer x:Name="DeleteCategory" Tapped="DeleteCategory_Tapped" CommandParameter="{Binding .}"/>
+                                            </HorizontalStackLayout.GestureRecognizers>
+                                        </HorizontalStackLayout>
+                                    </HorizontalStackLayout>
                                     <HorizontalStackLayout IsVisible="{Binding IsEditMode}" Padding="10,0,0,0" Grid.RowSpan="2" Grid.Column="0" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Center">
                                         <handlers:BorderlessEntry VerticalOptions="Center" HorizontalOptions="Start"  TextColor="{DynamicResource Primary}" FontAttributes="Bold" FontSize="Medium" Text="{Binding CategoryName}"/>
-                                        <Button>
-
-                                        </Button>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout IsVisible="{Binding IsEditMode}" Padding="10,0,10,0" Grid.RowSpan="2" Grid.Column="1" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center">
+                                        <Button Text="Apply Changes" x:Name="ApplyChanges" Clicked="ApplyChanges_Clicked" TextColor="White" BackgroundColor="{StaticResource Success}"/>
                                     </HorizontalStackLayout>
                                     <HorizontalStackLayout Padding="0,0,10,0" Grid.Column="1" Grid.Row="0" HorizontalOptions="End" IsVisible="{Binding IsEditMode,Converter={StaticResource BoolConverter}}">
                                         <Label HorizontalOptions="End" VerticalOptions="Center" Text="Spend pay period | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="Caption"/>
@@ -133,11 +130,6 @@
                                         <Label HorizontalOptions="End" VerticalOptions="Center" Text="Spend all time | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="Caption"/>
                                         <Label HorizontalOptions="End" VerticalOptions="Center" Text="{Binding CategorySpendAllTime, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="Caption"/>
                                     </HorizontalStackLayout>
-                                    <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,10,0">
-                                        <Image.Source>
-                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Double_arrow}" Size="15"  Color="{DynamicResource Gray900}" />
-                                        </Image.Source>
-                                    </Image>
                                 </Grid>
                             </Border>
                         </VerticalStackLayout>

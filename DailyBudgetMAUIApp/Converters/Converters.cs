@@ -1440,4 +1440,25 @@ namespace DailyBudgetMAUIApp.Converters
             return null;
         }
     }
+
+    public class IndexToChartColor : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            int Index = (int)value;
+
+            Color ReturnColor = App.ChartColor[Index];
+
+            return ReturnColor;
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
 }

@@ -56,6 +56,7 @@
     <converters:SubCategoryIDToColor x:Key="SubCategoryIDToColor"/>
     <converters:SubCatIconConverter x:Key="SubCatIconConverter"/>
     <converters:CategoryIDToBoolReverse x:Key="CategoryIDToBoolReverse"/>
+    <converters:IndexToChartColor x:Key="IndexToChartColor"/>
 
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>

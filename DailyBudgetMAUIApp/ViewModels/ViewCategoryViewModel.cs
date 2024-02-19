@@ -2,6 +2,7 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using DailyBudgetMAUIApp.Handlers;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -9,7 +10,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class ViewCategoryViewModel : BaseViewModel
     {
         [ObservableProperty]
-        private ObservableCollection<Categories> _categories = new ObservableCollection<Categories>();
+        private IndexableObservableCollection<Categories> _categories = new IndexableObservableCollection<Categories>();
         [ObservableProperty]
         private ObservableCollection<ChartClass> _categoriesChart = new ObservableCollection<ChartClass>();
         [ObservableProperty]
