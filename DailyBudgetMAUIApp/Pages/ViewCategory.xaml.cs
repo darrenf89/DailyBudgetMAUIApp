@@ -9,6 +9,7 @@ using Syncfusion.Maui.Charts;
 using Syncfusion.Maui.ListView;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Transactions;
 using The49.Maui.BottomSheet;
 
 
@@ -271,14 +272,40 @@ public partial class ViewCategory : ContentPage
 
         listView.RefreshItem();
 
+        var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
+        var EntryList = Entries.ToList();
+        BorderlessEntry Entry = (BorderlessEntry)EntryList[cat.Index];
+        Entry.Focus();
+
     }
 
     private void ApplyChanges_Clicked(object sender, EventArgs e)
     {
         var Button = (Button)sender;
         Categories cat = (Categories)Button.BindingContext;
+
+        List<PatchDoc> CategoryDetails = new List<PatchDoc>();
+
+        PatchDoc NewName = new PatchDoc
+        {
+            op = "replace",
+            path = "/CategoryName",
+            value = cat.CategoryName
+        };
+
+        CategoryDetails.Add(NewName);
+
+        _ds.PatchCategory(cat.CategoryID, CategoryDetails);
+        _ds.UpdateAllTransactionsCategoryName(cat.CategoryID);
+
         cat.IsEditMode = false;
 
         listView.RefreshItem();
+
+        var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
+        var EntryList = Entries.ToList();
+        BorderlessEntry Entry = (BorderlessEntry)EntryList[cat.Index];
+        Entry.IsEnabled = false;
+        Entry.IsEnabled = true;
     }
 }

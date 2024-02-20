@@ -2826,6 +2826,85 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<string> PatchCategory(int CategoryID, List<PatchDoc> PatchDoc)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PatchAsync($"{_url}/categories/patchcategory/{CategoryID}", request).Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))                    
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+                    HandleError(new Exception(error.ErrorMessage), "PatchCategory", "PatchCategory");
+                    return "";
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "PatchCategory", "PatchCategory");
+                return "";
+            }
+
+        }
+        public async Task<string> UpdateAllTransactionsCategoryName(int CategoryID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/Updatealltransactionscategoryname/{CategoryID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return "OK";
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+                        HandleError(new Exception(error.ErrorMessage), "UpdateAllTransactionsCategoryName", "UpdateAllTransactionsCategoryName");
+                        return "";
+                    }
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "UpdateAllTransactionsCategoryName", "UpdateAllTransactionsCategoryName");
+                return "";
+            }
+        }
+
         public async Task<List<Categories>> GetAllHeaderCategoryDetailsFull(int BudgetID)
         {
             List<Categories>? categories = new List<Categories>();
