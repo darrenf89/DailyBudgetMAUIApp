@@ -30,15 +30,15 @@
     </TabBar>
 
     <ShellItem Route="CreateNewBudget" FlyoutItemIsVisible="False">
-        <ShellContent  ContentTemplate="{DataTemplate Pages:CreateNewBudget}"/>
+        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:CreateNewBudget}"/>
     </ShellItem>
 
     <ShellItem Route="ViewCategories" FlyoutItemIsVisible="True">
-        <ShellContent ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
+        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
     </ShellItem>
 
     <ShellItem Route="ViewCategory" FlyoutItemIsVisible="True">
-        <ShellContent ContentTemplate="{DataTemplate Pages:ViewCategory}"/>
+        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewCategory}"/>
     </ShellItem>
 
 </Shell>

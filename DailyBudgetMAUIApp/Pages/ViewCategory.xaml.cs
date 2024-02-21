@@ -260,9 +260,31 @@ public partial class ViewCategory : ContentPage
         await SwitchChart(Index);
     }
 
-    private void DeleteCategory_Tapped(object sender, TappedEventArgs e)
+    private async void DeleteCategory_Tapped(object sender, TappedEventArgs e)
     {
+        Categories cat = (Categories)e.Parameter;
 
+        bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete category?", $"Are you sure you want to Delete this category?", "Yes", "No!");
+        if (Delete)
+        {
+            Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
+            string[] CategoryList = Categories.Keys.ToArray();
+            var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this categories transactions?", "Cancel", "No", CategoryList);
+            if(reassign == "Cancel")
+            {
+
+            }
+            else if(reassign == "No")
+            {
+                await _ds.DeleteCategory(cat.CategoryID, false, 0);
+            }   
+            else
+            {
+                int ReplacementID = Categories[reassign];
+                await _ds.DeleteCategory(cat.CategoryID, true, ReplacementID);
+            }
+            
+        }
     }
 
     private void EditCategory_Tapped(object sender, TappedEventArgs e)

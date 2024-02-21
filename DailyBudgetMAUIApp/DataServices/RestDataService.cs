@@ -2996,6 +2996,90 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<string> DeleteCategory(int CategoryID, bool IsReassign, int ReAssignID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/deletecategory/{CategoryID}/{IsReassign}/{ReAssignID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return "OK";
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+                        HandleError(new Exception(error.ErrorMessage), "DeleteCategory", "DeleteCategory");
+                        return "";
+                    }
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "DeleteCategory", "DeleteCategory");
+                return "";
+            }
+        }
+
+        public async Task<Dictionary<string, int>> GetAllCategoryNames(int BudgetID)
+        {
+            Dictionary<string, int> Categories = new Dictionary<string, int>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getallcategorynames/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            Categories = serializer.Deserialize<Dictionary<string, int>>(reader);
+                        }
+
+                        return Categories;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+                        HandleError(new Exception(error.ErrorMessage), "GetAllCategoryNames", "GetAllCategoryNames");
+                        return null;
+                    }
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "GetAllCategoryNames", "GetAllCategoryNames");
+                return null;
+            }
+        }
+
         public async Task<List<Savings>> GetBudgetEnvelopeSaving(int BudgetID)
         {
             List<Savings>? Savings = new List<Savings>();

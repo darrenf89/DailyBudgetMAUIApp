@@ -80,6 +80,8 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> UpdateAllTransactionsCategoryName(int CategoryID);
         public Task<List<Categories>> GetAllHeaderCategoryDetailsFull(int BudgetID);
         public Task<List<Categories>> GetHeaderCategoryDetailsFull(int CategoryID, int BudgetID);
+        public Task<string> DeleteCategory(int CategoryID, bool IsReassign ,int ReAssignID);
+        public Task<Dictionary<string, int>> GetAllCategoryNames(int BudgetID);
         public Task<List<Savings>> GetBudgetEnvelopeSaving(int BudgetID);
         public Task<List<Savings>> GetBudgetRegularSaving(int BudgetID); 
         public Task<string> ShareBudgetRequest(ShareBudgetRequest BudgetShare);
