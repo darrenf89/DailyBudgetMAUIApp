@@ -9,6 +9,7 @@ using IeuanWalker.Maui.Switch;
 using Syncfusion.Maui.Core.Hosting;
 using Maui.FixesAndWorkarounds;
 using The49.Maui.BottomSheet;
+using DotNet.Meteor.HotReload.Plugin;
 
 
 namespace DailyBudgetMAUIApp;
@@ -34,6 +35,9 @@ public static class MauiProgram
                 fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialDesignIcons");
                 fonts.AddFont("manolo-mono.ttf", "ManoloMono");
             })
+#if DEBUG
+            .EnableHotReload()
+#endif
             .ConfigureMauiHandlers(handlers =>
             {
 #if __ANDROID__
