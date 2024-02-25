@@ -85,6 +85,7 @@ public partial class PopupReassignCategories : Popup
             i++;
         }
 
+        vslSelectors.Children.Add(grid)
     }
 
     private void Close_Window(object sender, EventArgs e)
