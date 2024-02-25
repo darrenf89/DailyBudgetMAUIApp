@@ -133,7 +133,6 @@ namespace DailyBudgetMAUIApp.ViewModels
             Transactions? EarliestTransaction = Transactions.OrderBy(t => t.TransactionDate).FirstOrDefault();
             if(EarliestTransaction != null)
             {
-                //DateTime FirstDate = EarliestTransaction.TransactionDate.GetValueOrDefault().Date;
                 DateTime FirstDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(-12);
                 int NumberOfDays = Convert.ToInt32(Math.Ceiling((_pt.GetBudgetLocalTime(DateTime.UtcNow).Date - FirstDate).TotalDays));
 
@@ -192,15 +191,21 @@ namespace DailyBudgetMAUIApp.ViewModels
                     });
                 }
 
-                MaxYValue += TransactionChart.Max(t => t.YAxesDouble);
-                MaxYValue += BillChart.Max(t => t.YAxesDouble);
-                MaxYValue += SavingsChart.Max(t => t.YAxesDouble);
-                MaxYValue += EnvelopeChart.Max(t => t.YAxesDouble);
-                MaxYValue = (Math.Round(MaxYValue / 10.0)) * 10;
+                List<double> MaxValues = new List<double>();
+                double Value = 0;
 
+                for (int i = 0; i <= TransactionChart.Count() -1; i++)
+                {
+                    Value = TransactionChart[i].YAxesDouble;
+                    Value += BillChart[i].YAxesDouble;
+                    Value += SavingsChart[i].YAxesDouble;
+                    Value += EnvelopeChart[i].YAxesDouble;
+                    MaxValues.Add(Value);
+                }
+
+                MaxYValue = ((Math.Round(MaxValues.Max() / 10.0)) * 10) + 10;
                 YInterval = MaxYValue / 5;
-            }
-            
+            }            
         }
 
         [ICommand]

@@ -2,15 +2,9 @@ using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.ViewModels;
 using Syncfusion.Maui.Carousel;
-using Syncfusion.Maui.Charts;
-using Syncfusion.Maui.ListView;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Transactions;
-using The49.Maui.BottomSheet;
+
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -329,5 +323,31 @@ public partial class ViewCategory : ContentPage
         BorderlessEntry Entry = (BorderlessEntry)EntryList[cat.Index];
         Entry.IsEnabled = false;
         Entry.IsEnabled = true;
+    }
+
+    private async void ViewTransactions_Tapped(object sender, TappedEventArgs e)
+    {
+        var PopUp = new PopUpPage();
+        App.CurrentPopUp = PopUp;
+        Application.Current.MainPage.ShowPopup(PopUp);
+
+        await Task.Delay(1000);
+
+        var Border = (Border)sender;
+        Categories Cat = (Categories)Border.BindingContext;
+
+        FilterModel Filters = new FilterModel
+        {
+            CategoryFilter = new List<int>
+                {
+                    Cat.CategoryID
+                }
+        };
+
+        await Shell.Current.GoToAsync($"{nameof(ViewFilteredTransactions)}",
+            new Dictionary<string, object>
+            {
+                ["Filters"] = Filters
+            });
     }
 }

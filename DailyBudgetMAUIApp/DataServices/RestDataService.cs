@@ -2332,6 +2332,60 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<List<Transactions>> GetFilteredTransactions(int BudgetID, FilterModel Filters, string page)
+        {
+            List<Transactions> transactions = new List<Transactions>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FilterModel>(Filters, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/transactions/getfilteredtransactions/{BudgetID}", request).Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            transactions = serializer.Deserialize<List<Transactions>>(reader);
+                        }
+
+                        return transactions;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+
+                        HandleError(new Exception(error.ErrorMessage), page, "GetCurrentPayPeriodTransactions");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error Trying get transactions in DataRestServices --> {ex.Message}");
+                HandleError(ex, page, "GetCurrentPayPeriodTransactions");
+                return null;
+            }
+        }
+
         public async Task<List<Transactions>> GetRecentTransactionsOffset(int BudgetID, int NumberOf, int Offset ,string page)
         {
             List<Transactions> transactions = new List<Transactions>();
@@ -2706,6 +2760,52 @@ namespace DailyBudgetMAUIApp.DataServices
                         }
 
                         return categories;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get categories in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<Categories> GetCategoryFromID(int CategoryID)
+        {
+            Categories? Category = new Categories();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getcategoryfromid/{CategoryID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            Category = serializer.Deserialize<Categories>(reader);
+                        }
+
+                        return Category;
                     }
                     else
                     {

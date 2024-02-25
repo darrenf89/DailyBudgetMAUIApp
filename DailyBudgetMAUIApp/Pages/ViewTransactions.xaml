@@ -29,10 +29,10 @@
             <Border AbsoluteLayout.LayoutBounds="0,0" Style="{DynamicResource DashboardMainContent}" x:Name="ChartContent" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="10,0,10,10" Padding="0">
                 <chart:SfCartesianChart PaletteBrushes="{Binding ChartBrushes}" Margin="5,0,5,0" >
                     <chart:SfCartesianChart.Series>
-                        <chart:StackingAreaSeries GroupingLabel="Amount" EnableAnimation="True" Label="Transactions" ItemsSource="{Binding TransactionChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" EnableTooltip="True"/>
-                        <chart:StackingAreaSeries GroupingLabel="Amount" EnableAnimation="True"  Label="Outgoings" ItemsSource="{Binding BillChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" EnableTooltip="True"/>
-                        <chart:StackingAreaSeries GroupingLabel="Amount" EnableAnimation="True"  Label="Savings" ItemsSource="{Binding SavingsChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" EnableTooltip="True"/>
-                        <chart:StackingAreaSeries GroupingLabel="Amount" EnableAnimation="True"  Label="Envelopes" ItemsSource="{Binding EnvelopeChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" EnableTooltip="True"/>
+                        <chart:StackingColumnSeries GroupingLabel="Amount" EnableAnimation="True" Label="Transactions" ItemsSource="{Binding TransactionChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" EnableTooltip="True"/>
+                        <chart:StackingColumnSeries GroupingLabel="Amount" EnableAnimation="True"  Label="Outgoings" ItemsSource="{Binding BillChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" EnableTooltip="True"/>
+                        <chart:StackingColumnSeries GroupingLabel="Amount" EnableAnimation="True"  Label="Savings" ItemsSource="{Binding SavingsChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" EnableTooltip="True"/>
+                        <chart:StackingColumnSeries GroupingLabel="Amount" EnableAnimation="True"  Label="Envelopes" ItemsSource="{Binding EnvelopeChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" EnableTooltip="True"/>
                     </chart:SfCartesianChart.Series>
                     <chart:SfCartesianChart.Legend>
                         <chart:ChartLegend Placement="Bottom">
@@ -106,7 +106,7 @@
                         </Border>
                     </Grid> 
                 </Border>
-                <BoxView HeightRequest="4" Color="{StaticResource White}" />
+                <BoxView HeightRequest="4" Color="{StaticResource White}"/>
             </VerticalStackLayout>
             <sfList:SfListView SwipeOffset="128" HeightRequest="{Binding SFListHeight}" SelectionMode="None" x:Name="listView" AllowSwiping="True" AutoFitMode="DynamicHeight" LoadMoreOption="Auto" LoadMoreCommand="{Binding LoadMoreItemsCommand}" LoadMoreCommandParameter="{Binding Source={x:Reference listView}}" ItemsSource="{Binding Transactions}">
                 <sfList:SfListView.EmptyView>

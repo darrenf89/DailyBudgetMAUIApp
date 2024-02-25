@@ -70,7 +70,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DotNetMeteor.HotReload.Plugin" Version="3.*"/>
+		<PackageReference Include="DotNetMeteor.HotReload.Plugin" Version="3.*" />
 		<PackageReference Include="IeuanWalker.Maui.Switch" Version="1.0.4" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.7" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.7" />
@@ -152,6 +152,9 @@
 	  </Compile>
 	  <Compile Update="Pages\ViewSavings.xaml.cs">
 	    <DependentUpon>ViewSavings.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\ViewFilteredTransactions.xaml.cs">
+	    <DependentUpon>ViewFilteredTransactions.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
@@ -247,6 +250,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewSavings.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\ViewFilteredTransactions.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewTransactions.xaml">

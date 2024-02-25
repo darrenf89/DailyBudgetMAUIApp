@@ -183,6 +183,10 @@ public partial class ViewCategories : ContentPage
 
     private async void ListViewTapped_Tapped(object sender, TappedEventArgs e)
     {
+        var PopUp = new PopUpPage();
+        App.CurrentPopUp = PopUp;
+        Application.Current.MainPage.ShowPopup(PopUp);
+
         Categories Category = (Categories)e.Parameter;
 
         if(Category.CategoryID == -1)
@@ -199,10 +203,18 @@ public partial class ViewCategories : ContentPage
 
             App.CurrentBottomSheet = page;
 
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
+
             await page.ShowAsync();
         }
         else
         {
+            await Task.Delay(1000);
+
             await Shell.Current.GoToAsync($"{nameof(ViewCategory)}?HeaderCatId={Category.CategoryID}");
         }
     }

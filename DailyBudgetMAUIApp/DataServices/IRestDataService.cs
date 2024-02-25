@@ -66,6 +66,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<Budgets> GetAllBudgetTransactions(int BudgetID);
         public Task<List<Transactions>> GetRecentTransactions(int BudgetID, int NumberOf, string page);
         public Task<List<Transactions>> GetCurrentPayPeriodTransactions(int BudgetID, string page);
+        public Task<List<Transactions>> GetFilteredTransactions(int BudgetID, FilterModel Filters, string page);
         public Task<List<Transactions>> GetRecentTransactionsOffset(int BudgetID, int NumberOf, int Offset, string page);
         public Task<Budgets> SaveBudgetDailyCycle(Budgets budget);
         public Task<string> CreateNewOtpCode(int UserID, string OTPType);
@@ -74,6 +75,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<List<string>> GetPayeeList(int BudgetID);
         public Task<Categories> GetPayeeLastCategory(int BudgetID, string PayeeName);
         public Task<List<Categories>> GetCategories(int BudgetID);
+        public Task<Categories> GetCategoryFromID(int CategoryID);
         public Task<int> AddNewCategory(int BudgetID, DefaultCategories Category);
         public Task<Categories> AddNewSubCategory(int BudgetID, Categories Category);
         public Task<string> PatchCategory(int CategoryID, List<PatchDoc> PatchDoc);

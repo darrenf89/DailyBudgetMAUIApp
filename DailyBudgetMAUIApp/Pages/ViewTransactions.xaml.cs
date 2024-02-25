@@ -113,6 +113,12 @@ public partial class ViewTransactions : ContentPage
 
         if (tappedItem == tappedTransaction)
         {
+            tappedItem.IsVisible = false;
+            tappedItem = null;
+
+            ListView.RefreshItem();
+            ListView.RefreshView();
+
             return;
         }
 

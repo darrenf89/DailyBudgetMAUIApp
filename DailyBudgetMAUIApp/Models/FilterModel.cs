@@ -10,7 +10,7 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public List<string>? _transactionEventTypeFilter;
         [ObservableProperty]
-        public List<string>? _PayeeFilter;
+        public List<string>? _payeeFilter;
         [ObservableProperty]
         public List<int>? _categoryFilter;
         [ObservableProperty]
@@ -20,8 +20,8 @@ namespace DailyBudgetMAUIApp.Models
     public partial class DateFilter : ObservableObject
     {
         [ObservableProperty]
-        public DateTime _dateFrom;
+        public DateTime? _dateFrom;
         [ObservableProperty]
-        public DateTime _dateTo;
+        public DateTime? _dateTo;
     }
 }

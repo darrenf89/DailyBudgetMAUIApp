@@ -3,6 +3,8 @@ using DailyBudgetMAUIApp.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using DailyBudgetMAUIApp.Handlers;
+using Microsoft.Toolkit.Mvvm.Input;
+using DailyBudgetMAUIApp.Pages;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {

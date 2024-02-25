@@ -131,6 +131,9 @@
                                         <Label HorizontalOptions="End" VerticalOptions="Center" Text="{Binding CategorySpendAllTime, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="Caption"/>
                                     </HorizontalStackLayout>
                                 </Grid>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer  Tapped="ViewTransactions_Tapped"/>
+                                </Border.GestureRecognizers>
                             </Border>
                         </VerticalStackLayout>
                     </ViewCell.View>

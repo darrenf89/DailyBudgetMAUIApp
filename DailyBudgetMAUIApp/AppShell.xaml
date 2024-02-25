@@ -41,4 +41,8 @@
         <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewCategory}"/>
     </ShellItem>
 
+    <ShellItem Route="ViewFilteredTransactions" FlyoutItemIsVisible="True">
+        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewFilteredTransactions}"/>
+    </ShellItem>
+
 </Shell>
