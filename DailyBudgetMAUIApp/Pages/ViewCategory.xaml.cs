@@ -11,23 +11,6 @@ namespace DailyBudgetMAUIApp.Pages;
 
 public partial class ViewCategory : ContentPage
 {
-    public List<Categories> _addCategoryList = new List<Categories>();
-    public List<Categories> AddCategoryList
-    {
-        get => _addCategoryList;
-        set
-        {
-            if (_addCategoryList != value)
-            {
-                _addCategoryList = value;
-                _vm.Categories.Clear();
-                foreach (Categories c in AddCategoryList)
-                {
-                    _vm.Categories.Add(c);
-                }
-            }
-        }
-    }
 
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
@@ -349,5 +332,43 @@ public partial class ViewCategory : ContentPage
             {
                 ["Filters"] = Filters
             });
+    }
+
+    private void AddSubCat_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private void EditHeaderCategory_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private async void DeleteHeaderCat_Tapped(object sender, TappedEventArgs e)
+    {
+        Categories cat = (Categories)e.Parameter;
+
+        bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete category group?", $"Are you sure you want to Delete the category group?", "Yes", "No!");
+        if (Delete)
+        {
+            Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
+            string[] CategoryList = Categories.Keys.ToArray();
+
+            Popup Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, _vm.HeaderCatId, _vm.Categories.ToList(), new RestDataService()));
+            var reult = await Application.Current.MainPage.ShowPopupAsync(Popup);
+            if (reult.ToString() == "Cancel")
+            {
+
+            }
+            else if (reult.ToString() == "No")
+            {
+
+            }
+            else
+            {
+
+            }
+
+        }
     }
 }

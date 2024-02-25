@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            x:Class="DailyBudgetMAUIApp.Handlers.PopupReassignCategories"
+            xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+            xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+            xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+            CanBeDismissedByTappingOutsideOfPopup="False"
+            Color="Transparent">
+    <AbsoluteLayout x:Name="AbsLayout">
+        <ImageButton x:Name="btnClose" Clicked="Close_Window" WidthRequest="22" HeightRequest="22" Background="{DynamicResource Gray400}" CornerRadius="11" ZIndex="99">
+            <ImageButton.Source>
+                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Cancel}" Color="White"/>
+            </ImageButton.Source>
+        </ImageButton>
+        <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0">
+            <Border BackgroundColor="{DynamicResource White}" Margin="15,160,15,0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16">
+                <VerticalStackLayout>
+                    <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Medium"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Reassign categories before deleting"/>
+                    </HorizontalStackLayout>
+                    <VerticalStackLayout x:Name="vslSelectors">
+
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </AbsoluteLayout>
+</xct:Popup>

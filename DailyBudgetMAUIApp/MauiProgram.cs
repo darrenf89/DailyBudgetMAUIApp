@@ -109,6 +109,7 @@ public static class MauiProgram
         builder.Services.AddTransient<PopupDailyPayDay, PopupDailyPayDayViewModel>();
         builder.Services.AddTransient<PopupDailyIncome, PopupDailyIncomeViewModel>();
         builder.Services.AddTransient<PopupDailyTransaction, PopupDailyTransactionViewModel>();
+        builder.Services.AddTransient<PopupReassignCategories, PopupReassignCategoriesViewModel>();
         builder.Services.AddTransient<LoadingPage>();
         builder.Services.AddTransient<LoadingPageTwo>();
 

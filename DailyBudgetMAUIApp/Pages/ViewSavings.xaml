@@ -182,7 +182,7 @@
                                                 <TapGestureRecognizer Tapped="MoveBalance_Tapped" CommandParameter="{Binding .}"/>
                                             </VerticalStackLayout.GestureRecognizers>
                                         </VerticalStackLayout>
-                                        <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="50" >
+                                        <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="50" IsVisible="{Binding ., Converter={StaticResource IsSavingsBuilder}}">
                                             <Border BackgroundColor="White" Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource Gray900Brush}" StrokeThickness="1" StrokeShape="RoundRectangle 20">
                                                 <Border.Shadow>
                                                     <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource PrimaryDarkBrush}" Radius="5" />

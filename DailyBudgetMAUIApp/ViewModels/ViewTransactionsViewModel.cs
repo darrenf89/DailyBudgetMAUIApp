@@ -203,8 +203,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                     MaxValues.Add(Value);
                 }
 
-                MaxYValue = ((Math.Round(MaxValues.Max() / 10.0)) * 10) + 10;
+                MaxYValue = (Math.Round(MaxValues.Max() / 10.0) * 10.0);
                 YInterval = MaxYValue / 5;
+                MaxYValue += YInterval;
             }            
         }
 

@@ -79,20 +79,23 @@
 		<PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="PureWeen.Maui.FixesAndWorkarounds" Version="1.5.0" />
-		<PackageReference Include="Syncfusion.Licensing" Version="24.2.6" />
-		<PackageReference Include="Syncfusion.Maui.Buttons" Version="24.2.6" />
-		<PackageReference Include="Syncfusion.Maui.Carousel" Version="24.2.6" />
-		<PackageReference Include="Syncfusion.Maui.Charts" Version="24.2.6" />
-		<PackageReference Include="Syncfusion.Maui.Expander" Version="24.2.6" />
-		<PackageReference Include="Syncfusion.Maui.Gauges" Version="24.2.6" />
-		<PackageReference Include="Syncfusion.Maui.ListView" Version="24.2.6" />
-		<PackageReference Include="Syncfusion.Maui.Picker" Version="24.2.6" />
-		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="24.2.6" />
+		<PackageReference Include="Syncfusion.Licensing" Version="24.2.7" />
+		<PackageReference Include="Syncfusion.Maui.Buttons" Version="24.2.7" />
+		<PackageReference Include="Syncfusion.Maui.Carousel" Version="24.2.7" />
+		<PackageReference Include="Syncfusion.Maui.Charts" Version="24.2.7" />
+		<PackageReference Include="Syncfusion.Maui.Expander" Version="24.2.7" />
+		<PackageReference Include="Syncfusion.Maui.Gauges" Version="24.2.7" />
+		<PackageReference Include="Syncfusion.Maui.ListView" Version="24.2.7" />
+		<PackageReference Include="Syncfusion.Maui.Picker" Version="24.2.7" />
+		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="24.2.7" />
 		<PackageReference Include="System.ObjectModel" Version="4.3.0" />
 		<PackageReference Include="The49.Maui.BottomSheet" Version="8.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Handlers\PopupReassignCategories.xaml.cs">
+	    <DependentUpon>PopupReassignCategories.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Handlers\PopupDailyPayDay.xaml.cs">
 	    <DependentUpon>PopupDailyPayDay.xaml</DependentUpon>
 	  </Compile>
@@ -160,6 +163,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Handlers\ButtonControlActivityIndicator.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Handlers\PopupReassignCategories.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Handlers\PopupDailyPayDay.xaml">
@@ -270,8 +276,8 @@
 		<PackageReference Include="Xamarin.GooglePlayServices.Base">
 		<Version>118.2.0.5</Version>
 		</PackageReference>
-		<PackageReference Include="Xamarin.AndroidX.Collection" Version="1.4.0" />
-		<PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.4.0" />
+		<PackageReference Include="Xamarin.AndroidX.Collection" Version="1.4.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.4.0.1" />
 	</ItemGroup>
 
 	<ProjectExtensions><VisualStudio><UserProperties XamarinHotReloadDebuggerTimeoutExceptionDailyBudgetMAUIAppHideInfoBar="True" XamarinHotReloadGenericExceptionInfoBarDailyBudgetMAUIAppHideInfoBar="True" /></VisualStudio></ProjectExtensions>
