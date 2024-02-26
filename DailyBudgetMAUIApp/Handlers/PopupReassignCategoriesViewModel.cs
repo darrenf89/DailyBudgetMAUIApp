@@ -25,17 +25,17 @@ namespace DailyBudgetMAUIApp.ViewModels
         public double ButtonThreeWidth { get; }
 
         [ObservableProperty]
-        public List<Categories> _categories;
+        private List<Categories> _categories;
         [ObservableProperty]
-        public Dictionary<string, int> _reAssignCategories;
+        private Dictionary<string, int> _reAssignCategories;
         [ObservableProperty]
-        public int _headerCatID;
+        private int _headerCatID;
         [ObservableProperty]
-        public List<string> _selectedReAssignCat = new List<string>();
+        private List<string> _selectedReAssignCat = new List<string>();
         [ObservableProperty]
-        public List<string> _ddlCategories = new List<string>();
+        private List<string> _ddlCategories = new List<string>();
 
-        public PopupReassignCategoriesViewModel(Dictionary<string, int> ReAssignCategories, int HeaderCatID, List<Categories> Categories, IRestDataService ds)
+        public PopupReassignCategoriesViewModel(Dictionary<string, int> InputReAssignCategories, int InputHeaderCatID, List<Categories> InputCategories, IRestDataService ds)
         {
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
@@ -45,9 +45,9 @@ namespace DailyBudgetMAUIApp.ViewModels
             ButtonTwoWidth = ((PopupWidth - 140) / 3);
             ButtonThreeWidth = ((PopupWidth - 260) / 2);
 
-            this.Categories = Categories;
-            this.ReAssignCategories = ReAssignCategories;
-            this.HeaderCatID = HeaderCatID;
+            this.Categories = InputCategories;
+            this.ReAssignCategories = InputReAssignCategories;
+            this.HeaderCatID = InputHeaderCatID;
 
             _ds = ds;
 

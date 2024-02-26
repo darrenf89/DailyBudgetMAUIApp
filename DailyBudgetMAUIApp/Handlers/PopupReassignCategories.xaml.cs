@@ -27,6 +27,11 @@ public partial class PopupReassignCategories : Popup
 
     private void CreateReAssignData()
     {
+        Application.Current.Resources.TryGetValue("StandardInputBorder", out var StandardInputBorder);
+        Application.Current.Resources.TryGetValue("Primary", out var Primary);
+        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
+        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+
         Grid grid = new Grid
         {
             BackgroundColor = Color.FromArgb("#00FFFFFF"),
@@ -42,25 +47,33 @@ public partial class PopupReassignCategories : Popup
             {
                 new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) }
             }
-
         };
 
-        Label CurrentLbl = new Label
+        Label Current = new Label
         {
-            Text = "Current"
+            Text = "Current",
+            TextColor = (Color)Tertiary,
+            FontSize = 12,
+            CharacterSpacing = 0
         };
 
-        Label ToLbl = new Label
+        Label To = new Label
         {
-            Text = "New"
+            Text = "New",
+            TextColor = (Color)Tertiary,
+            FontSize = 12,
+            CharacterSpacing = 0
         };
 
-        grid.Add(CurrentLbl, 0, 0);
-        grid.Add(ToLbl, 2, 0);
+        grid.Add(Current, 0, 0);
+        grid.Add(To, 2, 0);
 
-        Label ToLabel = new Label 
+        Label AssignLabel = new Label 
         { 
-            Text = "Assign To"
+            Text = "assign To",
+            TextColor = (Color)Gray400,
+            FontSize = 8,
+            CharacterSpacing = 0
         };
 
         int i = 1;
@@ -70,22 +83,43 @@ public partial class PopupReassignCategories : Popup
 
             Border CurrentBorder = new Border
             {
-
+                Style = (Style)StandardInputBorder
             };
+
+            Label CurrentLabel = new Label
+            {
+                Text = Category.CategoryName,
+                TextColor = (Color)Tertiary,
+                FontSize = 12,
+                CharacterSpacing = 0
+            };
+
+            CurrentBorder.Content = CurrentLabel;
 
             Border ToBorder = new Border
             {
-
+                Style = (Style)StandardInputBorder
             };
 
+            BorderlessPicker ToPicker = new BorderlessPicker
+            {
+                ItemsSource = _vm.DdlCategories,
+                FontSize = 12,
+                CharacterSpacing = 0,
+                TextColor = (Color)Primary
+            };
+
+            _vm.SelectedReAssignCat.Add("Do not reassign");
+            ToPicker.SetBinding(Picker.SelectedIndexProperty, _vm.SelectedReAssignCat[i-1]);
+
             grid.Add(CurrentBorder, 0, i);
-            grid.Add(ToLabel, 1, i);
+            grid.Add(AssignLabel, 1, i);
             grid.Add(ToBorder, 2, i);
 
             i++;
         }
 
-        vslSelectors.Children.Add(grid)
+        vslSelectors.Children.Add(grid);
     }
 
     private void Close_Window(object sender, EventArgs e)
