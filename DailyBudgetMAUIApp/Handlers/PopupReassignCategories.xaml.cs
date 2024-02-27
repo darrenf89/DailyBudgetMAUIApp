@@ -104,8 +104,7 @@ public partial class PopupReassignCategories : Popup
             };
 
             _vm.SelectedReAssignCat.Add("Do not reassign");
-            ToPicker.SetBinding(Picker.SelectedItemProperty, _vm.SelectedReAssignCat[i - 1]);
-            ToPicker.SelectedItem = "Do not reassign";
+            ToPicker.SetBinding(BorderlessPicker.SelectedItemProperty, $"SelectedReAssignCat[{i - 1}]");
 
             ToBorder.Content = ToPicker;
 
