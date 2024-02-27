@@ -25,9 +25,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         public double ButtonThreeWidth { get; }
 
         [ObservableProperty]
-        private List<Categories> _categories;
+        private List<Categories> _categories = new List<Categories>();
         [ObservableProperty]
-        private Dictionary<string, int> _reAssignCategories;
+        private Dictionary<string, int> _reAssignCategories = new Dictionary<string, int>();
         [ObservableProperty]
         private int _headerCatID;
         [ObservableProperty]
@@ -57,6 +57,11 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 DdlCategories.Add(item);
             }
+        }
+
+        public async Task DeleteCategory(Categories Cat, int ReAssignID, bool IsReAssign)
+        {
+            await _ds.DeleteCategory(Cat.CategoryID, IsReAssign, ReAssignID);
         }
     }
 }

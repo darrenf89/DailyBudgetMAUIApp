@@ -360,13 +360,10 @@ public partial class ViewCategory : ContentPage
             {
 
             }
-            else if (reult.ToString() == "No")
+            else if (reult.ToString() == "Ok")
             {
-
-            }
-            else
-            {
-
+                await _ds.DeleteCategory(_vm.HeaderCatId, false, 0);
+                await Shell.Current.GoToAsync($"..");
             }
 
         }

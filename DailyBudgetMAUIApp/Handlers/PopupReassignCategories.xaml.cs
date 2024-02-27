@@ -122,6 +122,26 @@ public partial class PopupReassignCategories : Popup
         vslSelectors.Children.Add(grid);
     }
 
+    private async void ApplyCategoryReAssign_Clicked(object sender, EventArgs e)
+    {
+        int i = 0;
+        foreach(Categories Cat in _vm.Categories)
+        {
+            string SelectedCat = _vm.SelectedReAssignCat[i];
+            int SelectedCatID = _vm.ReAssignCategories[SelectedCat];
+            bool IsReAssign = SelectedCatID != 0;
+
+            await _vm.DeleteCategory(Cat, SelectedCatID, IsReAssign);
+            i++;
+        }
+
+        this.Close("Ok");
+    }
+
+    private void Cancel_Clicked(object sender, EventArgs e)
+    {
+        this.Close("Cancel");
+    }
     private void Close_Window(object sender, EventArgs e)
     {
         this.Close("Cancel");
