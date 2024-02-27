@@ -354,13 +354,13 @@ public partial class ViewCategory : ContentPage
             Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
             string[] CategoryList = Categories.Keys.ToArray();
 
-            Popup Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, _vm.HeaderCatId, _vm.Categories.ToList(), new RestDataService()));
-            var reult = await Application.Current.MainPage.ShowPopupAsync(Popup);
-            if (reult.ToString() == "Cancel")
+            var Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, _vm.HeaderCatId, _vm.Categories.ToList(), new RestDataService()));
+            var result = await Shell.Current.ShowPopupAsync(Popup);
+            if (result.ToString() == "Cancel")
             {
 
             }
-            else if (reult.ToString() == "Ok")
+            else if (result.ToString() == "Ok")
             {
                 await _ds.DeleteCategory(_vm.HeaderCatId, false, 0);
                 await Shell.Current.GoToAsync($"..");

@@ -23,6 +23,7 @@ public partial class PopupReassignCategories : Popup
         _vm = viewModel;
 
         CreateReAssignData();
+
     }
 
     private void CreateReAssignData()
@@ -68,18 +69,11 @@ public partial class PopupReassignCategories : Popup
         grid.Add(Current, 0, 0);
         grid.Add(To, 2, 0);
 
-        Label AssignLabel = new Label 
-        { 
-            Text = "assign To",
-            TextColor = (Color)Gray400,
-            FontSize = 8,
-            CharacterSpacing = 0
-        };
-
         int i = 1;
+
         foreach (Categories Category in _vm.Categories)
         {
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
+            grid.AddRowDefinition(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
 
             Border CurrentBorder = new Border
             {
@@ -110,7 +104,18 @@ public partial class PopupReassignCategories : Popup
             };
 
             _vm.SelectedReAssignCat.Add("Do not reassign");
-            ToPicker.SetBinding(Picker.SelectedIndexProperty, _vm.SelectedReAssignCat[i-1]);
+            ToPicker.SetBinding(Picker.SelectedItemProperty, _vm.SelectedReAssignCat[i - 1]);
+            ToPicker.SelectedItem = "Do not reassign";
+
+            ToBorder.Content = ToPicker;
+
+            Label AssignLabel = new Label
+            {
+                Text = "assign to",
+                TextColor = (Color)Gray400,
+                FontSize = 8,
+                CharacterSpacing = 0
+            };
 
             grid.Add(CurrentBorder, 0, i);
             grid.Add(AssignLabel, 1, i);
@@ -119,7 +124,7 @@ public partial class PopupReassignCategories : Popup
             i++;
         }
 
-        vslSelectors.Children.Add(grid);
+        vslSelectors.Content = grid;
     }
 
     private async void ApplyCategoryReAssign_Clicked(object sender, EventArgs e)
