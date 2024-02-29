@@ -1,6 +1,4 @@
-using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using Microsoft.Maui.Handlers;
@@ -8,9 +6,7 @@ using System.Globalization;
 using IeuanWalker.Maui.Switch;
 using IeuanWalker.Maui.Switch.Events;
 using IeuanWalker.Maui.Switch.Helpers;
-using System.Windows.Input;
-using CommunityToolkit.Maui.ApplicationModel;
-using Microsoft.Maui.Layouts;
+
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -27,6 +23,7 @@ public partial class AddTransaction : ContentPage
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
+
     }
 
     private async void Content_Loaded(object sender, EventArgs e)
@@ -41,7 +38,8 @@ public partial class AddTransaction : ContentPage
     async protected override void OnAppearing()
     {
         base.OnAppearing();
-        
+
+
         if (_vm.BudgetID == 0)
         {
             _vm.BudgetID = App.DefaultBudgetID;
@@ -52,10 +50,12 @@ public partial class AddTransaction : ContentPage
             if(_vm.Transaction == null)
             {
                 _vm.Transaction = new Transactions();
+
                 _vm.Transaction.EventType = "Transaction";
                 _vm.Title = "Add a New Transaction";
                 btnAddTransaction.IsVisible = true;
                 _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
+
             }
             else
             {
@@ -76,7 +76,6 @@ public partial class AddTransaction : ContentPage
                     lblSavingsName.IsEnabled = false;
                 }
             }
-
         }
         else
         {
@@ -234,7 +233,7 @@ public partial class AddTransaction : ContentPage
                     {
                         await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
                     }
-                }
+                }                
             }
         }
 
@@ -261,7 +260,7 @@ public partial class AddTransaction : ContentPage
                 string status = _ds.UpdateTransaction(_vm.Transaction).Result;
                 if (status == "OK")
                 {
-                    if(_vm.NavigatedFrom == "ViewTransactions")
+                    if (_vm.NavigatedFrom == "ViewTransactions")
                     {
                         await Shell.Current.GoToAsync($"///{nameof(ViewTransactions)}");
                     }
@@ -278,7 +277,7 @@ public partial class AddTransaction : ContentPage
                         await Shell.Current.GoToAsync($"///{nameof(MainPage)}?ID=1&SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
                     }
                 }
-            }
+            }            
         }
     }
 
@@ -510,4 +509,5 @@ public partial class AddTransaction : ContentPage
         var page = new SelectSavingCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectSavingCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
         await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
     }
+
 }

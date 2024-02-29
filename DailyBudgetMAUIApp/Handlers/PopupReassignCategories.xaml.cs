@@ -6,7 +6,6 @@ using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Models;
 using System.Globalization;
 using DailyBudgetMAUIApp.DataServices;
-using Android.Views;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
@@ -32,12 +31,13 @@ public partial class PopupReassignCategories : Popup
         Application.Current.Resources.TryGetValue("Primary", out var Primary);
         Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
         Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
 
         Grid grid = new Grid
         {
             BackgroundColor = Color.FromArgb("#00FFFFFF"),
             Padding = new Thickness(0),
-            Margin = new Thickness(0),
+            Margin = new Thickness(20,0,20,0),
             ColumnDefinitions =
             {
                 new ColumnDefinition{Width = new GridLength((_vm.PopupWidth / 2) - 40)},
@@ -53,17 +53,23 @@ public partial class PopupReassignCategories : Popup
         Label Current = new Label
         {
             Text = "Current",
-            TextColor = (Color)Tertiary,
-            FontSize = 12,
-            CharacterSpacing = 0
+            TextColor = (Color)Gray900,
+            FontSize = 16,
+            CharacterSpacing = 0,
+            HorizontalOptions = LayoutOptions.Center,
+            Padding = new Thickness(0,0,0,10),
+            FontAttributes = FontAttributes.Bold
         };
 
         Label To = new Label
         {
             Text = "New",
-            TextColor = (Color)Tertiary,
-            FontSize = 12,
-            CharacterSpacing = 0
+            TextColor = (Color)Gray900,
+            FontSize = 16,
+            CharacterSpacing = 0,
+            HorizontalOptions = LayoutOptions.Center,
+            Padding = new Thickness(0, 0, 0, 10),
+            FontAttributes = FontAttributes.Bold
         };
 
         grid.Add(Current, 0, 0);
@@ -77,22 +83,32 @@ public partial class PopupReassignCategories : Popup
 
             Border CurrentBorder = new Border
             {
-                Style = (Style)StandardInputBorder
+                Style = (Style)StandardInputBorder,
+                MinimumWidthRequest = (_vm.PopupWidth / 2) - 50,
+                HeightRequest = 38,
+                Padding = new Thickness(0, 0, 0, 0)
             };
 
             Label CurrentLabel = new Label
             {
                 Text = Category.CategoryName,
-                TextColor = (Color)Tertiary,
+                TextColor = (Color)Gray900,
                 FontSize = 12,
-                CharacterSpacing = 0
+                CharacterSpacing = 0,
+                Padding = new Thickness(10,0,0,0),
+                Margin = new Thickness(0),
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.Center
             };
 
             CurrentBorder.Content = CurrentLabel;
 
             Border ToBorder = new Border
             {
-                Style = (Style)StandardInputBorder
+                Style = (Style)StandardInputBorder,
+                MinimumWidthRequest = (_vm.PopupWidth / 2) - 50,
+                HeightRequest = 38,
+                Padding = new Thickness(0),
             };
 
             BorderlessPicker ToPicker = new BorderlessPicker
@@ -100,7 +116,10 @@ public partial class PopupReassignCategories : Popup
                 ItemsSource = _vm.DdlCategories,
                 FontSize = 12,
                 CharacterSpacing = 0,
-                TextColor = (Color)Primary
+                Margin = new Thickness(10,0,0,0),
+                TextColor = (Color)Primary,
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.Center
             };
 
             _vm.SelectedReAssignCat.Add("Do not reassign");
@@ -108,16 +127,22 @@ public partial class PopupReassignCategories : Popup
 
             ToBorder.Content = ToPicker;
 
-            Label AssignLabel = new Label
+            Image ClickImage = new Image
             {
-                Text = "assign to",
-                TextColor = (Color)Gray400,
-                FontSize = 8,
-                CharacterSpacing = 0
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Center,
+                Margin = new Thickness(0,0,0,12),
+                Source = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\uea50",
+                    Size = 20,
+                    Color = (Color)Gray900                    
+                }
             };
 
             grid.Add(CurrentBorder, 0, i);
-            grid.Add(AssignLabel, 1, i);
+            grid.Add(ClickImage, 1, i);
             grid.Add(ToBorder, 2, i);
 
             i++;

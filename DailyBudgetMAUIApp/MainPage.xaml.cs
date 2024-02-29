@@ -213,7 +213,14 @@ public partial class MainPage : ContentPage
         entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
 
         int Days = (int)Math.Ceiling((_vm.DefaultBudget.NextIncomePayday.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
-        _vm.FutureDailySpend = (decimal)(_vm.DefaultBudget.LeftToSpendBalance.GetValueOrDefault() / (Days - 1));
+        if(Days == 1)
+        {
+            _vm.FutureDailySpend = -1;
+        }
+        else 
+        {
+            _vm.FutureDailySpend = (decimal)(_vm.DefaultBudget.LeftToSpendBalance.GetValueOrDefault() / (Days - 1));
+        }
 
     }
 

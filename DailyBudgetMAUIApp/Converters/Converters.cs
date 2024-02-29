@@ -127,7 +127,7 @@ namespace DailyBudgetMAUIApp.Converters
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null) return null;
+            if (value == null) return "";
 
             if ((bool)value)
             {
@@ -232,6 +232,10 @@ namespace DailyBudgetMAUIApp.Converters
             if (value == null) return null;
 
             decimal Amount = (decimal)value;
+            if(Amount == -1)
+            {
+                return "Pay day tomorrow";
+            }
 
             string AmountString = Amount.ToString("c", CultureInfo.CurrentCulture);
 

@@ -39,6 +39,12 @@ public partial class SelectCategoryPage : ContentPage
         _vm.Transaction = Transaction;
         _vm.BudgetID = BudgetID;
 
+    }
+
+    async protected override void OnAppearing()
+    {
+       base.OnAppearing(); 
+
         _vm.CategoryList = _ds.GetCategories(_vm.BudgetID).Result;
 
         if (_vm.CategoryList.Count == 0)
@@ -63,11 +69,6 @@ public partial class SelectCategoryPage : ContentPage
         FillSubCategoryLists(_vm.GroupCategoryList);
         LoadCategoryList();
         LoadCategoryFilter();
-    }
-
-    async protected override void OnAppearing()
-    {
-       base.OnAppearing();
 
     }
 

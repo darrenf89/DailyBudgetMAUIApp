@@ -86,37 +86,37 @@
         <sfList:SfListView.FooterTemplate>
             <DataTemplate>
                 <VerticalStackLayout>  
-                    <BoxView HeightRequest="4" Color="{StaticResource Primary}" />
+                    <BoxView HeightRequest="4" Color="{StaticResource PrimaryDark}" />
                     <FlexLayout Wrap="Wrap" AlignItems="Start" JustifyContent="SpaceEvenly" Margin="0,0,0,0" BackgroundColor="{StaticResource White}">
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
-                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Primary}" FontSize="Caption" Text="Delete" WidthRequest="100" Margin="0,6,0,4" FontAttributes="Bold"/>
-                            <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,2" WidthRequest="100">
+                            <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent" Margin="0,4,0,0">
                                 <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete_forever}" Size="22" Color="{DynamicResource Primary}"/>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete_forever}" Size="25" Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
+                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Primary}" FontSize="Small" Text="Delete" WidthRequest="100" Margin="0,2,0,0" FontAttributes="Bold"/>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="DeleteHeaderCat" Tapped="DeleteHeaderCat_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
-                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Primary}" FontSize="Caption" Text="Edit" WidthRequest="100" Margin="0,6,0,4" FontAttributes="Bold"/>
-                            <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,2" WidthRequest="100">
+                            <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent" Margin="0,4,0,0">
                                 <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="22" Color="{DynamicResource Primary}"/>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="25" Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
+                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Primary}" FontSize="Small" Text="Edit" WidthRequest="100" Margin="0,2,0,0" FontAttributes="Bold"/>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="EditHeaderCategory" Tapped="EditHeaderCategory_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
-                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Primary}" FontSize="Caption" Text="Add New" WidthRequest="100" Margin="0,6,0,4" FontAttributes="Bold"/>
-                            <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,2" WidthRequest="100">
+                            <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent" Margin="0,4,0,0">
                                 <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Add}" Size="22" Color="{DynamicResource Primary}"/>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Add}" Size="25" Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
+                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Primary}" FontSize="Small" Text="Add New" WidthRequest="100" Margin="0,2,0,0" FontAttributes="Bold"/>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="AddSubCat" Tapped="AddSubCat_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>

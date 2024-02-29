@@ -17,14 +17,14 @@
             <Border BackgroundColor="{DynamicResource White}" Margin="0,100,0,0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16">
                 <VerticalStackLayout>
                     <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                        <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Medium"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Reassign categories before deleting"/>
+                        <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Medium"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,30,5,10" Text="Reassign category transactions"/>
                     </HorizontalStackLayout>
                     <VerticalStackLayout>
                         <ScrollView x:Name="vslSelectors" MaximumHeightRequest="{Binding MaxHeight}">
 
                         </ScrollView>
                         <Grid RowDefinitions="Auto" ColumnDefinitions="*">
-                            <VerticalStackLayout Grid.Column="0" Grid.Row="0" Margin="10,5,10,5">
+                            <VerticalStackLayout Grid.Column="0" Grid.Row="0" Margin="20,15,20,15">
                                 <Button x:Name="ApplyCategoryReAssign" Clicked="ApplyCategoryReAssign_Clicked" Text="Apply" Style="{StaticResource SuccessButton}" HeightRequest="44" />
                                 <Button x:Name="Cancel" Clicked="Cancel_Clicked" Text="Cancel" Style="{StaticResource DangerButton}" HeightRequest="44" Margin="0,5,0,0"/>
                             </VerticalStackLayout>

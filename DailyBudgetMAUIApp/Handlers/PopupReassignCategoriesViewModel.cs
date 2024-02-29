@@ -33,7 +33,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public PopupReassignCategoriesViewModel(Dictionary<string, int> InputReAssignCategories, int InputHeaderCatID, List<Categories> InputCategories, IRestDataService ds)
         {
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
-            MaxHeight = ScreenHeight * 0.35;
+            MaxHeight = ScreenHeight * 0.4;
             ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             PopupWidth = ScreenWidth - 30;
             EntryWidth = PopupWidth * 0.6;
