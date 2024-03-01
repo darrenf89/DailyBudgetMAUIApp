@@ -1,8 +1,4 @@
 using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
-using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
 
 namespace DailyBudgetMAUIApp.Pages;
 

@@ -1,5 +1,5 @@
 namespace DailyBudgetMAUIApp.Pages;
-
+using DailyBudgetMAUIApp.Popups;
 public class LogoutPage : ContentPage
 {
 	public LogoutPage()

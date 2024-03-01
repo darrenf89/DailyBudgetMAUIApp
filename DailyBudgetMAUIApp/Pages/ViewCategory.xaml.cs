@@ -2,8 +2,11 @@ using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Pages.BottomSheets;
+using DailyBudgetMAUIApp.Popups;
 using DailyBudgetMAUIApp.ViewModels;
 using Syncfusion.Maui.Carousel;
+using The49.Maui.BottomSheet;
 
 
 
@@ -11,6 +14,19 @@ namespace DailyBudgetMAUIApp.Pages;
 
 public partial class ViewCategory : ContentPage
 {
+    public Categories _addCategory = new Categories();
+    public Categories AddCategory
+    {
+        get => _addCategory;
+        set
+        {
+            if (_addCategory != value)
+            {
+                _addCategory = value;
+                LoadData();
+            }
+        }
+    }
 
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
@@ -48,7 +64,10 @@ public partial class ViewCategory : ContentPage
     protected async override void OnAppearing()
     {
         base.OnAppearing();
-
+        await LoadData();
+    }
+    private async Task LoadData()
+    {
         _vm.Categories.Clear();
         _vm.CategoriesChart.Clear();
 
@@ -58,7 +77,7 @@ public partial class ViewCategory : ContentPage
 
         _vm.Title = $"{CategoryName}";
 
-        foreach (Categories cat in CategoryList.Where(c=>c.IsSubCategory))
+        foreach (Categories cat in CategoryList.Where(c => c.IsSubCategory))
         {
             _vm.Categories.Add(cat);
 
@@ -241,7 +260,7 @@ public partial class ViewCategory : ContentPage
     {
         Categories cat = (Categories)e.Parameter;
 
-        bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete category?", $"Are you sure you want to Delete this category?", "Yes", "No!");
+        bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete category?", $"Are you sure you want to Delete {cat.CategoryName}?", "Yes", "No!");
         if (Delete)
         {
             Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
@@ -260,7 +279,15 @@ public partial class ViewCategory : ContentPage
                 int ReplacementID = Categories[reassign];
                 await _ds.DeleteCategory(cat.CategoryID, true, ReplacementID);
             }
-            
+
+            int index = _vm.Categories.IndexOf(cat);
+
+            _vm.Categories.RemoveAt(index);
+            _vm.CategoriesChart.RemoveAt(index);
+
+            listView.RefreshView();
+            listView.RefreshItem();
+
         }
     }
 
@@ -273,9 +300,14 @@ public partial class ViewCategory : ContentPage
 
         var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
         var EntryList = Entries.ToList();
-        BorderlessEntry Entry = (BorderlessEntry)EntryList[cat.Index];
-        Entry.Focus();
-
+        foreach(BorderlessEntry ent in EntryList)
+        {
+            if(ent.Text == cat.CategoryName)
+            {
+                ent.Focus();
+                return;
+            }
+        }
     }
 
     private void ApplyChanges_Clicked(object sender, EventArgs e)
@@ -303,51 +335,96 @@ public partial class ViewCategory : ContentPage
 
         var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
         var EntryList = Entries.ToList();
-        BorderlessEntry Entry = (BorderlessEntry)EntryList[cat.Index];
-        Entry.IsEnabled = false;
-        Entry.IsEnabled = true;
+        foreach (BorderlessEntry ent in EntryList)
+        {
+            if (ent.Text == cat.CategoryName)
+            {
+                ent.IsEnabled = false;
+                ent.IsEnabled = true;
+                return;
+            }
+        }
     }
 
     private async void ViewTransactions_Tapped(object sender, TappedEventArgs e)
     {
-        var PopUp = new PopUpPage();
-        App.CurrentPopUp = PopUp;
-        Application.Current.MainPage.ShowPopup(PopUp);
-
-        await Task.Delay(1000);
-
         var Border = (Border)sender;
         Categories Cat = (Categories)Border.BindingContext;
 
-        FilterModel Filters = new FilterModel
+        if (!Cat.IsEditMode)
         {
-            CategoryFilter = new List<int>
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+
+            await Task.Delay(1000);
+
+            FilterModel Filters = new FilterModel
+            {
+                CategoryFilter = new List<int>
                 {
                     Cat.CategoryID
                 }
+            };
+
+            await Shell.Current.GoToAsync($"{nameof(ViewFilteredTransactions)}",
+                new Dictionary<string, object>
+                {
+                    ["Filters"] = Filters
+                });
+        }
+    }
+
+    private async void AddSubCat_Tapped(object sender, TappedEventArgs e)
+    {
+        AddSubCategoryBottomSheet page = new AddSubCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), new ProductTools(new RestDataService()), new RestDataService());
+
+        page.Detents = new DetentsCollection()
+        {
+            new ContentDetent(),
+            new FullscreenDetent()
         };
 
-        await Shell.Current.GoToAsync($"{nameof(ViewFilteredTransactions)}",
-            new Dictionary<string, object>
-            {
-                ["Filters"] = Filters
-            });
+        page.HasBackdrop = true;
+        page.CornerRadius = 0;
+
+        App.CurrentBottomSheet = page;
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
+
+        await page.ShowAsync();
     }
 
-    private void AddSubCat_Tapped(object sender, TappedEventArgs e)
+    private async void EditHeaderCategory_Tapped(object sender, TappedEventArgs e)
     {
+        EditCategoryBottomSheet page = new EditCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), new ProductTools(new RestDataService()), new RestDataService());
 
-    }
+        page.Detents = new DetentsCollection()
+        {
+            new ContentDetent(),
+            new FullscreenDetent()
+        };
 
-    private void EditHeaderCategory_Tapped(object sender, TappedEventArgs e)
-    {
+        page.HasBackdrop = true;
+        page.CornerRadius = 0;
 
+        App.CurrentBottomSheet = page;
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
+
+        await page.ShowAsync();
     }
 
     private async void DeleteHeaderCat_Tapped(object sender, TappedEventArgs e)
     {
-        Categories cat = (Categories)e.Parameter;
-
         bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete category group?", $"Are you sure you want to Delete the category group?", "Yes", "No!");
         if (Delete)
         {

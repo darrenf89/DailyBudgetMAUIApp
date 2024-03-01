@@ -3,6 +3,7 @@ using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using Syncfusion.Maui.ListView;
 using Syncfusion.Maui.DataSource;
+using DailyBudgetMAUIApp.Popups;
 
 namespace DailyBudgetMAUIApp.Pages;
 

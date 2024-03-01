@@ -10,6 +10,7 @@ using Syncfusion.Maui.Core.Hosting;
 using Maui.FixesAndWorkarounds;
 using The49.Maui.BottomSheet;
 using DotNet.Meteor.HotReload.Plugin;
+using DailyBudgetMAUIApp.Popups;
 
 
 namespace DailyBudgetMAUIApp;
@@ -119,6 +120,9 @@ public static class MauiProgram
         builder.Services.AddTransient<ShareBudget>();
         builder.Services.AddTransient<EnvelopeOptionsBottomSheet>();
         builder.Services.AddTransient<TransactionOptionsBottomSheet>();
+        builder.Services.AddTransient<EditCategoryBottomSheet>();
+        builder.Services.AddTransient<AddNewCategoryBottomSheet>();
+        builder.Services.AddTransient<AddSubCategoryBottomSheet>();
 
 #if WINDOWS
         SetWindowHandlers(); 

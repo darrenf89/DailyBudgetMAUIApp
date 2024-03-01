@@ -5,6 +5,7 @@ using The49.Maui.BottomSheet;
 using Microsoft.Maui;
 using System.Drawing;
 using Color = Microsoft.Maui.Graphics.Color;
+using Microsoft.Maui.Platform;
 
 #if IOS
 using UIKit;
@@ -13,6 +14,7 @@ using Foundation;
 
 #if ANDROID
 using Microsoft.Maui.Controls.Compatibility.Platform.Android;
+using Android.Widget;
 #endif
 
 namespace DailyBudgetMAUIApp;
@@ -42,7 +44,7 @@ public partial class App : Application
 		InitializeComponent();
         LoadChartBrush();
 
-        Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping(nameof(Button), (handler, view) =>
+        Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping(nameof(Microsoft.Maui.Controls.Button), (handler, view) =>
         {
 #if ANDROID
                handler.PlatformView.Gravity = Android.Views.GravityFlags.Center;  
@@ -94,6 +96,17 @@ public partial class App : Application
                 handler.PlatformView.Layer.BorderWidth = 0;
 #endif
             }
+        });
+
+        Microsoft.Maui.Handlers.SearchBarHandler.Mapper.AppendToMapping(nameof(SearchBar), (h, v) =>
+        {
+#if ANDROID
+            var children = h.PlatformView.GetChildrenOfType<ImageView>();
+            foreach (var child in children)
+            {
+                child.SetColorFilter(Colors.DarkGray.ToPlatform());
+            }
+#endif
         });
 
         //MainPage = new AppShell();

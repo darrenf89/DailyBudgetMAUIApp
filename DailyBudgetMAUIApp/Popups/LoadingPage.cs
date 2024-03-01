@@ -1,4 +1,4 @@
-﻿namespace DailyBudgetMAUIApp.Handlers
+﻿namespace DailyBudgetMAUIApp.Popups
 {
     public class LoadingPage : ContentPage
     {
@@ -33,7 +33,7 @@
                 TextColor = (Color)Light,
                 HorizontalOptions = LayoutOptions.Center,
                 FontSize = 18,
-                Margin = new Thickness(0,20,0,0),
+                Margin = new Thickness(0, 20, 0, 0),
                 FontAttributes = FontAttributes.Bold,
                 Opacity = 1
             };

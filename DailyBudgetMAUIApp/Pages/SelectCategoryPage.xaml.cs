@@ -2,9 +2,7 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using Syncfusion.Maui.Expander;
-using System;
-using System.Xml.XPath;
+using DailyBudgetMAUIApp.Popups;
 
 namespace DailyBudgetMAUIApp.Pages;
 

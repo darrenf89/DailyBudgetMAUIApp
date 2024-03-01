@@ -93,26 +93,32 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Handlers\PopupReassignCategories.xaml.cs">
+	  <Compile Update="Popups\PopupReassignCategories.xaml.cs">
 	    <DependentUpon>PopupReassignCategories.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Handlers\PopupDailyPayDay.xaml.cs">
+	  <Compile Update="Popups\PopupDailyPayDay.xaml.cs">
 	    <DependentUpon>PopupDailyPayDay.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Handlers\PopupDailyIncome.xaml.cs">
+	  <Compile Update="Popups\PopupDailyIncome.xaml.cs">
 	    <DependentUpon>PopupDailyIncome.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Handlers\PopupDailyBill.xaml.cs">
+	  <Compile Update="Popups\PopupDailyBill.xaml.cs">
 	    <DependentUpon>PopupDailyBill.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Handlers\PopupInfo.xaml.cs">
+	  <Compile Update="Popups\PopupInfo.xaml.cs">
 	    <DependentUpon>PopupInfo.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Handlers\PopUpOTP.xaml.cs">
+	  <Compile Update="Popups\PopUpOTP.xaml.cs">
 	    <DependentUpon>PopUpOTP.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Handlers\PopUpPageVariableInput.xaml.cs">
+	  <Compile Update="Popups\PopUpPageVariableInput.xaml.cs">
 	    <DependentUpon>PopUpPageVariableInput.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\BottomSheets\AddSubCategoryBottomSheet.xaml.cs">
+	    <DependentUpon>AddSubCategoryBottomSheet.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\BottomSheets\EditCategoryBottomSheet.xaml.cs">
+	    <DependentUpon>EditCategoryBottomSheet.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Pages\BottomSheets\TransactionOptionsBottomSheet.xaml.cs">
 	    <DependentUpon>TransactionOptionsBottomSheet.xaml</DependentUpon>
@@ -165,28 +171,28 @@
 	  <MauiXaml Update="Handlers\ButtonControlActivityIndicator.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Handlers\PopupReassignCategories.xaml">
+	  <MauiXaml Update="Popups\PopupReassignCategories.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Handlers\PopupDailyPayDay.xaml">
+	  <MauiXaml Update="Popups\PopupDailyPayDay.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Handlers\PopupDailyIncome.xaml">
+	  <MauiXaml Update="Popups\PopupDailyIncome.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Handlers\PopupDailyBill.xaml">
+	  <MauiXaml Update="Popups\PopupDailyBill.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Handlers\PopUpPage.xaml">
+	  <MauiXaml Update="Popups\PopUpPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Handlers\PopupInfo.xaml">
+	  <MauiXaml Update="Popups\PopupInfo.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Handlers\PopUpOTP.xaml">
+	  <MauiXaml Update="Popups\PopUpOTP.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Handlers\PopUpPageVariableInput.xaml">
+	  <MauiXaml Update="Popups\PopUpPageVariableInput.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\AddBill.xaml">
@@ -199,6 +205,12 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\AddTransaction.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\BottomSheets\AddSubCategoryBottomSheet.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\BottomSheets\EditCategoryBottomSheet.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\BottomSheets\AddNewCategoryBottomSheet.xaml">

@@ -131,9 +131,22 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
 
             Transactions? EarliestTransaction = Transactions.OrderBy(t => t.TransactionDate).FirstOrDefault();
+            DateTime FirstDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(-12);
+
+            while (EarliestTransaction.TransactionDate > FirstDate.AddDays(-1))
+            {                
+                List<Transactions> NewTransactions = LoadMoreTransactions().Result;
+                if(NewTransactions.Count() == 0)
+                {
+                    break;
+                }
+                Transactions.AddRange(NewTransactions);
+                EarliestTransaction = Transactions.OrderBy(t => t.TransactionDate).FirstOrDefault();
+            }
+
             if(EarliestTransaction != null)
             {
-                DateTime FirstDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(-12);
+                
                 int NumberOfDays = Convert.ToInt32(Math.Ceiling((_pt.GetBudgetLocalTime(DateTime.UtcNow).Date - FirstDate).TotalDays));
 
                 for (int i = 0; i <= NumberOfDays; i++) 
@@ -218,32 +231,39 @@ namespace DailyBudgetMAUIApp.ViewModels
                 listView.IsLazyLoading = true;
                 await Task.Delay(2000);
 
-                List<Transactions> NewTransactions = await _ds.GetRecentTransactionsOffset(App.DefaultBudgetID, 10, CurrentOffset, "ViewTransactions");
-                CurrentOffset += 10;
-                foreach (Transactions T in NewTransactions)
-                {
-                    if(!T.IsTransacted)
-                    {
-                        T.RunningTotal = 0;
-                    }
-                    else
-                    {
-                        T.RunningTotal = RunningTotal;
-                        if(T.IsIncome)
-                        {
-                            RunningTotal -= T.TransactionAmount.GetValueOrDefault();
-                        }
-                        else
-                        {
-                            RunningTotal += T.TransactionAmount.GetValueOrDefault();
-                        }
-
-                        Transactions.Add(T);
-                    }                    
-                }
+                await LoadMoreTransactions();
 
                 listView.IsLazyLoading = false;
             }
+        }
+
+        private async Task<List<Transactions>> LoadMoreTransactions()
+        {
+            List<Transactions> NewTransactions = await _ds.GetRecentTransactionsOffset(App.DefaultBudgetID, 10, CurrentOffset, "ViewTransactions");
+            CurrentOffset += 10;
+            foreach (Transactions T in NewTransactions)
+            {
+                if (!T.IsTransacted)
+                {
+                    T.RunningTotal = 0;
+                }
+                else
+                {
+                    T.RunningTotal = RunningTotal;
+                    if (T.IsIncome)
+                    {
+                        RunningTotal -= T.TransactionAmount.GetValueOrDefault();
+                    }
+                    else
+                    {
+                        RunningTotal += T.TransactionAmount.GetValueOrDefault();
+                    }
+
+                    Transactions.Add(T);
+                }
+            }
+
+            return NewTransactions;
         }
     }
 }

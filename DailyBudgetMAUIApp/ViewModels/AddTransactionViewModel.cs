@@ -5,9 +5,6 @@ using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using System.Diagnostics;
-using System.Globalization;
-using System.Transactions;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {

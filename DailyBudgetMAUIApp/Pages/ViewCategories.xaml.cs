@@ -2,12 +2,11 @@ using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Popups;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.ViewModels;
 using Syncfusion.Maui.Carousel;
-using Syncfusion.Maui.Charts;
 using Syncfusion.Maui.ListView;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using The49.Maui.BottomSheet;
 

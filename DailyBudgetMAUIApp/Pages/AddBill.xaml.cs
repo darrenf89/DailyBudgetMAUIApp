@@ -2,6 +2,7 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
+using DailyBudgetMAUIApp.Popups;
 using CommunityToolkit.Maui.Views;
 using System.Globalization;
 using System.Text.RegularExpressions;

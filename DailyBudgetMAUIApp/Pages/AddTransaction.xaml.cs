@@ -1,11 +1,11 @@
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using Microsoft.Maui.Handlers;
 using System.Globalization;
 using IeuanWalker.Maui.Switch;
 using IeuanWalker.Maui.Switch.Events;
 using IeuanWalker.Maui.Switch.Helpers;
+using Microsoft.Maui.Handlers;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -307,7 +307,7 @@ public partial class AddTransaction : ContentPage
         {
             if(swhTransactionDate.IsEnabled)
             {
-                entTransactionDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).Date.AddDays(1);
+                entTransactionDate.MinimumDate = default(DateTime);
             }
 #if ANDROID
             var handler = entTransactionDate.Handler as IDatePickerHandler;

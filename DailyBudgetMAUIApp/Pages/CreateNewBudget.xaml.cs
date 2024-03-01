@@ -2,16 +2,15 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
+using DailyBudgetMAUIApp.Popups;
 using CommunityToolkit.Maui.Views;
 using System.Diagnostics;
-using Microsoft.Toolkit.Mvvm.Input;
-using CommunityToolkit.Maui.ApplicationModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Microsoft.Maui.Controls.Internals;
 using IeuanWalker.Maui.Switch.Events;
 using IeuanWalker.Maui.Switch;
 using IeuanWalker.Maui.Switch.Helpers;
+
 
 
 namespace DailyBudgetMAUIApp.Pages;
