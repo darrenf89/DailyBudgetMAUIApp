@@ -2689,6 +2689,53 @@ namespace DailyBudgetMAUIApp.DataServices
                 throw new Exception(ex.Message);
             }
         }
+        
+        public async Task<List<Payees>> GetPayeeListFull(int BudgetID)
+        {
+            List<Payees>? Payee = new List<Payees>();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/getpayeelistfull/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            Payee = serializer.Deserialize<List<Payees>>(reader);
+                        }
+
+                        return Payee;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "GetPayeeListFull", "GetPayeeListFull");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                HandleError(ex, "GetPayeeListFull", "GetPayeeListFull");
+                return null;
+            }
+        }
 
         public async Task<Categories> GetPayeeLastCategory(int BudgetID, string PayeeName)
         {
@@ -2733,6 +2780,84 @@ namespace DailyBudgetMAUIApp.DataServices
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to get latest payee category in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> DeletePayee(int BudgetID, string OldPayeeName, string NewPayeeName)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/deletepayee/{BudgetID}/{OldPayeeName}/{NewPayeeName}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return "OK";
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "DeletePayee", "DeletePayee");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                HandleError(ex, "DeletePayee", "DeletePayee");
+                return null;
+            }
+        }
+
+        public async Task<string> UpdatePayee(int BudgetID, string OldPayeeName, string NewPayeeName)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/updatepayee/{BudgetID}/{OldPayeeName}/{NewPayeeName}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return "OK";
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "UpdatePayee", "UpdatePayee");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                HandleError(ex, "UpdatePayee", "UpdatePayee");
+                return null;
             }
         }
 

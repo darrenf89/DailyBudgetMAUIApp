@@ -93,6 +93,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Pages\ViewPayees.xaml.cs">
+	    <DependentUpon>ViewPayees.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Popups\PopupReassignCategories.xaml.cs">
 	    <DependentUpon>PopupReassignCategories.xaml</DependentUpon>
 	  </Compile>
@@ -169,6 +172,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Handlers\ButtonControlActivityIndicator.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\ViewPayees.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Popups\PopupReassignCategories.xaml">

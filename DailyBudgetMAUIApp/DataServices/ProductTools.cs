@@ -1020,16 +1020,15 @@ namespace DailyBudgetMAUIApp.DataServices
                             Stats.StartBBPeiordAmount = budget.BankBalance;
                             Stats.StartMaBPeiordAmount = budget.MoneyAvailableBalance;
                         }
+                        Stats.EndDate = budget.NextIncomePayday.GetValueOrDefault();
 
                         budget.PayPeriodStats[Index] = Stats;
-
+                        
 
                         for (int i = budget.PayPeriodStats.Count - 1; i >= 0; i--)
                         {
                             _ds.UpdatePayPeriodStats(budget.PayPeriodStats[i]);
-                        }
-
-                        
+                        }                        
 
                         //SAVE BUDGET UPDATES - BEFORE CHECK IT HASNT ALREADY BEEN UPDATED
                         DateTime BudgetUpdatedCheck = await _ds.GetBudgetValuesLastUpdatedAsync(budget.BudgetID, "DailyChecks");

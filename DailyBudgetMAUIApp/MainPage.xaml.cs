@@ -4,7 +4,6 @@ using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
-using DailyBudgetMAUIApp.Popups;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
@@ -223,6 +222,128 @@ public partial class MainPage : ContentPage
             _vm.FutureDailySpend = (decimal)(_vm.DefaultBudget.LeftToSpendBalance.GetValueOrDefault() / (Days - 1));
         }
 
+        List<Categories> CategoryList = _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID).Result;
+        await LoadCategoryChartData(CategoryList, false);
+
+    }
+
+    private async Task LoadCategoryChartData(List<Categories> CategoryList, bool IsBackButton)
+    {
+        Application.Current.Resources.TryGetValue("PrimaryBrush", out var PrimaryBrush);
+        Application.Current.Resources.TryGetValue("Primary", out var Primary);
+        Application.Current.Resources.TryGetValue("White", out var White);
+
+        _vm.CategoriesChart.Clear();
+        CategoryLegend.Children.Clear();
+
+        if(IsBackButton)
+        {
+            Image image = new Image
+            {
+                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Start,
+                Margin = new Thickness(0, 2, 0, 2),
+                ZIndex = 999,
+                Source = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue31b",
+                    Size = 32,
+                    Color = (Color)Primary,
+                }
+            };
+
+            TapGestureRecognizer ImageTapGesture = new TapGestureRecognizer();
+            ImageTapGesture.NumberOfTapsRequired = 1;
+            ImageTapGesture.Tapped += async (s, e) =>
+            {
+                List<Categories> CategoryList = _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID).Result;
+                await LoadCategoryChartData(CategoryList, false);
+            };
+
+            image.GestureRecognizers.Add(ImageTapGesture);
+            CategoryLegend.Children.Add(image);
+        }
+
+        int i = 0;
+        foreach (Categories cat in CategoryList)
+        {
+            if ((IsBackButton && cat.IsSubCategory) || !IsBackButton)
+            {
+                ChartClass Value = new ChartClass
+                {
+                    XAxesString = cat.CategoryName,
+                    YAxesDouble = (double)cat.CategorySpendPayPeriod
+                };
+
+                _vm.CategoriesChart.Add(Value);
+
+                Border border = new Border
+                {
+                    BackgroundColor = App.ChartColor[i],
+                    Stroke = (Brush)PrimaryBrush,
+                    StrokeThickness = 1,
+                    StrokeShape = new RoundRectangle
+                    {
+                        CornerRadius = new CornerRadius(4)
+                    },
+                    Margin = new Thickness(0, 2, 10, 2),
+                    Padding = new Thickness(10, 0, 0, 0)
+                };
+
+                Label label = new Label
+                {
+                    Text = cat.CategoryName,
+                    TextColor = (Color)White,
+                    FontSize = 16,
+                    Padding = new Thickness(0, 8, 0, 8)
+                };
+
+                border.Content = label;
+
+                TapGestureRecognizer TapGesture = new TapGestureRecognizer();
+
+                if (cat.IsSubCategory)
+                {
+                    TapGesture.NumberOfTapsRequired = 1;
+                    TapGesture.Tapped += async (s, e) =>
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                        await Task.Delay(1000);
+                        FilterModel Filters = new FilterModel
+                        {
+                            CategoryFilter = new List<int>
+                            {
+                                cat.CategoryID
+                            }
+                        };
+
+                        await Shell.Current.GoToAsync($"{nameof(ViewFilteredTransactions)}",
+                            new Dictionary<string, object>
+                            {
+                                ["Filters"] = Filters
+                            });
+                    };
+                }
+                else
+                {
+                    TapGesture.NumberOfTapsRequired = 1;
+                    TapGesture.Tapped += async (s, e) =>
+                    {
+                        List<Categories> CategoryList = _ds.GetHeaderCategoryDetailsFull(cat.CategoryID, App.DefaultBudgetID).Result;
+                        await LoadCategoryChartData(CategoryList, true);
+                    };
+                }
+
+                border.GestureRecognizers.Add(TapGesture);
+
+                CategoryLegend.Children.Add(border);
+                i++;
+            }
+        }
     }
 
     void TransactionAmount_Changed(object sender, TextChangedEventArgs e)
@@ -1829,6 +1950,29 @@ public partial class MainPage : ContentPage
 
         ProcessSnackBar();
 
+    }
+
+    private void CoverOverspend_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private void CategoryOptions_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private async void ViewCategories_Tapped(object sender, TappedEventArgs e)
+    {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);        
+        }
+
+
+        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewCategories)}");
     }
 }
 

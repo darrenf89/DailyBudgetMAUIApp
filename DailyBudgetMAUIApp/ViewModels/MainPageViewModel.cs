@@ -60,6 +60,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private double _quickTransactionInputWidth;
         [ObservableProperty]
         private decimal _futureDailySpend;
+        [ObservableProperty]
+        private ObservableCollection<ChartClass> _categoriesChart = new ObservableCollection<ChartClass>();
+        [ObservableProperty]
+        private List<Brush> _chartBrushes = new List<Brush>();
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {
@@ -71,6 +75,8 @@ namespace DailyBudgetMAUIApp.ViewModels
             QuickTransactionWidth = ScreenWidth - 180;
             QuickTransactionInputWidth = QuickTransactionWidth - 70;
             ProgressBarCarWidthRequest = ScreenWidth - 115;
+
+            ChartBrushes = App.ChartBrush;
         }        
 
         [ICommand]

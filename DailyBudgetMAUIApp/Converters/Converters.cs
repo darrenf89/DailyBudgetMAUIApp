@@ -1449,12 +1449,20 @@ namespace DailyBudgetMAUIApp.Converters
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-
+            Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
             if (value == null) return null;
 
             int Index = (int)value;
 
-            Color ReturnColor = App.ChartColor[Index];
+            Color ReturnColor = new();
+            if (Index < 8)
+            {
+                ReturnColor = App.ChartColor[Index];
+            }
+            else
+            {
+                ReturnColor = (Color)Gray400;
+            }            
 
             return ReturnColor;
 

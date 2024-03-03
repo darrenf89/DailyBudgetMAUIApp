@@ -3,7 +3,6 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
-using DailyBudgetMAUIApp.Popups;
 using DailyBudgetMAUIApp.ViewModels;
 using Syncfusion.Maui.Carousel;
 using The49.Maui.BottomSheet;
@@ -12,17 +11,17 @@ using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class ViewCategory : ContentPage
+public partial class ViewPayees : ContentPage
 {
-    public Categories _addCategory = new Categories();
-    public Categories AddCategory
+    public Payees _addPayee = new Payees();
+    public Payees AddPayee
     {
-        get => _addCategory;
+        get => _addPayee;
         set
         {
-            if (_addCategory != value)
+            if (_addPayee != value)
             {
-                _addCategory = value;
+                _addPayee = value;
                 LoadData();
             }
         }
@@ -30,9 +29,9 @@ public partial class ViewCategory : ContentPage
 
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-	private readonly ViewCategoryViewModel _vm;
+	private readonly ViewPayeesViewModel _vm;
     private readonly IDispatcherTimer _timer;
-    public ViewCategory(ViewCategoryViewModel viewModel, IProductTools pt, IRestDataService ds)
+    public ViewPayees(ViewPayeesViewModel viewModel, IProductTools pt, IRestDataService ds)
 	{
         this.BindingContext = viewModel;
         _vm = viewModel;
@@ -68,30 +67,33 @@ public partial class ViewCategory : ContentPage
     }
     private async Task LoadData()
     {
-        _vm.Categories.Clear();
-        _vm.CategoriesChart.Clear();
+        _vm.Payees.Clear();
+        _vm.PayeesChart.Clear();
 
-        List<Categories> CategoryList = _ds.GetHeaderCategoryDetailsFull(_vm.HeaderCatId, App.DefaultBudgetID).Result;
+        List<Payees> PayeeList = await _ds.GetPayeeListFull( App.DefaultBudgetID);
+        PayeeList = PayeeList.OrderByDescending(p => p.PayeeSpendPayPeriod).ToList();
 
-        var CategoryName = CategoryList.Where(c => !c.IsSubCategory).Select(c => c.CategoryName).FirstOrDefault();
+        _vm.Title = $"Payee Details";
 
-        _vm.Title = $"{CategoryName}";
-
-        foreach (Categories cat in CategoryList.Where(c => c.IsSubCategory))
+        foreach (Payees payee in PayeeList)
         {
-            _vm.Categories.Add(cat);
+            _vm.Payees.Add(payee);
 
-            ChartClass Value = new ChartClass
+            if(_vm.PayeesChart.Count() < 8)
             {
-                XAxesString = cat.CategoryName,
-                YAxesDouble = (double)cat.CategorySpendPayPeriod
-            };
+                ChartClass Value = new ChartClass
+                {
+                    XAxesString = payee.Payee,
+                    YAxesDouble = (double)payee.PayeeSpendPayPeriod
+                };
 
-            _vm.CategoriesChart.Add(Value);
+                _vm.PayeesChart.Add(Value);
+            }
+            
         }
 
         _vm.PayPeriods.Add("All Time");
-        foreach (SpendPeriods SP in _vm.Categories[0].CategorySpendPeriods)
+        foreach (SpendPeriods SP in _vm.Payees[0].PayeeSpendPeriods)
         {
             if (SP.IsCurrentPeriod)
             {
@@ -121,42 +123,44 @@ public partial class ViewCategory : ContentPage
 
         if (Index == 0)
         {
-            _vm.CategoriesChart.Clear();
+            _vm.PayeesChart.Clear();
 
-            foreach (Categories cat in _vm.Categories)
+            foreach (Payees payee in _vm.Payees)
             {
-                if (cat.CategoryID != -1)
+                if (_vm.PayeesChart.Count() < 8)
                 {
                     ChartClass Value = new ChartClass
                     {
-                        XAxesString = cat.CategoryName,
-                        YAxesDouble = (double)cat.CategorySpendAllTime
+                        XAxesString = payee.Payee,
+                        YAxesDouble = (double)payee.PayeeSpendPayPeriod
                     };
 
-                    _vm.CategoriesChart.Add(Value);
-
-                    cat.CategorySpendPayPeriod = cat.CategorySpendPeriods[Index].SpendTotalAmount;
+                    _vm.PayeesChart.Add(Value);
                 }
+
+                payee.PayeeSpendPayPeriod = payee.PayeeSpendPeriods[Index].SpendTotalAmount;
+                
             }
         }
         else
         {
-            _vm.CategoriesChart.Clear();
+            _vm.PayeesChart.Clear();
 
-            foreach (Categories cat in _vm.Categories)
+            foreach (Payees payee in _vm.Payees)
             {
-                if (cat.CategoryID != -1)
+                if (_vm.PayeesChart.Count() < 8)
                 {
                     ChartClass Value = new ChartClass
                     {
-                        XAxesString = cat.CategoryName,
-                        YAxesDouble = (double)cat.CategorySpendPeriods[Index - 1].SpendTotalAmount
+                        XAxesString = payee.Payee,
+                        YAxesDouble = (double)payee.PayeeSpendPeriods[Index - 1].SpendTotalAmount
                     };
 
-                    _vm.CategoriesChart.Add(Value);
-
-                    cat.CategorySpendPayPeriod = cat.CategorySpendPeriods[Index - 1].SpendTotalAmount;
+                    _vm.PayeesChart.Add(Value);
                 }
+
+                payee.PayeeSpendPayPeriod = payee.PayeeSpendPeriods[Index - 1].SpendTotalAmount;
+
             }
         }
 
@@ -202,8 +206,6 @@ public partial class ViewCategory : ContentPage
 
     private async void SwipeGestureRecognizer_Swiped(object sender, SwipedEventArgs e)
     {
-        
-
         switch (e.Direction)
         {
             case SwipeDirection.Left:
@@ -258,59 +260,62 @@ public partial class ViewCategory : ContentPage
 
     private async void DeleteCategory_Tapped(object sender, TappedEventArgs e)
     {
-        Categories cat = (Categories)e.Parameter;
+        Payees payee = (Payees)e.Parameter;
 
-        bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete category?", $"Are you sure you want to Delete {cat.CategoryName}?", "Yes", "No!");
+        bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete payee?", $"Are you sure you want to Delete {payee.Payee}?", "Yes", "No!");
         if (Delete)
         {
-            Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
-            string[] CategoryList = Categories.Keys.ToArray();
-            var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this categories transactions?", "Cancel", "No", CategoryList);
+            List<string> Payees = await _ds.GetPayeeList(App.DefaultBudgetID);
+            string[] PayeeList = Payees.ToArray();
+            var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
             if(reassign == "Cancel")
             {
 
             }
             else if(reassign == "No")
             {
-                await _ds.DeleteCategory(cat.CategoryID, false, 0);
+                await _ds.DeletePayee(App.DefaultBudgetID, payee.Payee, "");
 
-                int index = _vm.Categories.IndexOf(cat);
+                int index = _vm.Payees.IndexOf(payee);
 
-                _vm.Categories.RemoveAt(index);
-                _vm.CategoriesChart.RemoveAt(index);
+                _vm.Payees.RemoveAt(index);
+                _vm.PayeesChart.RemoveAt(index);
             }   
             else
             {
-                int ReplacementID = Categories[reassign];
-                await _ds.DeleteCategory(cat.CategoryID, true, ReplacementID);
+                await _ds.DeletePayee(App.DefaultBudgetID, payee.Payee, reassign);
 
-                int index = _vm.Categories.IndexOf(cat);
+                int index = _vm.Payees.IndexOf(payee);
 
-                _vm.Categories.RemoveAt(index);
-                _vm.CategoriesChart.RemoveAt(index);
+                _vm.Payees.RemoveAt(index);
+                _vm.PayeesChart.RemoveAt(index);
             }
 
             listView.RefreshView();
             listView.RefreshItem();
-
         }
     }
 
     private void EditCategory_Tapped(object sender, TappedEventArgs e)
     {
-        Categories cat = (Categories)e.Parameter;
-        cat.IsEditMode = true;
+        if (!_vm.Payees.Where(p => p.IsEditMode).Any())
+        {        
+            Payees payee = (Payees)e.Parameter;
+            payee.IsEditMode = true;
 
-        listView.RefreshItem();
+            listView.RefreshItem();
 
-        var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
-        var EntryList = Entries.ToList();
-        foreach(BorderlessEntry ent in EntryList)
-        {
-            if(ent.Text == cat.CategoryName)
+            _vm.OldPayeeName = payee.Payee;
+
+            var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
+            var EntryList = Entries.ToList();
+            foreach(BorderlessEntry ent in EntryList)
             {
-                ent.Focus();
-                return;
+                if(ent.Text == payee.Payee)
+                {
+                    ent.Focus();
+                    return;
+                }
             }
         }
     }
@@ -318,23 +323,11 @@ public partial class ViewCategory : ContentPage
     private void ApplyChanges_Clicked(object sender, EventArgs e)
     {
         var Button = (Button)sender;
-        Categories cat = (Categories)Button.BindingContext;
+        Payees payee = (Payees)Button.BindingContext;
 
-        List<PatchDoc> CategoryDetails = new List<PatchDoc>();
+        _ds.UpdatePayee(App.DefaultBudgetID, _vm.OldPayeeName, payee.Payee);
 
-        PatchDoc NewName = new PatchDoc
-        {
-            op = "replace",
-            path = "/CategoryName",
-            value = cat.CategoryName
-        };
-
-        CategoryDetails.Add(NewName);
-
-        _ds.PatchCategory(cat.CategoryID, CategoryDetails);
-        _ds.UpdateAllTransactionsCategoryName(cat.CategoryID);
-
-        cat.IsEditMode = false;
+        payee.IsEditMode = false;
 
         listView.RefreshItem();
 
@@ -342,7 +335,7 @@ public partial class ViewCategory : ContentPage
         var EntryList = Entries.ToList();
         foreach (BorderlessEntry ent in EntryList)
         {
-            if (ent.Text == cat.CategoryName)
+            if (ent.Text == payee.Payee)
             {
                 ent.IsEnabled = false;
                 ent.IsEnabled = true;
@@ -354,9 +347,9 @@ public partial class ViewCategory : ContentPage
     private async void ViewTransactions_Tapped(object sender, TappedEventArgs e)
     {
         var Border = (Border)sender;
-        Categories Cat = (Categories)Border.BindingContext;
+        Payees payee = (Payees)Border.BindingContext;
 
-        if (!Cat.IsEditMode)
+        if (!payee.IsEditMode)
         {
             var PopUp = new PopUpPage();
             App.CurrentPopUp = PopUp;
@@ -366,9 +359,9 @@ public partial class ViewCategory : ContentPage
 
             FilterModel Filters = new FilterModel
             {
-                CategoryFilter = new List<int>
+                PayeeFilter = new List<string>
                 {
-                    Cat.CategoryID
+                    payee.Payee
                 }
             };
 
@@ -377,77 +370,6 @@ public partial class ViewCategory : ContentPage
                 {
                     ["Filters"] = Filters
                 });
-        }
-    }
-
-    private async void AddSubCat_Tapped(object sender, TappedEventArgs e)
-    {
-        AddSubCategoryBottomSheet page = new AddSubCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), new ProductTools(new RestDataService()), new RestDataService());
-
-        page.Detents = new DetentsCollection()
-        {
-            new ContentDetent(),
-            new FullscreenDetent()
-        };
-
-        page.HasBackdrop = true;
-        page.CornerRadius = 0;
-
-        App.CurrentBottomSheet = page;
-
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
-        }
-
-        await page.ShowAsync();
-    }
-
-    private async void EditHeaderCategory_Tapped(object sender, TappedEventArgs e)
-    {
-        EditCategoryBottomSheet page = new EditCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), new ProductTools(new RestDataService()), new RestDataService());
-
-        page.Detents = new DetentsCollection()
-        {
-            new ContentDetent(),
-            new FullscreenDetent()
-        };
-
-        page.HasBackdrop = true;
-        page.CornerRadius = 0;
-
-        App.CurrentBottomSheet = page;
-
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
-        }
-
-        await page.ShowAsync();
-    }
-
-    private async void DeleteHeaderCat_Tapped(object sender, TappedEventArgs e)
-    {
-        bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete category group?", $"Are you sure you want to Delete the category group?", "Yes", "No!");
-        if (Delete)
-        {
-            Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
-            string[] CategoryList = Categories.Keys.ToArray();
-
-            var Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, _vm.HeaderCatId, _vm.Categories.ToList(), new RestDataService()));
-            var result = await Shell.Current.ShowPopupAsync(Popup);
-            if (result.ToString() == "Cancel")
-            {
-
-            }
-            else if (result.ToString() == "Ok")
-            {
-                await _ds.DeleteCategory(_vm.HeaderCatId, false, 0);
-                await Shell.Current.GoToAsync($"..");
-            }
-
         }
     }
 }

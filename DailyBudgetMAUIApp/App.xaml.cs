@@ -128,19 +128,35 @@ public partial class App : Application
             new SolidColorBrush(Color.FromArgb("#665191")),
             new SolidColorBrush(Color.FromArgb("#f95d6a")),
             new SolidColorBrush(Color.FromArgb("#a05195")),
+            new SolidColorBrush(Color.FromArgb("#d45087")),
+            new SolidColorBrush(Color.FromArgb("#003f5c")),
+            new SolidColorBrush(Color.FromArgb("#ffa600")),
+            new SolidColorBrush(Color.FromArgb("#2f4b7c")),
+            new SolidColorBrush(Color.FromArgb("#ff7c43")),
+            new SolidColorBrush(Color.FromArgb("#665191")),
+            new SolidColorBrush(Color.FromArgb("#f95d6a")),
+            new SolidColorBrush(Color.FromArgb("#a05195")),
             new SolidColorBrush(Color.FromArgb("#d45087"))
         };
 
         ChartColor = new List<Color>
         {
-             Color.FromArgb("#003f5c"),
-             Color.FromArgb("#ffa600"),
-             Color.FromArgb("#2f4b7c"),
-             Color.FromArgb("#ff7c43"),
-             Color.FromArgb("#665191"),
-             Color.FromArgb("#f95d6a"),
-             Color.FromArgb("#a05195"),
-             Color.FromArgb("#d45087")
+            Color.FromArgb("#003f5c"),
+            Color.FromArgb("#ffa600"),
+            Color.FromArgb("#2f4b7c"),
+            Color.FromArgb("#ff7c43"),
+            Color.FromArgb("#665191"),
+            Color.FromArgb("#f95d6a"),
+            Color.FromArgb("#a05195"),
+            Color.FromArgb("#d45087"),
+            Color.FromArgb("#003f5c"),
+            Color.FromArgb("#ffa600"),
+            Color.FromArgb("#2f4b7c"),
+            Color.FromArgb("#ff7c43"),
+            Color.FromArgb("#665191"),
+            Color.FromArgb("#f95d6a"),
+            Color.FromArgb("#a05195"),
+            Color.FromArgb("#d45087")
         };
     }
 }
