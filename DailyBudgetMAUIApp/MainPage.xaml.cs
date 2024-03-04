@@ -222,9 +222,199 @@ public partial class MainPage : ContentPage
             _vm.FutureDailySpend = (decimal)(_vm.DefaultBudget.LeftToSpendBalance.GetValueOrDefault() / (Days - 1));
         }
 
-        List<Categories> CategoryList = _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID).Result;
+        List<Categories> CategoryList = await _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID);
         await LoadCategoryChartData(CategoryList, false);
 
+        _vm.Payees = await _ds.GetPayeeListFull(App.DefaultBudgetID);
+        _vm.Payees = _vm.Payees.OrderByDescending(p => p.PayeeSpendAllTime).ToList();
+        _vm.CurrentPayeeOffset = 0;
+        await LoadPayeeChartData();
+
+
+    }
+
+    private async Task LoadPayeeChartData()
+    {
+        Application.Current.Resources.TryGetValue("PrimaryBrush", out var PrimaryBrush);
+        Application.Current.Resources.TryGetValue("Primary", out var Primary);
+        Application.Current.Resources.TryGetValue("White", out var White);
+        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+
+        _vm.PayeesChart.Clear();
+        PayeeLegend.Children.Clear();
+        PreviousNextPayee.Children.Clear();
+
+        int MaxIndex = _vm.CurrentPayeeOffset + 8 >= _vm.Payees.Count() ? _vm.Payees.Count() - _vm.CurrentPayeeOffset : 8;
+
+        List<Payees> Payees = _vm.Payees.GetRange(_vm.CurrentPayeeOffset, MaxIndex);
+
+        int i = 0;
+        foreach (Payees payee in Payees)
+        {
+            ChartClass Value = new ChartClass
+            {
+                XAxesString = payee.Payee,
+                YAxesDouble = (double)payee.PayeeSpendPayPeriod
+            };
+
+            _vm.PayeesChart.Add(Value);
+
+            Border border = new Border
+            {
+                BackgroundColor = App.ChartColor[i],
+                Stroke = (Brush)PrimaryBrush,
+                StrokeThickness = 1,
+                StrokeShape = new RoundRectangle
+                {
+                    CornerRadius = new CornerRadius(4)
+                },
+                Margin = new Thickness(0, 2, 10, 2),
+                Padding = new Thickness(10, 0, 0, 0)
+            };
+
+            Label label = new Label
+            {
+                Text = payee.Payee,
+                TextColor = (Color)White,
+                FontSize = 16,
+                Padding = new Thickness(0, 8, 0, 8)
+            };
+
+            border.Content = label;
+
+            TapGestureRecognizer TapGesture = new TapGestureRecognizer();
+
+            TapGesture.NumberOfTapsRequired = 1;
+            TapGesture.Tapped += async (s, e) =>
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+                await Task.Delay(1000);
+                FilterModel Filters = new FilterModel
+                {
+                    PayeeFilter = new List<string>
+                        {
+                            payee.Payee
+                        }
+                };
+
+                await Shell.Current.GoToAsync($"{nameof(ViewFilteredTransactions)}",
+                    new Dictionary<string, object>
+                    {
+                        ["Filters"] = Filters
+                    });
+            };
+
+            border.GestureRecognizers.Add(TapGesture);
+            PayeeLegend.Children.Add(border);
+
+            i++;
+        }
+
+        if(_vm.CurrentPayeeOffset >= 8)
+        {
+            HorizontalStackLayout HSLPrevious = new HorizontalStackLayout
+            {
+                Padding = new Thickness(10,0,0,5)
+            };
+
+            Image PreviousImage = new Image
+            {
+                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Start,
+                Margin = new Thickness(0,0,10,0),
+                ZIndex = 999,
+                Source = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5c4",
+                    Size = 25,
+                    Color = (Color)Tertiary,
+                }
+            };
+
+            TapGestureRecognizer PreviousImageTapGesture = new TapGestureRecognizer();
+            PreviousImageTapGesture.NumberOfTapsRequired = 1;
+            PreviousImageTapGesture.Tapped += async (s, e) =>
+            {
+                _vm.CurrentPayeeOffset -= 8;
+                await LoadPayeeChartData();
+            };
+
+            HSLPrevious.GestureRecognizers.Add(PreviousImageTapGesture);
+            HSLPrevious.Children.Add(PreviousImage);
+
+            Label PreviousLabel = new Label
+            {
+                Text = "Previous",
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Start,
+                TextColor = (Color)Tertiary,
+                FontSize = 18,
+                Padding = new Thickness(0),
+                Margin = new Thickness(0),
+                FontAttributes = FontAttributes.Bold
+            };
+
+            HSLPrevious.Children.Add(PreviousLabel);
+            PreviousNextPayee.Add(HSLPrevious, 0, 0);
+        }
+
+        if(_vm.CurrentPayeeOffset + 8 < _vm.Payees.Count())
+        {
+            HorizontalStackLayout HSLNext = new HorizontalStackLayout
+            {
+                Padding = new Thickness(0, 0, 0, 5),
+                HorizontalOptions = LayoutOptions.End,
+                VerticalOptions = LayoutOptions.Center
+            };
+
+            Image NextImage = new Image
+            {
+                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.End,
+                Margin = new Thickness(10, 0, 10, 0),
+                ZIndex = 999,
+                Source = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5c8",
+                    Size = 25,
+                    Color = (Color)Tertiary,
+                }
+            };
+
+            TapGestureRecognizer NextImageTapGesture = new TapGestureRecognizer();
+            NextImageTapGesture.NumberOfTapsRequired = 1;
+            NextImageTapGesture.Tapped += async (s, e) =>
+            {
+                _vm.CurrentPayeeOffset += 8;
+                await LoadPayeeChartData();
+            };
+
+            HSLNext.GestureRecognizers.Add(NextImageTapGesture);
+            
+
+            Label NextLabel = new Label
+            {
+                Text = "Next",
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.End,
+                TextColor = (Color)Tertiary,
+                FontSize = 18,
+                Padding = new Thickness(0),
+                Margin = new Thickness(0),
+                FontAttributes = FontAttributes.Bold
+            };
+
+            HSLNext.Children.Add(NextLabel);
+            HSLNext.Children.Add(NextImage);
+
+            PreviousNextPayee.Add(HSLNext, 1, 0);
+        }
     }
 
     private async Task LoadCategoryChartData(List<Categories> CategoryList, bool IsBackButton)
@@ -1973,6 +2163,16 @@ public partial class MainPage : ContentPage
 
 
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewCategories)}");
+    }
+
+    private void PayeeOptions_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private void ViewPayees_Tapped(object sender, TappedEventArgs e)
+    {
+
     }
 }
 

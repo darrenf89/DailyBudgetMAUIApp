@@ -455,6 +455,46 @@
                             </VerticalStackLayout>
                         </Border>
                     </AbsoluteLayout>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdCategoryDetails" IsVisible="True">
+                        <VerticalStackLayout>
+                            <Grid RowDefinitions="Auto,200" ColumnDefinitions="45, *, *">
+                                <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Category}" Size="45"  Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                </Image>
+                                <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer x:Name="CategoryOptions" Tapped="CategoryOptions_Tapped" />
+                                    </Image.GestureRecognizers>
+                                </Image>
+                                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Budget category spend" FontAttributes="Bold" FontSize="Large" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0" VerticalOptions="Start"/>
+                                <chart:SfCircularChart Margin="5,0,0,20" BackgroundColor="Transparent" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                                    <chart:DoughnutSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
+                                </chart:SfCircularChart>
+                                <ScrollView Grid.Row="1" Grid.Column="2" Margin="0,10,0,10">
+                                    <VerticalStackLayout x:Name="CategoryLegend" >
+
+                                    </VerticalStackLayout>
+                                </ScrollView>
+                            </Grid>
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource SuccessLight}" Margin="0,5,0,0">
+                                <BoxView HeightRequest="2" Color="{StaticResource Success}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="View your category spend" TextColor="{DynamicResource Success}"/>
+                                <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="1" Grid.Column="1" >
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Success}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="ViewCategories" Tapped="ViewCategories_Tapped"/>
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
                     <AbsoluteLayout x:Name="absBill" IsVisible="false">
                         <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">
                             <Border.StrokeShape>
@@ -490,6 +530,49 @@
                             </VerticalStackLayout>
                         </Border>
                     </AbsoluteLayout>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdPayeeDetails" IsVisible="True">
+                        <VerticalStackLayout>
+                            <Grid RowDefinitions="Auto,Auto,200,Auto" ColumnDefinitions="45, *, *">
+                                <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Storefront}" Size="45"  Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                </Image>
+                                <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer x:Name="PayeeOptions" Tapped="PayeeOptions_Tapped" />
+                                    </Image.GestureRecognizers>
+                                </Image>
+                                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Budget payee spend" FontAttributes="Bold" FontSize="Large" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0" VerticalOptions="Start"/>
+                                <chart:SfCircularChart Margin="5,0,0,20" BackgroundColor="Transparent" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                                    <chart:DoughnutSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding PayeesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
+                                </chart:SfCircularChart>
+                                <ScrollView Grid.Row="2" Grid.Column="2" Margin="0,5,0,5">
+                                    <VerticalStackLayout x:Name="PayeeLegend">
+
+                                    </VerticalStackLayout>
+                                </ScrollView>
+                                <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" RowDefinitions="Auto" ColumnDefinitions="*,*" x:Name="PreviousNextPayee" Margin="0,0,0,0" Padding="0">
+
+                                </Grid>
+                            </Grid>
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource SuccessLight}" Margin="0,0,0,0">
+                                <BoxView HeightRequest="2" Color="{StaticResource Success}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                <Label FontAttributes="Bold" Grid.Row="2" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="View your payees spend" TextColor="{DynamicResource Success}"/>
+                                <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="2" Grid.Column="1" >
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Success}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="ViewPayees" Tapped="ViewPayees_Tapped"/>
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
                     <AbsoluteLayout x:Name="absIncome" IsVisible="false">
                         <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">
                             <Border.StrokeShape>
@@ -525,46 +608,6 @@
                             </VerticalStackLayout>
                         </Border>
                     </AbsoluteLayout>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdCategoryDetails" IsVisible="True">
-                        <VerticalStackLayout>
-                            <Grid RowDefinitions="Auto,200" ColumnDefinitions="45, *, *">
-                                <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Category}" Size="45"  Color="{DynamicResource Primary}" />
-                                    </Image.Source>
-                                </Image>
-                                <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
-                                    </Image.Source>
-                                    <Image.GestureRecognizers>
-                                        <TapGestureRecognizer x:Name="CategoryOptions" Tapped="CategoryOptions_Tapped" />
-                                    </Image.GestureRecognizers>
-                                </Image>
-                                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Budget Category Spend" FontAttributes="Bold" FontSize="Large" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0" VerticalOptions="Start"/>
-                                <chart:SfCircularChart Margin="5,0,0,20" BackgroundColor="Transparent" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-                                    <chart:DoughnutSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
-                                </chart:SfCircularChart>
-                                <ScrollView Grid.Row="1" Grid.Column="2" Margin="0,10,0,10">
-                                    <VerticalStackLayout x:Name="CategoryLegend" >
-
-                                    </VerticalStackLayout>
-                                </ScrollView>
-                            </Grid>
-                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource SuccessLight}" Margin="0,5,0,0">
-                                <BoxView HeightRequest="2" Color="{StaticResource Success}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="View your category spend" TextColor="{DynamicResource Success}"/>
-                                <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="1" Grid.Column="1" >
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Success}"/>
-                                    </Image.Source>
-                                </Image>
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer x:Name="ViewCategories" Tapped="ViewCategories_Tapped"/>
-                                </Grid.GestureRecognizers>
-                            </Grid>
-                        </VerticalStackLayout>
-                    </Border>
                     <Button WidthRequest="{Binding SignOutButtonWidth}" Command="{Binding SignOutCommand}" Style="{DynamicResource buttonClicked}" Text="Sign Out" HeightRequest="50" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,0,5,20" FontSize="20" CornerRadius="25" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
                 </VerticalStackLayout>
             </ScrollView>

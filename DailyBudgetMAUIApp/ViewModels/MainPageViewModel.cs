@@ -61,7 +61,13 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private decimal _futureDailySpend;
         [ObservableProperty]
+        private int _currentPayeeOffset = 0;
+        [ObservableProperty]
+        private List<Payees> _payees = new List<Payees>();
+        [ObservableProperty]
         private ObservableCollection<ChartClass> _categoriesChart = new ObservableCollection<ChartClass>();
+        [ObservableProperty]
+        private ObservableCollection<ChartClass> _payeesChart = new ObservableCollection<ChartClass>();
         [ObservableProperty]
         private List<Brush> _chartBrushes = new List<Brush>();
 
