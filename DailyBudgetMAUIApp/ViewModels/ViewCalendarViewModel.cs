@@ -18,6 +18,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private Budgets _budget;
         [ObservableProperty]
         private ObservableCollection<SchedulerAppointment> _events = new ObservableCollection<SchedulerAppointment>();
+        [ObservableProperty]
+        private DateTime _today = DateTime.Today;
 
         public ViewCalendarViewModel(IProductTools pt, IRestDataService ds)
         {

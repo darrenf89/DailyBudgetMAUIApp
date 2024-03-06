@@ -20,7 +20,7 @@
         </Grid>
     </Shell.TitleView>
     <VerticalStackLayout>
-        <scheduler:SfScheduler  x:Name="Scheduler" View="Agenda" AppointmentsSource="{Binding Events}" ShowBusyIndicator="{Binding ShowBusyIndicator}" QueryAppointmentsCommand="{Binding LoadMoreEventsCommand}">
+        <scheduler:SfScheduler  x:Name="Scheduler" View="Agenda" AppointmentsSource="{Binding Events}" ShowBusyIndicator="{Binding ShowBusyIndicator}" QueryAppointmentsCommand="{Binding LoadMoreEventsCommand}" MinimumDateTime="{Binding Today}">
             <scheduler:SfScheduler.AgendaView>
                 <scheduler:SchedulerAgendaView>
                     <scheduler:SchedulerAgendaView.MonthHeaderTemplate>
