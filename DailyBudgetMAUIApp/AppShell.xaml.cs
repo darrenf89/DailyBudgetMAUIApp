@@ -37,6 +37,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ViewIncomes), typeof(ViewIncomes));
         Routing.RegisterRoute(nameof(ViewFilteredTransactions), typeof(ViewFilteredTransactions));
         Routing.RegisterRoute(nameof(ViewPayees), typeof(ViewPayees));
+        Routing.RegisterRoute(nameof(ViewCalendar), typeof(ViewCalendar));
 
         App.MainTabBar = MainTabBar;
         App.ViewTabBar = ViewTabBar;

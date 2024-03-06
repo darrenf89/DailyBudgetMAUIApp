@@ -249,6 +249,7 @@ public partial class MainPage : ContentPage
         List<Payees> Payees = _vm.Payees.GetRange(_vm.CurrentPayeeOffset, MaxIndex);
 
         int i = 0;
+        decimal TotalValue = 0;
         foreach (Payees payee in Payees)
         {
             ChartClass Value = new ChartClass
@@ -256,6 +257,8 @@ public partial class MainPage : ContentPage
                 XAxesString = payee.Payee,
                 YAxesDouble = (double)payee.PayeeSpendPayPeriod
             };
+
+            TotalValue += payee.PayeeSpendPayPeriod;
 
             _vm.PayeesChart.Add(Value);
 
@@ -310,6 +313,15 @@ public partial class MainPage : ContentPage
             PayeeLegend.Children.Add(border);
 
             i++;
+        }
+
+        if(TotalValue == 0)
+        {
+            _vm.PayeeChartVisible = false;
+        }
+        else
+        {
+            _vm.PayeeChartVisible = true;
         }
 
         if(_vm.CurrentPayeeOffset >= 8)
@@ -457,6 +469,7 @@ public partial class MainPage : ContentPage
         }
 
         int i = 0;
+        decimal TotalValue = 0;
         foreach (Categories cat in CategoryList)
         {
             if ((IsBackButton && cat.IsSubCategory) || !IsBackButton)
@@ -466,6 +479,8 @@ public partial class MainPage : ContentPage
                     XAxesString = cat.CategoryName,
                     YAxesDouble = (double)cat.CategorySpendPayPeriod
                 };
+
+                TotalValue += cat.CategorySpendPayPeriod;
 
                 _vm.CategoriesChart.Add(Value);
 
@@ -533,6 +548,15 @@ public partial class MainPage : ContentPage
                 CategoryLegend.Children.Add(border);
                 i++;
             }
+        }
+
+        if (TotalValue == 0)
+        {
+            _vm.CategoryChartVisible = false;
+        }
+        else
+        {
+            _vm.CategoryChartVisible = true;
         }
     }
 
@@ -2170,9 +2194,17 @@ public partial class MainPage : ContentPage
 
     }
 
-    private void ViewPayees_Tapped(object sender, TappedEventArgs e)
+    private async void ViewPayees_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
 
+
+        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewPayees)}");
     }
 }
 

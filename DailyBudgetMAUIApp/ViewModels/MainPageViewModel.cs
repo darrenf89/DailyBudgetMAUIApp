@@ -70,6 +70,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private ObservableCollection<ChartClass> _payeesChart = new ObservableCollection<ChartClass>();
         [ObservableProperty]
         private List<Brush> _chartBrushes = new List<Brush>();
+        [ObservableProperty]
+        private bool _payeeChartVisible = true;
+        [ObservableProperty]
+        private bool _categoryChartVisible = true;
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DailyBudgetMAUIApp.Pages.ViewCalendar"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:scheduler="clr-namespace:Syncfusion.Maui.Scheduler;assembly=Syncfusion.Maui.Scheduler"
+             Shell.TabBarIsVisible="False">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+    </Shell.BackButtonBehavior>
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="25,*">
+            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" x:Name="HomeButton" Clicked="HomeButton_Clicked" HorizontalOptions="Center" Grid.Column="0" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Home}" Size="35" />
+                </Button.ImageSource>
+            </Button>
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Medium"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
+        </Grid>
+    </Shell.TitleView>
+    <VerticalStackLayout>
+        <scheduler:SfScheduler  x:Name="Scheduler" View="Agenda" AppointmentsSource="{Binding Events}" ShowBusyIndicator="{Binding ShowBusyIndicator}" QueryAppointmentsCommand="{Binding LoadMoreEventsCommand}">
+            <scheduler:SfScheduler.AgendaView>
+                <scheduler:SchedulerAgendaView>
+                    <scheduler:SchedulerAgendaView.MonthHeaderTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Label x:Name="label" HorizontalOptions="Center" Background="{StaticResource Primary}" VerticalOptions="Center" TextColor="Black" FontSize="25"  Text="{Binding StringFormat='{0:MMMM yyyy}'}" />
+                            </Grid>
+                        </DataTemplate>
+                    </scheduler:SchedulerAgendaView.MonthHeaderTemplate>
+                    <scheduler:SchedulerAgendaView.DayHeaderSettings>
+                        <scheduler:SchedulerDayHeaderSettings />
+                    </scheduler:SchedulerAgendaView.DayHeaderSettings>
+                </scheduler:SchedulerAgendaView>
+            </scheduler:SfScheduler.AgendaView>
+        </scheduler:SfScheduler>
+    </VerticalStackLayout>
+</ContentPage>
