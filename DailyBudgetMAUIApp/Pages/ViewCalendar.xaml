@@ -19,22 +19,30 @@
             <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Medium"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
         </Grid>
     </Shell.TitleView>
-    <VerticalStackLayout>
-        <scheduler:SfScheduler  x:Name="Scheduler" View="Agenda" AppointmentsSource="{Binding Events}" ShowBusyIndicator="{Binding ShowBusyIndicator}" QueryAppointmentsCommand="{Binding LoadMoreEventsCommand}" MinimumDateTime="{Binding Today}">
-            <scheduler:SfScheduler.AgendaView>
-                <scheduler:SchedulerAgendaView>
-                    <scheduler:SchedulerAgendaView.MonthHeaderTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Label x:Name="label" HorizontalOptions="Center" Background="{StaticResource Primary}" VerticalOptions="Center" TextColor="Black" FontSize="25"  Text="{Binding StringFormat='{0:MMMM yyyy}'}" />
-                            </Grid>
-                        </DataTemplate>
-                    </scheduler:SchedulerAgendaView.MonthHeaderTemplate>
-                    <scheduler:SchedulerAgendaView.DayHeaderSettings>
-                        <scheduler:SchedulerDayHeaderSettings />
-                    </scheduler:SchedulerAgendaView.DayHeaderSettings>
-                </scheduler:SchedulerAgendaView>
-            </scheduler:SfScheduler.AgendaView>
-        </scheduler:SfScheduler>
+    <VerticalStackLayout BackgroundColor="{StaticResource Primary}">
+        <Border Style="{DynamicResource DashboardMainContent}">
+            <scheduler:SfScheduler x:Name="Scheduler" View="Agenda" MinimumHeightRequest="{Binding SchedulerHeight}" AppointmentsSource="{Binding Events}" ShowBusyIndicator="{Binding ShowBusyIndicator}" QueryAppointmentsCommand="{Binding LoadMoreEventsCommand}" MinimumDateTime="{Binding Today}">
+                <scheduler:SfScheduler.AgendaView>
+                    <scheduler:SchedulerAgendaView>
+                        <scheduler:SchedulerAgendaView.MonthHeaderSettings>
+                            <scheduler:SchedulerMonthHeaderSettings Height="0"/>
+                        </scheduler:SchedulerAgendaView.MonthHeaderSettings>
+                        <!--<scheduler:SchedulerAgendaView.MonthHeaderTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*" RowDefinitions="30" VerticalOptions="Center">
+                                    <Label VerticalOptions="Center" HorizontalOptions="Start" Text="{Binding StringFormat='{0:MMM yyyy}'}" TextColor="{StaticResource Tertiary}" FontSize="Medium" Margin="20,0,0,0"/>
+                                </Grid>
+                            </DataTemplate>
+                        </scheduler:SchedulerAgendaView.MonthHeaderTemplate>-->
+                        <scheduler:SchedulerAgendaView.DayHeaderSettings>
+                            <scheduler:SchedulerDayHeaderSettings />
+                        </scheduler:SchedulerAgendaView.DayHeaderSettings>
+                        <scheduler:SchedulerAgendaView.WeekHeaderSettings>
+                            <scheduler:SchedulerWeekHeaderSettings/>
+                        </scheduler:SchedulerAgendaView.WeekHeaderSettings>
+                    </scheduler:SchedulerAgendaView>
+                </scheduler:SfScheduler.AgendaView>
+            </scheduler:SfScheduler>
+        </Border>
     </VerticalStackLayout>
 </ContentPage>

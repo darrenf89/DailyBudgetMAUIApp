@@ -70,7 +70,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DotNetMeteor.HotReload.Plugin" Version="3.*" />
+		<PackageReference Include="DotNetMeteor.HotReload.Plugin" Version="3.2.0" />
 		<PackageReference Include="IeuanWalker.Maui.Switch" Version="1.0.4" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.7" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.7" />
@@ -85,7 +85,7 @@
 		<PackageReference Include="Syncfusion.Maui.Charts" Version="24.2.9" />
 		<PackageReference Include="Syncfusion.Maui.Expander" Version="24.2.9" />
 		<PackageReference Include="Syncfusion.Maui.Gauges" Version="24.2.9" />
-		<PackageReference Include="Syncfusion.Maui.ListView" Version="24.2.9" />
+		<PackageReference Include="Syncfusion.Maui.ListView" Version="24.2.7" />
 		<PackageReference Include="Syncfusion.Maui.Picker" Version="24.2.9" />
 		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="24.2.9" />
 		<PackageReference Include="Syncfusion.Maui.Scheduler" Version="24.2.9" />
