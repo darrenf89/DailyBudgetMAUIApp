@@ -1326,6 +1326,4 @@
         <Setter Property="SelectedTabColor" Value="{StaticResource Gray950}" />
     </Style>
 
-
-
 </ResourceDictionary>

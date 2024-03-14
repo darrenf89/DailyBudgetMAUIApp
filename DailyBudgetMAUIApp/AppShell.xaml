@@ -30,7 +30,7 @@
     </TabBar>
 
     <ShellItem Route="ViewCalendar" FlyoutItemIsVisible="False">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewCalendar}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:ViewCalendar}"/>
     </ShellItem>
 
     <ShellItem Route="CreateNewBudget" FlyoutItemIsVisible="False">

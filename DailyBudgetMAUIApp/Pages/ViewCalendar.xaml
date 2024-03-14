@@ -19,10 +19,10 @@
             <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Medium"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
         </Grid>
     </Shell.TitleView>
-    <VerticalStackLayout BackgroundColor="{StaticResource Primary}">
-        <Border Style="{DynamicResource DashboardMainContent}">
-            <scheduler:SfScheduler x:Name="Scheduler" View="Agenda" MinimumHeightRequest="{Binding SchedulerHeight}" AppointmentsSource="{Binding Events}" ShowBusyIndicator="{Binding ShowBusyIndicator}" QueryAppointmentsCommand="{Binding LoadMoreEventsCommand}" MinimumDateTime="{Binding Today}">
-                <scheduler:SfScheduler.AgendaView>
+    <Grid BackgroundColor="{StaticResource Primary}" RowDefinitions="Auto,Auto,*" ColumnDefinitions="*">
+        <Border Grid.Row="0" Grid.Column="0" Style="{DynamicResource DashboardMainContent}">
+            <scheduler:SfScheduler Tapped="Scheduler_Tapped" TodayHighlightBrush="{StaticResource PrimaryDark}" x:Name="Scheduler" View="Agenda" MinimumHeightRequest="{Binding SchedulerHeight}" AppointmentsSource="{Binding Events}" ShowBusyIndicator="{Binding ShowBusyIndicator}" QueryAppointmentsCommand="{Binding LoadMoreEventsCommand}" MinimumDateTime="{Binding Today}">
+                <scheduler:SfScheduler.AgendaView>  
                     <scheduler:SchedulerAgendaView>
                         <scheduler:SchedulerAgendaView.MonthHeaderSettings>
                             <scheduler:SchedulerMonthHeaderSettings Height="0"/>
@@ -38,11 +38,243 @@
                             <scheduler:SchedulerDayHeaderSettings />
                         </scheduler:SchedulerAgendaView.DayHeaderSettings>
                         <scheduler:SchedulerAgendaView.WeekHeaderSettings>
-                            <scheduler:SchedulerWeekHeaderSettings/>
+                            <scheduler:SchedulerWeekHeaderSettings Height="0"/>
                         </scheduler:SchedulerAgendaView.WeekHeaderSettings>
                     </scheduler:SchedulerAgendaView>
                 </scheduler:SfScheduler.AgendaView>
             </scheduler:SfScheduler>
         </Border>
-    </VerticalStackLayout>
+        <BoxView Grid.Row="1" Grid.Column="0" HeightRequest="8" Color="{StaticResource White}"/>
+        <ScrollView BackgroundColor="White" Grid.Row="2" Grid.Column="0">
+            <VerticalStackLayout Padding="20,10,20,10">
+                <Border Style="{StaticResource brdCardViewRectange}" IsVisible="{Binding IsSavingVisible}">
+                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto">
+                        <Border VerticalOptions="Start" BackgroundColor="White" Margin="5,5,15,0" Grid.Row="0" Grid.RowSpan="5" Grid.Column="0" HeightRequest="30" WidthRequest="30" StrokeShape="RoundRectangle 15" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
+                            <Border.Shadow>
+                                <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
+                            </Border.Shadow>
+                            <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="{Binding Saving, Converter={StaticResource SavingToGlyph}}"/>
+                        </Border>
+                        <Label Margin="0,0,0,0" Padding="0" VerticalOptions="Start" Text="{Binding Saving.SavingsName}" TextColor="{StaticResource Primary}" FontSize="Large" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
+                        <Label Margin="0,0,0,10" FontAttributes="Bold" Padding="0" Text="{Binding Saving.SavingsType, Converter={StaticResource SavingsTypeToText}}" TextColor="{StaticResource Tertiary}" FontSize="Medium" Grid.Column="1" Grid.Row="1" IsVisible="{Binding IsSavingsClosed, Converter={StaticResource BoolConverter}}"/>
+                        <Label Margin="0,0,0,10" Text="Goal completed" FontAttributes="Bold" TextColor="{StaticResource Tertiary}" FontSize="Medium" Grid.Column="1" Grid.Row="1" IsVisible="{Binding Saving.IsSavingsClosed}"/>
+                        <VerticalStackLayout IsVisible="{Binding Saving.IsSavingsClosed, Converter={StaticResource BoolConverter}}" Grid.Row="2" Grid.Column="1">
+                            <Grid  ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" IsVisible="{Binding Saving, Converter={StaticResource IsSavingsTargetAmount}}">
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Saving goal |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.SavingsGoal, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Current saved |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.CurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Saved each day |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.RegularSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Date Achieved |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.GoalDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" IsVisible="{Binding Saving, Converter={StaticResource IsSavingsTargetDate}}">
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Saving goal |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.SavingsGoal, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Current saved |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.CurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Saved each day |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.RegularSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Estimated completion date |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.GoalDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" IsVisible="{Binding Saving, Converter={StaticResource IsSavingsBuilder}}">
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Current saved |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.CurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Saved each day |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.RegularSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource brdCardViewRectange}" IsVisible="{Binding IsEnvelopeVisible}">
+                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto">
+                        <Border VerticalOptions="Start" BackgroundColor="White" Margin="5,5,15,0" Grid.Row="0" Grid.RowSpan="5" Grid.Column="0" HeightRequest="30" WidthRequest="30" StrokeShape="RoundRectangle 15" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
+                            <Border.Shadow>
+                                <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
+                            </Border.Shadow>
+                            <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="envelope.svg"/>
+                        </Border>
+                        <Label Margin="0,0,0,0" Padding="0" VerticalOptions="Start" Text="{Binding Envelope.SavingsName}" TextColor="{StaticResource Primary}" FontSize="Large" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
+                        <Label Margin="0,0,0,10" FontAttributes="Bold" Padding="0" Text="{Binding Envelope.SavingsType, Converter={StaticResource SavingsTypeToText}}" TextColor="{StaticResource Tertiary}" FontSize="Medium" Grid.Column="1" Grid.Row="1" IsVisible="{Binding Envelope.IsSavingsClosed, Converter={StaticResource BoolConverter}}"/>
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="1">
+                            <Grid  ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Put away each period |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Envelope.PeriodSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Left in envelope |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Envelope.CurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Daily required |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Envelope.RegularSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource brdCardViewRectange}" IsVisible="{Binding IsIncomeVisible}">
+                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                        <Border VerticalOptions="Start" BackgroundColor="White" Margin="5,5,15,0" Grid.Row="0" Grid.RowSpan="5" Grid.Column="0" HeightRequest="30" WidthRequest="30" StrokeShape="RoundRectangle 15" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
+                            <Border.Shadow>
+                                <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
+                            </Border.Shadow>
+                            <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="income.svg"/>
+                        </Border>
+                        <Label Margin="0,0,0,8" Padding="0" VerticalOptions="Start" Text="{Binding Income.IncomeName}" TextColor="{StaticResource Primary}" FontSize="Large" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
+                        <Label Margin="0,0,0,0" FontAttributes="Bold" Padding="0" Text="{Binding Income, Converter={StaticResource IncomeTypeConverter}}" TextColor="{StaticResource Tertiary}" FontSize="Medium" Grid.Column="1" Grid.Row="1"/>
+                        <Label IsVisible="{Binding Income.IsRecuringIncome}" Margin="0,2,0,0" FontAttributes="Bold" Padding="0" Text="{Binding Income, Converter={StaticResource RecurringIncomeDetails}}" TextColor="{StaticResource Gray400}" FontSize="Small" Grid.Column="1" Grid.Row="2"/>
+                        <VerticalStackLayout Grid.Row="3" Grid.Column="1" Margin="0,10,0,0">
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Extra Income amount |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label FontAttributes="Bold" Text="{Binding Income.IncomeAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Due Date |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label FontAttributes="Bold" Text="{Binding Income.DateOfIncomeEvent, StringFormat='{0: dd MMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource brdCardViewRectange}" IsVisible="{Binding IsBillVisible}">
+                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                        <Border VerticalOptions="Start" BackgroundColor="White" Margin="5,5,15,0" Grid.Row="0" Grid.RowSpan="5" Grid.Column="0" HeightRequest="30" WidthRequest="30" StrokeShape="RoundRectangle 15" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
+                            <Border.Shadow>
+                                <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
+                            </Border.Shadow>
+                            <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="{Binding Bill, Converter={StaticResource BillToGlyph}}"/>
+                        </Border>
+                        <Label Margin="0,0,0,8" Padding="0" VerticalOptions="Start" Text="{Binding Bill.BillName}" TextColor="{StaticResource Primary}" FontSize="Large" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
+                        <Label Margin="0,0,0,0" FontAttributes="Bold" Padding="0" Text="{Binding Bill.IsRecuring, Converter={StaticResource BillTypeConverter}}" TextColor="{StaticResource Tertiary}" FontSize="Medium" Grid.Column="1" Grid.Row="1"/>
+                        <Label IsVisible="{Binding Bill.IsRecuring}" Margin="0,2,0,0" FontAttributes="Bold" Padding="0" Text="{Binding Bill, Converter={StaticResource RecurringBillDetails}}" TextColor="{StaticResource Gray400}" FontSize="Small" Grid.Column="1" Grid.Row="2"/>
+                        <VerticalStackLayout Grid.Row="3" Grid.Column="1" Margin="0,10,0,0">
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Outgoing amount |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label FontAttributes="Bold" Text="{Binding Bill.BillAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Current balance |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label FontAttributes="Bold" Text="{Binding Bill.BillCurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Put away each day |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label FontAttributes="Bold" Text="{Binding Bill.RegularBillValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">
+                                    <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Due date |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                    <Label FontAttributes="Bold" Text="{Binding Bill.BillDueDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+                <Border Style="{DynamicResource brdCardViewRectange}" IsVisible="{Binding IsBudgetVisible}">
+                    <Grid ColumnDefinitions="Auto, *, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
+                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="5,5,15,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
+                        <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding BudgetCard.BudgetName}" FontAttributes="Bold" FontSize="Large" Padding="0,0,0,8" TextColor="{StaticResource Primary}" Margin="0"/>
+                        <HorizontalStackLayout Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" VerticalOptions="End">
+                            <Label Text="{Binding BudgetCard.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}"  VerticalTextAlignment="End" VerticalOptions="End" Padding="0,0,0,0" Margin="0"/>
+                        </HorizontalStackLayout>
+                        <Label Text="Current Bank Balance" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="3" TextColor="{StaticResource Gray400}" Padding="0,0,0,10" FontSize="Small"/>
+                        <HorizontalStackLayout Grid.Row="8" Grid.Column="1" Margin="0,0,10,0">
+                            <Label VerticalOptions="Center" Text="Days to Pay Day | " FontSize="Caption" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                            <Label VerticalOptions="Center" Text="{Binding BudgetCard.NextIncomePayday, Converter={StaticResource DateToNumberOfDays}}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource Gray900}"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="9" Grid.Column="1" Margin="0,0,10,0">
+                            <Label VerticalOptions="Center" Text="Due Date | " FontSize="Caption" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                            <Label VerticalOptions="Center" Text="{Binding BudgetCard.NextIncomePayday, StringFormat='{0:dd MMM yy}'}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource Gray900}"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="10" Grid.Column="1" Margin="0,0,10,10">
+                            <Label VerticalOptions="Center" Text="Pay Day Amount | " FontSize="Caption" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                            <Label VerticalOptions="Center" Text="{Binding BudgetCard.PaydayAmount, StringFormat='{0:c}'}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource Gray900}"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </Border>
+                <Border Style="{DynamicResource brdCardViewRectange}" IsVisible="{Binding IsTransactionVisible}">
+                    <Grid BackgroundColor="Transparent" RowDefinitions="Auto" ColumnDefinitions="*">
+                        <Grid BackgroundColor="{Binding Transaction.IsTransacted,Converter={StaticResource BoolToColorDisabled}}" Grid.Row="0" Grid.Column="0" RowDefinitions="62" ColumnDefinitions="Auto,Auto,*" IsVisible="True">
+                            <Border BackgroundColor="White" Margin="15,0,0,0" Grid.Row="0" Grid.RowSpan="1" Grid.Column="0" HeightRequest="24" WidthRequest="24" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
+                                <Border.Shadow>
+                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+                                </Border.Shadow>
+                                <Image  HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="12" Source="{Binding Transaction.EventType, Converter={StaticResource TransactionTypePngConverter}}"/>
+                            </Border>
+                            <Label FontSize="Medium" Grid.Row="0" Grid.RowSpan="1" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Start" Text="{Binding Transaction, Converter={StaticResource TransactionDisplayName}}" Margin="20,0,0,0" TextColor="{StaticResource Gray900}"/>
+                            <Label Padding="10,0,20,0" Grid.Row="0" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding Transaction, Converter={StaticResource TransactionAmountToCurrencyString}}" TextColor="{Binding Transaction.IsIncome, Converter={StaticResource BoolToColor}}" FontSize="Medium" CharacterSpacing="0"/>
+                        </Grid>
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                            <Grid BackgroundColor="{Binding Transaction.IsTransacted,Converter={StaticResource BoolToColorDisabled}}" Grid.Row="0" Grid.Column="0" RowDefinitions="62" ColumnDefinitions="Auto,Auto,*" IsVisible="True">
+                                <Border BackgroundColor="White" Margin="15,0,0,0" Grid.Row="0" Grid.RowSpan="1" Grid.Column="0" HeightRequest="24" WidthRequest="24" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
+                                    <Border.Shadow>
+                                        <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+                                    </Border.Shadow>
+                                    <Image  HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="12" Source="{Binding Transaction.EventType, Converter={StaticResource TransactionTypePngConverter}}"/>
+                                </Border>
+                                <Label FontSize="Medium" Grid.Row="0" Grid.RowSpan="1" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Start" Text="{Binding Transaction, Converter={StaticResource TransactionDisplayName}}" Margin="20,0,0,0" TextColor="{StaticResource Gray900}"/>
+                                <Label Padding="10,0,20,0" Grid.Row="0" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding Transaction, Converter={StaticResource TransactionAmountToCurrencyString}}" TextColor="{Binding Transaction.IsIncome, Converter={StaticResource BoolToColor}}" FontSize="Medium" CharacterSpacing="0"/>
+                            </Grid>
+                            <Grid BackgroundColor="{Binding Transaction.IsTransacted,Converter={StaticResource BoolToColorDisabled}}" Padding="0,5,0,15" Grid.ColumnDefinitions="Auto,*" Grid.RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                                <Image Grid.Row="0" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center" Margin="35,0,20,5">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Watch}" Size="18" Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                </Image>
+                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Transaction.TransactionDate, StringFormat='{0:hh:mm tt}'}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="Small"/>
+                                <Image Grid.Row="1" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center" Margin="35,5,20,5">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Category}" Size="18" Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                </Image>
+                                <Label Grid.Row="1" Grid.Column="1" Text="{Binding Transaction.Category, Converter={StaticResource IsCategoryStringText}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="Small"/>
+                                <Image Grid.Row="2" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center" Margin="35,5,20,5">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Savings}" Size="18" Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                </Image>
+                                <Label Grid.Row="2" Grid.Column="1" Text="{Binding Transaction.SavingName, Converter={StaticResource IsSpendCategoryStringText}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="Small"/>
+                                <Image Grid.Row="3" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center" Margin="35,5,20,5">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Description}" Size="18" Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                </Image>
+                                <Label Grid.Row="3" Grid.Column="1" Text="{Binding Transaction.Notes, Converter={StaticResource IsNoteStringText}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="Small"/>
+                                <Image Grid.Row="4" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center" Margin="35,5,20,5">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Celebration}" Size="18" Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                </Image>
+                                <Label Grid.Row="4" Grid.Column="1" Text="{Binding Transaction.EventType, Converter={StaticResource EventTypeToString}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="Small"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>            
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>
