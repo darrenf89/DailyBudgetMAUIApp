@@ -301,6 +301,10 @@ namespace DailyBudgetMAUIApp.DataServices
 
             Budget.LastUpdated = DateTime.UtcNow;
             int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
+            if(DaysToPayDay == 0)
+            {
+                DaysToPayDay = 1;
+            }
 
             //If Budget is Borrow Pay add Next Pay day value to MaB and Lts
             if(Budget.IsBorrowPay)
@@ -1593,6 +1597,11 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 await ChangeDefaultBudget(App.UserDetails.UserID, SelectedBudget.BudgetID, true);
             };
+
+            if(page == "Dashboard")
+            {
+                picker.HeightRequest = 2;
+            }
 
             return picker;
         }

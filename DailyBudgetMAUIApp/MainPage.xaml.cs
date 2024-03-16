@@ -15,8 +15,6 @@ using Syncfusion.Maui.ProgressBar;
 using Microsoft.Maui.Controls.Shapes;
 using CommunityToolkit.Maui.Extensions;
 using Syncfusion.Maui.Scheduler;
-using CommunityToolkit.Maui.ApplicationModel;
-using Microsoft.Extensions.Logging;
 
 
 namespace DailyBudgetMAUIApp;
@@ -26,6 +24,7 @@ public partial class MainPage : ContentPage
     private readonly MainPageViewModel _vm;
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
+    public Picker SwitchBudgetPicker { get; set; }
 
     public MainPage(MainPageViewModel viewModel, IRestDataService ds, IProductTools pt)
 	{
@@ -126,6 +125,7 @@ public partial class MainPage : ContentPage
             App.HasVisitedCreatePage = true;
 
             await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={App.DefaultBudgetID}&NavigatedFrom=Budget Settings");
+            return;
         }
 
         await LoadMainDashboardContent();
@@ -148,92 +148,99 @@ public partial class MainPage : ContentPage
             _vm.Title = $"Good morning {App.UserDetails.NickName}!";
         }
 
-        _vm.EnvelopeStats = new EnvelopeStats(_vm.DefaultBudget.Savings);
+        if (_vm.DefaultBudget.IsCreated)
+        {
+            _vm.EnvelopeStats = new EnvelopeStats(_vm.DefaultBudget.Savings);
 
-        if (_vm.EnvelopeStats.NumberOfEnvelopes == 0)
-        {
-            brdYourEnvelopes.IsVisible = false;
-        }
-        else
-        {
-            brdYourEnvelopes.IsVisible = true;
-        }
+            if (_vm.EnvelopeStats.NumberOfEnvelopes == 0)
+            {
+                brdYourEnvelopes.IsVisible = false;
+            }
+            else
+            {
+                brdYourEnvelopes.IsVisible = true;
+            }
 
-        SavingCarousel.Children.Clear();
-        SavingCarouselIdent.Children.Clear();
-        if (_vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).ToList().Count() != 0)
-        {
-            absSaving.IsVisible = true;
-            _vm.SavingCarousel = await CreateSavingCarousel();
-            SavingCarousel.Children.Add(_vm.SavingCarousel);
-        }
-        else
-        {
-            absSaving.IsVisible = false;
-        }
+            SavingCarousel.Children.Clear();
+            SavingCarouselIdent.Children.Clear();
+            if (_vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).ToList().Count() != 0)
+            {
+                absSaving.IsVisible = true;
+                _vm.SavingCarousel = await CreateSavingCarousel();
+                SavingCarousel.Children.Add(_vm.SavingCarousel);
+            }
+            else
+            {
+                absSaving.IsVisible = false;
+            }
 
-        BillCarousel.Children.Clear();
-        BillCarouselIdent.Children.Clear();
-        if (_vm.DefaultBudget.Bills.Count() != 0)
-        {
-            absBill.IsVisible = true;
-            _vm.BillCarousel = await CreateBillCarousel();
-            BillCarousel.Children.Add(_vm.BillCarousel);
-        }
-        else
-        {
-            absBill.IsVisible = false;
-        }
+            BillCarousel.Children.Clear();
+            BillCarouselIdent.Children.Clear();
+            if (_vm.DefaultBudget.Bills.Count() != 0)
+            {
+                absBill.IsVisible = true;
+                _vm.BillCarousel = await CreateBillCarousel();
+                BillCarousel.Children.Add(_vm.BillCarousel);
+            }
+            else
+            {
+                absBill.IsVisible = false;
+            }
 
-        IncomeCarousel.Children.Clear();
-        IncomeCarouselIdent.Children.Clear();
-        if (_vm.DefaultBudget.IncomeEvents.Any())
-        {
-            absIncome.IsVisible = true;
-            _vm.IncomeCarousel = await CreateIncomeCarousel();
-            IncomeCarousel.Children.Add(_vm.IncomeCarousel);
+            IncomeCarousel.Children.Clear();
+            IncomeCarouselIdent.Children.Clear();
+            if (_vm.DefaultBudget.IncomeEvents.Any())
+            {
+                absIncome.IsVisible = true;
+                _vm.IncomeCarousel = await CreateIncomeCarousel();
+                IncomeCarousel.Children.Add(_vm.IncomeCarousel);
+            }
+            else
+            {
+                absIncome.IsVisible = false;
+            }
+
+            _vm.RecentTransactions.Clear();
+            List<Transactions> RecentTrans = await _ds.GetRecentTransactions(_vm.DefaultBudgetID, 6, "MainPage");
+
+            if (RecentTrans.Count() > 0)
+            {
+                foreach (Transactions T in RecentTrans)
+                {
+                    _vm.RecentTransactions.Add(T);
+                }
+            }
+
+
+            _vm.MaxBankBalance = _vm.DefaultBudget.BankBalance.GetValueOrDefault();
+            _vm.MaxBankBalance += _vm.DefaultBudget.CurrentActiveIncome;
+            if (_vm.DefaultBudget.IsBorrowPay)
+            {
+                _vm.MaxBankBalance += _vm.DefaultBudget.PaydayAmount.GetValueOrDefault();
+            }
+
+            decimal Amount = 0;
+            entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
+
+            int Days = (int)Math.Ceiling((_vm.DefaultBudget.NextIncomePayday.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
+            if (Days == 1)
+            {
+                _vm.FutureDailySpend = -1;
+            }
+            else
+            {
+                _vm.FutureDailySpend = (decimal)(_vm.DefaultBudget.LeftToSpendBalance.GetValueOrDefault() / (Days - 1));
+            }
+
+            List<Categories> CategoryList = await _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID);
+            await LoadCategoryChartData(CategoryList, false);
+
+            _vm.Payees = await _ds.GetPayeeListFull(App.DefaultBudgetID);
+            _vm.Payees = _vm.Payees.OrderByDescending(p => p.PayeeSpendAllTime).ToList();
+            _vm.CurrentPayeeOffset = 0;
+            await LoadPayeeChartData();
+            await LoadBudgetCalendar();
         }
-        else
-        {
-            absIncome.IsVisible = false;
-        }
-
-        _vm.RecentTransactions.Clear();
-        List<Transactions> RecentTrans = await _ds.GetRecentTransactions(_vm.DefaultBudgetID, 6, "MainPage");
-        foreach(Transactions T in RecentTrans)
-        {
-            _vm.RecentTransactions.Add(T);
-        }
-
-        _vm.MaxBankBalance = _vm.DefaultBudget.BankBalance.GetValueOrDefault();
-        _vm.MaxBankBalance += _vm.DefaultBudget.CurrentActiveIncome;
-        if (_vm.DefaultBudget.IsBorrowPay)
-        {
-            _vm.MaxBankBalance += _vm.DefaultBudget.PaydayAmount.GetValueOrDefault();
-        }
-
-        decimal Amount = 0;
-        entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-
-        int Days = (int)Math.Ceiling((_vm.DefaultBudget.NextIncomePayday.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
-        if(Days == 1)
-        {
-            _vm.FutureDailySpend = -1;
-        }
-        else 
-        {
-            _vm.FutureDailySpend = (decimal)(_vm.DefaultBudget.LeftToSpendBalance.GetValueOrDefault() / (Days - 1));
-        }
-
-        List<Categories> CategoryList = await _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID);
-        await LoadCategoryChartData(CategoryList, false);
-
-        _vm.Payees = await _ds.GetPayeeListFull(App.DefaultBudgetID);
-        _vm.Payees = _vm.Payees.OrderByDescending(p => p.PayeeSpendAllTime).ToList();
-        _vm.CurrentPayeeOffset = 0;
-        await LoadPayeeChartData();
-        await LoadBudgetCalendar();
-
     }
 
     private async Task LoadBudgetCalendar()
@@ -469,6 +476,7 @@ public partial class MainPage : ContentPage
                     {
                         ["Filters"] = Filters
                     });
+                return;
             };
 
             border.GestureRecognizers.Add(TapGesture);
@@ -693,6 +701,7 @@ public partial class MainPage : ContentPage
                             {
                                 ["Filters"] = Filters
                             });
+                        return;
                     };
                 }
                 else
@@ -2372,6 +2381,13 @@ public partial class MainPage : ContentPage
     private void YourBudgetCalendarOptions_Tapped(object sender, TappedEventArgs e)
     {
 
+    }
+
+    private async void SwitchBudgetMain_Tapped(object sender, TappedEventArgs e)
+    {
+        SwitchBudgetPicker = await _pt.SwitchBudget("Dashboard");
+        MainVSLView.Children.Add(SwitchBudgetPicker);
+        SwitchBudgetPicker.Focus();
     }
 }
 

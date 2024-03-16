@@ -74,10 +74,52 @@
                 </Border>
             </HorizontalStackLayout>
             <ScrollView x:Name="MainScrollView" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" >
-                <VerticalStackLayout VerticalOptions="Start">
+                <VerticalStackLayout VerticalOptions="Start" >
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,10">
                         <Grid ColumnDefinitions="*" RowDefinitions="Auto">
                             <Image Source="mainpagelogo.png" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" MaximumHeightRequest="70" Margin="10,0,0,0" HorizontalOptions="Center"/>
+                        </Grid>
+                    </Border>
+                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
+                        <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
+                            <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
+                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                                <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Complete Set up"  FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
+                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to finalise your budget's details!" FontSize="Caption" TextColor="{DynamicResource Gray600}"/>
+                            </VerticalStackLayout>
+                            <Grid BackgroundColor="{DynamicResource Tertiary}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                                <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
+                        <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
+                            <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" x:Name="MainVSLView">
+                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                                <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Change selected budget"  FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
+                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="You haven't completed set up for this budget, do you want to change to another budget?" FontSize="Caption" TextColor="{DynamicResource Gray600}"/>
+                            </VerticalStackLayout>
+                            <Grid BackgroundColor="{DynamicResource Info}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                                <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="SwitchBudgetMain" Tapped="SwitchBudgetMain_Tapped"/>
+                                </Grid.GestureRecognizers>
+                            </Grid>
                         </Grid>
                     </Border>
                     <Border Style="{DynamicResource DashboardMainContent}" Stroke="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColorLight}}" StrokeThickness="3" Padding="0">
@@ -136,10 +178,10 @@
                                 <gauge:SfRadialGauge.Axes>
                                     <gauge:RadialAxis StartAngle="150" EndAngle="30" Minimum="0" Maximum="{Binding DefaultBudget.StartDayDailyAmount}" Interval="0" AnimationDuration="3000" EnableLoadingAnimation="True" RadiusFactor="0.95">
                                         <gauge:RadialAxis.AxisLineStyle>
-                                            <gauge:RadialLineStyle Fill="{StaticResource DangerLight}"/>
+                                            <gauge:RadialLineStyle Fill="{StaticResource DangerLightBrush}"/>
                                         </gauge:RadialAxis.AxisLineStyle>
                                         <gauge:RadialAxis.Ranges>
-                                            <gauge:RadialRange StartValue="0" EndValue="{Binding DefaultBudget.LeftToSpendDailyAmount}"/>
+                                            <gauge:RadialRange StartValue="0" EndValue="{Binding DefaultBudget.LeftToSpendDailyAmount}" Fill="{StaticResource SuccessBrush}"/>
                                         </gauge:RadialAxis.Ranges>
                                         <gauge:RadialAxis.Annotations>
                                             <gauge:GaugeAnnotation x:Name="annotation" DirectionUnit="Angle" DirectionValue="90" PositionFactor="0">
@@ -190,27 +232,6 @@
                     </Border>
                     <Border Style="{DynamicResource DashboardMainContent}" HeightRequest="120">
                         <Label Text="ADVERTISEMENT PLACEHOLDER" FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center"/>
-                    </Border>
-                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
-                        <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
-                            <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
-                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
-                            </VerticalStackLayout>
-                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
-                                <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Complete Set up"  FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
-                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to finalise your budget's details!" FontSize="Caption" TextColor="{DynamicResource Gray600}"/>
-                            </VerticalStackLayout>
-                            <Grid BackgroundColor="{DynamicResource Tertiary}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
-                                <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
-                                    </Image.Source>
-                                </Image>
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
-                                </Grid.GestureRecognizers>
-                            </Grid>
-                        </Grid>
                     </Border>
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetShareRequestToBool}}" >
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
