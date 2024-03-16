@@ -24,7 +24,7 @@
             <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Medium"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
         </Grid>
     </Shell.TitleView>
-    <sfList:SfListView IsStickyHeader="True" BackgroundColor="White" SelectionMode="None" x:Name="listView" AllowSwiping="False" ItemsSource="{Binding Categories}" ItemSize="170" AutoFitMode="DynamicHeight" IsScrollingEnabled="True">
+    <sfList:SfListView IsStickyHeader="True" BackgroundColor="White" SelectionMode="None" x:Name="listView" ItemsSource="{Binding Categories}" AutoFitMode="Height" IsScrollingEnabled="True">
         <sfList:SfListView.HeaderTemplate>
             <DataTemplate>
                 <AbsoluteLayout BackgroundColor="{StaticResource Primary}">

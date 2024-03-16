@@ -1,4 +1,5 @@
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
@@ -51,6 +52,11 @@ namespace DailyBudgetMAUIApp.ViewModels
             TabContentWidth = ScreenWidth - 40;
             ChartContentHeight = ScreenHeight * 0.25;
             MaxChartContentHeight = ChartContentHeight + 10;
+
+        }
+
+        public async Task OnLoad()
+        {
             ChartTitle = "Current period";
 
             Title = $"Check Your Categories {App.UserDetails.NickName}";
@@ -84,9 +90,9 @@ namespace DailyBudgetMAUIApp.ViewModels
             Categories.Add(AddCat);
 
             PayPeriods.Add("All Time");
-            foreach(SpendPeriods SP in Categories[0].CategorySpendPeriods)
+            foreach (SpendPeriods SP in Categories[0].CategorySpendPeriods)
             {
-                if(SP.IsCurrentPeriod)
+                if (SP.IsCurrentPeriod)
                 {
                     PayPeriods.Add("Current Period");
                 }

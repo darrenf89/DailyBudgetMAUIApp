@@ -46,11 +46,10 @@ public partial class ViewCategories : ContentPage
 
         InitializeComponent();
 
-        listView.PropertyChanged += listView_PropertyChanged;
         var timer = Application.Current.Dispatcher.CreateTimer();
         _timer = timer;
         timer.Interval = TimeSpan.FromSeconds(45);
-        timer.Tick += async (s, e) => 
+        timer.Tick += async (s, e) =>
         {
             _vm.ChartUpdating = true;
             await CycleThroughChart();
@@ -70,6 +69,13 @@ public partial class ViewCategories : ContentPage
     protected async override void OnAppearing()
     {
         base.OnAppearing();
+
+        _vm.OnLoad();
+
+        var size = _vm.ScreenWidth / 170;
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.SpanCount = (int)size;
+        listView.ItemsLayout = gridLayout;
 
         listView.RefreshView();
         listView.RefreshItem();
@@ -154,17 +160,6 @@ public partial class ViewCategories : ContentPage
             }
             await SwitchChart(_vm.SelectedIndex);
         });
-    }
-
-    private void listView_PropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == "Width")
-        {
-            var size = _vm.ScreenWidth / listView.ItemSize;
-            GridLayout gridLayout = new GridLayout();
-            gridLayout.SpanCount = (int)size;
-            listView.ItemsLayout = gridLayout;
-        }
     }
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
