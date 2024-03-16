@@ -17,7 +17,7 @@
 		<ApplicationTitle>dBudget</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.dailybudgetmauiapp</ApplicationId>
+		<ApplicationId>dBudget</ApplicationId>
 		<ApplicationIdGuid>a9e0258c-e381-49fa-aa43-d11c44cf7b75</ApplicationIdGuid>
 
 		<!-- Versions -->

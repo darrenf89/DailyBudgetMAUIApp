@@ -7,6 +7,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 using System.Windows.Input;
 using Syncfusion.Maui.Carousel;
 using System.Collections.ObjectModel;
+using Syncfusion.Maui.Scheduler;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -74,6 +75,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool _payeeChartVisible = true;
         [ObservableProperty]
         private bool _categoryChartVisible = true;
+        [ObservableProperty]
+        private ObservableCollection<SchedulerAppointment> _eventList = new ObservableCollection<SchedulerAppointment>();
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {

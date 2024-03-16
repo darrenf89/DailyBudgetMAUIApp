@@ -21,19 +21,12 @@
     </Shell.TitleView>
     <Grid BackgroundColor="{StaticResource Primary}" RowDefinitions="Auto,Auto,*" ColumnDefinitions="*">
         <Border Grid.Row="0" Grid.Column="0" Style="{DynamicResource DashboardMainContent}">
-            <scheduler:SfScheduler Tapped="Scheduler_Tapped" TodayHighlightBrush="{StaticResource PrimaryDark}" x:Name="Scheduler" View="Agenda" MinimumHeightRequest="{Binding SchedulerHeight}" AppointmentsSource="{Binding Events}" ShowBusyIndicator="{Binding ShowBusyIndicator}" QueryAppointmentsCommand="{Binding LoadMoreEventsCommand}" MinimumDateTime="{Binding Today}">
+            <scheduler:SfScheduler SelectedAppointmentBackground="{StaticResource Primary}" Tapped="Scheduler_Tapped" TodayHighlightBrush="{StaticResource PrimaryDark}" x:Name="Scheduler" View="Agenda" MinimumHeightRequest="{Binding SchedulerHeight}" AppointmentsSource="{Binding EventList}" ShowBusyIndicator="{Binding ShowBusyIndicator}" QueryAppointmentsCommand="{Binding LoadMoreEventsCommand}" MinimumDateTime="{Binding Today}">
                 <scheduler:SfScheduler.AgendaView>  
                     <scheduler:SchedulerAgendaView>
                         <scheduler:SchedulerAgendaView.MonthHeaderSettings>
                             <scheduler:SchedulerMonthHeaderSettings Height="0"/>
                         </scheduler:SchedulerAgendaView.MonthHeaderSettings>
-                        <!--<scheduler:SchedulerAgendaView.MonthHeaderTemplate>
-                            <DataTemplate>
-                                <Grid ColumnDefinitions="*" RowDefinitions="30" VerticalOptions="Center">
-                                    <Label VerticalOptions="Center" HorizontalOptions="Start" Text="{Binding StringFormat='{0:MMM yyyy}'}" TextColor="{StaticResource Tertiary}" FontSize="Medium" Margin="20,0,0,0"/>
-                                </Grid>
-                            </DataTemplate>
-                        </scheduler:SchedulerAgendaView.MonthHeaderTemplate>-->
                         <scheduler:SchedulerAgendaView.DayHeaderSettings>
                             <scheduler:SchedulerDayHeaderSettings />
                         </scheduler:SchedulerAgendaView.DayHeaderSettings>
@@ -46,7 +39,7 @@
         </Border>
         <BoxView Grid.Row="1" Grid.Column="0" HeightRequest="8" Color="{StaticResource White}"/>
         <ScrollView BackgroundColor="White" Grid.Row="2" Grid.Column="0">
-            <VerticalStackLayout Padding="20,10,20,10">
+            <VerticalStackLayout Padding="20,10,20,10" VerticalOptions="Center">
                 <Border Style="{StaticResource brdCardViewRectange}" IsVisible="{Binding IsSavingVisible}">
                     <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto">
                         <Border VerticalOptions="Start" BackgroundColor="White" Margin="5,5,15,0" Grid.Row="0" Grid.RowSpan="5" Grid.Column="0" HeightRequest="30" WidthRequest="30" StrokeShape="RoundRectangle 15" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
@@ -273,7 +266,11 @@
                             </Grid>
                         </VerticalStackLayout>
                     </Grid>
-                </Border>            
+                </Border>
+                <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto">
+                    <Button Grid.Row="0" Grid.Column="0" Text="Previous" Style="{StaticResource TertiaryButton}" Command="{Binding SelectPreviousCommand}" IsEnabled="{Binding IsPreviousEnabled}" HeightRequest="44" Margin="0,15,0,15" />
+                    <Button Grid.Row="0" Grid.Column="2" Text="Next" Style="{StaticResource PrimaryButton}" Command="{Binding SelectNextCommand}" IsEnabled="{Binding IsNextEnabled}" HeightRequest="44" Margin="0,15,0,15"/>
+                </Grid>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

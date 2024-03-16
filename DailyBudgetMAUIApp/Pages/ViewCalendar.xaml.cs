@@ -68,10 +68,26 @@ namespace DailyBudgetMAUIApp.Pages
         {
             var Appointments = e.Appointments;
 
-            if(Appointments != null)
+            if (Appointments != null)
             {
                 SchedulerAppointment Appointment = (SchedulerAppointment)Appointments[0];
                 await _vm.LoadEventCard(Appointment.Notes, (int)Appointment.Id);
+                _vm.SelectedIndex = _vm.EventList.IndexOf(Appointment);
+                if (_vm.SelectedIndex == 0)
+                {
+                    _vm.IsNextEnabled = true;
+                    _vm.IsPreviousEnabled = false;
+                }
+                else if (_vm.SelectedIndex == _vm.EventList.Count() - 1)
+                {
+                    _vm.IsNextEnabled = false;
+                    _vm.IsPreviousEnabled = true;
+                }
+                else
+                {
+                    _vm.IsNextEnabled = true;
+                    _vm.IsPreviousEnabled = true;
+                }
             }
         }
         

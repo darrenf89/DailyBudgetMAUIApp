@@ -22,7 +22,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool _isBudgetVisible;
         [ObservableProperty]
-        private ObservableCollection<SchedulerAppointment> _events = new ObservableCollection<SchedulerAppointment>();
+        private ObservableCollection<SchedulerAppointment> _eventList = new ObservableCollection<SchedulerAppointment> ();
+        [ObservableProperty]
+        private List<SchedulerAppointment> _events = new List<SchedulerAppointment>();
         [ObservableProperty]
         private DateTime _today = DateTime.Today;
         [ObservableProperty]
@@ -47,25 +49,72 @@ namespace DailyBudgetMAUIApp.ViewModels
         private Savings _envelope = new Savings();
         [ObservableProperty]
         private bool _isEnvelopeVisible;
+        [ObservableProperty]
+        private int _selectedIndex = 0;
+        [ObservableProperty]
+        private bool _isNextEnabled = true;
+        [ObservableProperty]
+        private bool _isPreviousEnabled = false;
 
 
         public ViewCalendarViewModel(IProductTools pt, IRestDataService ds)
         {
             _ds = ds;
             _pt = pt;
-            SchedulerHeight = ((DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density)) * 0.52;
+            SchedulerHeight = ((DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density)) * 0.48;
         }
 
         public async Task LoadData()
         {
-            Title = "Budget Events' Calendar";
+            Title = "Budget's Events Calendar";
             Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
             await LoadPayDayEvents(Today.AddMonths(1));
             await LoadOutgoingEvents(Today, Today.AddMonths(1));
             await LoadIncomeEvents(Today, Today.AddMonths(1));
             await LoadSavingsEvents();
-            await LoadTransactionsEvents();
-            await LoadEventCard("PayDay", 0);
+            await LoadTransactionsEvents();            
+            foreach (SchedulerAppointment s in Events.OrderBy(c => c.StartTime))
+            {
+                EventList.Add(s);
+            }
+            Events.Clear();
+            await LoadEventCard(EventList[SelectedIndex].Notes, (int)EventList[SelectedIndex].Id);
+        }
+
+        [ICommand]
+        private async void SelectNext(object obj)
+        {
+            IsPreviousEnabled = true;
+
+            if(SelectedIndex < EventList.Count() - 1)
+            {
+                SelectedIndex++;
+                await LoadEventCard(EventList[SelectedIndex].Notes, (int)EventList[SelectedIndex].Id);
+            }
+
+            if (SelectedIndex == EventList.Count() - 1)
+            {
+                IsNextEnabled = false;
+            }
+
+        }
+
+        [ICommand]
+        private async void SelectPrevious(object obj)
+        {
+            IsNextEnabled = true;
+
+            if (SelectedIndex > 0)
+            {
+                SelectedIndex--;
+                await LoadEventCard(EventList[SelectedIndex].Notes, (int)EventList[SelectedIndex].Id);
+            }
+
+            if (SelectedIndex == 0)
+            {
+                IsPreviousEnabled = false;
+            }
+
         }
 
         [ICommand]
@@ -84,6 +133,11 @@ namespace DailyBudgetMAUIApp.ViewModels
             await LoadPayDayEvents(MaxDate);
             await LoadOutgoingEvents(MinDate, MaxDate);
             await LoadIncomeEvents(MinDate, MaxDate);
+            foreach (SchedulerAppointment s in Events.OrderByDescending(c => c.StartTime))
+            {
+                EventList.Add(s);
+            }
+            Events.Clear();
         }
 
         private async Task LoadPayDayEvents(DateTime MaxDate)

@@ -14,6 +14,9 @@ using DailyBudgetMAUIApp.Converters;
 using Syncfusion.Maui.ProgressBar;
 using Microsoft.Maui.Controls.Shapes;
 using CommunityToolkit.Maui.Extensions;
+using Syncfusion.Maui.Scheduler;
+using CommunityToolkit.Maui.ApplicationModel;
+using Microsoft.Extensions.Logging;
 
 
 namespace DailyBudgetMAUIApp;
@@ -229,7 +232,166 @@ public partial class MainPage : ContentPage
         _vm.Payees = _vm.Payees.OrderByDescending(p => p.PayeeSpendAllTime).ToList();
         _vm.CurrentPayeeOffset = 0;
         await LoadPayeeChartData();
+        await LoadBudgetCalendar();
 
+    }
+
+    private async Task LoadBudgetCalendar()
+    {
+        Application.Current.Resources.TryGetValue("White", out var White);
+        Application.Current.Resources.TryGetValue("Success", out var Success);
+        Application.Current.Resources.TryGetValue("Primary", out var Primary);
+        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+
+        DateTime MaxDate = DateTime.UtcNow.AddMonths(1);
+        DateTime BudgetDate = _vm.DefaultBudget.NextIncomePayday.GetValueOrDefault();
+
+        Scheduler.HeaderView.TextStyle = new SchedulerTextStyle
+        {
+            TextColor = (Color)Primary,
+            FontSize = 25,
+            FontFamily = "OpenSansSemibold"
+        };
+
+        Scheduler.MinimumDateTime = DateTime.UtcNow;
+        Scheduler.MaximumDateTime = MaxDate;
+
+        while (BudgetDate < MaxDate.AddDays(30))
+        {
+            SchedulerAppointment PayDay = new SchedulerAppointment
+            {
+                StartTime = BudgetDate.Date,
+                EndTime = BudgetDate.Date.AddMinutes(1439),
+                Subject = $"Getting paid {_vm.DefaultBudget.PaydayAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)}",
+                IsReadOnly = true,
+                Background = (Color)Success,
+                TextColor = (Color)White,
+                Notes = "PayDay",
+                Id = 0
+            };
+
+            _vm.EventList.Add(PayDay);
+
+            foreach (Savings saving in _vm.DefaultBudget.Savings.Where(s => !s.IsRegularSaving))
+            {
+                SchedulerAppointment EnvelopeEvent = new SchedulerAppointment
+                {
+                    StartTime = BudgetDate.Date,
+                    EndTime = BudgetDate.Date.AddMinutes(1439),
+                    Subject = $"Putting {saving.PeriodSavingValue.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} away for {saving.SavingsName}",
+                    IsReadOnly = true,
+                    Background = App.ChartColor[2],
+                    TextColor = (Color)White,
+                    Notes = "Envelope",
+                    Id = saving.SavingID
+                };
+
+                _vm.EventList.Add(EnvelopeEvent);
+            }
+
+            BudgetDate = _pt.CalculateNextDate(BudgetDate, _vm.DefaultBudget.PaydayType, _vm.DefaultBudget.PaydayValue.GetValueOrDefault(), _vm.DefaultBudget.PaydayDuration);
+        }
+
+        foreach (Transactions transaction in _vm.DefaultBudget.Transactions.Where(s => !s.IsTransacted))
+        {
+
+            SchedulerAppointment TransactionEvent = new SchedulerAppointment
+            {
+                StartTime = transaction.TransactionDate.GetValueOrDefault().Date,
+                EndTime = transaction.TransactionDate.GetValueOrDefault().Date.AddMinutes(1439),
+                Subject = $"Upcoming transaction for {transaction.TransactionDate.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)}",
+                IsReadOnly = true,
+                Background = App.ChartColor[5],
+                TextColor = (Color)White,
+                Notes = "Transaction",
+                Id = transaction.TransactionID
+            };
+
+            _vm.EventList.Add(TransactionEvent);
+        }
+
+        foreach (Savings saving in _vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving))
+        {
+            if (saving.SavingsType != "SavingsBuilder")
+            {
+                SchedulerAppointment SavingEvent = new SchedulerAppointment
+                {
+                    StartTime = saving.GoalDate.GetValueOrDefault().Date,
+                    EndTime = saving.GoalDate.GetValueOrDefault().Date.AddMinutes(1439),
+                    Subject = $"Saving {saving.SavingsGoal.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} for {saving.SavingsName}",
+                    IsReadOnly = true,
+                    Background = App.ChartColor[1],
+                    TextColor = (Color)White,
+                    Notes = "Saving",
+                    Id = saving.SavingID
+                };
+
+                _vm.EventList.Add(SavingEvent);
+            }
+        }
+
+        foreach (Bills bill in _vm.DefaultBudget.Bills)
+        {
+            DateTime BillDate = bill.BillDueDate.GetValueOrDefault();
+
+            while (BillDate <= MaxDate)
+            {
+                SchedulerAppointment BillEvent = new SchedulerAppointment
+                {
+                    StartTime = bill.BillDueDate.GetValueOrDefault().Date,
+                    EndTime = bill.BillDueDate.GetValueOrDefault().Date.AddMinutes(1439),
+                    Subject = $"{bill.BillAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} outgoing for {bill.BillName}",
+                    IsReadOnly = true,
+                    Background = App.ChartColor[3],
+                    TextColor = (Color)White,
+                    Notes = "Bill",
+                    Id = bill.BillID
+                };
+
+                _vm.EventList.Add(BillEvent);
+
+                if (bill.IsRecuring)
+                {
+                    BillDate = _pt.CalculateNextDate(BillDate, bill.BillType, bill.BillValue.GetValueOrDefault(), bill.BillDuration);
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        foreach (IncomeEvents income in _vm.DefaultBudget.IncomeEvents)
+        {
+            DateTime IncomeDate = income.DateOfIncomeEvent;
+
+            while (IncomeDate <= MaxDate)
+            {
+                SchedulerAppointment IncomeEvent = new SchedulerAppointment
+                {
+                    StartTime = income.DateOfIncomeEvent.Date,
+                    EndTime = income.DateOfIncomeEvent.Date.AddMinutes(1439),
+                    Subject = $"{income.IncomeAmount.ToString("c", CultureInfo.CurrentCulture)} income for {income.IncomeName}",
+                    IsReadOnly = true,
+                    Background = App.ChartColor[4],
+                    TextColor = (Color)White,
+                    Notes = "Income",
+                    Id = income.IncomeEventID
+                };
+
+                _vm.EventList.Add(IncomeEvent);
+
+                if (income.IsRecurringIncome)
+                {
+                    IncomeDate = _pt.CalculateNextDate(IncomeDate, income.RecurringIncomeType, income.RecurringIncomeValue.GetValueOrDefault(), income.RecurringIncomeDuration);
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
 
     }
 
@@ -2205,6 +2367,11 @@ public partial class MainPage : ContentPage
 
 
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewPayees)}");
+    }
+
+    private void YourBudgetCalendarOptions_Tapped(object sender, TappedEventArgs e)
+    {
+
     }
 }
 
