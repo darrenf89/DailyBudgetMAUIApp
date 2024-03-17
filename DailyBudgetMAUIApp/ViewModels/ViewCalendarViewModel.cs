@@ -66,6 +66,8 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public async Task LoadData()
         {
+            EventList.Clear();
+
             Title = "Budget's Events Calendar";
             Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
             await LoadPayDayEvents(Today.AddMonths(1));

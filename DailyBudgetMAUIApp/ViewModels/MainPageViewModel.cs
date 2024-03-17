@@ -8,6 +8,8 @@ using System.Windows.Input;
 using Syncfusion.Maui.Carousel;
 using System.Collections.ObjectModel;
 using Syncfusion.Maui.Scheduler;
+using DailyBudgetMAUIApp.Pages.BottomSheets;
+using The49.Maui.BottomSheet;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -90,7 +92,33 @@ namespace DailyBudgetMAUIApp.ViewModels
             ProgressBarCarWidthRequest = ScreenWidth - 115;
 
             ChartBrushes = App.ChartBrush;
-        }        
+        }
+
+        [ICommand]
+        private async void GoToAccountSettings(object obj)
+        {
+
+        }
+
+        [ICommand]
+        private async void GoToBudgetSettings(object obj)
+        {
+
+            EditBudgetSettingsBottomSheet page = new EditBudgetSettingsBottomSheet(new ProductTools(new RestDataService()), new RestDataService());
+
+            page.Detents = new DetentsCollection()
+            {
+                new FixedContentDetent(),
+                new FullscreenDetent()
+
+            };
+
+            page.HasBackdrop = true;
+            page.CornerRadius = 0;
+
+            App.CurrentBottomSheet = page;
+            page.ShowAsync();
+        }
 
         [ICommand]
         async void NavigateCreateNewBudget()

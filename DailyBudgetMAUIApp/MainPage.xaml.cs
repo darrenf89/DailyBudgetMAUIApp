@@ -251,6 +251,8 @@ public partial class MainPage : ContentPage
         Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
         Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
 
+        _vm.EventList.Clear();
+
         DateTime MaxDate = DateTime.UtcNow.AddMonths(1);
         DateTime BudgetDate = _vm.DefaultBudget.NextIncomePayday.GetValueOrDefault();
 
@@ -259,6 +261,7 @@ public partial class MainPage : ContentPage
             TextColor = (Color)Primary,
             FontSize = 25,
             FontFamily = "OpenSansSemibold"
+            
         };
 
         Scheduler.MinimumDateTime = DateTime.UtcNow;

@@ -22,13 +22,16 @@
     <Grid BackgroundColor="{StaticResource Primary}" RowDefinitions="Auto,Auto,*" ColumnDefinitions="*">
         <Border Grid.Row="0" Grid.Column="0" Style="{DynamicResource DashboardMainContent}">
             <scheduler:SfScheduler SelectedAppointmentBackground="{StaticResource Primary}" Tapped="Scheduler_Tapped" TodayHighlightBrush="{StaticResource PrimaryDark}" x:Name="Scheduler" View="Agenda" MinimumHeightRequest="{Binding SchedulerHeight}" AppointmentsSource="{Binding EventList}" ShowBusyIndicator="{Binding ShowBusyIndicator}" QueryAppointmentsCommand="{Binding LoadMoreEventsCommand}" MinimumDateTime="{Binding Today}">
+                <scheduler:SfScheduler.HeaderView>
+                    <scheduler:SchedulerHeaderView Height="50" Background="White" />
+                </scheduler:SfScheduler.HeaderView>
                 <scheduler:SfScheduler.AgendaView>  
                     <scheduler:SchedulerAgendaView>
                         <scheduler:SchedulerAgendaView.MonthHeaderSettings>
                             <scheduler:SchedulerMonthHeaderSettings Height="0"/>
                         </scheduler:SchedulerAgendaView.MonthHeaderSettings>
                         <scheduler:SchedulerAgendaView.DayHeaderSettings>
-                            <scheduler:SchedulerDayHeaderSettings />
+                            <scheduler:SchedulerDayHeaderSettings Background="Transparent" />
                         </scheduler:SchedulerAgendaView.DayHeaderSettings>
                         <scheduler:SchedulerAgendaView.WeekHeaderSettings>
                             <scheduler:SchedulerWeekHeaderSettings Height="0"/>

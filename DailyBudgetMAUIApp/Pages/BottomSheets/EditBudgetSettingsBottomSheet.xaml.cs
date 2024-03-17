@@ -20,7 +20,7 @@ public partial class EditBudgetSettingsBottomSheet : BottomSheet
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
 
-    public EditBudgetSettingsBottomSheet(Categories Category, IProductTools pt, IRestDataService ds)
+    public EditBudgetSettingsBottomSheet(IProductTools pt, IRestDataService ds)
 	{
 		InitializeComponent();
 
@@ -38,20 +38,7 @@ public partial class EditBudgetSettingsBottomSheet : BottomSheet
         MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
         MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
 
-        lblTitle.Text = $"Edit category";
-
-        this.Category = Category;
-        entCategoryName.Text = this.Category.CategoryName;
-        entIconSearch.Text = this.Category.CategoryIcon;
-        this.SelectedIcon = this.Category.CategoryIcon;
-
-        this.PropertyChanged += ViewTransactionFilterBottomSheet_PropertyChanged;
-
-        MaterialDesignIconsFonts obj = new MaterialDesignIconsFonts();
-
-        Icons = _pt.GetIcons().Result;
-        FillIconFlexLayout(SelectedIcon);
-        ToggleIconButtons(SelectedIcon);
+        lblTitle.Text = $"Change budget settings";
     }
 
     private void ViewTransactionFilterBottomSheet_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
