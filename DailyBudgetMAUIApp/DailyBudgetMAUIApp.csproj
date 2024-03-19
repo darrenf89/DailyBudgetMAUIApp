@@ -94,8 +94,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Pages\BottomSheets\EditBudgetSettingsBottomSheet.xaml.cs">
-	    <DependentUpon>EditBudgetSettingsBottomSheet.xaml</DependentUpon>
+	  <Compile Update="Pages\EditBudgetSettings.xaml.cs">
+	    <DependentUpon>EditBudgetSettings.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Pages\ViewPayees.xaml.cs">
 	    <DependentUpon>ViewPayees.xaml</DependentUpon>
@@ -178,7 +178,7 @@
 	  <MauiXaml Update="Handlers\ButtonControlActivityIndicator.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\BottomSheets\EditBudgetSettingsBottomSheet.xaml">
+	  <MauiXaml Update="Pages\EditBudgetSettings.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewCalendar.xaml">

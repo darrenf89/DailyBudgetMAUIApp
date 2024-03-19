@@ -10,6 +10,8 @@ using System.Collections.ObjectModel;
 using Syncfusion.Maui.Scheduler;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
 using The49.Maui.BottomSheet;
+using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.Handlers;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -103,21 +105,18 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ICommand]
         private async void GoToBudgetSettings(object obj)
         {
-
-            EditBudgetSettingsBottomSheet page = new EditBudgetSettingsBottomSheet(new ProductTools(new RestDataService()), new RestDataService());
-
-            page.Detents = new DetentsCollection()
+            if (App.CurrentPopUp == null)
             {
-                new FixedContentDetent(),
-                new FullscreenDetent()
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-            };
+            await Task.Delay(500);
 
-            page.HasBackdrop = true;
-            page.CornerRadius = 0;
+            EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()));
 
-            App.CurrentBottomSheet = page;
-            page.ShowAsync();
+            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
         }
 
         [ICommand]

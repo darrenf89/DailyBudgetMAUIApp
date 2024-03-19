@@ -29,8 +29,6 @@ public partial class CreateNewBudget : ContentPage
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
-
-
     }
 
     async protected override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -399,7 +397,6 @@ public partial class CreateNewBudget : ContentPage
 
     private void ChangeSelectedCurrency_Tapped(object sender, TappedEventArgs e)
     {
-
         _vm.SearchVisible = true;
         _vm.CurrencySearchResults = _ds.GetCurrencySymbols("").Result;
         CurrencySearch.Text = "";
