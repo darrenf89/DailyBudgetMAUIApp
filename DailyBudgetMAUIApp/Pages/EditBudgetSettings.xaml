@@ -86,18 +86,36 @@
                                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,20" HeightRequest="44" Stroke="{StaticResource Info}">
                                     <handlers:BorderlessPicker HeightRequest="44" TextColor="{DynamicResource Gray900}" Margin="16,0,0,0" x:Name="pckrNumberFormat" Title="Select your preferred number format" ItemsSource="{Binding NumberFormats}" ItemDisplayBinding="{Binding NumberFormat}" SelectedItem="{Binding SelectedNumberFormats}"/>
                                 </Border>
-
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                        <BoxView HeightRequest="1" Grid.Row="1" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Margin="8,0,20,0">
+                            <Grid VerticalOptions="Center" ColumnDefinitions="Auto,*,*" RowDefinitions="Auto,Auto">
+                                <Label Grid.Column="1" Grid.Row="0" Text="Date Time Settings" Margin="15,5,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                                <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">
+                                    <Image.Source>
+                                        <FontImageSource x:Name="DateTimeIcon" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_more}" Size="30"  Color="{DynamicResource Info}"/>
+                                    </Image.Source>
+                                </Image>
+                                <HorizontalStackLayout Margin="15,0,0,10" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1">
+                                    <Label x:Name="DateTimeValue" Text="{Binding CurrentTime}" TextColor="{StaticResource Info}" FontSize="Small" FontAttributes="Bold"/>
+                                </HorizontalStackLayout>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="acrDateTimeSetting" Tapped="acrDateTimeSetting_Tapped" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                            <VerticalStackLayout Margin="10,5,10,0" x:Name="DateTimeSetting" HorizontalOptions="Fill">
+                                <Label Text="Date Format" FontSize="Small" TextColor="{DynamicResource Gray900}" Padding="5,0,0,10"/>
+                                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,20" HeightRequest="44" Stroke="{StaticResource Info}">
+                                    <handlers:BorderlessPicker HeightRequest="44" TextColor="{DynamicResource Gray900}" Margin="16,0,0,0" x:Name="pckrDateFormat" Title="Select your preferred Date Format" ItemsSource="{Binding DateFormats}" ItemDisplayBinding="{Binding DateFormat}" SelectedItem="{Binding SelectedDateFormats}"/>
+                                </Border>
+                                <Label Text="Budget Time Zone" FontSize="Small" TextColor="{DynamicResource Gray900}" Padding="5,0,0,10"/>
+                                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,20" HeightRequest="44" Stroke="{StaticResource Info}">
+                                    <handlers:BorderlessPicker HeightRequest="44" TextColor="{DynamicResource Gray900}" Margin="16,0,0,0" x:Name="pckrTimeZone" Title="Select your Time Zone" ItemsSource="{Binding TimeZones}" ItemDisplayBinding="{Binding TimeZoneDisplayName}" SelectedItem="{Binding SelectedTimeZone}"/>
+                                </Border>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
                         <BoxView HeightRequest="1" Grid.Row="3" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
-                        <HorizontalStackLayout Grid.Column="0" Grid.Row="4" IsVisible="false" Margin="5,5,0,20" x:Name="validator" VerticalOptions="Center" HorizontalOptions="Center">
-                            <Image>
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="20" Color="{DynamicResource Danger}"/>
-                                </Image.Source>
-                            </Image>
-                            <Label x:Name="lblValidator" Style="{StaticResource ErrorMessage}" WidthRequest="300" HorizontalTextAlignment="Start" HorizontalOptions="Start" VerticalOptions="Center" Padding="0" Margin="0,0,0,0" FontSize="Small"/>
-                        </HorizontalStackLayout>
                     </Grid>
                 </ScrollView>
             </VerticalStackLayout>

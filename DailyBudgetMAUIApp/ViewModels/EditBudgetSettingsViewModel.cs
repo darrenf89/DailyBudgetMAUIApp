@@ -6,6 +6,7 @@ using DailyBudgetMAUIApp.Pages;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -40,6 +41,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool _isBorrowPay;
         [ObservableProperty]
         private BudgetSettings _budgetSettings;
+        [ObservableProperty]
+        private string _currentTime;
+        [ObservableProperty]
+        private CultureInfo _timeCultureInfo;
 
         public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -62,6 +67,15 @@ namespace DailyBudgetMAUIApp.ViewModels
             SelectedDateFormats = _ds.GetDateFormatsById(BudgetSettings.ShortDatePattern ?? 1, BudgetSettings.DateSeperator ?? 1).Result;
             SelectedNumberFormats = _ds.GetNumberFormatsById(BudgetSettings.CurrencyDecimalDigits ?? 2, BudgetSettings.CurrencyDecimalSeparator ?? 2, BudgetSettings.CurrencyGroupSeparator ?? 1).Result;
             SelectedTimeZone = _ds.GetTimeZoneById(BudgetSettings.TimeZone.GetValueOrDefault()).Result;
+
+            TimeCultureInfo.DateTimeFormat.ShortDatePattern = await _ds.GetShortDatePatternById(SelectedDateFormats.ShortDatePatternID);
+            TimeCultureInfo.DateTimeFormat.DateSeparator = await _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID);
+
+        }
+
+        partial void OnSelectedDateFormatsChanged(lut_DateFormat value)
+        {
+
         }
         
         public void ChangeSelectedCurrency()
@@ -120,6 +134,12 @@ namespace DailyBudgetMAUIApp.ViewModels
             await Task.Delay(500);
 
             await Shell.Current.GoToAsync($"..");
+        }
+
+        public async Task UpdateTime()
+        {
+            DateTime CurrentDateTime = DateTime.UtcNow.AddHours(SelectedTimeZone.TimeZoneUTCOffset);
+            CurrentTime = CurrentDateTime.ToString(TimeCultureInfo);
         }
     }
 }

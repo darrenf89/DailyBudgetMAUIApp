@@ -12,6 +12,7 @@ public partial class EditBudgetSettings : ContentPage
     public double ScreenHeight { get; set; }
 
     private readonly EditBudgetSettingsViewModel _vm;
+    private IDispatcherTimer _timer;
 
     public EditBudgetSettings(EditBudgetSettingsViewModel viewModel)
 	{
@@ -23,8 +24,12 @@ public partial class EditBudgetSettings : ContentPage
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 60;
         ButtonWidth = ScreenWidth - 40;
-        MainScrollView.MaximumHeightRequest = ScreenHeight - 280;
+    }
 
+    protected async override void OnAppearing()
+    {
+        base.OnAppearing();
+        MainScrollView.MaximumHeightRequest = ScreenHeight - 280;
         TopBV.WidthRequest = ScreenWidth;
         MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
         MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
@@ -33,13 +38,16 @@ public partial class EditBudgetSettings : ContentPage
 
         lblTitle.Text = $"Budget settings";
 
-    }
-
-    protected async override void OnAppearing()
-    {
-        base.OnAppearing();
-
         await _vm.OnLoad();
+
+        var timer = Application.Current.Dispatcher.CreateTimer();
+        _timer = timer;
+        timer.Interval = TimeSpan.FromSeconds(1);
+        timer.Tick += async (s, e) =>
+        {
+            await _vm.UpdateTime();
+        };
+        timer.Start();
 
         CurrencySettingValue.Text = 9000.01.ToString("c", CultureInfo.CurrentCulture);
 
@@ -48,6 +56,12 @@ public partial class EditBudgetSettings : ContentPage
             await App.CurrentPopUp.CloseAsync();
             App.CurrentPopUp = null;
         }
+    }
+
+    protected override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        base.OnNavigatingFrom(args);
+        _timer.Stop();
     }
 
     private void acrCurrencySetting_Tapped(object sender, TappedEventArgs e)
@@ -61,6 +75,20 @@ public partial class EditBudgetSettings : ContentPage
         {
             CurrencySetting.IsVisible = false;
             CurrencySettingIcon.Glyph = "\ue5ce";
+        }
+    }
+
+    private void acrDateTimeSetting_Tapped(object sender, TappedEventArgs e)
+    {
+        if (!DateTimeSetting.IsVisible)
+        {
+            DateTimeSetting.IsVisible = true;
+            DateTimeIcon.Glyph = "\ue5cf";
+        }
+        else
+        {
+            DateTimeSetting.IsVisible = false;
+            DateTimeIcon.Glyph = "\ue5ce";
         }
     }
 

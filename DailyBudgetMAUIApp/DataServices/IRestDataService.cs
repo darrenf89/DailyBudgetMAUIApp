@@ -34,6 +34,8 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<lut_BudgetTimeZone> GetTimeZoneById(int TImeZoneID);
         public Task<lut_NumberFormat> GetNumberFormatsById(int CurrencyDecimalDigits, int CurrencyDecimalSeparator, int CurrencyGroupSeparator);
         public Task<List<lut_NumberFormat>> GetNumberFormats();
+        public Task<string> GetShortDatePatternById(int ShortDatePatternID);
+        public Task<string> GetDateSeperatorById(int DateSeperatorID);
         public Task<string> UpdatePayPeriodStats(PayPeriodStats Stats);
         public Task<PayPeriodStats> CreateNewPayPeriodStats(int BudgetID);
         public Task<string> PatchBudget(int BudgetID, List<PatchDoc> PatchDoc);
