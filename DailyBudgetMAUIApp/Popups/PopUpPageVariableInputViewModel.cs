@@ -1,23 +1,21 @@
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-
-
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
     public partial class PopUpPageVariableInputViewModel : BaseViewModel
     {
         [ObservableProperty]
-        private bool _returnDataError;
+        private bool returnDataError;
         [ObservableProperty]
-        private bool _isSubDesc;
+        private bool isSubDesc;
         [ObservableProperty]
-        private DateTime _dateTimeInput;
+        private DateTime dateTimeInput;
         [ObservableProperty]
-        private decimal _decimalInput;
+        private decimal decimalInput;
         [ObservableProperty]
-        private decimal _stringInput;
+        private decimal stringInput;
         [ObservableProperty]
-        private string _type;
+        private string type;
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
         public double PopupWidth { get; }

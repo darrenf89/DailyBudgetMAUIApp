@@ -1,12 +1,6 @@
-﻿using CommunityToolkit.Maui.Views;
-using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
+﻿using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using System.Diagnostics;
-using System.Globalization;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -16,21 +10,21 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int _budgetID;
+        private int  budgetID;
         [ObservableProperty]
-        private Transactions _transaction = new Transactions();
+        private Transactions  transaction = new Transactions();
         [ObservableProperty]
-        private Bills _bill = new Bills();
+        private Bills  bill = new Bills();
         [ObservableProperty]
-        private bool _payeeDoesntExists;
+        private bool  payeeDoesntExists;
         [ObservableProperty]
-        private List<string>? _payeeList = new List<string>();
+        private List<string>?  payeeList = new List<string>();
         [ObservableProperty]
-        private string _filteredListEmptyText = "You have not set up any Payee's go ahead and do that!";
+        private string  filteredListEmptyText = "You have not set up any Payee's go ahead and do that!";
         [ObservableProperty]
-        private string _selectedPayee;
+        private string  selectedPayee;
         [ObservableProperty]
-        private string _pageType;
+        private string  pageType;
 
 
         public double ScreenWidth { get; }

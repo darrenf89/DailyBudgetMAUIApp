@@ -2,16 +2,13 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Popups;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Syncfusion.Maui.Carousel;
 using System.Collections.ObjectModel;
 using Syncfusion.Maui.Scheduler;
-using DailyBudgetMAUIApp.Pages.BottomSheets;
-using The49.Maui.BottomSheet;
-using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.Handlers;
+using CommunityToolkit.Maui.Views;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -24,63 +21,63 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
 
         [ObservableProperty]
-        private int _defaultBudgetID;
+        private int  defaultBudgetID;
 
         [ObservableProperty]
-        private Budgets _defaultBudget = new Budgets();
+        private Budgets  defaultBudget = new Budgets();
 
         [ObservableProperty]
-        private bool _isBudgetCreated;
+        private bool  isBudgetCreated;
         [ObservableProperty]
-        private bool _isRefreshing;
+        private bool  isRefreshing;
         [ObservableProperty]
-        private string _snackBar;
+        private string  snackBar;
         [ObservableProperty]
-        private int _snackID;
+        private int  snackID;
         [ObservableProperty]
-        private double _progressBarWidthRequest;
+        private double  progressBarWidthRequest;
         [ObservableProperty]
-        private double _progressBarCarWidthRequest;
+        private double  progressBarCarWidthRequest;
         [ObservableProperty]
-        private EnvelopeStats _envelopeStats;
+        private EnvelopeStats  envelopeStats;
         [ObservableProperty]
-        private double _signOutButtonWidth;
+        private double  signOutButtonWidth;
         [ObservableProperty]
-        private SfCarousel _savingCarousel;
+        private SfCarousel  savingCarousel;
         [ObservableProperty]
-        private SfCarousel _billCarousel;
+        private SfCarousel  billCarousel;
         [ObservableProperty]
-        private SfCarousel _incomeCarousel;
+        private SfCarousel  incomeCarousel;
         [ObservableProperty]
-        private ObservableCollection<Transactions> _recentTransactions = new ObservableCollection<Transactions>();
+        private ObservableCollection<Transactions>  recentTransactions = new ObservableCollection<Transactions>();
         [ObservableProperty]
-        private double _recentTransactionsHeight = 452;
+        private double  recentTransactionsHeight = 452;
         [ObservableProperty]
-        private decimal _maxBankBalance = 0;
+        private decimal  maxBankBalance = 0;
         [ObservableProperty]
-        private decimal _transactionAmount;
+        private decimal  transactionAmount;
         [ObservableProperty]
-        private double _quickTransactionWidth;
+        private double  quickTransactionWidth;
         [ObservableProperty]
-        private double _quickTransactionInputWidth;
+        private double  quickTransactionInputWidth;
         [ObservableProperty]
-        private decimal _futureDailySpend;
+        private decimal  futureDailySpend;
         [ObservableProperty]
-        private int _currentPayeeOffset = 0;
+        private int  currentPayeeOffset = 0;
         [ObservableProperty]
-        private List<Payees> _payees = new List<Payees>();
+        private List<Payees>  payees = new List<Payees>();
         [ObservableProperty]
-        private ObservableCollection<ChartClass> _categoriesChart = new ObservableCollection<ChartClass>();
+        private ObservableCollection<ChartClass>  categoriesChart = new ObservableCollection<ChartClass>();
         [ObservableProperty]
-        private ObservableCollection<ChartClass> _payeesChart = new ObservableCollection<ChartClass>();
+        private ObservableCollection<ChartClass>  payeesChart = new ObservableCollection<ChartClass>();
         [ObservableProperty]
-        private List<Brush> _chartBrushes = new List<Brush>();
+        private List<Brush>  chartBrushes = new List<Brush>();
         [ObservableProperty]
-        private bool _payeeChartVisible = true;
+        private bool  payeeChartVisible = true;
         [ObservableProperty]
-        private bool _categoryChartVisible = true;
+        private bool  categoryChartVisible = true;
         [ObservableProperty]
-        private ObservableCollection<SchedulerAppointment> _eventList = new ObservableCollection<SchedulerAppointment>();
+        private ObservableCollection<SchedulerAppointment>  eventList = new ObservableCollection<SchedulerAppointment>();
 
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {
@@ -96,13 +93,13 @@ namespace DailyBudgetMAUIApp.ViewModels
             ChartBrushes = App.ChartBrush;
         }
 
-        [ICommand]
+        [RelayCommand]
         private async void GoToAccountSettings(object obj)
         {
 
         }
 
-        [ICommand]
+        [RelayCommand]
         private async void GoToBudgetSettings(object obj)
         {
             if (App.CurrentPopUp == null)
@@ -119,7 +116,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
         }
 
-        [ICommand]
+        [RelayCommand]
         async void NavigateCreateNewBudget()
         {
             var page = new LoadingPage();
@@ -130,7 +127,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
 
-        [ICommand]
+        [RelayCommand]
         async void SignOut()
         {
             var page = new LoadingPage();
@@ -155,7 +152,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
         }
 
-        [ICommand]
+        [RelayCommand]
         async void RefreshPage()
         {
             DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Full").Result;

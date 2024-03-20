@@ -1,4 +1,4 @@
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 
@@ -20,15 +20,15 @@ namespace DailyBudgetMAUIApp.ViewModels
         public double MaxHeight { get; }
 
         [ObservableProperty]
-        private List<Categories> _categories = new List<Categories>();
+        private List<Categories> categories = new List<Categories>();
         [ObservableProperty]
-        private Dictionary<string, int> _reAssignCategories = new Dictionary<string, int>();
+        private Dictionary<string, int> reAssignCategories = new Dictionary<string, int>();
         [ObservableProperty]
-        private int _headerCatID;
+        private int headerCatID;
         [ObservableProperty]
-        private List<string> _selectedReAssignCat = new List<string>();
+        private List<string> selectedReAssignCat = new List<string>();
         [ObservableProperty]
-        private List<string> _ddlCategories = new List<string>();
+        private List<string> ddlCategories = new List<string>();
 
         public PopupReassignCategoriesViewModel(Dictionary<string, int> InputReAssignCategories, int InputHeaderCatID, List<Categories> InputCategories, IRestDataService ds)
         {

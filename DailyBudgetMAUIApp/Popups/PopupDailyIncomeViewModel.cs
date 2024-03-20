@@ -1,4 +1,5 @@
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -17,7 +18,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public DateTime OriginalDate { get; set; }
 
         [ObservableProperty]
-        public IncomeEvents _income;
+        public IncomeEvents income;
 
         public PopupDailyIncomeViewModel()
         {

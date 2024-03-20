@@ -1,46 +1,44 @@
-﻿using DailyBudgetMAUIApp.Models;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class PayPeriodStats : ObservableObject
     {
         [ObservableProperty]
-        public int _payPeriodID;
+        public int  payPeriodID;
         [ObservableProperty]
-        public bool _isCurrentPeriod;
+        public bool  isCurrentPeriod;
         [ObservableProperty]
-        public DateTime _startDate;
+        public DateTime  startDate;
         [ObservableProperty]
-        public DateTime _endDate;
+        public DateTime  endDate;
         [ObservableProperty]
-        public int _durationOfPeriod;
+        public int  durationOfPeriod;
         [ObservableProperty]
-        public decimal _savingsToDate;
+        public decimal  savingsToDate;
         [ObservableProperty]
-        public decimal _billsToDate;
+        public decimal  billsToDate;
         [ObservableProperty]
-        public decimal _incomeToDate;
+        public decimal  incomeToDate;
         [ObservableProperty]
-        public decimal _spendToDate;
+        public decimal  spendToDate;
         [ObservableProperty]
-        public decimal? _startLtSDailyAmount;
+        public decimal?  startLtSDailyAmount;
         [ObservableProperty]
-        public decimal? _startLtSPeiordAmount;
+        public decimal?  startLtSPeiordAmount;
         [ObservableProperty]
-        public decimal? _startBBPeiordAmount;
+        public decimal?  startBBPeiordAmount;
         [ObservableProperty]
-        public decimal? _startMaBPeiordAmount;
+        public decimal?  startMaBPeiordAmount;
         [ObservableProperty]
-        public decimal? _endLtSDailyAmount;
+        public decimal?  endLtSDailyAmount;
         [ObservableProperty]
-        public decimal? _endLtSPeiordAmount;
+        public decimal?  endLtSPeiordAmount;
         [ObservableProperty]
-        public decimal? _endBBPeiordAmount;
+        public decimal?  endBBPeiordAmount;
         [ObservableProperty]
-        public decimal? _endMaBPeiordAmount;
+        public decimal?  endMaBPeiordAmount;
 
     }
 }

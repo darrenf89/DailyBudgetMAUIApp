@@ -1,21 +1,22 @@
-﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class OTP : ObservableObject
     {
         [ObservableProperty]
-        public int _oTPID;
+        public int  oTPID;
         [ObservableProperty]
-        public string _oTPCode;
+        public string  oTPCode;
         [ObservableProperty]
-        public DateTime _oTPExpiryTime;
+        public DateTime  oTPExpiryTime;
         [ObservableProperty]
-        public int _userAccountID;
+        public int  userAccountID;
         [ObservableProperty]
-        public bool _isValidated;
+        public bool  isValidated;
         [ObservableProperty]
-        public string _oTPType;
+        public string  oTPType;
     }
 
 }

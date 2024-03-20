@@ -1,6 +1,6 @@
 using CommunityToolkit.Maui.Views;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
@@ -24,31 +24,31 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ObservableProperty]
-        private string _email;
+        private string  email;
         [ObservableProperty]
-        private string _password;
+        private string  password;
         [ObservableProperty]
-        private string _passwordConfirm;
+        private string  passwordConfirm;
         [ObservableProperty]
-        private string _nickName;
+        private string  nickName;
         [ObservableProperty]
-        private bool _isDPAPermissions;
+        private bool  isDPAPermissions;
         [ObservableProperty]
-        private bool _isAgreedToTerms;
+        private bool  isAgreedToTerms;
         [ObservableProperty]
-        private bool _emailValid;
+        private bool  emailValid;
         [ObservableProperty]
-        private bool _emailRequired;
+        private bool  emailRequired;
         [ObservableProperty]
-        private bool _nickNameRequired;
+        private bool  nickNameRequired;
         [ObservableProperty]
-        private bool _passwordRequired;
+        private bool  passwordRequired;
         [ObservableProperty]
-        private bool _passwordSameSame;
+        private bool  passwordSameSame;
         [ObservableProperty]
-        private bool _passwordStrong;
+        private bool  passwordStrong;
         [ObservableProperty]
-        private bool _registerSuccess;
+        private bool  registerSuccess;
 
         public bool PageIsValid()
         {
@@ -85,7 +85,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             RegisterSuccess = false;
         }
 
-        [ICommand]    
+        [RelayCommand]    
         async void SignUp()
         {
             await ResetSuccessFailureMessage();
@@ -207,7 +207,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        [ICommand]
+        [RelayCommand]
         async void NavigateSignIn()
         {
             await Shell.Current.GoToAsync($"../{nameof(LogonPage)}");

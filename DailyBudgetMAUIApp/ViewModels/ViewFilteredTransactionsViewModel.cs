@@ -1,7 +1,6 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -13,21 +12,21 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private FilterModel _filters;
+        private FilterModel  filters;
         [ObservableProperty]
-        private ObservableCollection<Transactions> _transactions = new ObservableCollection<Transactions>();
+        private ObservableCollection<Transactions>  transactions = new ObservableCollection<Transactions>();
         [ObservableProperty]
-        private Budgets _budget;
+        private Budgets  budget;
         [ObservableProperty]
-        private double _sFListHeight;
+        private double  sFListHeight;
         [ObservableProperty]
-        private double _screenWidth;
+        private double  screenWidth;
         [ObservableProperty]
-        private double _screenHeight;
+        private double  screenHeight;
         [ObservableProperty]
-        private string _totalSpendTypeHeader;
+        private string  totalSpendTypeHeader;
         [ObservableProperty]
-        private decimal _totalSpend;
+        private decimal  totalSpend;
 
         public ViewFilteredTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {

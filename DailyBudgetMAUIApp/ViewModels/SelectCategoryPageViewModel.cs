@@ -1,7 +1,6 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DailyBudgetMAUIApp.Models;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -12,23 +11,23 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int _budgetID;
+        private int  budgetID;
         [ObservableProperty]
-        private Transactions _transaction;
+        private Transactions  transaction;
         [ObservableProperty]
-        private bool _payeeDoesntExists;
+        private bool  payeeDoesntExists;
         [ObservableProperty]
-        private List<Categories>? _categoryList = new List<Categories>();
+        private List<Categories>?  categoryList = new List<Categories>();
         [ObservableProperty]
-        private List<Categories>? _subCategoryList = new List<Categories>();
+        private List<Categories>?  subCategoryList = new List<Categories>();
         [ObservableProperty]
-        private List<Categories>? _groupCategoryList = new List<Categories>();
+        private List<Categories>?  groupCategoryList = new List<Categories>();
         [ObservableProperty]
-        private string _noCategoriesText = "You have not set up any Categories go ahead and do that!";
+        private string  noCategoriesText = "You have not set up any Categories go ahead and do that!";
         [ObservableProperty]
-        private bool _isFilterShown = false;
+        private bool  isFilterShown = false;
         [ObservableProperty]
-        private double _sortFilterHeight = 326;
+        private double  sortFilterHeight = 326;
 
 
 

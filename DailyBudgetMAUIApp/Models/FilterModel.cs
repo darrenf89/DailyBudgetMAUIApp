@@ -1,27 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class FilterModel : ObservableObject
     {
         [ObservableProperty]
-        public DateFilter? _dateFilter;
+        public DateFilter?  dateFilter;
         [ObservableProperty]
-        public List<string>? _transactionEventTypeFilter;
+        public List<string>?  transactionEventTypeFilter;
         [ObservableProperty]
-        public List<string>? _payeeFilter;
+        public List<string>?  payeeFilter;
         [ObservableProperty]
-        public List<int>? _categoryFilter;
+        public List<int>?  categoryFilter;
         [ObservableProperty]
-        public List<int>? _savingFilter;
+        public List<int>?  savingFilter;
     }
 
     public partial class DateFilter : ObservableObject
     {
         [ObservableProperty]
-        public DateTime? _dateFrom;
+        public DateTime?  dateFrom;
         [ObservableProperty]
-        public DateTime? _dateTo;
+        public DateTime?  dateTo;
     }
 }

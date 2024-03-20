@@ -1,9 +1,6 @@
-﻿using DailyBudgetMAUIApp.Pages;
+﻿using CommunityToolkit.Mvvm.Input;
+using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Popups;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using System.ComponentModel;
-using System.Reflection;
 
 namespace DailyBudgetMAUIApp;
 
@@ -45,7 +42,7 @@ public partial class AppShell : Shell
         this.BindingContext = this;
     }
 
-    [ICommand]
+    [RelayCommand]
     async void Logout()
     {
         if (Preferences.ContainsKey(nameof(App.UserDetails)))

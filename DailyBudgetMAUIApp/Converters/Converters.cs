@@ -873,7 +873,7 @@ namespace DailyBudgetMAUIApp.Converters
             Transactions T = (Transactions)value;
             string TString = "";
 
-            if(T._isIncome)
+            if(T.IsIncome)
             {
                 TString = "+ ";
             }

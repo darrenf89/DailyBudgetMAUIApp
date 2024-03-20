@@ -3,8 +3,8 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
 using System.Globalization;
 
@@ -21,19 +21,19 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int _budgetID;
+        private int  budgetID;
         [ObservableProperty]
-        private int _savingID;
+        private int  savingID;
         [ObservableProperty]
-        private Savings _saving;
+        private Savings  saving;
         [ObservableProperty]
-        private bool _isPageValid;
+        private bool  isPageValid;
         [ObservableProperty]
-        private DateTime _minimumDate = DateTime.UtcNow.Date.AddDays(1);
+        private DateTime  minimumDate = DateTime.UtcNow.Date.AddDays(1);
         [ObservableProperty]
-        private string _savingType;
+        private string  savingType;
         [ObservableProperty]
-        private string _navigatedFrom;
+        private string  navigatedFrom;
 
         public string SavingTypeText { get; set; } = "";
         public string SavingRecurringText { get; set; } = "";
@@ -121,7 +121,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        [ICommand]
+        [RelayCommand]
         public async void BackButton()
         {
             if (NavigatedFrom == "CreateNewBudget")
@@ -224,7 +224,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        [ICommand]
+        [RelayCommand]
         public async void ChangeSavingsName()
         {
             try

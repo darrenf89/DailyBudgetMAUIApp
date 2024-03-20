@@ -1,7 +1,6 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -12,19 +11,19 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int _budgetID;
+        private int  budgetID;
         [ObservableProperty]
-        private Transactions _transaction;
+        private Transactions  transaction;
         [ObservableProperty]
-        private List<Savings>? _envelopeSavingList = new List<Savings>();
+        private List<Savings>?  envelopeSavingList = new List<Savings>();
         [ObservableProperty]
-        private List<Savings>? _envelopeFilteredSavingList = new List<Savings>();
+        private List<Savings>?  envelopeFilteredSavingList = new List<Savings>();
         [ObservableProperty]
-        private string _noEnvelopeSavingText = "You have not set up any Envelope Savings!";
+        private string  noEnvelopeSavingText = "You have not set up any Envelope Savings!";
         [ObservableProperty]
-        private bool _isFilterShown = false;
+        private bool  isFilterShown = false;
         [ObservableProperty]
-        private double _sortFilterHeight = 236.190476190476;
+        private double  sortFilterHeight = 236.190476190476;
 
 
 

@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 
 
 namespace DailyBudgetMAUIApp.Models
@@ -7,37 +7,37 @@ namespace DailyBudgetMAUIApp.Models
     public partial class Savings : ObservableObject
     {
         [ObservableProperty]
-        private int _savingID;
+        private int  savingID;
         [ObservableProperty]
-        private string? _savingsType;
+        private string?  savingsType;
         [ObservableProperty]
-        private string? _savingsName;
+        private string?  savingsName;
         [ObservableProperty]
-        private decimal? _currentBalance  = 0;
+        private decimal?  currentBalance  = 0;
         [ObservableProperty]
-        private DateTime _lastUpdatedDate = DateTime.UtcNow;
+        private DateTime  lastUpdatedDate = DateTime.UtcNow;
         [ObservableProperty]
-        private DateTime? _goalDate = null;
+        private DateTime?  goalDate = null;
         [ObservableProperty]
-        private decimal? _lastUpdatedValue;
+        private decimal?  lastUpdatedValue;
         [ObservableProperty]
-        private bool _isSavingsClosed = false;
+        private bool  isSavingsClosed = false;
         [ObservableProperty]
-        private decimal? _savingsGoal = 0;
+        private decimal?  savingsGoal = 0;
         [ObservableProperty]
-        private bool _canExceedGoal;
+        private bool  canExceedGoal;
         [ObservableProperty]
-        private bool _isDailySaving;
+        private bool  isDailySaving;
         [ObservableProperty]
-        private bool _isRegularSaving;
+        private bool  isRegularSaving;
         [ObservableProperty]
-        private decimal? _regularSavingValue;
+        private decimal?  regularSavingValue;
         [ObservableProperty]
-        private decimal? _periodSavingValue;
+        private decimal?  periodSavingValue;
         [ObservableProperty]
-        private bool _isAutoComplete;
+        private bool  isAutoComplete;
         [ObservableProperty]
-        private string _ddlSavingsPeriod;
+        private string  ddlSavingsPeriod;
 
     }
 }

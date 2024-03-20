@@ -1,7 +1,4 @@
 using CommunityToolkit.Maui.Views;
-using System.ComponentModel;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;

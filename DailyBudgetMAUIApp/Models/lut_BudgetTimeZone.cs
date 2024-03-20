@@ -1,4 +1,5 @@
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+
 
 namespace DailyBudgetMAUIApp.Models
 {
@@ -6,13 +7,13 @@ namespace DailyBudgetMAUIApp.Models
     {
 
         [ObservableProperty]
-        public int _timeZoneID;
+        public int  timeZoneID;
         [ObservableProperty]
-        public string _timeZoneName;
+        public string  timeZoneName;
         [ObservableProperty]
-        public int _timeZoneUTCOffset;
+        public int  timeZoneUTCOffset;
         [ObservableProperty]
-        public string _timeZoneDisplayName;
+        public string  timeZoneDisplayName;
 
     }
 }

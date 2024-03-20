@@ -1,7 +1,7 @@
 ﻿using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -17,7 +17,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
-        [ICommand]
+        [RelayCommand]
         async void GoToLandingPage()
         {
             await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");

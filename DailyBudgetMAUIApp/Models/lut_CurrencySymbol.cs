@@ -1,4 +1,4 @@
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 
 namespace DailyBudgetMAUIApp.Models
@@ -6,12 +6,12 @@ namespace DailyBudgetMAUIApp.Models
     public partial class lut_CurrencySymbol : ObservableObject
     {
         [ObservableProperty]
-        public int _id;
+        public int  id;
         [ObservableProperty]        
-        public string _currencySymbol = "";
+        public string  currencySymbol = "";
         [ObservableProperty]
-        public string _name = "";
+        public string  name = "";
         [ObservableProperty]
-        public string _code = "";
+        public string  code = "";
     }
 }

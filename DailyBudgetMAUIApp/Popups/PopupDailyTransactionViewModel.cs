@@ -1,12 +1,5 @@
-using CommunityToolkit.Maui.Views;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
-using Newtonsoft.Json;
-using System.Diagnostics;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -25,7 +18,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public DateTime OriginalDate { get; set; }
 
         [ObservableProperty]
-        public Transactions _transaction;
+        public Transactions transaction;
 
         public PopupDailyTransactionViewModel()
         {

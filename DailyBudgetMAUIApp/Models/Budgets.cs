@@ -1,4 +1,4 @@
-﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Globalization;
 
 
@@ -7,77 +7,77 @@ namespace DailyBudgetMAUIApp.Models
     public partial class Budgets : ObservableObject
     {
         [ObservableProperty]
-        private int _budgetID;
+        private int  budgetID;
         [ObservableProperty]
-        private string? _budgetName;
+        private string?  budgetName;
         [ObservableProperty]
-        private DateTime _budgetCreatedOn = DateTime.UtcNow;
+        private DateTime  budgetCreatedOn = DateTime.UtcNow;
         [ObservableProperty]
-        private decimal? _bankBalance ;
+        private decimal?  bankBalance ;
         [ObservableProperty]
-        private decimal? _moneyAvailableBalance ;
+        private decimal?  moneyAvailableBalance ;
         [ObservableProperty]
-        private decimal? _leftToSpendBalance ;
+        private decimal?  leftToSpendBalance ;
         [ObservableProperty]
-        private DateTime? _nextIncomePayday ;
+        private DateTime?  nextIncomePayday ;
         [ObservableProperty]
-        private DateTime? _nextIncomePaydayCalculated ;
+        private DateTime?  nextIncomePaydayCalculated ;
         [ObservableProperty]
-        private decimal? _paydayAmount ;
+        private decimal?  paydayAmount ;
         [ObservableProperty]
-        private string? _paydayType ;
+        private string?  paydayType ;
         [ObservableProperty]
-        private int? _paydayValue ;
+        private int?  paydayValue ;
         [ObservableProperty]
-        private string? _paydayDuration ;
+        private string?  paydayDuration ;
         [ObservableProperty]
-        private bool _isCreated ;
+        private bool  isCreated ;
         [ObservableProperty]
-        private DateTime _lastUpdated ;
+        private DateTime  lastUpdated ;
         [ObservableProperty]
-        private List<IncomeEvents> _incomeEvents  = new List<IncomeEvents>();
+        private List<IncomeEvents>  incomeEvents  = new List<IncomeEvents>();
         [ObservableProperty]
-        private List<Savings> _savings  = new List<Savings>();
+        private List<Savings>  savings  = new List<Savings>();
         [ObservableProperty]
-        private List<Transactions> _transactions  = new List<Transactions>();
+        private List<Transactions>  transactions  = new List<Transactions>();
         [ObservableProperty]
-        private List<Categories> _categories  = new List<Categories>();
+        private List<Categories>  categories  = new List<Categories>();
         [ObservableProperty]
-        private List<Bills> _bills  = new List<Bills>();
+        private List<Bills>  bills  = new List<Bills>();
         [ObservableProperty]
-        private List<PayPeriodStats> _payPeriodStats  = new List<PayPeriodStats>();
+        private List<PayPeriodStats>  payPeriodStats  = new List<PayPeriodStats>();
         [ObservableProperty]
-        private List<BudgetHstoryLastPeriod> _budgetHistory  = new List<BudgetHstoryLastPeriod>();
+        private List<BudgetHstoryLastPeriod>  budgetHistory  = new List<BudgetHstoryLastPeriod>();
         [ObservableProperty]
-        private string? _currencyType ;
+        private string?  currencyType ;
         [ObservableProperty]
-        private int? _aproxDaysBetweenPay  = 30;
+        private int?  aproxDaysBetweenPay  = 30;
         [ObservableProperty]
-        private DateTime _budgetValuesLastUpdated  = DateTime.UtcNow;
+        private DateTime  budgetValuesLastUpdated  = DateTime.UtcNow;
         [ObservableProperty]
-        private decimal _dailySavingOutgoing ;
+        private decimal  dailySavingOutgoing ;
         [ObservableProperty]
-        private decimal _dailyBillOutgoing ;
+        private decimal  dailyBillOutgoing ;
         [ObservableProperty]
-        private decimal _leftToSpendDailyAmount ;
+        private decimal  leftToSpendDailyAmount ;
         [ObservableProperty]
-        private decimal? _startDayDailyAmount ;
+        private decimal?  startDayDailyAmount ;
         [ObservableProperty]
-        private ErrorClass? _error  = null;
+        private ErrorClass?  error  = null;
         [ObservableProperty]
-        private int _stage = 1;
+        private int  stage = 1;
         [ObservableProperty]
-        private int _sharedUserID = 0;
+        private int  sharedUserID = 0;
         [ObservableProperty]
-        private bool _isSharedValidated;
+        private bool  isSharedValidated;
         [ObservableProperty]
-        private string _budgetType = "Basic";
+        private string  budgetType = "Basic";
         [ObservableProperty]
-        private AccountInfo _accountInfo = new AccountInfo();
+        private AccountInfo  accountInfo = new AccountInfo();
         [ObservableProperty]
-        private bool _isBorrowPay = true;
+        private bool  isBorrowPay = true;
         [ObservableProperty]
-        private decimal _currentActiveIncome = 0;
+        private decimal  currentActiveIncome = 0;
     }
 
     public class AccountInfo
@@ -97,21 +97,21 @@ namespace DailyBudgetMAUIApp.Models
     public partial class EnvelopeStats : ObservableObject
     {
         [ObservableProperty]
-        private int _numberOfEnvelopes;
+        private int  numberOfEnvelopes;
         [ObservableProperty]
-        private string _envelopeTotalString;
+        private string  envelopeTotalString;
         [ObservableProperty]
-        private string _envelopeCurrentString;
+        private string  envelopeCurrentString;
         [ObservableProperty]
-        private string _amountPerDayString;
+        private string  amountPerDayString;
         [ObservableProperty]
-        private decimal _envelopeTotal;
+        private decimal  envelopeTotal;
         [ObservableProperty]
-        private decimal _envelopeCurrent;
+        private decimal  envelopeCurrent;
         [ObservableProperty]
-        private decimal _amountPerDay;
+        private decimal  amountPerDay;
         [ObservableProperty]
-        private int _daysLeftToSpend;
+        private int  daysLeftToSpend;
 
         public EnvelopeStats(List<Savings> Savings)
         {

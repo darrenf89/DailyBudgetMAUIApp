@@ -1,45 +1,44 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class Transactions : ObservableObject
     {
         [ObservableProperty]
-        public int _transactionID;
+        public int  transactionID;
         [ObservableProperty]
-        public bool _isSpendFromSavings;
+        public bool  isSpendFromSavings;
         [ObservableProperty]
-        public int? _savingID;
+        public int?  savingID;
         [ObservableProperty]
-        public string? _savingName;
+        public string?  savingName;
         [ObservableProperty]
-        public DateTime? _transactionDate;
+        public DateTime?  transactionDate;
         [ObservableProperty]
-        public DateTime? _whenAdded  = DateTime.UtcNow;
+        public DateTime?  whenAdded  = DateTime.UtcNow;
         [ObservableProperty]
-        public bool _isIncome;
+        public bool  isIncome;
         [ObservableProperty]
-        public decimal? _transactionAmount;
+        public decimal?  transactionAmount;
         [ObservableProperty]
-        public string? _category;
+        public string?  category;
         [ObservableProperty]
-        public string? _payee;
+        public string?  payee;
         [ObservableProperty]
-        public string? _notes;
+        public string?  notes;
         [ObservableProperty]
-        public int? _categoryID;
+        public int?  categoryID;
         [ObservableProperty]
-        public bool _isTransacted;
+        public bool  isTransacted;
         [ObservableProperty]
-        public string? _savingsSpendType;
+        public string?  savingsSpendType;
         [ObservableProperty]
-        public string _stage;
+        public string  stage;
         [ObservableProperty]
-        public string _eventType;
+        public string  eventType;
         [ObservableProperty]
-        public decimal? _runningTotal;
+        public decimal?  runningTotal;
         [ObservableProperty]
-        public bool _isVisible;
+        public bool  isVisible;
     }
 }

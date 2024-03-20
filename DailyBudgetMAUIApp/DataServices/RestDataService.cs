@@ -760,11 +760,12 @@ namespace DailyBudgetMAUIApp.DataServices
                         using (JsonReader reader = new JsonTextReader(sr))
                         {
                             Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
                             DateFormats = serializer.Deserialize<List<lut_DateFormat>>(reader);
+                            
                         }
 
                         return DateFormats;
+
                     }
                     else
                     {
@@ -810,11 +811,10 @@ namespace DailyBudgetMAUIApp.DataServices
                         using (JsonReader reader = new JsonTextReader(sr))
                         {
                             Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
                             DateFormat = serializer.Deserialize<lut_DateFormat>(reader);
-                        }
+                            return DateFormat;
+                        }                        
 
-                        return DateFormat;
                     }
                     else
                     {
@@ -934,6 +934,102 @@ namespace DailyBudgetMAUIApp.DataServices
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to get get number format by id in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<lut_ShortDatePattern> GetShortDatePatternById(int ShortDatePatternID)
+        {
+            lut_ShortDatePattern ShaortDatePattern = new lut_ShortDatePattern();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getshortdatepatternbyid/{ShortDatePatternID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            ShaortDatePattern = serializer.Deserialize<lut_ShortDatePattern>(reader);
+                        }
+
+                        return ShaortDatePattern;
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "GetShortDatePatternById", "GetShortDatePatternById");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetShortDatePatternById", "GetShortDatePatternById");
+                return null;
+            }
+        }
+
+        public async Task<lut_DateSeperator> GetDateSeperatorById(int DateSeperatorID)
+        {
+            lut_DateSeperator DateSeperator = new lut_DateSeperator();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getdateseperatorbyid/{DateSeperatorID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            DateSeperator = serializer.Deserialize<lut_DateSeperator>(reader);
+                        }
+
+                        return DateSeperator;
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "GetDateSeperatorById", "GetDateSeperatorById");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetDateSeperatorById", "GetDateSeperatorById");
+                return null;
             }
         }
 
@@ -3778,5 +3874,6 @@ namespace DailyBudgetMAUIApp.DataServices
                 return null;
             }
         }
+
     }
 }

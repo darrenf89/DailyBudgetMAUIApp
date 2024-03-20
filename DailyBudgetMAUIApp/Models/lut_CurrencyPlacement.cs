@@ -1,14 +1,15 @@
-﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class lut_CurrencyPlacement : ObservableObject
     {
         [ObservableProperty]
-        public int _id;
+        public int  id;
         [ObservableProperty]
-        public string _currencyPlacement = "";
+        public string  currencyPlacement = "";
         [ObservableProperty]
-        public int _currencyPositivePatternRef  = 0;
+        public int  currencyPositivePatternRef  = 0;
     }
 }

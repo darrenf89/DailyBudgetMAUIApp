@@ -1,33 +1,32 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class IncomeEvents : ObservableObject
     {
         [ObservableProperty]
-        private int _incomeEventID;
+        private int  incomeEventID;
         [ObservableProperty]
-        private decimal _incomeAmount;
+        private decimal  incomeAmount;
         [ObservableProperty]
-        private string _incomeName  = "";
+        private string  incomeName  = "";
         [ObservableProperty]
-        private DateTime _incomeActiveDate  = DateTime.UtcNow;
+        private DateTime  incomeActiveDate  = DateTime.UtcNow;
         [ObservableProperty]
-        private DateTime _dateOfIncomeEvent  = DateTime.UtcNow;
+        private DateTime  dateOfIncomeEvent  = DateTime.UtcNow;
         [ObservableProperty]
-        private bool _isRecurringIncome;
+        private bool  isRecurringIncome;
         [ObservableProperty]
-        private string? _recurringIncomeType;
+        private string?  recurringIncomeType;
         [ObservableProperty]
-        private int? _recurringIncomeValue;
+        private int?  recurringIncomeValue;
         [ObservableProperty]
-        private string? _recurringIncomeDuration;
+        private string?  recurringIncomeDuration;
         [ObservableProperty]
-        private bool _isClosed;
+        private bool  isClosed;
         [ObservableProperty]
-        private bool? _isInstantActive;
+        private bool?  isInstantActive;
         [ObservableProperty]
-        private bool? _isIncomeAddedToBalance  = false;
+        private bool?  isIncomeAddedToBalance  = false;
     }
 }

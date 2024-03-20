@@ -3,8 +3,8 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
 using System.Globalization;
 
@@ -20,21 +20,21 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int _budgetID;
+        private int  budgetID;
         [ObservableProperty]
-        private int _billID;
+        private int  billID;
         [ObservableProperty]
-        private Bills _bill;
+        private Bills  bill;
         [ObservableProperty]
-        private bool _isPageValid;
+        private bool  isPageValid;
         [ObservableProperty]
-        private DateTime _minimumDate = DateTime.UtcNow.Date.AddDays(1);
+        private DateTime  minimumDate = DateTime.UtcNow.Date.AddDays(1);
         [ObservableProperty]
-        private string _navigatedFrom;
+        private string  navigatedFrom;
         [ObservableProperty]
-        private string _billName;
+        private string  billName;
         [ObservableProperty]
-        private string _billPayee;
+        private string  billPayee;
 
 
         public string BillTypeText { get; set; } = "";
@@ -148,7 +148,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        [ICommand]
+        [RelayCommand]
         public async void BackButton()
         {
             Bill.BillName = "";
@@ -181,7 +181,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        [ICommand]
+        [RelayCommand]
         public async void ChangeBillName()
         {
             try

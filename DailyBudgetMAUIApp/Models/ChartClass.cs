@@ -1,30 +1,30 @@
-﻿
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class ChartClass : ObservableObject
     {
         [ObservableProperty]
-        private double _xAxesDouble;
+        private double  xAxesDouble;
         [ObservableProperty]
-        private decimal _xAxesDecimal;
+        private decimal  xAxesDecimal;
         [ObservableProperty]
-        private string _xAxesString;
+        private string  xAxesString;
         [ObservableProperty]
-        private DateTime _xAxesDate;
+        private DateTime  xAxesDate;
         [ObservableProperty]
-        private int _xAxesInt;
+        private int  xAxesInt;
         [ObservableProperty]
-        private double _yAxesDouble;
+        private double  yAxesDouble;
         [ObservableProperty]
-        private string _yAxesString;
+        private string  yAxesString;
         [ObservableProperty]
-        private DateTime _yAxesDate;
+        private DateTime  yAxesDate;
         [ObservableProperty]
-        private int _yAxesInt;
+        private int  yAxesInt;
         [ObservableProperty]
-        private decimal _yAxesDecimal;
+        private decimal  yAxesDecimal;
     }
 
 }

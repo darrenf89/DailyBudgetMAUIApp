@@ -1,6 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 
 
 namespace DailyBudgetMAUIApp.Models
@@ -8,25 +7,25 @@ namespace DailyBudgetMAUIApp.Models
     public partial class BudgetSettings : ObservableObject
     {
         [ObservableProperty]
-        public int _settingsID; 
+        public int settingsID; 
         [ObservableProperty]
-        public int? _budgetID; 
+        public int? budgetID; 
         [ObservableProperty]
-        public int? _currencyPattern  = 1;
+        public int? currencyPattern  = 1;
         [ObservableProperty]
-        public int? _currencySymbol  = 1;
+        public int? currencySymbol  = 1;
         [ObservableProperty]
-        public int? _currencyDecimalDigits  = 2;
+        public int? currencyDecimalDigits  = 2;
         [ObservableProperty]
-        public int? _currencyDecimalSeparator  = 1;
+        public int? currencyDecimalSeparator  = 1;
         [ObservableProperty]
-        public int? _currencyGroupSeparator  = 2;
+        public int? currencyGroupSeparator  = 2;
         [ObservableProperty]
-        public int? _dateSeperator  = 1;
+        public int? dateSeperator  = 1;
         [ObservableProperty]       
-        public int? _shortDatePattern  = 2;
+        public int? shortDatePattern  = 2;
         [ObservableProperty]
-        public int? _timeZone = 47;
+        public int? timeZone = 47;
 
     }
 }

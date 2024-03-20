@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
 using System.Diagnostics;
 using System.Globalization;
 
@@ -16,35 +16,35 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private List<lut_CurrencySymbol> _currencySearchResults;
+        private List<lut_CurrencySymbol> currencySearchResults;
         [ObservableProperty]
-        private lut_CurrencySymbol _selectedCurrencySymbol;
+        private lut_CurrencySymbol selectedCurrencySymbol;
         [ObservableProperty]
-        private bool _searchVisible = false;
+        private bool searchVisible = false;
         [ObservableProperty]
-        private List<lut_CurrencyPlacement> _currencyPlacements;
+        private List<lut_CurrencyPlacement> currencyPlacements;
         [ObservableProperty]
-        private lut_CurrencyPlacement _selectedCurrencyPlacement;
+        private lut_CurrencyPlacement selectedCurrencyPlacement;
         [ObservableProperty]
-        private List<lut_DateFormat> _dateFormats;
+        private List<lut_DateFormat> dateFormats;
         [ObservableProperty]
-        private List<lut_BudgetTimeZone> _timeZones;
+        private List<lut_BudgetTimeZone> timeZones;
         [ObservableProperty]
-        private lut_DateFormat _selectedDateFormats;
+        private lut_DateFormat selectedDateFormats;
         [ObservableProperty]
-        private List<lut_NumberFormat> _numberFormats;
+        private List<lut_NumberFormat> numberFormats;
         [ObservableProperty]
-        private lut_NumberFormat _selectedNumberFormats;
+        private lut_NumberFormat selectedNumberFormats;
         [ObservableProperty]
-        private lut_BudgetTimeZone _selectedTimeZone;
+        private lut_BudgetTimeZone selectedTimeZone;
         [ObservableProperty]
-        private bool _isBorrowPay;
+        private bool isBorrowPay;
         [ObservableProperty]
-        private BudgetSettings _budgetSettings;
+        private BudgetSettings budgetSettings;
         [ObservableProperty]
-        private string _currentTime;
+        private string currentTime;
         [ObservableProperty]
-        private CultureInfo _timeCultureInfo;
+        private CultureInfo timeCultureInfo = new CultureInfo("en-gb");
 
         public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -68,13 +68,18 @@ namespace DailyBudgetMAUIApp.ViewModels
             SelectedNumberFormats = _ds.GetNumberFormatsById(BudgetSettings.CurrencyDecimalDigits ?? 2, BudgetSettings.CurrencyDecimalSeparator ?? 2, BudgetSettings.CurrencyGroupSeparator ?? 1).Result;
             SelectedTimeZone = _ds.GetTimeZoneById(BudgetSettings.TimeZone.GetValueOrDefault()).Result;
 
-            TimeCultureInfo.DateTimeFormat.ShortDatePattern = await _ds.GetShortDatePatternById(SelectedDateFormats.ShortDatePatternID);
-            TimeCultureInfo.DateTimeFormat.DateSeparator = await _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID);
+            TimeCultureInfo.DateTimeFormat.ShortDatePattern = _ds.GetShortDatePatternById(SelectedDateFormats.ShortDatePatternID).Result.ShortDatePattern;
+            TimeCultureInfo.DateTimeFormat.DateSeparator = _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID).Result.DateSeperator;
 
         }
 
         partial void OnSelectedDateFormatsChanged(lut_DateFormat value)
         {
+            if(SelectedDateFormats != null)
+            {
+                TimeCultureInfo.DateTimeFormat.ShortDatePattern = SelectedDateFormats.DateFormat;
+                TimeCultureInfo.DateTimeFormat.LongDatePattern = SelectedDateFormats.DateFormat + "HH:mm:ss";
+            }
 
         }
         
@@ -84,7 +89,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             CurrencySearchResults = _ds.GetCurrencySymbols("").Result;
         }
 
-        [ICommand]
+        [RelayCommand]
         async void CurrencySearch(string query)
         {
             try
@@ -96,7 +101,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 if (ex.Message == "One or more errors occurred. (No currencies found)")
                 {
                     lut_CurrencySymbol cs = new lut_CurrencySymbol();
-                    cs._code = "No results please, try again!";
+                    cs.Code = "No results please, try again!";
                     CurrencySearchResults.Clear();
                     CurrencySearchResults.Add(cs);
                 }
@@ -113,7 +118,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        [ICommand]
+        [RelayCommand]
         private void CurrencySymbolSelected(lut_CurrencySymbol item)
         {
             SelectedCurrencySymbol = item;
@@ -121,7 +126,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             CurrencySearchResults = null;
         }
 
-        [ICommand]
+        [RelayCommand]
         private async void CloseSettings(object obj)
         {
             if (App.CurrentPopUp == null)

@@ -1,12 +1,6 @@
-﻿using CommunityToolkit.Maui.Views;
-using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
-using DailyBudgetMAUIApp.Models;
+﻿using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.Pages;
-using DailySpendWebApp.Models;
-using Microsoft.Toolkit.Mvvm.Input;
-using Newtonsoft.Json;
-using System.Diagnostics;
+
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -18,13 +12,13 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
-        [ICommand]
+        [RelayCommand]
         async void Logon()
         {
             await Shell.Current.GoToAsync(nameof(LogonPage));
         }
 
-        [ICommand]
+        [RelayCommand]
         async void Register()
         {
             await Shell.Current.GoToAsync(nameof(RegisterPage));

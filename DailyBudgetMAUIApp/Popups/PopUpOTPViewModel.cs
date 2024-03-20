@@ -1,66 +1,60 @@
-using CommunityToolkit.Maui.Views;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
-using Newtonsoft.Json;
-using System.Diagnostics;
-
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
     public partial class PopUpOTPViewModel : BaseViewModel
     {
         [ObservableProperty]
-        public int _userID;
+        public int  userID;
         [ObservableProperty]
-        public string _oTPType;
+        public string  oTPType;
         [ObservableProperty]
-        public string _returnData;
+        public string  returnData;
         [ObservableProperty]
-        public string _userEmail;
+        public string  userEmail;
         [ObservableProperty]
-        public OTP _oTP;
+        public OTP  oTP;
         [ObservableProperty]
-        private bool _emailValid;
+        private bool  emailValid;
         [ObservableProperty]
-        private bool _emailRequired;
+        private bool  emailRequired;
         [ObservableProperty]
-        private bool _oTPNotFound;
+        private bool  oTPNotFound;
         [ObservableProperty]
-        private bool _oTPRequired;
+        private bool  oTPRequired;
         [ObservableProperty]
-        private bool _emailNotFound;
+        private bool  emailNotFound;
         [ObservableProperty]
-        private bool _oTPValidated;
+        private bool  oTPValidated;
         [ObservableProperty]
-        private int _countdownNumber = 120;
+        private int  countdownNumber = 120;
         [ObservableProperty]
-        private bool _countdownVisible = false;
+        private bool  countdownVisible = false;
         [ObservableProperty]
-        private bool _resendVisible = true;
+        private bool  resendVisible = true;
         [ObservableProperty]
-        private bool _resendSuccess;
+        private bool  resendSuccess;
         [ObservableProperty]
-        private bool _maxLimitFailure;
+        private bool  maxLimitFailure;
         [ObservableProperty]
-        private bool _resendFailure;
+        private bool  resendFailure;
         [ObservableProperty]
-        private bool _passwordRequired;
+        private bool  passwordRequired;
         [ObservableProperty]
-        private bool _passwordSameSame;
+        private bool  passwordSameSame;
         [ObservableProperty]
-        private bool _passwordStrong;
+        private bool  passwordStrong;
         [ObservableProperty]
-        private string _password;
+        private string  password;
         [ObservableProperty]
-        private string _passwordConfirm;
+        private string  passwordConfirm;
         [ObservableProperty]
-        private bool _passwordResetFailure;
+        private bool  passwordResetFailure;
         [ObservableProperty]
-        private ShareBudgetRequest _shareBudgetRequest;
+        private ShareBudgetRequest  shareBudgetRequest;
 
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -82,7 +76,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
 
-        [ICommand]
+        [RelayCommand]
         public async void Resend()
         {
             

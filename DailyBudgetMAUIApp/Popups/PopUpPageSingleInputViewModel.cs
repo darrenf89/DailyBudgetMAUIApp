@@ -1,13 +1,5 @@
-using CommunityToolkit.Maui.Views;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
-using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
-using Newtonsoft.Json;
-using System.Diagnostics;
 
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -23,11 +15,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ObservableProperty]
-        private bool _returnDataRequired;
+        private bool returnDataRequired;
         [ObservableProperty]
-        private bool _isSubDesc;        
+        private bool isSubDesc;        
         [ObservableProperty]
-        private string _returnData;
+        private string returnData;
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
         public double PopupWidth { get; }

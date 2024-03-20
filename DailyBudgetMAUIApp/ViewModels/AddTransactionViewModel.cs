@@ -3,8 +3,8 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -18,23 +18,23 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int _budgetID;
+        private int  budgetID;
         [ObservableProperty]
-        private int _transactionID;
+        private int  transactionID;
         [ObservableProperty]
-        private Transactions? _transaction = null;
+        private Transactions?  transaction = null;
         [ObservableProperty]
-        private bool _isPageValid;
+        private bool  isPageValid;
         [ObservableProperty]
-        private bool _isFutureDatedTransaction;
+        private bool  isFutureDatedTransaction;
         [ObservableProperty]
-        private bool _isPayee;
+        private bool  isPayee;
         [ObservableProperty]
-        private bool _isSpendCategory;
+        private bool  isSpendCategory;
         [ObservableProperty]
-        private bool _isNote;
+        private bool  isNote;
         [ObservableProperty]
-        private string _navigatedFrom;
+        private string  navigatedFrom;
 
 
 
@@ -46,7 +46,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             Title = "Add a New Transaction";            
         }
 
-        [ICommand]
+        [RelayCommand]
         public async void BackButton()
         {
             if (NavigatedFrom == "ViewTransactions")

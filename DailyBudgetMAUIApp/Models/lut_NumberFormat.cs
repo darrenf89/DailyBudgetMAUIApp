@@ -1,4 +1,4 @@
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 
 namespace DailyBudgetMAUIApp.Models
@@ -6,14 +6,14 @@ namespace DailyBudgetMAUIApp.Models
     public partial class lut_NumberFormat : ObservableObject
     {
         [ObservableProperty]
-        public int _id;
+        public int  id;
         [ObservableProperty]
-        public int _currencyDecimalDigitsID;
+        public int  currencyDecimalDigitsID;
         [ObservableProperty]
-        public int _currencyDecimalSeparatorID;
+        public int  currencyDecimalSeparatorID;
         [ObservableProperty]
-        public int _currencyGroupSeparatorID;
+        public int  currencyGroupSeparatorID;
         [ObservableProperty]
-        public string _numberFormat = "";
+        public string  numberFormat = "";
     }
 }

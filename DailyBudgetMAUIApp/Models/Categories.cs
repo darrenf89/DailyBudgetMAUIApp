@@ -1,5 +1,5 @@
-﻿using Microsoft.Maui.Layouts;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 using DailyBudgetMAUIApp.Handlers;
 
 namespace DailyBudgetMAUIApp.Models
@@ -7,36 +7,36 @@ namespace DailyBudgetMAUIApp.Models
     public partial class Categories : ObservableObject, IIndexable
     {
         [ObservableProperty]
-        public int _categoryID;
+        public int  categoryID;
         [ObservableProperty]
-        public string? _categoryName;
+        public string?  categoryName;
         [ObservableProperty]
-        public bool _isSubCategory;
+        public bool  isSubCategory;
         [ObservableProperty]
-        public int? _categoryGroupID;
+        public int?  categoryGroupID;
         [ObservableProperty]
-        public string _categoryIcon;
+        public string  categoryIcon;
         [ObservableProperty]
-        public decimal _categorySpendAllTime;
+        public decimal  categorySpendAllTime;
         [ObservableProperty]
-        public decimal _categorySpendPayPeriod;
+        public decimal  categorySpendPayPeriod;
         [ObservableProperty]
-        public List<SpendPeriods> _categorySpendPeriods = new List<SpendPeriods>();
+        public List<SpendPeriods>  categorySpendPeriods = new List<SpendPeriods>();
         [ObservableProperty]
-        public bool _isEditMode = false;
+        public bool  isEditMode = false;
         public int Index { get; set; }
     }
 
     public partial class SpendPeriods: ObservableObject
     {
         [ObservableProperty]
-        public DateTime _fromDate;
+        public DateTime  fromDate;
         [ObservableProperty]
-        public DateTime _toDate;
+        public DateTime  toDate;
         [ObservableProperty]
-        public decimal _spendTotalAmount;
+        public decimal  spendTotalAmount;
         [ObservableProperty]
-        public bool _isCurrentPeriod;
+        public bool  isCurrentPeriod;
     }
 
     public class DefaultCategories

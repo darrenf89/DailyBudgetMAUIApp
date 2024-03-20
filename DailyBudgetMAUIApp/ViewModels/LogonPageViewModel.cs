@@ -2,11 +2,11 @@
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using System.Diagnostics;
-using CommunityToolkit.Maui.Views;
 using DailySpendWebApp.Models;
 
 
@@ -25,31 +25,31 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ObservableProperty]
-        private string _email;
+        private string  email;
 
         [ObservableProperty]
-        private string _password;
+        private string  password;
 
         [ObservableProperty]
-        private bool _rememberMe;
+        private bool  rememberMe;
 
         [ObservableProperty]
-        private bool _emailRequired;
+        private bool  emailRequired;
 
         [ObservableProperty]
-        private bool _emailValid;
+        private bool  emailValid;
 
         [ObservableProperty]
-        private bool _passwordRequired;
+        private bool  passwordRequired;
 
         [ObservableProperty]
-        private bool _emailValidatedSuccess;
+        private bool  emailValidatedSuccess;
 
         [ObservableProperty]
-        private bool _resetPasswordSuccess;
+        private bool  resetPasswordSuccess;
 
         [ObservableProperty]
-        private bool _resetPasswordFail;
+        private bool  resetPasswordFail;
 
         public bool PageIsValid()
         {
@@ -76,13 +76,13 @@ namespace DailyBudgetMAUIApp.ViewModels
             EmailValidatedSuccess = false;
         }
 
-        [ICommand]
+        [RelayCommand]
         async void NavigateRegister()
         {
             await Shell.Current.GoToAsync($"../{nameof(RegisterPage)}");
         }
 
-        [ICommand]
+        [RelayCommand]
         async void ResetPassword()
         {
             await ResetSuccessFailureMessage();
@@ -101,7 +101,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
-        [ICommand]
+        [RelayCommand]
         async void Login()
         {
             await ResetSuccessFailureMessage();

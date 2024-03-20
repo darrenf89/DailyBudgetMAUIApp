@@ -1,6 +1,6 @@
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -12,19 +12,19 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
         [ObservableProperty]
-        private ObservableCollection<Bills> _bills = new ObservableCollection<Bills>();
+        private ObservableCollection<Bills>  bills = new ObservableCollection<Bills>();
         [ObservableProperty]
-        private Budgets _budget;
+        private Budgets  budget;
         [ObservableProperty]
-        private double _screenHeight;
+        private double  screenHeight;
         [ObservableProperty]
-        private double _signOutButtonWidth;
+        private double  signOutButtonWidth;
         [ObservableProperty]
-        private decimal _totalBills;
+        private decimal  totalBills;
         [ObservableProperty]
-        private decimal _billsPerPayPeriod;
+        private decimal  billsPerPayPeriod;
         [ObservableProperty]
-        private double _minHeight;
+        private double  minHeight;
 
 
         public ViewBillsViewModel(IProductTools pt, IRestDataService ds)

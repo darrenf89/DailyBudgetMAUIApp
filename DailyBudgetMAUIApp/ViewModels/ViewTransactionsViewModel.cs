@@ -1,8 +1,8 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -12,51 +12,51 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private decimal _runningTotal;
+        private decimal  runningTotal;
         [ObservableProperty]
-        private ChartClass _payPeriodTransactions;
+        private ChartClass  payPeriodTransactions;
         [ObservableProperty]
-        private ObservableCollection<Transactions> _transactions = new ObservableCollection<Transactions>();
+        private ObservableCollection<Transactions>  transactions = new ObservableCollection<Transactions>();
         [ObservableProperty]
-        private int _currentOffset = 0;
+        private int  currentOffset = 0;
         [ObservableProperty]
-        private Budgets _budget;
+        private Budgets  budget;
         [ObservableProperty]
-        private int _maxNumberOfTransactions;
+        private int  maxNumberOfTransactions;
         [ObservableProperty]
-        private decimal _balanceAfterPending;
+        private decimal  balanceAfterPending;
         [ObservableProperty]
-        private double _chartContentHeight;
+        private double  chartContentHeight;
         [ObservableProperty]
-        private double _chartContentWidth;
+        private double  chartContentWidth;
         [ObservableProperty]
-        private double _maxChartContentHeight;
+        private double  maxChartContentHeight;
         [ObservableProperty]
-        private double _sFListHeight;
+        private double  sFListHeight;
         [ObservableProperty]
-        private double _screenWidth;
+        private double  screenWidth;
         [ObservableProperty]
-        private double _screenHeight;
+        private double  screenHeight;
         [ObservableProperty]
-        private double _zeroAmount = 0;
+        private double  zeroAmount = 0;
         [ObservableProperty]
-        private double _maxYValue = 0;
+        private double  maxYValue = 0;
         [ObservableProperty]
-        private double _yInterval = 0;
+        private double  yInterval = 0;
         [ObservableProperty]
-        private string _scrollDirection;
+        private string  scrollDirection;
         [ObservableProperty]
-        private int _scrollCount;
+        private int  scrollCount;
         [ObservableProperty]
-        private List<ChartClass> _transactionChart = new List<ChartClass>();
+        private List<ChartClass>  transactionChart = new List<ChartClass>();
         [ObservableProperty]
-        private List<ChartClass> _billChart = new List<ChartClass>();
+        private List<ChartClass>  billChart = new List<ChartClass>();
         [ObservableProperty]
-        private List<ChartClass> _savingsChart = new List<ChartClass>();
+        private List<ChartClass>  savingsChart = new List<ChartClass>();
         [ObservableProperty]
-        private List<ChartClass> _envelopeChart = new List<ChartClass>();
+        private List<ChartClass>  envelopeChart = new List<ChartClass>();
         [ObservableProperty]
-        private List<Brush> _chartBrushes = new List<Brush>();
+        private List<Brush>  chartBrushes = new List<Brush>();
 
         public ViewTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -222,7 +222,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }            
         }
 
-        [ICommand]
+        [RelayCommand]
         async void LoadMoreItems(object obj)
         {
             if(Transactions.Count() < MaxNumberOfTransactions)

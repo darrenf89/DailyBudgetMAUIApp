@@ -1,36 +1,36 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class Bills : ObservableObject
     {
         [ObservableProperty]
-        private int _billID;
+        private int  billID;
         [ObservableProperty]
-        public string? _billName;
+        public string?  billName;
         [ObservableProperty]
-        public string? _billType;
+        public string?  billType;
         [ObservableProperty]
-        public int? _billValue;
+        public int?  billValue;
         [ObservableProperty]
-        public string? _billDuration;
+        public string?  billDuration;
         [ObservableProperty]
-        public decimal? _billAmount;
+        public decimal?  billAmount;
         [ObservableProperty]
-        public DateTime? _billDueDate;
+        public DateTime?  billDueDate;
         [ObservableProperty]
-        public decimal _billCurrentBalance;
+        public decimal  billCurrentBalance;
         [ObservableProperty]
-        public bool _isRecuring;
+        public bool  isRecuring;
         [ObservableProperty]
-        public DateTime _lastUpdatedDate;
+        public DateTime  lastUpdatedDate;
         [ObservableProperty]
-        public bool _isClosed;
+        public bool  isClosed;
         [ObservableProperty]
-        public decimal? _regularBillValue;
+        public decimal?  regularBillValue;
         [ObservableProperty]
-        public string _billPayee;
+        public string  billPayee;
 
 
     }

@@ -1,7 +1,6 @@
 using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -10,33 +9,33 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class ViewCategoriesViewModel : BaseViewModel
     {
         [ObservableProperty]
-        private ObservableCollection<Categories> _categories = new ObservableCollection<Categories>();
+        private ObservableCollection<Categories>  categories = new ObservableCollection<Categories>();
         [ObservableProperty]
-        private ObservableCollection<ChartClass> _categoriesChart = new ObservableCollection<ChartClass>();
+        private ObservableCollection<ChartClass>  categoriesChart = new ObservableCollection<ChartClass>();
         [ObservableProperty]
-        private double _screenWidth;
+        private double  screenWidth;
         [ObservableProperty]
-        private double _screenHeight;
+        private double  screenHeight;
         [ObservableProperty]
-        private List<Brush> _chartBrushes = new List<Brush>();
+        private List<Brush>  chartBrushes = new List<Brush>();
         [ObservableProperty]
-        private double _chartContentHeight;
+        private double  chartContentHeight;
         [ObservableProperty]
-        private double _chartContentWidth;
+        private double  chartContentWidth;
         [ObservableProperty]
-        private double _tabContentWidth;
+        private double  tabContentWidth;
         [ObservableProperty]
-        private double _maxChartContentHeight;
+        private double  maxChartContentHeight;
         [ObservableProperty]
-        private string _chartTitle;
+        private string  chartTitle;
         [ObservableProperty]
-        private bool _chartUpdating;
+        private bool  chartUpdating;
         [ObservableProperty]
-        private bool _isPlaying;
+        private bool  isPlaying;
         [ObservableProperty]
-        private List<string> _payPeriods = new List<string>();
+        private List<string>  payPeriods = new List<string>();
         [ObservableProperty]
-        private int _selectedIndex = 1;
+        private int  selectedIndex = 1;
 
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;

@@ -1,5 +1,5 @@
-﻿using Microsoft.Maui.Layouts;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 using DailyBudgetMAUIApp.Handlers;
 
 namespace DailyBudgetMAUIApp.Models
@@ -7,15 +7,15 @@ namespace DailyBudgetMAUIApp.Models
     public partial class Payees : ObservableObject, IIndexable
     {
         [ObservableProperty]
-        public string _payee;
+        public string  payee;
         [ObservableProperty]
-        public decimal _payeeSpendAllTime;
+        public decimal  payeeSpendAllTime;
         [ObservableProperty]
-        public decimal _payeeSpendPayPeriod;
+        public decimal  payeeSpendPayPeriod;
         [ObservableProperty]
-        public List<SpendPeriods> _payeeSpendPeriods = new List<SpendPeriods>();
+        public List<SpendPeriods>  payeeSpendPeriods = new List<SpendPeriods>();
         [ObservableProperty]
-        public bool _isEditMode = false;
+        public bool  isEditMode = false;
         public int Index { get; set; }
     }
 }

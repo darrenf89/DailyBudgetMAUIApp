@@ -1,27 +1,17 @@
-﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
-using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
-using System.Globalization;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
     public partial class BaseViewModel : ObservableObject
     {
         [ObservableProperty]
-        private bool _isPageBusy = false;
+        private bool  isPageBusy = false;
 
         [ObservableProperty]
-        private bool _isButtonBusy;
+        private bool  isButtonBusy;
 
         [ObservableProperty]
-        private string _title;
+        private string  title;
 
 
     }

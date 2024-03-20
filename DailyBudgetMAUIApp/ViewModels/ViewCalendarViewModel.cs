@@ -1,7 +1,7 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Syncfusion.Maui.Scheduler;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -14,47 +14,47 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private bool _showBusyIndicator;
+        private bool  showBusyIndicator;
         [ObservableProperty]
-        private Budgets _budget;
+        private Budgets  budget;
         [ObservableProperty]
-        private Budgets _budgetCard = new Budgets();
+        private Budgets  budgetCard = new Budgets();
         [ObservableProperty]
-        private bool _isBudgetVisible;
+        private bool  isBudgetVisible;
         [ObservableProperty]
-        private ObservableCollection<SchedulerAppointment> _eventList = new ObservableCollection<SchedulerAppointment> ();
+        private ObservableCollection<SchedulerAppointment>  eventList = new ObservableCollection<SchedulerAppointment> ();
         [ObservableProperty]
-        private List<SchedulerAppointment> _events = new List<SchedulerAppointment>();
+        private List<SchedulerAppointment>  events = new List<SchedulerAppointment>();
         [ObservableProperty]
-        private DateTime _today = DateTime.Today;
+        private DateTime  today = DateTime.Today;
         [ObservableProperty]
-        private double _schedulerHeight;
+        private double  schedulerHeight;
         [ObservableProperty]
-        private Savings _saving = new Savings();
+        private Savings  saving = new Savings();
         [ObservableProperty]
-        private bool _isSavingVisible;
+        private bool  isSavingVisible;
         [ObservableProperty]
-        private Transactions _transaction = new Transactions();
+        private Transactions  transaction = new Transactions();
         [ObservableProperty]
-        private bool _isTransactionVisible;
+        private bool  isTransactionVisible;
         [ObservableProperty]
-        private IncomeEvents _income = new IncomeEvents();
+        private IncomeEvents  income = new IncomeEvents();
         [ObservableProperty]
-        private bool _isIncomeVisible;
+        private bool  isIncomeVisible;
         [ObservableProperty]
-        private Bills _bill = new Bills();
+        private Bills  bill = new Bills();
         [ObservableProperty]
-        private bool _isBillVisible;
+        private bool  isBillVisible;
         [ObservableProperty]
-        private Savings _envelope = new Savings();
+        private Savings  envelope = new Savings();
         [ObservableProperty]
-        private bool _isEnvelopeVisible;
+        private bool  isEnvelopeVisible;
         [ObservableProperty]
-        private int _selectedIndex = 0;
+        private int  selectedIndex = 0;
         [ObservableProperty]
-        private bool _isNextEnabled = true;
+        private bool  isNextEnabled = true;
         [ObservableProperty]
-        private bool _isPreviousEnabled = false;
+        private bool  isPreviousEnabled = false;
 
 
         public ViewCalendarViewModel(IProductTools pt, IRestDataService ds)
@@ -83,7 +83,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             await LoadEventCard(EventList[SelectedIndex].Notes, (int)EventList[SelectedIndex].Id);
         }
 
-        [ICommand]
+        [RelayCommand]
         private async void SelectNext(object obj)
         {
             IsPreviousEnabled = true;
@@ -101,7 +101,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
-        [ICommand]
+        [RelayCommand]
         private async void SelectPrevious(object obj)
         {
             IsNextEnabled = true;
@@ -119,7 +119,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
-        [ICommand]
+        [RelayCommand]
         private async void LoadMoreEvents(object obj)
         {
             ShowBusyIndicator = true;
