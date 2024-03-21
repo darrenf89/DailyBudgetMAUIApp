@@ -29,12 +29,12 @@ public partial class EditBudgetSettings : ContentPage
     protected async override void OnAppearing()
     {
         base.OnAppearing();
-        MainScrollView.MaximumHeightRequest = ScreenHeight - 280;
+
         TopBV.WidthRequest = ScreenWidth;
+        MainAbs.WidthRequest = ScreenWidth;
         MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
         MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
-        MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
-        MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
+
 
         lblTitle.Text = $"Budget settings";
 
@@ -92,6 +92,20 @@ public partial class EditBudgetSettings : ContentPage
         {
             DateTimeSetting.IsVisible = false;
             DateTimeIcon.Glyph = "\ue5ce";
+        }
+    }
+
+    private void acrPayDaySetting_Tapped(object sender, TappedEventArgs e)
+    {
+        if (!PayDaySetting.IsVisible)
+        {
+            PayDaySetting.IsVisible = true;
+            PayDayIcon.Glyph = "\ue5cf";
+        }
+        else
+        {
+            PayDaySetting.IsVisible = false;
+            PayDayIcon.Glyph = "\ue5ce";
         }
     }
 

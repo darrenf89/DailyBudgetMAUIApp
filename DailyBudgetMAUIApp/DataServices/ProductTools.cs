@@ -812,6 +812,7 @@ namespace DailyBudgetMAUIApp.DataServices
             CultureSetting.NumberFormat.CurrencyDecimalDigits = Settings.CurrencyDecimalDigits;
             CultureSetting.NumberFormat.CurrencyPositivePattern = Settings.CurrencyPositivePattern;
             CultureSetting.DateTimeFormat.ShortDatePattern = Settings.ShortDatePattern;
+            CultureSetting.DateTimeFormat.LongDatePattern = Settings.ShortDatePattern + " HH:mm:ss";
             CultureSetting.DateTimeFormat.DateSeparator = Settings.DateSeparator;
 
             Thread.CurrentThread.CurrentCulture = CultureSetting;

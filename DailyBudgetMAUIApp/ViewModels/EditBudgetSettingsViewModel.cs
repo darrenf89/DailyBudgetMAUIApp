@@ -80,13 +80,25 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         private void UpdateCurrencySettingValue()
         {
-            CurrencyCultureInfo.NumberFormat.CurrencySymbol = SelectedCurrencySymbol.CurrencySymbol;
-            CurrencyCultureInfo.NumberFormat.CurrencyDecimalSeparator = _ds.GetCurrencyDecimalSeparatorById(SelectedNumberFormats.CurrencyDecimalSeparatorID).Result.CurrencyDecimalSeparator;
-            CurrencyCultureInfo.NumberFormat.CurrencyGroupSeparator = _ds.GetCurrencyGroupSeparatorById(SelectedNumberFormats.CurrencyGroupSeparatorID).Result.CurrencyGroupSeparator;
-            CurrencyCultureInfo.NumberFormat.CurrencyDecimalDigits = _ds.GetCurrencyDecimalDigitsById(SelectedNumberFormats.CurrencyDecimalDigitsID).Result.Id;
-            CurrencyCultureInfo.NumberFormat.CurrencyPositivePattern = SelectedCurrencyPlacement.CurrencyPositivePatternRef;
+            if(SelectedNumberFormats != null && SelectedCurrencyPlacement != null && SelectedCurrencySymbol != null)
+            {
+                CurrencyCultureInfo.NumberFormat.CurrencySymbol = SelectedCurrencySymbol.CurrencySymbol;
+                if(SelectedNumberFormats.CurrencyDecimalSeparatorID != 0)
+                {
+                    CurrencyCultureInfo.NumberFormat.CurrencyDecimalSeparator = _ds.GetCurrencyDecimalSeparatorById(SelectedNumberFormats.CurrencyDecimalSeparatorID).Result.CurrencyDecimalSeparator;
+                }
+                if (SelectedNumberFormats.CurrencyGroupSeparatorID != 0)
+                {
+                    CurrencyCultureInfo.NumberFormat.CurrencyGroupSeparator = _ds.GetCurrencyGroupSeparatorById(SelectedNumberFormats.CurrencyGroupSeparatorID).Result.CurrencyGroupSeparator;
+                }
+                if(SelectedNumberFormats.CurrencyDecimalDigitsID != 0)
+                {
+                    CurrencyCultureInfo.NumberFormat.CurrencyDecimalDigits = Convert.ToInt32(_ds.GetCurrencyDecimalDigitsById(SelectedNumberFormats.CurrencyDecimalDigitsID).Result.currencyDecimalDigits);
+                }
+                CurrencyCultureInfo.NumberFormat.CurrencyPositivePattern = SelectedCurrencyPlacement.CurrencyPositivePatternRef;
+            }
 
-            CurrencySettingValue = 9000.01.ToString("c", CurrencyCultureInfo);
+            CurrencySettingValue = 9001.ToString("c", CurrencyCultureInfo);
         }
 
         partial void OnSelectedNumberFormatsChanged(lut_NumberFormat value)
@@ -110,6 +122,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 TimeCultureInfo.DateTimeFormat.ShortDatePattern = SelectedDateFormats.DateFormat;
                 TimeCultureInfo.DateTimeFormat.LongDatePattern = SelectedDateFormats.DateFormat + " HH:mm:ss";
+                TimeCultureInfo.DateTimeFormat.DateSeparator = CurrencyCultureInfo.NumberFormat.CurrencyGroupSeparator;
             }
 
         }
@@ -175,7 +188,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public async Task UpdateTime()
         {
             DateTime CurrentDateTime = DateTime.UtcNow.AddHours(SelectedTimeZone.TimeZoneUTCOffset);
-            CurrentTime = CurrentDateTime.ToString(TimeCultureInfo.DateTimeFormat.LongDatePattern);
+            CurrentTime = CurrentDateTime.ToString(TimeCultureInfo.DateTimeFormat.LongDatePattern, CultureInfo.InvariantCulture);
         }
     }
 }
