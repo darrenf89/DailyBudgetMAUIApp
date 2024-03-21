@@ -45,6 +45,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string currentTime;
         [ObservableProperty]
         private CultureInfo timeCultureInfo = new CultureInfo("en-gb");
+        [ObservableProperty]
+        private string currencySettingValue;
+        [ObservableProperty]
+        private CultureInfo currencyCultureInfo = new CultureInfo("en-gb");
 
         public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -71,6 +75,33 @@ namespace DailyBudgetMAUIApp.ViewModels
             TimeCultureInfo.DateTimeFormat.ShortDatePattern = _ds.GetShortDatePatternById(SelectedDateFormats.ShortDatePatternID).Result.ShortDatePattern;
             TimeCultureInfo.DateTimeFormat.DateSeparator = _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID).Result.DateSeperator;
 
+            UpdateCurrencySettingValue();
+        }
+
+        private void UpdateCurrencySettingValue()
+        {
+            CurrencyCultureInfo.NumberFormat.CurrencySymbol = SelectedCurrencySymbol.CurrencySymbol;
+            CurrencyCultureInfo.NumberFormat.CurrencyDecimalSeparator = _ds.GetCurrencyDecimalSeparatorById(SelectedNumberFormats.CurrencyDecimalSeparatorID).Result.CurrencyDecimalSeparator;
+            CurrencyCultureInfo.NumberFormat.CurrencyGroupSeparator = _ds.GetCurrencyGroupSeparatorById(SelectedNumberFormats.CurrencyGroupSeparatorID).Result.CurrencyGroupSeparator;
+            CurrencyCultureInfo.NumberFormat.CurrencyDecimalDigits = _ds.GetCurrencyDecimalDigitsById(SelectedNumberFormats.CurrencyDecimalDigitsID).Result.Id;
+            CurrencyCultureInfo.NumberFormat.CurrencyPositivePattern = SelectedCurrencyPlacement.CurrencyPositivePatternRef;
+
+            CurrencySettingValue = 9000.01.ToString("c", CurrencyCultureInfo);
+        }
+
+        partial void OnSelectedNumberFormatsChanged(lut_NumberFormat value)
+        {
+            UpdateCurrencySettingValue();
+        }
+
+        partial void OnSelectedCurrencyPlacementChanged(lut_CurrencyPlacement value)
+        {
+            UpdateCurrencySettingValue();
+        }
+
+        partial void OnSelectedCurrencySymbolChanged(lut_CurrencySymbol value)
+        {
+            UpdateCurrencySettingValue();
         }
 
         partial void OnSelectedDateFormatsChanged(lut_DateFormat value)
@@ -78,7 +109,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             if(SelectedDateFormats != null)
             {
                 TimeCultureInfo.DateTimeFormat.ShortDatePattern = SelectedDateFormats.DateFormat;
-                TimeCultureInfo.DateTimeFormat.LongDatePattern = SelectedDateFormats.DateFormat + "HH:mm:ss";
+                TimeCultureInfo.DateTimeFormat.LongDatePattern = SelectedDateFormats.DateFormat + " HH:mm:ss";
             }
 
         }
@@ -144,7 +175,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public async Task UpdateTime()
         {
             DateTime CurrentDateTime = DateTime.UtcNow.AddHours(SelectedTimeZone.TimeZoneUTCOffset);
-            CurrentTime = CurrentDateTime.ToString(TimeCultureInfo);
+            CurrentTime = CurrentDateTime.ToString(TimeCultureInfo.DateTimeFormat.LongDatePattern);
         }
     }
 }

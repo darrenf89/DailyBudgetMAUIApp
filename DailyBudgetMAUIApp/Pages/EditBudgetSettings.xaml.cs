@@ -40,6 +40,11 @@ public partial class EditBudgetSettings : ContentPage
 
         await _vm.OnLoad();
 
+        pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;            
+        pckrDateFormat.SelectedIndex = _vm.SelectedDateFormats.Id - 1;
+        pckrNumberFormat.SelectedIndex = _vm.SelectedNumberFormats.Id - 1;
+        pckrTimeZone.SelectedIndex = _vm.SelectedTimeZone.TimeZoneID - 1;
+
         var timer = Application.Current.Dispatcher.CreateTimer();
         _timer = timer;
         timer.Interval = TimeSpan.FromSeconds(1);
@@ -48,8 +53,6 @@ public partial class EditBudgetSettings : ContentPage
             await _vm.UpdateTime();
         };
         timer.Start();
-
-        CurrencySettingValue.Text = 9000.01.ToString("c", CultureInfo.CurrentCulture);
 
         if (App.CurrentPopUp != null)
         {

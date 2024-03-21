@@ -37,7 +37,7 @@
                                     </Image.Source>
                                 </Image>
                                 <HorizontalStackLayout Margin="15,0,0,10" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1">
-                                    <Label x:Name="CurrencySettingValue" TextColor="{StaticResource Info}" FontSize="Small" FontAttributes="Bold"/>
+                                    <Label Text="{Binding CurrencySettingValue}" x:Name="CurrencySettingValue" TextColor="{StaticResource Info}" FontSize="Small" FontAttributes="Bold"/>
                                 </HorizontalStackLayout>
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer x:Name="acrCurrencySetting" Tapped="acrCurrencySetting_Tapped" />

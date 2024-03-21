@@ -1033,6 +1033,148 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<lut_CurrencyGroupSeparator> GetCurrencyGroupSeparatorById(int CurrencyGroupSeparatorId)
+        {
+            lut_CurrencyGroupSeparator GroupSeparator = new lut_CurrencyGroupSeparator();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencygroupseparatorbyid/{CurrencyGroupSeparatorId}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            GroupSeparator = serializer.Deserialize<lut_CurrencyGroupSeparator>(reader);
+                        }
+
+                        return GroupSeparator;
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "GetCurrencyGroupSeparatorById", "GetCurrencyGroupSeparatorById");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetCurrencyGroupSeparatorById", "GetCurrencyGroupSeparatorById");
+                return null;
+            }
+        }
+        public async Task<lut_CurrencyDecimalSeparator> GetCurrencyDecimalSeparatorById(int CurrencyDecimalSeparatorId)
+        {
+            lut_CurrencyDecimalSeparator DecimalSeparator = new lut_CurrencyDecimalSeparator();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencydecimalseparatorbyid/{CurrencyDecimalSeparatorId}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            DecimalSeparator = serializer.Deserialize<lut_CurrencyDecimalSeparator>(reader);
+                        }
+
+                        return DecimalSeparator;
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "GetCurrencyDecimalSeparatorById", "GetCurrencyDecimalSeparatorById");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetCurrencyDecimalSeparatorById", "GetCurrencyDecimalSeparatorById");
+                return null;
+            }
+        }
+        public async Task<lut_CurrencyDecimalDigits> GetCurrencyDecimalDigitsById(int CurrencyDecimalDigitsId)
+        {
+            lut_CurrencyDecimalDigits DecimalDigits = new lut_CurrencyDecimalDigits();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencydecimaldigitsbyid/{CurrencyDecimalDigitsId}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            DecimalDigits = serializer.Deserialize<lut_CurrencyDecimalDigits>(reader);
+                        }
+
+                        return DecimalDigits;
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "GetCurrencyDecimalDigitsById", "GetCurrencyDecimalDigitsById");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetCurrencyDecimalDigitsById", "GetCurrencyDecimalDigitsById");
+                return null;
+            }
+        }
+
         public async Task<List<lut_NumberFormat>> GetNumberFormats()
         {
             List<lut_NumberFormat> NumberFormat = new List<lut_NumberFormat>();
