@@ -20,11 +20,15 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private lut_CurrencySymbol selectedCurrencySymbol;
         [ObservableProperty]
+        private bool hasCurrencySymbolChanged;
+        [ObservableProperty]
         private bool searchVisible = false;
         [ObservableProperty]
         private List<lut_CurrencyPlacement> currencyPlacements;
         [ObservableProperty]
         private lut_CurrencyPlacement selectedCurrencyPlacement;
+        [ObservableProperty]
+        private bool hasCurrencyPlacementChanged;
         [ObservableProperty]
         private List<lut_DateFormat> dateFormats;
         [ObservableProperty]
@@ -32,15 +36,23 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private lut_DateFormat selectedDateFormats;
         [ObservableProperty]
+        private bool hasDateFormatChanged;
+        [ObservableProperty]
         private List<lut_NumberFormat> numberFormats;
         [ObservableProperty]
         private lut_NumberFormat selectedNumberFormats;
         [ObservableProperty]
+        private bool hasNumberFormatsChanged;
+        [ObservableProperty]
         private lut_BudgetTimeZone selectedTimeZone;
+        [ObservableProperty]
+        private bool hasTimeZoneChanged;
         [ObservableProperty]
         private bool isBorrowPay;
         [ObservableProperty]
         private BudgetSettings budgetSettings;
+        [ObservableProperty]
+        private Budgets budget;
         [ObservableProperty]
         private string currentTime;
         [ObservableProperty]
@@ -49,6 +61,16 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string currencySettingValue;
         [ObservableProperty]
         private CultureInfo currencyCultureInfo = new CultureInfo("en-gb");
+        [ObservableProperty]
+        private string payDaySettings;
+        [ObservableProperty]
+        private decimal payAmount;
+        [ObservableProperty]
+        private string payAmountString;
+        [ObservableProperty]
+        private int payAmountCursorPosition;
+        [ObservableProperty]
+        private bool hasPayAmountChanged;
 
         public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -65,6 +87,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
 
             BudgetSettings = _ds.GetBudgetSettings(App.DefaultBudgetID).Result;
+            Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
 
             SelectedCurrencySymbol = _ds.GetCurrencySymbols(BudgetSettings.CurrencySymbol.ToString()).Result[0];
             SelectedCurrencyPlacement = _ds.GetCurrencyPlacements(BudgetSettings.CurrencyPattern.ToString()).Result[0];
@@ -76,6 +99,28 @@ namespace DailyBudgetMAUIApp.ViewModels
             TimeCultureInfo.DateTimeFormat.DateSeparator = _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID).Result.DateSeperator;
 
             UpdateCurrencySettingValue();
+
+            PayAmount = Budget.PaydayAmount ?? 0;
+            PayAmountString = PayAmount.ToString("c", CultureInfo.CurrentCulture);
+
+            UpdatePayDaySettingsValue();
+        }
+
+        partial void OnPayAmountStringChanged(string value)
+        {
+            decimal ValueNumber = (decimal)_pt.FormatCurrencyNumber(value);
+            if(PayAmount != ValueNumber)
+            {
+                PayAmount = ValueNumber;
+                PayAmountString = PayAmount.ToString("c", CultureInfo.CurrentCulture);
+                PayAmountCursorPosition = _pt.FindCurrencyCursorPosition(PayAmountString);
+                HasPayAmountChanged = true;
+            }
+        }
+
+        private void UpdatePayDaySettingsValue()
+        {
+            
         }
 
         private void UpdateCurrencySettingValue()
@@ -103,16 +148,19 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         partial void OnSelectedNumberFormatsChanged(lut_NumberFormat value)
         {
+            HasNumberFormatsChanged = true;
             UpdateCurrencySettingValue();
         }
 
         partial void OnSelectedCurrencyPlacementChanged(lut_CurrencyPlacement value)
         {
+            HasCurrencyPlacementChanged = true;
             UpdateCurrencySettingValue();
         }
 
         partial void OnSelectedCurrencySymbolChanged(lut_CurrencySymbol value)
         {
+            HasCurrencySymbolChanged = true;
             UpdateCurrencySettingValue();
         }
 
@@ -120,11 +168,18 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             if(SelectedDateFormats != null)
             {
+                HasDateFormatChanged = true;
+
                 TimeCultureInfo.DateTimeFormat.ShortDatePattern = SelectedDateFormats.DateFormat;
                 TimeCultureInfo.DateTimeFormat.LongDatePattern = SelectedDateFormats.DateFormat + " HH:mm:ss";
-                TimeCultureInfo.DateTimeFormat.DateSeparator = CurrencyCultureInfo.NumberFormat.CurrencyGroupSeparator;
+                TimeCultureInfo.DateTimeFormat.DateSeparator = _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID).Result.DateSeperator;
             }
 
+        }
+
+        partial void OnSelectedTimeZoneChanged(lut_BudgetTimeZone value)
+        {
+            HasTimeZoneChanged = true;
         }
         
         public void ChangeSelectedCurrency()

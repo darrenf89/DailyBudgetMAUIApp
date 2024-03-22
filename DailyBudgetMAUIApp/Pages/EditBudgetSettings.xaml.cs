@@ -45,6 +45,13 @@ public partial class EditBudgetSettings : ContentPage
         pckrNumberFormat.SelectedIndex = _vm.SelectedNumberFormats.Id - 1;
         pckrTimeZone.SelectedIndex = _vm.SelectedTimeZone.TimeZoneID - 1;
 
+        _vm.HasCurrencyPlacementChanged = false;
+        _vm.HasCurrencySymbolChanged = false;
+        _vm.HasTimeZoneChanged = false;
+        _vm.HasNumberFormatsChanged = false;
+        _vm.HasDateFormatChanged = false;
+        _vm.HasPayAmountChanged = false;
+
         var timer = Application.Current.Dispatcher.CreateTimer();
         _timer = timer;
         timer.Interval = TimeSpan.FromSeconds(1);
