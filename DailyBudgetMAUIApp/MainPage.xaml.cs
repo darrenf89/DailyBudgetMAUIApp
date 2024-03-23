@@ -52,6 +52,7 @@ public partial class MainPage : ContentPage
 
     protected async override void OnAppearing()
     {
+
         base.OnAppearing();
 
         ProcessSnackBar();
@@ -887,6 +888,24 @@ public partial class MainPage : ContentPage
                     duration = TimeSpan.FromSeconds(10);
 
                     await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+
+                    break;
+
+                case "BudgetSettingsUpdated":
+
+                    text = $"Budget settings successfully updated";
+                    actionButtonText = "Ok";
+                    action = async () =>
+                    {
+                        source.Cancel();
+                    };
+                    duration = TimeSpan.FromSeconds(10);
+
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarInfoOptions).Show();
+
+                    BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+                    App.CurrentSettings = Settings;
+                    _pt.SetCultureInfo(App.CurrentSettings);
 
                     break;
 
@@ -2296,9 +2315,11 @@ public partial class MainPage : ContentPage
             };
 
             brdTransactionAmount.Shadow = shadow;
+            brdTransactionAmount.IsVisible = true;
         }
         else
         {
+            
             entTransactionAmount.IsEnabled = false;
             entTransactionAmount.IsEnabled = true;
 
@@ -2307,6 +2328,7 @@ public partial class MainPage : ContentPage
             var a3 = btnTransactionAmount.FadeTo(0, 250, Easing.CubicOut);
 
             await Task.WhenAll(a1, a2, a3);
+            brdTransactionAmount.IsVisible = false;
         }      
     }
 

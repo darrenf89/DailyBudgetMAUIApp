@@ -1342,6 +1342,41 @@ namespace DailyBudgetMAUIApp.DataServices
 
         }
 
+        public async Task<string> PatchBudgetSettings(int BudgetID, List<PatchDoc> PatchDoc)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PatchAsync($"{_url}/budgetsettings/updatebudgetsettings/{BudgetID}", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to get patch budget in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+
+        }
+
         public async Task<string> UpdateBudgetSettings(int BudgetID, BudgetSettings BS)
         {
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)

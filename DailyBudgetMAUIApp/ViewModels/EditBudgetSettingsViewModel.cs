@@ -71,6 +71,43 @@ namespace DailyBudgetMAUIApp.ViewModels
         private int payAmountCursorPosition;
         [ObservableProperty]
         private bool hasPayAmountChanged;
+        [ObservableProperty]
+        private DateTime payDayDate;
+        [ObservableProperty]
+        private bool hasPayDayDateChanged;
+        [ObservableProperty]
+        private bool validatorPayDay;
+        [ObservableProperty]
+        private bool validatorPayDayAmount;
+        [ObservableProperty]
+        private string payDayTypeText;
+        [ObservableProperty]
+        private bool validatorPayType;
+        [ObservableProperty]
+        private bool hasPayDayTypeTextChanged;
+        [ObservableProperty]
+        private bool hasPayDayOptionsChanged;
+        [ObservableProperty]
+        private string everyNthDuration;
+        [ObservableProperty]
+        private string everyNthValue;
+        [ObservableProperty]
+        private bool validatorEveryNthDuration;
+        [ObservableProperty]
+        private string workingDaysValue;
+        [ObservableProperty]
+        private bool validatorWorkingDayDuration;
+        [ObservableProperty]
+        private string everyMonthValue;
+        [ObservableProperty]
+        private bool validatorOfEveryMonthDuration;
+        [ObservableProperty]
+        private string lastOfTheMonthDuration;
+        [ObservableProperty]
+        private string payDayTwoSettings;
+        [ObservableProperty]
+        private bool hasBorrowPayChanged;
+
 
         public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -103,7 +140,87 @@ namespace DailyBudgetMAUIApp.ViewModels
             PayAmount = Budget.PaydayAmount ?? 0;
             PayAmountString = PayAmount.ToString("c", CultureInfo.CurrentCulture);
 
+            PayDayDate = Budget.NextIncomePayday.GetValueOrDefault();
+
+            IsBorrowPay = Budget.IsBorrowPay;
+
+            if(Budget.PaydayType == "Everynth")
+            {
+                PayDayTypeText = "Everynth";
+                EveryNthDuration = Budget.PaydayDuration;
+                EveryNthValue = Budget.PaydayValue.ToString();
+
+            }
+            else if (Budget.PaydayType == "WorkingDays")
+            {
+                PayDayTypeText = "WorkingDays";
+                WorkingDaysValue = Budget.PaydayValue.ToString();
+            }
+            else if (Budget.PaydayType == "OfEveryMonth")
+            {
+                PayDayTypeText = "OfEveryMonth";
+                EveryMonthValue = Budget.PaydayValue.ToString();
+            }
+            else if (Budget.PaydayType == "LastOfTheMonth")
+            {
+                PayDayTypeText = "LastOfTheMonth";
+                LastOfTheMonthDuration = Budget.PaydayDuration;
+            }
+
             UpdatePayDaySettingsValue();
+        }
+
+        partial void OnEveryNthDurationChanged(string oldValue, string newValue)
+        {
+            if (oldValue != newValue)
+            {
+                HasPayDayOptionsChanged = true;
+                UpdatePayDaySettingsValue();
+            }
+        }
+
+        partial void OnEveryNthValueChanged(string oldValue, string newValue)
+        {
+            if (oldValue != newValue)
+            {
+                HasPayDayOptionsChanged = true;
+                UpdatePayDaySettingsValue();
+            }
+        }
+
+        partial void OnWorkingDaysValueChanged(string oldValue, string newValue)
+        {
+            if (oldValue != newValue)
+            {
+                HasPayDayOptionsChanged = true;
+                UpdatePayDaySettingsValue();
+            }
+        }
+
+        partial void OnEveryMonthValueChanged(string oldValue, string newValue)
+        {
+            if (oldValue != newValue)
+            {
+                HasPayDayOptionsChanged = true;
+                UpdatePayDaySettingsValue();
+            }
+        }
+        partial void OnLastOfTheMonthDurationChanged(string oldValue, string newValue)
+        {
+            if (oldValue != newValue)
+            {
+                HasPayDayOptionsChanged = true;
+                UpdatePayDaySettingsValue();
+            }
+        }
+
+        partial void OnPayDayTypeTextChanged(string oldValue, string newValue)
+        {
+            if (oldValue != newValue)
+            {
+                HasPayDayTypeTextChanged = true;
+                UpdatePayDaySettingsValue();
+            }
         }
 
         partial void OnPayAmountStringChanged(string value)
@@ -115,12 +232,68 @@ namespace DailyBudgetMAUIApp.ViewModels
                 PayAmountString = PayAmount.ToString("c", CultureInfo.CurrentCulture);
                 PayAmountCursorPosition = _pt.FindCurrencyCursorPosition(PayAmountString);
                 HasPayAmountChanged = true;
+                UpdatePayDaySettingsValue();
+            }
+        }
+
+        partial void OnPayDayDateChanged(DateTime oldValue, DateTime newValue)
+        {
+            if(oldValue != newValue)
+            {
+                HasPayDayDateChanged = true;
+                UpdatePayDaySettingsValue();
             }
         }
 
         private void UpdatePayDaySettingsValue()
         {
-            
+            PayDaySettings = PayAmountString + " on the " + PayDayDate.ToString("d");
+            if (PayDayTypeText == "Everynth")
+            {
+                if(EveryNthValue == "1")
+                {
+                    PayDayTwoSettings = "Then once a " + EveryNthDuration.Replace("s", "");
+                }
+                else
+                {
+                    PayDayTwoSettings = "Then every " + EveryNthValue + " " + EveryNthDuration;
+                }
+            }
+            else if (PayDayTypeText == "WorkingDays")
+            {
+                if (WorkingDaysValue == "1")
+                {
+                    PayDayTwoSettings = "Then on the last working day of the month";
+                }
+                else
+                {
+                    PayDayTwoSettings = "Then " + WorkingDaysValue + " working days before end of month";
+                }
+
+            }
+            else if (PayDayTypeText == "OfEveryMonth")
+            {
+                if (EveryMonthValue == "1")
+                {
+                    PayDayTwoSettings = "Then on the 1st of every month";
+                }
+                else if(EveryMonthValue == "2")
+                {
+                    PayDayTwoSettings = "Then on the 2nd of every month";
+                }
+                else if (EveryMonthValue == "3")
+                {
+                    PayDayTwoSettings = "Then on the 3rd of every month";
+                }
+                else
+                {
+                    PayDayTwoSettings = "Then on the " + EveryMonthValue + "th of every month";
+                }
+            }
+            else if (PayDayTypeText == "LastOfTheMonth")
+            {
+                PayDayTwoSettings = "Then on the last " + LastOfTheMonthDuration + " of the month";
+            }
         }
 
         private void UpdateCurrencySettingValue()
@@ -244,6 +417,275 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             DateTime CurrentDateTime = DateTime.UtcNow.AddHours(SelectedTimeZone.TimeZoneUTCOffset);
             CurrentTime = CurrentDateTime.ToString(TimeCultureInfo.DateTimeFormat.LongDatePattern, CultureInfo.InvariantCulture);
+        }
+
+        [RelayCommand]
+        private async void SaveBudgetSettings()
+        {
+
+            bool EditBudget = await Application.Current.MainPage.DisplayAlert($"Update settings?", $"Are you sure you want to update your budgets settings?", "Yes", "No");
+            if (EditBudget)
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(100);
+
+                try
+                {
+                    List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+                    List<PatchDoc> BudgetSettingsUpdate = new List<PatchDoc>();
+
+                    if (HasCurrencySymbolChanged)
+                    {
+                        PatchDoc CurrencySymbol = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/CurrencySymbol",
+                            value = SelectedCurrencySymbol.Id
+                        };
+
+                        BudgetSettingsUpdate.Add(CurrencySymbol);
+                    }
+
+                    if (HasCurrencyPlacementChanged)
+                    {
+                        PatchDoc CurrencyPattern = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/CurrencyPattern",
+                            value = SelectedCurrencyPlacement.Id
+                        };
+
+                        BudgetSettingsUpdate.Add(CurrencyPattern);
+                    }
+
+
+                    if (HasNumberFormatsChanged)
+                    {
+                        PatchDoc CurrencyDecimalDigits = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/CurrencyDecimalDigits",
+                            value = SelectedNumberFormats.CurrencyDecimalDigitsID
+                        };
+
+                        BudgetSettingsUpdate.Add(CurrencyDecimalDigits);
+
+                        PatchDoc CurrencyDecimalSeparator = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/CurrencyDecimalSeparator",
+                            value = SelectedNumberFormats.CurrencyDecimalSeparatorID
+                        };
+
+                        BudgetSettingsUpdate.Add(CurrencyDecimalSeparator);
+
+                        PatchDoc CurrencyGroupSeparator = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/CurrencyGroupSeparator",
+                            value = SelectedNumberFormats.CurrencyGroupSeparatorID
+                        };
+
+                        BudgetSettingsUpdate.Add(CurrencyGroupSeparator);
+                    }
+
+                    if(HasDateFormatChanged)
+                    {
+                        PatchDoc DateSeperator = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/DateSeperator",
+                            value = SelectedDateFormats.DateSeperatorID
+                        };
+
+                        BudgetSettingsUpdate.Add(DateSeperator);
+
+                        PatchDoc ShortDatePattern = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/ShortDatePattern",
+                            value = SelectedDateFormats.ShortDatePatternID
+                        };
+
+                        BudgetSettingsUpdate.Add(ShortDatePattern);
+                    }
+
+                    if(HasTimeZoneChanged)
+                    {
+                        PatchDoc TimeZone = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/TimeZone",
+                            value = SelectedTimeZone.TimeZoneID
+                        };
+
+                        BudgetSettingsUpdate.Add(TimeZone);
+                    }
+
+                    if(HasBorrowPayChanged)
+                    {
+                        PatchDoc BorrowPay = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/IsBorrowPay",
+                            value = IsBorrowPay
+                        };
+
+                        BudgetUpdate.Add(BorrowPay);
+                    }
+
+                    if (HasPayAmountChanged)
+                    {
+                        PatchDoc PayDayAmount = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/PayDayAmount",
+                            value = PayAmount
+                        };
+
+                        BudgetUpdate.Add(PayDayAmount);
+                    }
+
+                    if (HasPayDayDateChanged)
+                    {
+                        PatchDoc NextIncomePayday = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/NextIncomePayday",
+                            value = PayDayDate
+                        };
+
+                        BudgetUpdate.Add(NextIncomePayday);
+                    }
+
+
+                    if(HasPayDayTypeTextChanged)
+                    {
+                        PatchDoc PayType = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/PaydayType",
+                            value = PayDayTypeText
+                        };
+
+                        BudgetUpdate.Add(PayType);
+                    }
+
+                    if(HasPayDayOptionsChanged)
+                    {
+                        if (PayDayTypeText == "Everynth")
+                        {
+                            PatchDoc PaydayValue = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/PaydayValue",
+                                value = EveryNthValue
+                            };
+
+                            BudgetUpdate.Add(PaydayValue);
+
+                            PatchDoc PaydayDuration = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/PaydayDuration",
+                                value = EveryNthDuration
+                            };
+
+                            BudgetUpdate.Add(PaydayDuration);
+
+                        }
+                        else if (PayDayTypeText == "WorkingDays")
+                        {
+                            PatchDoc PaydayValue = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/PaydayValue",
+                                value = WorkingDaysValue
+                            };
+
+                            BudgetUpdate.Add(PaydayValue);
+
+                            PatchDoc PaydayDuration = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/PaydayDuration",
+                                value = ""
+                            };
+
+                            BudgetUpdate.Add(PaydayDuration);
+                        }
+                        else if (PayDayTypeText == "OfEveryMonth")
+                        {
+                            PatchDoc PaydayValue = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/PaydayValue",
+                                value = EveryMonthValue
+                            };
+
+                            BudgetUpdate.Add(PaydayValue);
+
+                            PatchDoc PaydayDuration = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/PaydayDuration",
+                                value = ""
+                            };
+
+                            BudgetUpdate.Add(PaydayDuration);
+                        }
+                        else if (PayDayTypeText == "LastOfTheMonth")
+                        {
+                            PatchDoc PaydayValue = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/PaydayValue",
+                                value = ""
+                            };
+
+                            BudgetUpdate.Add(PaydayValue);
+
+                            PatchDoc PaydayDuration = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/PaydayDuration",
+                                value = LastOfTheMonthDuration
+                            };
+
+                            BudgetUpdate.Add(PaydayDuration);
+                        }
+                    }
+
+                    if (BudgetUpdate.Count() > 0)
+                    {
+                        await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+                    }
+
+                    if (BudgetSettingsUpdate.Count() > 0)
+                    {
+                        await _ds.PatchBudgetSettings(App.DefaultBudgetID, BudgetSettingsUpdate);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    ErrorLog Error = _pt.HandleCatchedException(ex, "EditBudgetSettings", "SaveSettings").Result;
+                    await Shell.Current.GoToAsync(nameof(ErrorPage),
+                        new Dictionary<string, object>
+                        {
+                            ["Error"] = Error
+                        });
+                }
+
+                await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=BudgetSettingsUpdated&SnackID=0");
+
+            }
         }
     }
 }

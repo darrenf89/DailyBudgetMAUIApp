@@ -26,6 +26,7 @@
                    HorizontalOptions="Start"
                    Grid.Column="0"/>
             <Button TextColor="White"
+                    Style="{StaticResource TitleButtons}"
                     BackgroundColor="{StaticResource Primary}"
                     Command="{Binding GoToBudgetSettingsCommand}"
                     HorizontalOptions="End"
@@ -40,7 +41,8 @@
                     Command="{Binding GoToAccountSettingsCommand}"
                     HorizontalOptions="End"
                     Grid.Column="2"
-                    Padding="0,0,10,0">
+                    Padding="0,0,10,0"
+                    Style="{StaticResource TitleButtons}">
                 <Button.ImageSource>
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Manage_accounts}" Size="30"/>
                 </Button.ImageSource>
@@ -59,7 +61,7 @@
                     </Border.GestureRecognizers>
                     <Image Rotation="90" Source="transactionicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
                 </Border>
-                <Border x:Name="brdTransactionAmount" Opacity="0" Margin="15,0,0,0" BackgroundColor="{StaticResource White}" HeightRequest="60" Stroke="{StaticResource PrimaryDarkBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 30">
+                <Border x:Name="brdTransactionAmount" IsVisible="False" Opacity="0" Margin="15,0,0,0" BackgroundColor="{StaticResource White}" HeightRequest="60" Stroke="{StaticResource PrimaryDarkBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 30">
                     <HorizontalStackLayout WidthRequest="{Binding QuickTransactionWidth}">
                         <handlers:BorderlessEntry WidthRequest="{Binding QuickTransactionInputWidth}" HorizontalTextAlignment="End" TextColor="{DynamicResource Gray900}" CharacterSpacing="0" x:Name="entTransactionAmount" TextChanged="TransactionAmount_Changed" Keyboard="Numeric" FontSize="25" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,10,0" />
                         <Button Clicked="btnTransactionAmount_Clicked" Style="{StaticResource TitleButtons}" x:Name="btnTransactionAmount" Opacity="0" BackgroundColor="{StaticResource SuccessLight}" Padding="5" WidthRequest="45" HeightRequest="45" CornerRadius="23" BorderColor="{StaticResource Success}" BorderWidth="2">

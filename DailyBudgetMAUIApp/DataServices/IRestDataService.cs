@@ -42,6 +42,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> UpdatePayPeriodStats(PayPeriodStats Stats);
         public Task<PayPeriodStats> CreateNewPayPeriodStats(int BudgetID);
         public Task<string> PatchBudget(int BudgetID, List<PatchDoc> PatchDoc);
+        public Task<string> PatchBudgetSettings(int BudgetID, List<PatchDoc> PatchDoc);
         public Task<string> UpdateBudgetSettings(int BudgetID, BudgetSettings BS);
         public Task<Bills> GetBillFromID(int BillID);
         public Task<string> SaveNewBill(Bills Bill, int BudgetID);
