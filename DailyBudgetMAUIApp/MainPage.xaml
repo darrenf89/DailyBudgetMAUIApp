@@ -580,7 +580,6 @@
                             </Grid>
                         </VerticalStackLayout>
                     </Border>
-
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdPayeeDetails" IsVisible="True">
                         <VerticalStackLayout>
                             <Grid RowDefinitions="Auto,Auto,200,Auto" ColumnDefinitions="45, *, *">

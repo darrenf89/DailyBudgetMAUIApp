@@ -908,6 +908,19 @@ public partial class MainPage : ContentPage
                     _pt.SetCultureInfo(App.CurrentSettings);
 
                     break;
+                case "BudgetDeleted":
+
+                    text = $"Budget has been deleted";
+                    actionButtonText = "Ok";
+                    action = async () =>
+                    {
+                        source.Cancel();
+                    };
+                    duration = TimeSpan.FromSeconds(10);
+
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarDangerOptions).Show();
+
+                    break;
 
                 default:
                     break;
@@ -2413,6 +2426,22 @@ public partial class MainPage : ContentPage
         SwitchBudgetPicker = await _pt.SwitchBudget("Dashboard");
         MainVSLView.Children.Add(SwitchBudgetPicker);
         SwitchBudgetPicker.Focus();
+    }
+
+    private async void Upload_Clicked(object sender, EventArgs e)
+    {
+        FileResult UploadFile = await MediaPicker.PickPhotoAsync();
+
+        if (UploadFile is null) return;
+
+        if (UploadFile.OpenReadAsync().Result.Length < 3000000)
+        {
+            await _ds.UploadUserProfilePicture(App.UserDetails.UserID, UploadFile);
+        }
+        else
+        {
+
+        }        
     }
 }
 

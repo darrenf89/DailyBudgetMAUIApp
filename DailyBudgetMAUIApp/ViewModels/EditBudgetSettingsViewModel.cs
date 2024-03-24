@@ -686,6 +686,38 @@ namespace DailyBudgetMAUIApp.ViewModels
                 await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=BudgetSettingsUpdated&SnackID=0");
 
             }
+
+        }
+
+        [RelayCommand]
+        private async void DeleteBudget()
+        {
+
+            bool EditBudget = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to delete {App.DefaultBudget.BudgetName} budget?", $"Deleting the budget is permanent make sure you are sure before hitting yes?", "Yes", "No");
+            if (EditBudget)
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(100);
+
+                string result = await _ds.DeleteBudget(App.DefaultBudgetID);
+                if (result == "LastBudget")
+                {
+                    await Application.Current.MainPage.DisplayAlert($"You can't delete this!", $"You can't delete this budget as it is your last budget and you must have at least one budget on the app", "Ok");
+                }
+                else
+                {
+                    List<Budgets> Budgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, "EditBudgetSettings");
+                    await _pt.ChangeDefaultBudget(App.UserDetails.UserID, Budgets[0].BudgetID, false);
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=BudgetDeleted&SnackID=0");           
+                }                
+
+            }
         }
     }
 }

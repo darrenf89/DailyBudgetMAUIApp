@@ -319,6 +319,7 @@
                 </ScrollView>
                 <VerticalStackLayout x:Name="BtnApply" Grid.Column="0" Grid.Row="2" >
                     <Button Command="{Binding SaveBudgetSettingsCommand}" Padding="0,10,0,10" FontSize="Small" x:Name="SaveCategory" Text="Save budget settings" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Info}" Margin="10,0,10,0" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
+                    <Button Command="{Binding DeleteBudgetCommand}" Padding="0,10,0,10" FontSize="Small" Text="Delete budget" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Danger}" Margin="10,10,10,0" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
                 </VerticalStackLayout>
             </Grid>
         </AbsoluteLayout>

@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using System.Net;
 using DailySpendWebApp.Models;
 using DailyBudgetMAUIApp.Pages;
+using System.Transactions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -202,6 +204,52 @@ namespace DailyBudgetMAUIApp.DataServices
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> UploadUserProfilePicture(int UserID, FileResult File)
+        {
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                var content = new MultipartFormDataContent
+                {
+                    { new StreamContent(await File.OpenReadAsync()), "file", File.FileName }
+                };
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/userAccounts/uploaduserprofilepicture/{UserID}", content).Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return "OK";
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "UploadProfilePicture", "UploadUserProfilePicture");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "UploadProfilePicture", "UploadUserProfilePicture");
+                return null;
             }
         }
 
@@ -583,6 +631,46 @@ namespace DailyBudgetMAUIApp.DataServices
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 Debug.WriteLine($"Error Trying to  Create new Budget in DataRestServices --> {ex.Message}");
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> DeleteBudget(int BudgetID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/deletebudget/{BudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return response.ReasonPhrase;
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "DeleteBudget", "DeleteBudget");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "DeleteBudget", "DeleteBudget");
+                return null;
             }
         }
 

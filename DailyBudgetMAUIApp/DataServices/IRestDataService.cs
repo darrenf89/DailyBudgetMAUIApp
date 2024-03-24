@@ -17,6 +17,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> GetUserSaltAsync(string UserEmail);
         public string LogoutUserAsync(RegisterModel User);
         public Task<UserDetailsModel> GetUserDetailsAsync(string UserEmail);
+        public Task<string> UploadUserProfilePicture(int UserID, FileResult File);
         public Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog);
         public Task<Budgets> GetBudgetDetailsAsync(int BudgetID, string Mode);
         public Task<DateTime> GetBudgetLastUpdatedAsync(int BudgetID);
@@ -26,6 +27,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<BudgetSettingValues> GetBudgetSettingsValues(int BudgetID);
         public Task<BudgetSettings> GetBudgetSettings(int BudgetID);
         public Task<Budgets> CreateNewBudget(string UserEmail, string? BudgetType = "Basic");
+        public Task<string> DeleteBudget(int BudgetID);
         public Task<List<lut_CurrencySymbol>> GetCurrencySymbols(string SearchQuery);
         public Task<List<lut_CurrencyPlacement>> GetCurrencyPlacements(string SearchQuery);
         public Task<List<lut_BudgetTimeZone>> GetBudgetTimeZones(string SearchQuery);
