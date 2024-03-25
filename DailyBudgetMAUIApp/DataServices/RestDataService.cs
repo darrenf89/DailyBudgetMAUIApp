@@ -634,7 +634,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public async Task<string> DeleteBudget(int BudgetID)
+        public async Task<string> DeleteBudget(int BudgetID, int UserID)
         {
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
@@ -644,7 +644,7 @@ namespace DailyBudgetMAUIApp.DataServices
             try
             {
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/deletebudget/{BudgetID}").Result;
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/deletebudget/{BudgetID}/{UserID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
 

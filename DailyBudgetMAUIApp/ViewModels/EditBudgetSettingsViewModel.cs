@@ -705,10 +705,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 await Task.Delay(100);
 
-                string result = await _ds.DeleteBudget(App.DefaultBudgetID);
+                string result = await _ds.DeleteBudget(App.DefaultBudgetID, App.UserDetails.UserID);
                 if (result == "LastBudget")
                 {
                     await Application.Current.MainPage.DisplayAlert($"You can't delete this!", $"You can't delete this budget as it is your last budget and you must have at least one budget on the app", "Ok");
+                }
+                else if(result == "SharedBudget")
+                {
+                    await Application.Current.MainPage.DisplayAlert($"This is a shared budget!", $"You can't delete a budget that you didnt create, someone kindly shared it with you so don't try and delete it", "Ok");
                 }
                 else
                 {
