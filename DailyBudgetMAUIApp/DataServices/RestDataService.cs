@@ -650,7 +650,14 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     if (response.IsSuccessStatusCode)
                     {
-                        return response.ReasonPhrase;
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            Dictionary<string,string> result = serializer.Deserialize<Dictionary<string, string>>(reader);
+                            string returnString = result["result"];
+                            return returnString;
+                        }
+
                     }
                     else
                     {

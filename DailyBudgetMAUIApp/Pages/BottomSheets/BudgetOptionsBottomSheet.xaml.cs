@@ -4,6 +4,7 @@ using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Handlers;
 using The49.Maui.BottomSheet;
 using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages.BottomSheets;
 
@@ -114,9 +115,26 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
     }
 
-    private void EditBudgetSettings_Tapped(object sender, TappedEventArgs e)
+    private async void EditBudgetSettings_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
+        }
 
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
+
+        await Task.Delay(500);
+
+        EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()));
+
+        await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
     }
 
     private void SyncBankBalance_Tapped(object sender, TappedEventArgs e)
@@ -217,6 +235,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
     private async void SwitchBudget_Tapped(object sender, TappedEventArgs e)
     {
         SwitchBudgetPicker = await _pt.SwitchBudget("Budget Options");
+        SwitchBudgetPicker.HeightRequest = 0.1;
         MainVSL.Children.Add(SwitchBudgetPicker);
         SwitchBudgetPicker.Focus();
     }

@@ -96,7 +96,18 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         private async void GoToAccountSettings(object obj)
         {
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
+            await Task.Delay(500);
+
+            EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()));
+
+            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
         }
 
         [RelayCommand]

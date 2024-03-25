@@ -350,8 +350,8 @@ public partial class MainPage : ContentPage
             {
                 SchedulerAppointment BillEvent = new SchedulerAppointment
                 {
-                    StartTime = bill.BillDueDate.GetValueOrDefault().Date,
-                    EndTime = bill.BillDueDate.GetValueOrDefault().Date.AddMinutes(1439),
+                    StartTime = BillDate.Date,
+                    EndTime = BillDate.Date.AddMinutes(1439),
                     Subject = $"{bill.BillAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} outgoing for {bill.BillName}",
                     IsReadOnly = true,
                     Background = App.ChartColor[3],
@@ -381,8 +381,8 @@ public partial class MainPage : ContentPage
             {
                 SchedulerAppointment IncomeEvent = new SchedulerAppointment
                 {
-                    StartTime = income.DateOfIncomeEvent.Date,
-                    EndTime = income.DateOfIncomeEvent.Date.AddMinutes(1439),
+                    StartTime = IncomeDate.Date,
+                    EndTime = IncomeDate.Date.AddMinutes(1439),
                     Subject = $"{income.IncomeAmount.ToString("c", CultureInfo.CurrentCulture)} income for {income.IncomeName}",
                     IsReadOnly = true,
                     Background = App.ChartColor[4],
@@ -2313,7 +2313,7 @@ public partial class MainPage : ContentPage
 
     private async void QuickTransaction_Tapped(object sender, TappedEventArgs e)
     {
-        if (brdTransactionAmount.Opacity == 0)
+        if (!brdTransactionAmount.IsVisible)
         {
             var a1 = brdTransaction.RotateTo(90, 250, Easing.CubicOut);
             var a2 = brdTransactionAmount.FadeTo(1, 250, Easing.CubicOut);

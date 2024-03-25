@@ -94,6 +94,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Pages\EditAccountSettings.xaml.cs">
+	    <DependentUpon>EditAccountSettings.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\EditBudgetSettings.xaml.cs">
 	    <DependentUpon>EditBudgetSettings.xaml</DependentUpon>
 	  </Compile>
@@ -176,6 +179,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Handlers\ButtonControlActivityIndicator.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\EditAccountSettings.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\EditBudgetSettings.xaml">
