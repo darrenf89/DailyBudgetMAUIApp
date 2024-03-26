@@ -1,11 +1,7 @@
 using DailyBudgetMAUIApp.ViewModels;
-using The49.Maui.BottomSheet;
 using Microsoft.Maui.Layouts;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using IeuanWalker.Maui.Switch.Events;
-using IeuanWalker.Maui.Switch.Helpers;
-using IeuanWalker.Maui.Switch;
+using Syncfusion.Maui.Core;
+
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -19,7 +15,7 @@ public partial class EditAccountSettings : ContentPage
 
     public EditAccountSettings(EditAccountSettingsViewModel viewModel)
 	{
-		InitializeComponent();
+		InitializeComponent();      
 
         this.BindingContext = viewModel;
         _vm = viewModel;
@@ -39,6 +35,29 @@ public partial class EditAccountSettings : ContentPage
         MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
 
         lblTitle.Text = $"Account settings";
+        
+        if(_vm.User.ProfilePicture.Contains("Avatar"))
+        {
+            ProfilePicture.ContentType = ContentType.AvatarCharacter;
+            bool Success = Enum.TryParse(_vm.User.ProfilePicture, out AvatarCharacter Avatar);
+            if(Success)
+            {
+                ProfilePicture.AvatarCharacter = Avatar;
+                int Number = Convert.ToInt32(_vm.User.ProfilePicture[_vm.User.ProfilePicture.Length - 1]);
+                Math.DivRem(Number, 8, out int index);
+                ProfilePicture.Background = App.ChartColor[index];;
+            }
+            else
+            {
+                 ProfilePicture.AvatarCharacter = AvatarCharacter.Avatar1;
+                 ProfilePicture.Background = App.ChartColor[1];
+            }
+        }
+        else
+        {
+            
+        }
+        
 
         if (App.CurrentPopUp != null)
         {

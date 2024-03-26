@@ -16,6 +16,7 @@ namespace DailyBudgetMAUIApp.Models
         public bool isAgreedToTerms { get; set; }
         public string? SubscriptionType { get; set; }
         public DateTime SubscriptionExpiry { get; set; }
+        public string? ProfilePicture {get; set;}
 
     }
 }

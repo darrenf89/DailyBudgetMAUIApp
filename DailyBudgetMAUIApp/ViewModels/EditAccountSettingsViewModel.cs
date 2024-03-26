@@ -15,6 +15,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
 
+        [ObservableProperty]
+        private UserDetailsModel user;
+
         public EditAccountSettingsViewModel(IProductTools pt, IRestDataService ds)
         {
             _pt = pt;
@@ -23,8 +26,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         
         public async Task OnLoad()
         {
-
-            
+               
         }
 
         [RelayCommand]
