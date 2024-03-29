@@ -80,7 +80,7 @@ namespace DailyBudgetMAUIApp.Converters
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null) return null;
+            if (value == null) return "";
 
             if ((bool)value)
             {
@@ -95,7 +95,7 @@ namespace DailyBudgetMAUIApp.Converters
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return null;
+            return "";
         }
 
     }
@@ -119,7 +119,7 @@ namespace DailyBudgetMAUIApp.Converters
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return null;
+            return "";
         }
     }
 

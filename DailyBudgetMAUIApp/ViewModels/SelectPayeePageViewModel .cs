@@ -4,6 +4,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
+    [QueryProperty(nameof(Transaction), nameof(Transaction))]
+    [QueryProperty(nameof(Bill), nameof(Bill))]
+    [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
+    [QueryProperty(nameof(PageType), nameof(PageType))]
     public partial class SelectPayeePageViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;

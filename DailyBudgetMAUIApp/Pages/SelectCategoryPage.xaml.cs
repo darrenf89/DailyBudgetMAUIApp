@@ -18,6 +18,17 @@ public partial class SelectCategoryPage : ContentPage
     private Dictionary<string, Button> CatFilterButton = new Dictionary<string, Button>();
     private List<int> FilteredGroupCat = new List<int>();
 
+    public SelectCategoryPage(IRestDataService ds, IProductTools pt, SelectCategoryPageViewModel viewModel)
+    {
+        _ds = ds;
+        _pt = pt;
+
+        InitializeComponent();
+
+        this.BindingContext = viewModel;
+        _vm = viewModel;
+    }
+
     public SelectCategoryPage(int BudgetID, Transactions Transaction, IRestDataService ds, IProductTools pt, SelectCategoryPageViewModel viewModel)
 	{
         if(Transaction.Category == null)
@@ -69,6 +80,12 @@ public partial class SelectCategoryPage : ContentPage
         LoadCategoryFilter();
 
     }
+
+    async protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+    }
+
 
     private void LoadCategoryFilter()
     {
@@ -604,7 +621,7 @@ public partial class SelectCategoryPage : ContentPage
             _vm.Transaction.Category = Category.CategoryName;
             _vm.Transaction.CategoryID = Category.CategoryID;
 
-            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
+            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage",
                 new Dictionary<string, object>
                 {
                     ["Transaction"] = _vm.Transaction
@@ -653,7 +670,7 @@ public partial class SelectCategoryPage : ContentPage
         _vm.Transaction.Category = "";
         _vm.Transaction.CategoryID = 0;
 
-        await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
+        await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage",
         new Dictionary<string, object>
         {
             ["Transaction"] = _vm.Transaction

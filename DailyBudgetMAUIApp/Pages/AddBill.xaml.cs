@@ -537,8 +537,15 @@ public partial class AddBill : ContentPage
 
         SaveBillTypeOptions();
 
-        var page = new SelectPayeePage(_vm.BudgetID, _vm.Bill, new RestDataService(), new ProductTools(new RestDataService()), new SelectPayeePageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-        await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+        if (_vm.Bill.BillPayee is null)
+        {
+            _vm.Bill.BillPayee = "";
+        }
+        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
+            new Dictionary<string, object>
+            {
+                ["Bill"] = _vm.Bill
+            });
     }
 
     private void HideKeyBoard()

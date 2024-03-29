@@ -34,8 +34,8 @@ public partial class EditAccountSettings : ContentPage
         MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
         MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
 
-        lblTitle.Text = $"Account settings";
-        
+        _vm.OnLoad();
+
         if(_vm.User.ProfilePicture.Contains("Avatar"))
         {
             ProfilePicture.ContentType = ContentType.AvatarCharacter;
@@ -45,7 +45,7 @@ public partial class EditAccountSettings : ContentPage
                 ProfilePicture.AvatarCharacter = Avatar;
                 int Number = Convert.ToInt32(_vm.User.ProfilePicture[_vm.User.ProfilePicture.Length - 1]);
                 Math.DivRem(Number, 8, out int index);
-                ProfilePicture.Background = App.ChartColor[index];;
+                ProfilePicture.Background = App.ChartColor[index];
             }
             else
             {

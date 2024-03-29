@@ -53,4 +53,12 @@
         <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewFilteredTransactions}"/>
     </ShellItem>
 
+    <ShellItem Route="SelectPayeePage" FlyoutItemIsVisible="True">
+        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:SelectPayeePage}"/>
+    </ShellItem>
+
+    <ShellItem Route="SelectCategoryPage" FlyoutItemIsVisible="True">
+        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:SelectCategoryPage}"/>
+    </ShellItem>
+
 </Shell>

@@ -5,6 +5,8 @@ using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
+    [QueryProperty(nameof(Transaction),nameof(Transaction))]
+    [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     public partial class SelectCategoryPageViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -28,8 +30,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool  isFilterShown = false;
         [ObservableProperty]
         private double  sortFilterHeight = 326;
-
-
 
         public double ScreenWidth { get; }
         public double EntryWidth { get; }

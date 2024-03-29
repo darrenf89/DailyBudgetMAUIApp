@@ -1758,7 +1758,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             });
 
-            App.MainTabBar.Items.Add(new ShellContentDI()
+            App.MainTabBar.Items.Add(new ShellContent()
             {
                 Title = "Transaction",
                 Route = "AddTransactions",
@@ -1818,7 +1818,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
-            App.MainTabBar.Items.Add(new ShellContentDI()
+            App.MainTabBar.Items.Add(new ShellContent()
             {
                 Title = "Transaction",
                 Route = "AddTransactions",
@@ -1894,7 +1894,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             });
 
-            App.MainTabBar.Items.Add(new ShellContentDI()
+            App.MainTabBar.Items.Add(new ShellContent()
             {
                 Title = "Transaction",
                 Route = "AddTransactions",

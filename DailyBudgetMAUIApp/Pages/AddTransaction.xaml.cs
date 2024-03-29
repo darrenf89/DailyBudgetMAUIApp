@@ -6,6 +6,8 @@ using IeuanWalker.Maui.Switch;
 using IeuanWalker.Maui.Switch.Events;
 using IeuanWalker.Maui.Switch.Helpers;
 using Microsoft.Maui.Handlers;
+using DailyBudgetMAUIApp.Handlers;
+using CommunityToolkit.Maui.Views;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -35,14 +37,25 @@ public partial class AddTransaction : ContentPage
         }
     }
 
+    async protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    {
+        base.OnNavigatedFrom(args);
+        _vm.NavigatedFrom = "";
+    }
+
     async protected override void OnAppearing()
     {
         base.OnAppearing();
 
-
-        if (_vm.BudgetID == 0)
+        if(string.IsNullOrEmpty(_vm.NavigatedFrom))
         {
+            _vm.Transaction = null;
+            _vm.TransactionID = 0;
             _vm.BudgetID = App.DefaultBudgetID;
+            _vm.IsFutureDatedTransaction = false;
+            _vm.IsPayee = false;
+            _vm.IsSpendCategory = false;
+            _vm.IsNote = false;
         }
 
         if (_vm.TransactionID == 0)
@@ -50,7 +63,8 @@ public partial class AddTransaction : ContentPage
             if(_vm.Transaction == null)
             {
                 _vm.Transaction = new Transactions();
-
+                _vm.Transaction.Payee = "";
+                _vm.Transaction.IsIncome = false;
                 _vm.Transaction.EventType = "Transaction";
                 _vm.Title = "Add a New Transaction";
                 btnAddTransaction.IsVisible = true;
@@ -218,6 +232,13 @@ public partial class AddTransaction : ContentPage
             bool result = await DisplayAlert("Add New Transaction", $"You are adding {TransactionType} for {TransactionAmount}, are you sure you want to continue?", "Yes, continue", "Cancel");
             if (result)
             {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
                 _vm.Transaction = _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID).Result;
                 if (_vm.Transaction.TransactionID != 0)
                 {
@@ -257,6 +278,13 @@ public partial class AddTransaction : ContentPage
             bool result = await DisplayAlert("Update A Transaction", $"You are updating {TransactionType} to {TransactionAmount}, are you sure you want to?", "Yes, continue", "Cancel");
             if (result)
             {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
                 string status = _ds.UpdateTransaction(_vm.Transaction).Result;
                 if (status == "OK")
                 {
@@ -324,20 +352,28 @@ public partial class AddTransaction : ContentPage
         edtNotes.IsEnabled = true;
 
         if (!_vm.IsPayee)
-        {            
-            _vm.Transaction.Payee = "";
+        {        
+            if(_vm.Transaction is not null)
+            {
+                _vm.Transaction.Payee = "";
+            }            
         }
         else
         {
-            var page = new SelectPayeePage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectPayeePageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+            if (_vm.Transaction.Payee is null)
+            {
+                _vm.Transaction.Payee = "";
+            }
+            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = _vm.Transaction
+                });
         }
     }
 
     private async void swhSpendCategory_Toggled(object sender, ToggledEventArgs e)
     {
-
-
         entTransactionAmount.IsEnabled = false;
         entTransactionAmount.IsEnabled = true;
         edtNotes.IsEnabled = false;
@@ -345,13 +381,25 @@ public partial class AddTransaction : ContentPage
 
         if (!_vm.IsSpendCategory)
         {
-            _vm.Transaction.Category = "";
-            _vm.Transaction.CategoryID = 0;
+            if (_vm.Transaction is not null)
+            {
+                _vm.Transaction.Category = "";
+                _vm.Transaction.CategoryID = 0;
+            }
         }
         else
         {
-            var page = new SelectCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-            await Navigation.PushModalAsync(page, true);
+            if (_vm.Transaction.Category == null)
+            {
+                _vm.Transaction.Category = "";
+                _vm.Transaction.CategoryID = 0;
+            }
+
+            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = _vm.Transaction
+                });
         }
     }
 
@@ -364,10 +412,14 @@ public partial class AddTransaction : ContentPage
 
         if (!_vm.Transaction.IsSpendFromSavings)
         {
-            _vm.Transaction.SavingName = "";
-            _vm.Transaction.SavingID = 0;
-            _vm.Transaction.SavingsSpendType = "";
-            _vm.Transaction.EventType = "Transaction";
+            if (_vm.Transaction is not null)
+            {
+                _vm.Transaction.SavingName = "";
+                _vm.Transaction.SavingID = 0;
+                _vm.Transaction.SavingsSpendType = "";
+                _vm.Transaction.EventType = "Transaction";
+            }
+
         }
         else
         {
@@ -473,8 +525,11 @@ public partial class AddTransaction : ContentPage
         edtNotes.IsEnabled = false;
         edtNotes.IsEnabled = true;
 
-        var page = new SelectPayeePage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectPayeePageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-        await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
+            new Dictionary<string, object>
+            {
+                ["Transaction"] = _vm.Transaction
+            });
     }
 
     private async void ChangeSelectedCategory_Tapped(object sender, TappedEventArgs e)
@@ -484,19 +539,11 @@ public partial class AddTransaction : ContentPage
         edtNotes.IsEnabled = false;
         edtNotes.IsEnabled = true;
 
-        if (_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
-        {
-            bool result = await Shell.Current.DisplayAlert("Sorry can't do that", "To change the savings that you want to spend you need to go back and start again!","Ok","Cancel");
-            if(result)
+        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}",
+            new Dictionary<string, object>
             {
-                await Shell.Current.GoToAsync($"///{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
-            }
-        }
-        else
-        {
-            var page = new SelectCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-            await Navigation.PushModalAsync(page, true);
-        }
+                ["Transaction"] = _vm.Transaction
+            });        
     }
 
     private async void ChangeSelectedSaving_Tapped(object sender, TappedEventArgs e)
@@ -506,8 +553,18 @@ public partial class AddTransaction : ContentPage
         edtNotes.IsEnabled = false;
         edtNotes.IsEnabled = true;
 
-        var page = new SelectSavingCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectSavingCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-        await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+        if (_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
+        {
+            bool result = await Shell.Current.DisplayAlert("Sorry can't do that", "To change the savings that you want to spend you need to go back and start again!", "Ok", "Cancel");
+            if (result)
+            {
+                await Shell.Current.GoToAsync($"///{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
+            }
+        }
+        else
+        {
+            var page = new SelectSavingCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectSavingCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
+            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+        }
     }
-
 }

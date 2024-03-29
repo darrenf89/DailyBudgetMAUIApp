@@ -81,7 +81,7 @@
                     <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40">
                         <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsPayee}"  SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhPayee_Toggled"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
-                            <Label HorizontalOptions="End" Text="{Binding IsPayee, Converter={StaticResource IsPayeeText}}" TextColor="{StaticResource Gray400}" FontSize="Medium" Padding="0,0,5,0"/>
+                            <Label IsVisible="{Binding IsPayee, Converter={StaticResource BoolConverter}}" HorizontalOptions="End" Text="{Binding IsPayee, Converter={StaticResource IsPayeeText}}" TextColor="{StaticResource Gray400}" FontSize="Medium" Padding="0,0,5,0"/>
                             <Label IsVisible="{Binding IsPayee}" HorizontalOptions="End" Text="{Binding Transaction.Payee}" TextColor="{StaticResource Primary}" FontSize="Medium" Padding="0,0,5,0" FontAttributes="Bold">
                                 <Label.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="ChangeSelectedPayee_Tapped" />

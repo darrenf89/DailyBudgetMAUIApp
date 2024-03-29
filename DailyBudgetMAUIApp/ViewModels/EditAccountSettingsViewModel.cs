@@ -26,7 +26,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         
         public async Task OnLoad()
         {
-               
+            User = App.UserDetails;
         }
 
         [RelayCommand]

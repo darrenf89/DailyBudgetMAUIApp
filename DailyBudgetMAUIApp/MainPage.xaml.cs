@@ -311,7 +311,6 @@ public partial class MainPage : ContentPage
             {
                 StartTime = transaction.TransactionDate.GetValueOrDefault().Date,
                 EndTime = transaction.TransactionDate.GetValueOrDefault().Date.AddMinutes(1439),
-                Subject = $"Upcoming transaction for {transaction.TransactionDate.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)}",
                 IsReadOnly = true,
                 Background = App.ChartColor[5],
                 TextColor = (Color)White,
@@ -2329,6 +2328,8 @@ public partial class MainPage : ContentPage
 
             brdTransactionAmount.Shadow = shadow;
             brdTransactionAmount.IsVisible = true;
+            brdTransactionAmount.IsVisible = false;
+            brdTransactionAmount.IsVisible = true;
         }
         else
         {
@@ -2341,6 +2342,8 @@ public partial class MainPage : ContentPage
             var a3 = btnTransactionAmount.FadeTo(0, 250, Easing.CubicOut);
 
             await Task.WhenAll(a1, a2, a3);
+            brdTransactionAmount.IsVisible = false;
+            brdTransactionAmount.IsVisible = true;
             brdTransactionAmount.IsVisible = false;
         }      
     }
