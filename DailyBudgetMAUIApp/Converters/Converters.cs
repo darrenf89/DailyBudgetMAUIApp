@@ -76,6 +76,30 @@ namespace DailyBudgetMAUIApp.Converters
 
     }
 
+    public class CategoryText : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return "No Category Selected";
+
+            if (string.IsNullOrEmpty((string)value))
+            {
+                return "No Category Selected";
+            }
+            else
+            {
+                return (string)value;
+            }
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
     public class IsPayeeText : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)

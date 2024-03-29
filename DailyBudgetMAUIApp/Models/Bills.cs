@@ -31,10 +31,9 @@ namespace DailyBudgetMAUIApp.Models
         public decimal?  regularBillValue;
         [ObservableProperty]
         public string  billPayee;
-
-
-    }
-
-    
-
+        [ObservableProperty]
+        public string category = "";
+        [ObservableProperty]
+        public int categoryID;
+    }  
 }

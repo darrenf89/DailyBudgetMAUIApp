@@ -37,6 +37,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ViewCalendar), typeof(ViewCalendar));
         Routing.RegisterRoute(nameof(SelectPayeePage), typeof(SelectPayeePage));
         Routing.RegisterRoute(nameof(SelectCategoryPage), typeof(SelectCategoryPage));
+        Routing.RegisterRoute(nameof(SelectSavingCategoryPage), typeof(SelectSavingCategoryPage));
 
         App.MainTabBar = MainTabBar;
         App.ViewTabBar = ViewTabBar;

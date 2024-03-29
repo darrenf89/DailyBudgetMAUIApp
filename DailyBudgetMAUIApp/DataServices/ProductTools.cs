@@ -856,16 +856,8 @@ namespace DailyBudgetMAUIApp.DataServices
             BillTransaction.Notes = $"Transaction added for bill, {Bill.BillName}";
             BillTransaction.IsTransacted = true;
             BillTransaction.Payee = Bill.BillPayee;
-
-            if(!string.IsNullOrEmpty(Bill.BillPayee))
-            {
-                Categories? LastCategory = _ds.GetPayeeLastCategory(App.DefaultBudgetID, Bill.BillPayee).Result;
-                if(LastCategory != null)
-                {
-                    BillTransaction.Category = LastCategory.CategoryName;
-                    BillTransaction.CategoryID = LastCategory.CategoryID;
-                }
-            }
+            BillTransaction.Category = Bill.Category;
+            BillTransaction.CategoryID = Bill.CategoryID;
 
             BillTransaction = _ds.SaveNewTransaction(BillTransaction, BudgetID).Result;
 
@@ -1766,9 +1758,9 @@ namespace DailyBudgetMAUIApp.DataServices
                 ContentTemplate = new DataTemplate(() => new AddTransaction(new AddTransactionViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
-            App.MainTabBar.Items.Add(new ShellContentDI()
+            App.MainTabBar.Items.Add(new ShellContent()
             {
-                Title = "Bill",
+                Title = "Outgoings",
                 Route = "AddBill",
                 Icon = "bill.svg",
                 ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
@@ -1810,9 +1802,9 @@ namespace DailyBudgetMAUIApp.DataServices
 
             });
 
-            App.MainTabBar.Items.Add(new ShellContentDI()
+            App.MainTabBar.Items.Add(new ShellContent()
             {
-                Title = "Bill",
+                Title = "Outgoings",
                 Route = "AddBill",
                 Icon = "bill.svg",
                 ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
@@ -1902,9 +1894,9 @@ namespace DailyBudgetMAUIApp.DataServices
                 ContentTemplate = new DataTemplate(() => new AddTransaction(new AddTransactionViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
-            App.MainTabBar.Items.Add(new ShellContentDI()
+            App.MainTabBar.Items.Add(new ShellContent()
             {
-                Title = "Bill",
+                Title = "Outgoings",
                 Route = "AddBill",
                 Icon = "bill.svg",
                 ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))

@@ -331,14 +331,27 @@ public partial class SelectCategoryPage : ContentPage
                         };
 
                         string SubCatImageGlyph = "";
-
-                        if (_vm.Transaction.CategoryID == SubCat.CategoryID)
+                        if(_vm.PageType == "Transaction")
                         {
-                            SubCatImageGlyph = "\ue837";
+                            if (_vm.Transaction.CategoryID == SubCat.CategoryID)
+                            {
+                                SubCatImageGlyph = "\ue837";
+                            }
+                            else
+                            {
+                                SubCatImageGlyph = "\ue836";
+                            }
                         }
-                        else
+                        else if(_vm.PageType == "Bill")
                         {
-                            SubCatImageGlyph = "\ue836";
+                            if (_vm.Bill.CategoryID == SubCat.CategoryID)
+                            {
+                                SubCatImageGlyph = "\ue837";
+                            }
+                            else
+                            {
+                                SubCatImageGlyph = "\ue836";
+                            }
                         }
 
                         Image SubCatImage = new Image
@@ -615,17 +628,35 @@ public partial class SelectCategoryPage : ContentPage
 
         Categories Category = (Categories)e.Parameter;
 
-        bool result = await DisplayAlert($"Select {Category.CategoryName}", $"Are you sure you want to select {Category.CategoryName} as the Category?", "Yes, continue", "No, go back!");
-        if (result)
+        if (_vm.PageType == "Transaction")
         {
-            _vm.Transaction.Category = Category.CategoryName;
-            _vm.Transaction.CategoryID = Category.CategoryID;
+            bool result = await DisplayAlert($"Select {Category.CategoryName}", $"Are you sure you want to select {Category.CategoryName} as the Category?", "Yes, continue", "No, go back!");
+            if (result)
+            {
+                _vm.Transaction.Category = Category.CategoryName;
+                _vm.Transaction.CategoryID = Category.CategoryID;
 
-            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage",
-                new Dictionary<string, object>
-                {
-                    ["Transaction"] = _vm.Transaction
-                });
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&TransactionID={_vm.Transaction.TransactionID}",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = _vm.Transaction
+                    });
+            }
+        }
+        else if (_vm.PageType == "Bill")
+        {
+            bool result = await DisplayAlert($"Select {Category.CategoryName}", $"Are you sure you want to select {Category.CategoryName} as the Category?", "Yes, continue", "No, go back!");
+            if (result)
+            {
+                _vm.Bill.Category = Category.CategoryName;
+                _vm.Bill.CategoryID = Category.CategoryID;
+
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&BillID={_vm.Bill.BillID}",
+                    new Dictionary<string, object>
+                    {
+                        ["Bill"] = _vm.Bill
+                    });
+            }
         }
     }
 
@@ -667,14 +698,29 @@ public partial class SelectCategoryPage : ContentPage
 
     private async void BackButton_Clicked(object sender, EventArgs e)
     {
-        _vm.Transaction.Category = "";
-        _vm.Transaction.CategoryID = 0;
-
-        await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage",
-        new Dictionary<string, object>
+        if(_vm.PageType=="Transaction")
         {
-            ["Transaction"] = _vm.Transaction
-        });
+            _vm.Transaction.Category = "";
+            _vm.Transaction.CategoryID = 0;
+
+            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&TransactionID={_vm.Transaction.TransactionID}",
+            new Dictionary<string, object>
+            {
+                ["Transaction"] = _vm.Transaction
+            });
+        }
+        else if(_vm.PageType=="Bill")
+        {
+            _vm.Bill.Category = "";
+            _vm.Bill.CategoryID = 0;
+
+            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&BillID={_vm.Bill.BillID}",
+            new Dictionary<string, object>
+            {
+                ["Bill"] = _vm.Bill
+            });
+        }
+
     }
 
     private async void ShowHideSortFiler_Tapped(object sender, TappedEventArgs e)

@@ -56,6 +56,11 @@ public partial class AddTransaction : ContentPage
             _vm.IsPayee = false;
             _vm.IsSpendCategory = false;
             _vm.IsNote = false;
+            _vm.RedirectTo = "";
+        }
+        else if(string.Equals(_vm.NavigatedFrom, "ViewTransactions", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewSavings", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase))
+        {
+            _vm.RedirectTo = _vm.NavigatedFrom;
         }
 
         if (_vm.TransactionID == 0)
@@ -242,11 +247,11 @@ public partial class AddTransaction : ContentPage
                 _vm.Transaction = _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID).Result;
                 if (_vm.Transaction.TransactionID != 0)
                 {
-                    if (_vm.NavigatedFrom == "ViewSavings")
+                    if (_vm.RedirectTo == "ViewSavings")
                     {
                         await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
                     }
-                    else if (_vm.NavigatedFrom == "ViewEnvelopes")
+                    else if (_vm.RedirectTo == "ViewEnvelopes")
                     {
                         await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
                     }
@@ -288,15 +293,15 @@ public partial class AddTransaction : ContentPage
                 string status = _ds.UpdateTransaction(_vm.Transaction).Result;
                 if (status == "OK")
                 {
-                    if (_vm.NavigatedFrom == "ViewTransactions")
+                    if (_vm.RedirectTo == "ViewTransactions")
                     {
                         await Shell.Current.GoToAsync($"///{nameof(ViewTransactions)}");
                     }
-                    else if (_vm.NavigatedFrom == "ViewSavings")
+                    else if (_vm.RedirectTo == "ViewSavings")
                     {
                         await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
                     }
-                    else if (_vm.NavigatedFrom == "ViewEnvelopes")
+                    else if (_vm.RedirectTo == "ViewEnvelopes")
                     {
                         await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
                     }
@@ -395,7 +400,7 @@ public partial class AddTransaction : ContentPage
                 _vm.Transaction.CategoryID = 0;
             }
 
-            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}",
+            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
                 new Dictionary<string, object>
                 {
                     ["Transaction"] = _vm.Transaction
@@ -410,22 +415,37 @@ public partial class AddTransaction : ContentPage
         edtNotes.IsEnabled = false;
         edtNotes.IsEnabled = true;
 
-        if (!_vm.Transaction.IsSpendFromSavings)
+        if (_vm.Transaction is null)
         {
-            if (_vm.Transaction is not null)
-            {
-                _vm.Transaction.SavingName = "";
-                _vm.Transaction.SavingID = 0;
-                _vm.Transaction.SavingsSpendType = "";
-                _vm.Transaction.EventType = "Transaction";
-            }
-
+            _vm.Transaction.SavingName = "";
+            _vm.Transaction.SavingID = 0;
+            _vm.Transaction.SavingsSpendType = "";
+            _vm.Transaction.EventType = "Transaction";
         }
         else
         {
-            var page = new SelectSavingCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectSavingCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+            if (!_vm.Transaction.IsSpendFromSavings)
+            {
+                if (_vm.Transaction is not null)
+                {
+                    _vm.Transaction.SavingName = "";
+                    _vm.Transaction.SavingID = 0;
+                    _vm.Transaction.SavingsSpendType = "";
+                    _vm.Transaction.EventType = "Transaction";
+                }
+
+            }
+            else
+            {
+                await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectSavingCategoryPage)}?BudgetID={_vm.BudgetID}",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = _vm.Transaction
+                    });
+
+            }
         }
+
     }
 
 
@@ -539,7 +559,7 @@ public partial class AddTransaction : ContentPage
         edtNotes.IsEnabled = false;
         edtNotes.IsEnabled = true;
 
-        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}",
+        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
             new Dictionary<string, object>
             {
                 ["Transaction"] = _vm.Transaction
@@ -563,8 +583,11 @@ public partial class AddTransaction : ContentPage
         }
         else
         {
-            var page = new SelectSavingCategoryPage(_vm.BudgetID, _vm.Transaction, new RestDataService(), new ProductTools(new RestDataService()), new SelectSavingCategoryPageViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectSavingCategoryPage)}?BudgetID={_vm.BudgetID}",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = _vm.Transaction
+                });
         }
     }
 }

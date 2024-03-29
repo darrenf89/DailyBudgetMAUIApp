@@ -35,6 +35,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string  billName;
         [ObservableProperty]
         private string  billPayee;
+        [ObservableProperty]
+        private string billCategory;
+        [ObservableProperty]
+        private string redirectTo;
 
 
         public string BillTypeText { get; set; } = "";
@@ -61,7 +65,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     Bill.BillName = "";
                     Bill.BillPayee = "";
-                    if (NavigatedFrom == "CreateNewBudget")
+                    if (RedirectTo == "CreateNewBudget")
                     {
                         if (App.CurrentPopUp == null)
                         {
@@ -71,7 +75,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         }
                         await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
                     }
-                    else if (NavigatedFrom == "ViewBills")
+                    else if (RedirectTo == "ViewBills")
                     {
                         if (App.CurrentPopUp == null)
                         {
@@ -109,7 +113,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     Bill.BillName = "";
                     Bill.BillPayee = "";
-                    if (NavigatedFrom == "CreateNewBudget")
+                    if (RedirectTo == "CreateNewBudget")
                     {
                         if (App.CurrentPopUp == null)
                         {
@@ -120,7 +124,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
                     }
-                    else if (NavigatedFrom == "ViewBills")
+                    else if (RedirectTo == "ViewBills")
                     {
                         if (App.CurrentPopUp == null)
                         {
@@ -153,7 +157,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             Bill.BillName = "";
             Bill.BillPayee = "";
-            if (NavigatedFrom == "CreateNewBudget")
+            if (RedirectTo == "CreateNewBudget")
             {
                 if (App.CurrentPopUp == null)
                 {
@@ -164,7 +168,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
             }
-            else if (NavigatedFrom == "ViewBills")
+            else if (RedirectTo == "ViewBills")
             {
                 if (App.CurrentPopUp == null)
                 {

@@ -16,7 +16,16 @@ public partial class SelectSavingCategoryPage : ContentPage
 	private readonly IProductTools _pt;
 	private readonly SelectSavingCategoryPageViewModel _vm;
 
+    public SelectSavingCategoryPage(IRestDataService ds, IProductTools pt, SelectSavingCategoryPageViewModel viewModel)
+    {
+        _ds = ds;
+        _pt = pt;
 
+        InitializeComponent();
+
+        this.BindingContext = viewModel;
+        _vm = viewModel;
+    }
     public SelectSavingCategoryPage(int BudgetID, Transactions Transaction, IRestDataService ds, IProductTools pt, SelectSavingCategoryPageViewModel viewModel)
 	{
         if(Transaction.Category == null)
@@ -36,12 +45,19 @@ public partial class SelectSavingCategoryPage : ContentPage
         _vm.Transaction = Transaction;
         _vm.BudgetID = BudgetID;
 
+       
+    }
+
+    async protected override void OnAppearing()
+    {
+       base.OnAppearing();
+
         _vm.EnvelopeSavingList = _ds.GetBudgetEnvelopeSaving(_vm.BudgetID).Result;
 
         decimal Total = 0;
         decimal Balance = 0;
 
-        foreach(Savings Saving in _vm.EnvelopeSavingList)
+        foreach (Savings Saving in _vm.EnvelopeSavingList)
         {
             Total += Saving.PeriodSavingValue.GetValueOrDefault();
             Balance += Saving.CurrentBalance.GetValueOrDefault();
@@ -63,11 +79,6 @@ public partial class SelectSavingCategoryPage : ContentPage
 
         _vm.EnvelopeFilteredSavingList = _vm.EnvelopeSavingList;
         LoadSavingList();
-    }
-
-    async protected override void OnAppearing()
-    {
-       base.OnAppearing();
 
         if (App.CurrentPopUp != null)
         {
@@ -237,11 +248,11 @@ public partial class SelectSavingCategoryPage : ContentPage
             _vm.Transaction.SavingsSpendType = "EnvelopeSaving";
             _vm.Transaction.EventType = "Envelope";
 
-            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
-                new Dictionary<string, object>
-                {
-                    ["Transaction"] = _vm.Transaction
-                });
+            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectSavingCategoryPage&TransactionID={_vm.Transaction.TransactionID}",
+            new Dictionary<string, object>
+            {
+                ["Transaction"] = _vm.Transaction
+            });
         }
     }
 
@@ -252,7 +263,7 @@ public partial class SelectSavingCategoryPage : ContentPage
         _vm.Transaction.SavingsSpendType = "";
         _vm.Transaction.EventType = "Transaction";
 
-        await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}",
+        await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectSavingCategoryPage&TransactionID={_vm.Transaction.TransactionID}",
         new Dictionary<string, object>
         {
             ["Transaction"] = _vm.Transaction

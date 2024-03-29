@@ -35,6 +35,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool  isNote;
         [ObservableProperty]
         private string  navigatedFrom;
+        [ObservableProperty]
+        private string redirectTo;
 
 
 
@@ -49,7 +51,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         public async void BackButton()
         {
-            if (NavigatedFrom == "ViewTransactions")
+            if (string.Equals(RedirectTo, "ViewTransactions",StringComparison.OrdinalIgnoreCase))
             {
                 if (App.CurrentPopUp == null)
                 {
@@ -60,7 +62,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 await Shell.Current.GoToAsync($"//{nameof(ViewTransactions)}");
             }
-            else if (NavigatedFrom == "ViewSavings")
+            else if (string.Equals(RedirectTo, "ViewSavings", StringComparison.OrdinalIgnoreCase))
             {
                 if (App.CurrentPopUp == null)
                 {
@@ -71,7 +73,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
             }
-            else if (NavigatedFrom == "ViewEnvelopes")
+            else if (string.Equals(RedirectTo, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase))
             {
                 if (App.CurrentPopUp == null)
                 {

@@ -306,11 +306,11 @@ public partial class MainPage : ContentPage
 
         foreach (Transactions transaction in _vm.DefaultBudget.Transactions.Where(s => !s.IsTransacted))
         {
-
             SchedulerAppointment TransactionEvent = new SchedulerAppointment
             {
                 StartTime = transaction.TransactionDate.GetValueOrDefault().Date,
                 EndTime = transaction.TransactionDate.GetValueOrDefault().Date.AddMinutes(1439),
+                Subject = $"Future Transaction",
                 IsReadOnly = true,
                 Background = App.ChartColor[5],
                 TextColor = (Color)White,

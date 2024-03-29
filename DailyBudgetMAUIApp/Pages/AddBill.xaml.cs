@@ -31,6 +31,29 @@ public partial class AddBill : ContentPage
     {
         base.OnAppearing();
 
+        if (string.IsNullOrEmpty(_vm.NavigatedFrom))
+        {
+            _vm.Bill = null;
+            _vm.BillID = 0;
+            _vm.BillPayee = "";
+            _vm.BillCategory = "";
+            _vm.RedirectTo = "";
+            _vm.BillName = "";
+        }
+        else if(string.Equals(_vm.NavigatedFrom, "ViewBillsNew", StringComparison.OrdinalIgnoreCase))
+        {
+            _vm.Bill = null;
+            _vm.BillID = 0;
+            _vm.RedirectTo = "ViewBills";
+            _vm.BillName = "";
+            _vm.BillPayee = "";
+            _vm.BillCategory = "";
+        }
+        else if (string.Equals(_vm.NavigatedFrom, "CreateNewBudget", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewBills", StringComparison.OrdinalIgnoreCase))
+        {
+            _vm.RedirectTo = _vm.NavigatedFrom;
+        }
+
         if (_vm.BudgetID == 0)
         {
             _vm.BudgetID = App.DefaultBudgetID;
@@ -56,7 +79,10 @@ public partial class AddBill : ContentPage
         }
         else
         {
-            _vm.Bill = _ds.GetBillFromID(_vm.BillID).Result;
+            if(_vm.Bill is null)
+            {
+                _vm.Bill = _ds.GetBillFromID(_vm.BillID).Result;
+            }
             _vm.Title = $"Update Outgoing {_vm.Bill.BillName}";
             btnUpdateBill.IsVisible = true;
 
@@ -80,6 +106,11 @@ public partial class AddBill : ContentPage
         if (!string.IsNullOrEmpty(_vm.Bill.BillPayee))
         {
             _vm.BillPayee = _vm.Bill.BillPayee;
+        }
+
+        if (!string.IsNullOrEmpty(_vm.Bill.Category))
+        {
+            _vm.BillCategory = _vm.Bill.Category;
         }
 
         if (App.CurrentPopUp != null)
@@ -418,6 +449,9 @@ public partial class AddBill : ContentPage
             _vm.BillRecurringText = "";
 
             _vm.Bill.BillType = "";
+            _vm.BillPayee = "";
+            _vm.BillCategory = "";
+
             SaveBillTypeOptions();
 
         }
@@ -558,5 +592,23 @@ public partial class AddBill : ContentPage
         entEverynthValue.IsEnabled = true;
         entOfEveryMonthValue.IsEnabled = false;
         entOfEveryMonthValue.IsEnabled = true;
+    }
+
+    private async void SelectCategory_Tapped(object sender, TappedEventArgs e)
+    {
+        HideKeyBoard();
+
+        SaveBillTypeOptions();
+
+        if (_vm.Bill.Category is null)
+        {
+            _vm.Bill.Category = "";
+        }
+
+        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
+            new Dictionary<string, object>
+            {
+                ["Bill"] = _vm.Bill
+            });
     }
 }

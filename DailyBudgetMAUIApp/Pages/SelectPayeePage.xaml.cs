@@ -301,7 +301,7 @@ public partial class SelectPayeePage : ContentPage
                 }
 
                 _vm.Transaction.Payee = Payee;
-                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage",
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&TransactionID={_vm.Transaction.TransactionID}",
                 new Dictionary<string, object>
                 {
                     ["Transaction"] = _vm.Transaction
@@ -310,7 +310,7 @@ public partial class SelectPayeePage : ContentPage
             else if (_vm.PageType == "Bill")
             {
                 _vm.Bill.BillPayee = Payee;
-                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage",
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&BillID={_vm.Bill.BillID}",
                 new Dictionary<string, object>
                 {
                     ["Bill"] = _vm.Bill
@@ -335,7 +335,7 @@ public partial class SelectPayeePage : ContentPage
         {
             _vm.Transaction.Payee = "";
 
-            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage",
+            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&TransactionID={_vm.Transaction.TransactionID}",
             new Dictionary<string, object>
             {
             ["Transaction"] = _vm.Transaction
@@ -345,7 +345,7 @@ public partial class SelectPayeePage : ContentPage
         {
             _vm.Bill.BillPayee = "";
 
-            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage",
+            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&BillID={_vm.Bill.BillID}",
             new Dictionary<string, object>
             {
                 ["Bill"] = _vm.Bill
@@ -390,7 +390,7 @@ public partial class SelectPayeePage : ContentPage
                 entBillPayee.IsEnabled = true;
                 entBillPayee.Unfocus();
 
-                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage",
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&BillID={_vm.Bill.BillID}",
                 new Dictionary<string, object>
                 {
                     ["Bill"] = _vm.Bill
@@ -406,7 +406,7 @@ public partial class SelectPayeePage : ContentPage
                 entTransactionPayee.IsEnabled = true;
                 entTransactionPayee.Unfocus();
 
-                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage",
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&TransactionID={_vm.Transaction.TransactionID}",
                 new Dictionary<string, object>
                 {
                     ["Transaction"] = _vm.Transaction

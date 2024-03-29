@@ -7,6 +7,8 @@ namespace DailyBudgetMAUIApp.ViewModels
 {
     [QueryProperty(nameof(Transaction),nameof(Transaction))]
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
+    [QueryProperty(nameof(Bill), nameof(Bill))]
+    [QueryProperty(nameof(PageType), nameof(PageType))]
     public partial class SelectCategoryPageViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -15,7 +17,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private int  budgetID;
         [ObservableProperty]
-        private Transactions  transaction;
+        private Transactions transaction;
         [ObservableProperty]
         private bool  payeeDoesntExists;
         [ObservableProperty]
@@ -30,6 +32,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool  isFilterShown = false;
         [ObservableProperty]
         private double  sortFilterHeight = 326;
+        [ObservableProperty]
+        private Bills bill;
+        [ObservableProperty]
+        private string pageType;
 
         public double ScreenWidth { get; }
         public double EntryWidth { get; }

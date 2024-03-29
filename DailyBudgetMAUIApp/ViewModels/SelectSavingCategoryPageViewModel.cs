@@ -5,6 +5,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
+    [QueryProperty(nameof(BudgetID),nameof(BudgetID))]
+    [QueryProperty(nameof(Transaction), nameof(Transaction))]
     public partial class SelectSavingCategoryPageViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;

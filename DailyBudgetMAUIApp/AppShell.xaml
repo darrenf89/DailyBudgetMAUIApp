@@ -61,4 +61,8 @@
         <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:SelectCategoryPage}"/>
     </ShellItem>
 
+    <ShellItem Route="SelectSavingCategoryPage" FlyoutItemIsVisible="True">
+        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:SelectSavingCategoryPage}"/>
+    </ShellItem>
+
 </Shell>

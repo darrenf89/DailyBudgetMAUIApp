@@ -190,12 +190,11 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             foreach (Transactions transaction in Budget.Transactions.Where(s => !s.IsTransacted))
             {
-
                 SchedulerAppointment SavingEvent = new SchedulerAppointment
                 {
                     StartTime = transaction.TransactionDate.GetValueOrDefault().Date,
                     EndTime = transaction.TransactionDate.GetValueOrDefault().Date.AddMinutes(1439),
-                    Subject = $"Upcoming transaction for {transaction.TransactionDate.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)}",
+                    Subject = $"Future Transaction",
                     IsReadOnly = true,
                     Background = App.ChartColor[5],
                     TextColor = (Color)White,

@@ -224,6 +224,13 @@
                             <TapGestureRecognizer x:Name="SelectPayee" Tapped="SelectPayee_Tapped"/>
                         </Border.GestureRecognizers>
                     </Border>
+                    <Label Text="Category" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
+                        <Label x:Name="lblCategory" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"  VerticalOptions="Center" Text="{Binding BillCategory, Converter={StaticResource CategoryText}}"/>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="SelectCategory" Tapped="SelectCategory_Tapped"/>
+                        </Border.GestureRecognizers>
+                    </Border>
                 </VerticalStackLayout>
             </Border>
             <Grid ColumnDefinitions="30,*,30" RowDefinitions="10,*,40">
