@@ -32,8 +32,8 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public string  billPayee;
         [ObservableProperty]
-        public string category = "";
+        public string? category = "";
         [ObservableProperty]
-        public int categoryID;
+        public int? categoryID = 0;
     }  
 }

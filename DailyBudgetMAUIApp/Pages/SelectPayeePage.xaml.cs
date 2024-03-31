@@ -1,6 +1,7 @@
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
+using Microsoft.Maui.Layouts;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -9,6 +10,10 @@ public partial class SelectPayeePage : ContentPage
 	private readonly IRestDataService _ds;
 	private readonly IProductTools _pt;
 	private readonly SelectPayeePageViewModel _vm;
+
+    public double ButtonWidth { get; set; }
+    public double ScreenWidth { get; set; }
+    public double ScreenHeight { get; set; }
 
     public SelectPayeePage(IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel)
     {
@@ -19,6 +24,10 @@ public partial class SelectPayeePage : ContentPage
 
         this.BindingContext = viewModel;
         _vm = viewModel;
+
+        ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
+        ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 60;
+        ButtonWidth = ScreenWidth - 40;
 
     }
 
@@ -96,8 +105,39 @@ public partial class SelectPayeePage : ContentPage
         }
     }
 
+    private void acrPayeeName_Tapped(object sender, TappedEventArgs e)
+    {
+        if (!PayeeName.IsVisible)
+        {
+            PayeeName.IsVisible = true;
+            PayeeNameIcon.Glyph = "\ue5cf";
+        }
+        else
+        {
+            PayeeName.IsVisible = false;
+            PayeeNameIcon.Glyph = "\ue5ce";
+        }
+    }
+    private void acrPayeeList_Tapped(object sender, TappedEventArgs e)
+    {
+        if (!PayeeList.IsVisible)
+        {
+            PayeeList.IsVisible = true;
+            PayeeListIcon.Glyph = "\ue5cf";
+        }
+        else
+        {
+            PayeeList.IsVisible = false;
+            PayeeListIcon.Glyph = "\ue5ce";
+        }
+    }
+
     async protected override void OnAppearing()
     {
+        TopBV.WidthRequest = ScreenWidth;
+        MainAbs.WidthRequest = ScreenWidth;
+        MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
+        MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
         base.OnAppearing();          
     }
 
@@ -135,7 +175,15 @@ public partial class SelectPayeePage : ContentPage
             }
         }
 
-        _vm.PayeeDoesntExists = !_vm.PayeeList.Contains(_vm.Transaction.Payee) && _vm.Transaction.Payee != "";
+        if(_vm.PageType == "Transaction")
+        {
+            _vm.PayeeDoesntExists = !_vm.PayeeList.Contains(_vm.Transaction.Payee) && _vm.Transaction.Payee != "";
+        }
+        else if(_vm.PageType == "Bill")
+        {
+            _vm.PayeeDoesntExists = !_vm.PayeeList.Contains(_vm.Bill.BillPayee) && _vm.Bill.BillPayee != "";
+        }
+        
 
         if(_vm.PayeeDoesntExists)
         {
@@ -152,7 +200,8 @@ public partial class SelectPayeePage : ContentPage
     {
         Application.Current.Resources.TryGetValue("Primary", out var Primary);
         Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+        Application.Current.Resources.TryGetValue("InfoLL", out var InfoLL);
+        Application.Current.Resources.TryGetValue("Info", out var Info);
         Application.Current.Resources.TryGetValue("brdPrimary", out var brdPrimary);
         Application.Current.Resources.TryGetValue("PrimaryDark", out var PrimaryDark);
         Application.Current.Resources.TryGetValue("PrimaryLightLight", out var PrimaryLight);
@@ -198,7 +247,7 @@ public partial class SelectPayeePage : ContentPage
                     {
                         WidthRequest = 60,
                         HeightRequest = 4,
-                        Color = (Color)Tertiary,
+                        Color = (Color)Info,
                         HorizontalOptions = LayoutOptions.End,
                         Margin = new Thickness(0, 0, 0, 10)
 
@@ -247,7 +296,7 @@ public partial class SelectPayeePage : ContentPage
                         FontFamily = "MaterialDesignIcons",
                         Glyph = PayeeImageGlyph,
                         Size = 20,
-                        Color = (Color)PrimaryDark
+                        Color = (Color)Info
                     }
                 };
 
@@ -322,7 +371,7 @@ public partial class SelectPayeePage : ContentPage
 
     }
 
-    private async void BackButton_Clicked(object sender, EventArgs e)
+    private async void BackButton_Clicked(object sender, TappedEventArgs e)
     {
         entTransactionPayee.IsEnabled = false;
         entTransactionPayee.IsEnabled = true;
@@ -379,9 +428,25 @@ public partial class SelectPayeePage : ContentPage
         }
     }
 
-    private async void AddNewPayee_Clicked(object sender, EventArgs e)
+    private void entPayee_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if(_vm.PageType == "Bill")
+        LoadHeader();
+        if (_vm.PageType == "Bill")
+        {
+            LoadPayeeList(_vm.Bill.BillPayee);
+            _vm.PayeeName = _vm.Bill.BillPayee;
+        }
+        else if (_vm.PageType == "Transaction")
+        {
+            LoadPayeeList(_vm.Transaction.Payee);
+            _vm.PayeeName = _vm.Transaction.Payee;
+        }
+        
+    }
+
+    private async void SavePayeeName_Clicked(object sender, EventArgs e)
+    {
+        if (_vm.PageType == "Bill")
         {
             bool result = await DisplayAlert("Add New Payee", $"Are you sure you want to add {_vm.Bill.BillPayee} as a new Payee?", "Yes, continue", "No, go back!");
             if (result)
@@ -397,7 +462,7 @@ public partial class SelectPayeePage : ContentPage
                 });
             }
         }
-        else if(_vm.PageType == "Transaction")
+        else if (_vm.PageType == "Transaction")
         {
             bool result = await DisplayAlert("Add New Payee", $"Are you sure you want to add {_vm.Transaction.Payee} as a new Payee?", "Yes, continue", "No, go back!");
             if (result)
@@ -412,20 +477,6 @@ public partial class SelectPayeePage : ContentPage
                     ["Transaction"] = _vm.Transaction
                 });
             }
-        }
- 
-    }
-
-    private void entPayee_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        LoadHeader();
-        if (_vm.PageType == "Bill")
-        {
-            LoadPayeeList(_vm.Bill.BillPayee);
-        }
-        else if (_vm.PageType == "Transaction")
-        {
-            LoadPayeeList(_vm.Transaction.Payee);
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.Input;
+using DailyBudgetMAUIApp.Handlers;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -29,6 +32,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string  selectedPayee;
         [ObservableProperty]
         private string  pageType;
+        [ObservableProperty]
+        private string payeeName;
 
 
         public double ScreenWidth { get; }
@@ -49,6 +54,22 @@ namespace DailyBudgetMAUIApp.ViewModels
             PayeeBorderWidth = ScreenWidth - 60;
             MinHeight = ScreenHeight + 200;
         }
+
+        [RelayCommand]
+        private async void ClosePayee(object obj)
+        {
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(500);
+
+            await Shell.Current.GoToAsync($"..");
+        }
+
 
     }
 }

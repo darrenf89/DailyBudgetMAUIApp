@@ -58,6 +58,7 @@
     <converters:CategoryIDToBoolReverse x:Key="CategoryIDToBoolReverse"/>
     <converters:IndexToChartColor x:Key="IndexToChartColor"/>
     <converters:CategoryText x:Key="CategoryText"/>
+    <converters:CreateNewPayeeConverter x:Key="CreateNewPayeeConverter"/>
 
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>

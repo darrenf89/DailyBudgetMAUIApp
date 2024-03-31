@@ -4,6 +4,22 @@ using System.Globalization;
 
 namespace DailyBudgetMAUIApp.Converters
 {
+    public class CreateNewPayeeConverter : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return "Create '' as a payee";
+
+            return $"Create '{(string)value}' as a payee";
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
     public class IsSpendFromSavingText : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
