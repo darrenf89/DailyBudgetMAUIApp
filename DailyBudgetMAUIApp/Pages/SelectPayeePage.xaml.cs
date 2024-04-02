@@ -1,6 +1,9 @@
+using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
+using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Layouts;
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -10,10 +13,12 @@ public partial class SelectPayeePage : ContentPage
 	private readonly IRestDataService _ds;
 	private readonly IProductTools _pt;
 	private readonly SelectPayeePageViewModel _vm;
+    private IDispatcherTimer _payeeSearchTimer;
 
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
     public double ScreenHeight { get; set; }
+    public string LastSearchPayee { get; set; } = "";
 
     public SelectPayeePage(IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel)
     {
@@ -24,6 +29,16 @@ public partial class SelectPayeePage : ContentPage
 
         this.BindingContext = viewModel;
         _vm = viewModel;
+
+        var timer = Application.Current.Dispatcher.CreateTimer();
+        _payeeSearchTimer = timer;
+
+        timer.Interval = TimeSpan.FromMilliseconds(800);
+        timer.Tick += async (s, e) =>
+        {
+            await UpdateAfterPayeeChanged();
+            _payeeSearchTimer.Stop();
+        };
 
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 60;
@@ -81,6 +96,7 @@ public partial class SelectPayeePage : ContentPage
 
     async protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
+
         base.OnNavigatedTo(args);
         _vm.SelectedPayee = _vm.Transaction.Payee;
         if (string.Equals(_vm.PageType, "Bill", StringComparison.OrdinalIgnoreCase))
@@ -103,6 +119,12 @@ public partial class SelectPayeePage : ContentPage
         {
             LoadPayeeList(_vm.Transaction.Payee);
         }
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
     }
 
     private void acrPayeeName_Tapped(object sender, TappedEventArgs e)
@@ -118,6 +140,7 @@ public partial class SelectPayeePage : ContentPage
             PayeeNameIcon.Glyph = "\ue5ce";
         }
     }
+
     private void acrPayeeList_Tapped(object sender, TappedEventArgs e)
     {
         if (!PayeeList.IsVisible)
@@ -134,6 +157,15 @@ public partial class SelectPayeePage : ContentPage
 
     async protected override void OnAppearing()
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
+
+        await Task.Delay(10);
+
         TopBV.WidthRequest = ScreenWidth;
         MainAbs.WidthRequest = ScreenWidth;
         MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
@@ -205,6 +237,7 @@ public partial class SelectPayeePage : ContentPage
         Application.Current.Resources.TryGetValue("brdPrimary", out var brdPrimary);
         Application.Current.Resources.TryGetValue("PrimaryDark", out var PrimaryDark);
         Application.Current.Resources.TryGetValue("PrimaryLightLight", out var PrimaryLight);
+        Application.Current.Resources.TryGetValue("White", out var White);
 
         List<string> FilteredList = new List<string>();
 
@@ -273,7 +306,8 @@ public partial class SelectPayeePage : ContentPage
                     Text = Payee,
                     TextColor = (Color)Gray900,
                     FontSize = 14,
-                    Padding = new Thickness(2,2,2,2)
+                    Padding = new Thickness(2,2,2,2),
+                    Margin = new Thickness(10,0,0,0)
                 };
 
                 string PayeeImageGlyph = "";
@@ -290,19 +324,33 @@ public partial class SelectPayeePage : ContentPage
                 Image PayeeImage = new Image
                 {
                     VerticalOptions = LayoutOptions.Center,
-                    BackgroundColor = (Color)PrimaryLight,
+                    BackgroundColor = (Color)White,
                     Source = new FontImageSource
                     {
                         FontFamily = "MaterialDesignIcons",
                         Glyph = PayeeImageGlyph,
-                        Size = 20,
+                        Size = 12,
                         Color = (Color)Info
                     }
                 };
 
+                Border ImageBorder = new Border
+                {
+                    StrokeThickness = 0,
+                    HeightRequest = 12,
+                    WidthRequest = 12,
+                    StrokeShape = new RoundRectangle
+                    {
+                        CornerRadius = 6
+                    },
+                    BackgroundColor = (Color)White
+                };
+
+                ImageBorder.Content = PayeeImage;
+
                 HorizontalStackLayout PayeeHSL = new HorizontalStackLayout();
 
-                PayeeHSL.Children.Add(PayeeImage);
+                PayeeHSL.Children.Add(ImageBorder);
                 PayeeHSL.Children.Add(PayeeLabel);
 
                 PayeeBorder.Content = PayeeHSL;
@@ -430,18 +478,29 @@ public partial class SelectPayeePage : ContentPage
 
     private void entPayee_TextChanged(object sender, TextChangedEventArgs e)
     {
+        _payeeSearchTimer.Stop();
+        if (LastSearchPayee != e.NewTextValue) 
+        {
+            _payeeSearchTimer.Start();
+        }   
+    }
+
+    private async Task UpdateAfterPayeeChanged()
+    {
+        await Task.Delay(100);
         LoadHeader();
         if (_vm.PageType == "Bill")
         {
             LoadPayeeList(_vm.Bill.BillPayee);
+            LastSearchPayee = _vm.Bill.BillPayee;
             _vm.PayeeName = _vm.Bill.BillPayee;
         }
         else if (_vm.PageType == "Transaction")
         {
             LoadPayeeList(_vm.Transaction.Payee);
+            LastSearchPayee = _vm.Transaction.Payee;
             _vm.PayeeName = _vm.Transaction.Payee;
         }
-        
     }
 
     private async void SavePayeeName_Clicked(object sender, EventArgs e)

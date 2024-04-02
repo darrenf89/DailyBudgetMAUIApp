@@ -7,6 +7,9 @@ using Syncfusion.Maui.Expander;
 using System;
 using System.Globalization;
 using System.Xml.XPath;
+using Microsoft.Maui.Layouts;
+using CommunityToolkit.Maui.Views;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -15,6 +18,10 @@ public partial class SelectSavingCategoryPage : ContentPage
 	private readonly IRestDataService _ds;
 	private readonly IProductTools _pt;
 	private readonly SelectSavingCategoryPageViewModel _vm;
+
+    public double ButtonWidth { get; set; }
+    public double ScreenWidth { get; set; }
+    public double ScreenHeight { get; set; }
 
     public SelectSavingCategoryPage(IRestDataService ds, IProductTools pt, SelectSavingCategoryPageViewModel viewModel)
     {
@@ -25,6 +32,10 @@ public partial class SelectSavingCategoryPage : ContentPage
 
         this.BindingContext = viewModel;
         _vm = viewModel;
+
+        ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
+        ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 60;
+        ButtonWidth = ScreenWidth - 40;
     }
     public SelectSavingCategoryPage(int BudgetID, Transactions Transaction, IRestDataService ds, IProductTools pt, SelectSavingCategoryPageViewModel viewModel)
 	{
@@ -50,7 +61,21 @@ public partial class SelectSavingCategoryPage : ContentPage
 
     async protected override void OnAppearing()
     {
-       base.OnAppearing();
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
+
+        await Task.Delay(10);
+
+        TopBV.WidthRequest = ScreenWidth;
+        MainAbs.WidthRequest = ScreenWidth;
+        MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
+        MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
+
+        base.OnAppearing();
 
         _vm.EnvelopeSavingList = _ds.GetBudgetEnvelopeSaving(_vm.BudgetID).Result;
 
@@ -62,9 +87,6 @@ public partial class SelectSavingCategoryPage : ContentPage
             Total += Saving.PeriodSavingValue.GetValueOrDefault();
             Balance += Saving.CurrentBalance.GetValueOrDefault();
         }
-
-        entTotal.Text = Total.ToString("c", CultureInfo.CurrentCulture);
-        entBalanceRemaining.Text = Balance.ToString("c", CultureInfo.CurrentCulture);
 
         if (_vm.EnvelopeSavingList.Count == 0)
         {
@@ -99,6 +121,7 @@ public partial class SelectSavingCategoryPage : ContentPage
         Application.Current.Resources.TryGetValue("Success", out var Success);
         Application.Current.Resources.TryGetValue("brdSuccess", out var brdSuccess);
         Application.Current.Resources.TryGetValue("pillSuccess", out var pillSuccess);
+        Application.Current.Resources.TryGetValue("White", out var White);
 
         vslSavings.Children.Clear();
 
@@ -165,15 +188,29 @@ public partial class SelectSavingCategoryPage : ContentPage
                 Image SavingImage = new Image
                 {                           
                     VerticalOptions = LayoutOptions.Center,
-                    BackgroundColor = (Color)PrimaryLight,
+                    BackgroundColor = (Color)White,
                     Source = new FontImageSource                            
                     {
                         FontFamily = "MaterialDesignIcons",
                         Glyph = SavingImageGlyph,
-                        Size = 20,
-                        Color = (Color)PrimaryDark
+                        Size = 12,
+                        Color = (Color)Info
                     }
                 };
+
+                Border ImageBorder = new Border
+                {
+                    StrokeThickness = 0,
+                    HeightRequest = 12,
+                    WidthRequest = 12,
+                    StrokeShape = new RoundRectangle
+                    {
+                        CornerRadius = 6
+                    },
+                    BackgroundColor = (Color)White
+                };
+
+                ImageBorder.Content = SavingImage;
 
                 Grid SavingHSL = new Grid
                 {
@@ -190,6 +227,7 @@ public partial class SelectSavingCategoryPage : ContentPage
                 {
                     Style = (Style)pillSuccess,
                     Margin = new Thickness(5,0,5,0),
+                    Padding = new Thickness(10, 2, 10, 2),
                     HorizontalOptions = LayoutOptions.End,
                     VerticalOptions = LayoutOptions.Center
                 };
@@ -205,7 +243,7 @@ public partial class SelectSavingCategoryPage : ContentPage
 
                 EnvelopeBalanceBorder.Content = EnvelopeBalanceLabel;
 
-                SavingHSL.Add(SavingImage,0,0);
+                SavingHSL.Add(ImageBorder, 0,0);
                 SavingHSL.Add(SavingLabel,1,0);
                 SavingHSL.Add(EnvelopeBalanceBorder,2,0);
 
@@ -270,37 +308,12 @@ public partial class SelectSavingCategoryPage : ContentPage
         });
     }
 
-    private async void ShowHideSortFiler_Tapped(object sender, TappedEventArgs e)
-    {
-        if(FilterHidden.IsVisible)
-        {
-            FilterHidden.IsVisible = false;
-            FilterShown.IsVisible = true;
-
-            FilterOptions.IsVisible = true;
-            FilterOptions.HeightRequest = 0;
-            var animation = new Animation(v => FilterOptions.HeightRequest = v, 0, _vm.SortFilterHeight);
-            animation.Commit(this, "FilterOptionsShow", 16, 300, Easing.CubicOut);
-        }
-        else
-        {
-            FilterHidden.IsVisible = true;
-            FilterShown.IsVisible = false;
-
-            var animation = new Animation(v => FilterOptions.HeightRequest = v, _vm.SortFilterHeight, 0);
-            animation.Commit(this, "FilterOptionsHide", 16, 300, Easing.CubicOut, (v,c) =>
-            {
-                FilterOptions.IsVisible = false;
-            });
-
-        }
-    }
-
     private void AscSort_Clicked(object sender, EventArgs e)
     {
         Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
         Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
         Application.Current.Resources.TryGetValue("Info", out var Info);
+        Application.Current.Resources.TryGetValue("White", out var White);
 
         if (AscSort.Style == (Style)buttonUnclicked)
         {
@@ -309,23 +322,47 @@ public partial class SelectSavingCategoryPage : ContentPage
                 FontFamily = "MaterialDesignIcons",
                 Glyph = "\ue876",
                 Size = 15,
-                Color = (Color)Info
+                Color = (Color)White
             };
             AscSort.Style = (Style)buttonClicked;
 
             DesSort.Style = (Style)buttonUnclicked;
-            DesSort.ImageSource = null;
+            DesSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
 
             BalanceAscSort.Style = (Style)buttonUnclicked;
-            BalanceAscSort.ImageSource = null;
+            BalanceAscSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
 
             BalanceDesSort.Style = (Style)buttonUnclicked;
-            BalanceDesSort.ImageSource = null;
+            BalanceDesSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
         }
         else
         {
             AscSort.Style = (Style)buttonUnclicked;
-            AscSort.ImageSource = null;
+            AscSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
         }
     }
 
@@ -343,24 +380,59 @@ public partial class SelectSavingCategoryPage : ContentPage
                 FontFamily = "MaterialDesignIcons",
                 Glyph = "\ue876",
                 Size = 15,
-                Color = (Color)Info
+                Color = (Color)White
             };
             DesSort.Style = (Style)buttonClicked;
 
             AscSort.Style = (Style)buttonUnclicked;
-            AscSort.ImageSource = null;
+            AscSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
 
             BalanceAscSort.Style = (Style)buttonUnclicked;
-            BalanceAscSort.ImageSource = null;
+            BalanceAscSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
 
             BalanceDesSort.Style = (Style)buttonUnclicked;
-            BalanceDesSort.ImageSource = null;
+            BalanceDesSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
         }
         else
         {
             DesSort.Style = (Style)buttonUnclicked;
-            DesSort.ImageSource = null;
+            DesSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
         }                
+    }
+    async protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+
+        base.OnNavigatedTo(args);
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
     }
 
     private void SortCategories(string SortDirection)
@@ -386,13 +458,19 @@ public partial class SelectSavingCategoryPage : ContentPage
 
     private async void SortFilterApply_Clicked(object sender, EventArgs e)
     {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
+        }
+
+        await Task.Delay(10);
+
         entEnvelopeSearch.IsEnabled = false;
         entEnvelopeSearch.IsEnabled = true;
 
         _vm.EnvelopeFilteredSavingList = _vm.EnvelopeSavingList;
-
-        var LoadingPage = new LoadingPageTwo();
-        await Application.Current.MainPage.Navigation.PushModalAsync(LoadingPage, true);
 
         Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
         Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
@@ -424,48 +502,13 @@ public partial class SelectSavingCategoryPage : ContentPage
 
         LoadSavingList();
 
-        FilterHidden.IsVisible = true;
-        FilterShown.IsVisible = false;
+        acrFilterOption_Tapped(null, null);
 
-        var animation = new Animation(v => FilterOptions.HeightRequest = v, _vm.SortFilterHeight, 0);
-        animation.Commit(this, "FilterOptionsHide", 16, 300, Easing.CubicOut, (v, c) =>
+        if (App.CurrentPopUp != null)
         {
-            FilterOptions.IsVisible = false;
-        });
-
-        await Application.Current.MainPage.Navigation.PopModalAsync();
-    }
-
-    private async void ClearAllFilter_Tapped(object sender, TappedEventArgs e)
-    {
-        var LoadingPage = new LoadingPageTwo();
-        await Application.Current.MainPage.Navigation.PushModalAsync(LoadingPage, true);
-
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-
-        DesSort.Style = (Style)buttonUnclicked;
-        DesSort.ImageSource = null;
-        AscSort.Style = (Style)buttonUnclicked;
-        AscSort.ImageSource = null;
-        AscSort.Style = (Style)buttonUnclicked;
-        AscSort.ImageSource = null;
-
-        entEnvelopeSearch.Text = "";
-
-        _vm.EnvelopeFilteredSavingList = _vm.EnvelopeSavingList;
-
-        LoadSavingList();        
-
-        FilterHidden.IsVisible = true;
-        FilterShown.IsVisible = false;
-
-        var animation = new Animation(v => FilterOptions.HeightRequest = v, _vm.SortFilterHeight, 0);
-        animation.Commit(this, "FilterOptionsHide", 16, 300, Easing.CubicOut, (v, c) =>
-        {
-            FilterOptions.IsVisible = false;
-        });
-
-        await Application.Current.MainPage.Navigation.PopModalAsync();
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
     }
 
     private void BalanceDesSort_Clicked(object sender, EventArgs e)
@@ -482,23 +525,47 @@ public partial class SelectSavingCategoryPage : ContentPage
                 FontFamily = "MaterialDesignIcons",
                 Glyph = "\ue876",
                 Size = 15,
-                Color = (Color)Info
+                Color = (Color)White
             };
             BalanceDesSort.Style = (Style)buttonClicked;
 
             AscSort.Style = (Style)buttonUnclicked;
-            AscSort.ImageSource = null;
+            AscSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
 
             DesSort.Style = (Style)buttonUnclicked;
-            DesSort.ImageSource = null;
+            DesSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
 
             BalanceAscSort.Style = (Style)buttonUnclicked;
-            BalanceAscSort.ImageSource = null;
+            BalanceAscSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
         }
         else
         {
             BalanceDesSort.Style = (Style)buttonUnclicked;
-            BalanceDesSort.ImageSource = null;
+            BalanceDesSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
         }
     }
 
@@ -516,23 +583,75 @@ public partial class SelectSavingCategoryPage : ContentPage
                 FontFamily = "MaterialDesignIcons",
                 Glyph = "\ue876",
                 Size = 15,
-                Color = (Color)Info
+                Color = (Color)White
             };
             BalanceAscSort.Style = (Style)buttonClicked;
 
             AscSort.Style = (Style)buttonUnclicked;
-            AscSort.ImageSource = null;
+            AscSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
 
             DesSort.Style = (Style)buttonUnclicked;
-            DesSort.ImageSource = null;
+            DesSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
 
             BalanceDesSort.Style = (Style)buttonUnclicked;
-            BalanceDesSort.ImageSource = null;
+            BalanceDesSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
         }
         else
         {
             BalanceAscSort.Style = (Style)buttonUnclicked;
-            BalanceAscSort.ImageSource = null;
+            BalanceAscSort.ImageSource = new FontImageSource
+            {
+                FontFamily = "MaterialDesignIcons",
+                Glyph = "\ue5cd",
+                Size = 15,
+                Color = (Color)Info
+            };
+        }
+    }
+
+    private void acrSavingCategories_Tapped(object sender, TappedEventArgs e)
+    {
+        if (!SavingCategories.IsVisible)
+        {
+            SavingCategories.IsVisible = true;
+            SavingCategoriesIcon.Glyph = "\ue5cf";
+        }
+        else
+        {
+            SavingCategories.IsVisible = false;
+            SavingCategoriesIcon.Glyph = "\ue5ce";
+        }
+    }
+
+    private void acrFilterOption_Tapped(object sender, TappedEventArgs e)
+    {
+        if (!FilterOption.IsVisible)
+        {
+            FilterOption.IsVisible = true;
+            FilterOptionIcon.Glyph = "\ue5cf";
+        }
+        else
+        {
+            FilterOption.IsVisible = false;
+            FilterOptionIcon.Glyph = "\ue5ce";
         }
     }
 }
