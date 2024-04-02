@@ -32,7 +32,9 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
         ButtonWidth = ScreenWidth - 40;
-        MainScrollView.MaximumHeightRequest = ScreenHeight - 280;
+
+        MainScrollView.MaximumHeightRequest = ScreenHeight - App.NavBarHeight - App.StatusBarHeight - 80;
+        MainAbs.HeightRequest = ScreenHeight - App.NavBarHeight - App.StatusBarHeight;
 
         MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
         MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, AbsoluteLayout.AutoSize));

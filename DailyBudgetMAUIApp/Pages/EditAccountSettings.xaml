@@ -23,7 +23,7 @@
                 </HorizontalStackLayout.GestureRecognizers>
             </HorizontalStackLayout>
             <AbsoluteLayout AbsoluteLayout.LayoutBounds="0.5,0,150,210" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,30,0,0">
-                <ImageButton Style="{StaticResource TitleButtons}" ZIndex="999" WidthRequest="40" HeightRequest="40" Padding="6" Aspect="Center" CornerRadius="20" VerticalOptions="Center" Margin="5,0,0,0" AbsoluteLayout.LayoutBounds="0.95,0.78" AbsoluteLayout.LayoutFlags="PositionProportional" BackgroundColor="{StaticResource Primary}">
+                <ImageButton Command="{Binding ChangeSelectedProfilePicCommand}" Style="{StaticResource TitleButtons}" ZIndex="999" WidthRequest="40" HeightRequest="40" Padding="6" Aspect="Center" CornerRadius="20" VerticalOptions="Center" Margin="5,0,0,0" AbsoluteLayout.LayoutBounds="0.95,0.78" AbsoluteLayout.LayoutFlags="PositionProportional" BackgroundColor="{StaticResource Primary}">
                     <ImageButton.Source>
                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Photo_camera}" Color="{DynamicResource White}"/>
                     </ImageButton.Source>

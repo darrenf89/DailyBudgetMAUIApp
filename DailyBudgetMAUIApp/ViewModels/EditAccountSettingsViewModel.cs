@@ -4,9 +4,8 @@ using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
-using System.Diagnostics;
-using System.Globalization;
+using DailyBudgetMAUIApp.Pages.BottomSheets;
+using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -26,7 +25,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         
         public async Task OnLoad()
         {
-            User = App.UserDetails;
+            User = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
         }
 
         [RelayCommand]
@@ -52,6 +51,34 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
 
             }
+        }
+
+        [RelayCommand]
+        private async void ChangeSelectedProfilePic()
+        {
+            EditProfilePictureBottomSheet page = new EditProfilePictureBottomSheet( new ProductTools(new RestDataService()), new RestDataService());
+
+            page.Detents = new DetentsCollection()
+            {
+                new FixedContentDetent            
+                {
+                    IsDefault = true
+                },
+                new MediumDetent(),
+                new FullscreenDetent()
+            };
+
+            page.HasBackdrop = true;
+            page.CornerRadius = 0;
+
+            App.CurrentBottomSheet = page;
+
+            page.ShowAsync();
+        }
+
+        public async Task<Stream> GetUserProfilePictureStream(int UserID)
+        {
+            return await _ds.DownloadUserProfilePicture(UserID);
         }
 
     }

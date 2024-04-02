@@ -7,6 +7,48 @@ namespace DailyBudgetMAUIApp.Pages;
 
 public partial class EditAccountSettings : ContentPage
 {
+    public string _updatedAvatar = "";
+    public string UpdatedAvatar
+    {
+        get => _updatedAvatar;
+        set
+        {
+            if (_updatedAvatar != value)
+            {
+                _updatedAvatar = value;
+                bool Success = Enum.TryParse(value, out AvatarCharacter Avatar);
+                if (Success)
+                {
+                    ProfilePicture.ContentType = ContentType.AvatarCharacter;
+                    ProfilePicture.AvatarCharacter = Avatar;
+                    int Number = Convert.ToInt32(value[value.Length - 1]);
+                    Math.DivRem(Number, 8, out int index);
+                    ProfilePicture.Background = App.ChartColor[index];
+                }
+                else
+                {
+                    ProfilePicture.AvatarCharacter = AvatarCharacter.Avatar1;
+                    ProfilePicture.Background = App.ChartColor[1];
+                }
+            }
+        }
+    }
+
+    public Stream _profilePicStream;
+    public Stream ProfilePicStream
+    {
+        get => _profilePicStream;
+        set
+        {
+            if (_profilePicStream != value)
+            {
+                _profilePicStream = value;
+                ProfilePicture.ContentType = ContentType.Custom;
+                ProfilePicture.ImageSource = ImageSource.FromStream(() => ProfilePicStream);
+            }
+        }
+    }
+
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
     public double ScreenHeight { get; set; }
@@ -34,7 +76,7 @@ public partial class EditAccountSettings : ContentPage
         MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
         MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
 
-        _vm.OnLoad();
+        await _vm.OnLoad();
 
         if(_vm.User.ProfilePicture.Contains("Avatar"))
         {
@@ -55,9 +97,8 @@ public partial class EditAccountSettings : ContentPage
         }
         else
         {
-            
-        }
-        
+            ProfilePicStream = await _vm.GetUserProfilePictureStream(App.UserDetails.UserID);
+        }        
 
         if (App.CurrentPopUp != null)
         {

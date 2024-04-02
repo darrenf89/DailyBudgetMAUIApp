@@ -253,6 +253,45 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<Stream> DownloadUserProfilePicture(int UserID)
+        {
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/downloaduserprofilepicture/{UserID}").Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                     return await response.Content.ReadAsStreamAsync();        
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                    using (StreamReader sr = new StreamReader(s))
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    HandleError(new Exception(error.ErrorMessage), "DownloadProfilePicture", "DownloadProfilePicture");
+                    return null;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "DownloadProfilePicture", "DownloadProfilePicture");
+                return null;
+            }
+        }
+
         public async Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog)
         {
             ErrorLog ErrorLog = new();

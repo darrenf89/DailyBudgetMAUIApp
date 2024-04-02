@@ -91,6 +91,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Pages\BottomSheets\EditProfilePictureBottomSheet.xaml.cs">
+	    <DependentUpon>EditProfilePictureBottomSheet.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\EditAccountSettings.xaml.cs">
 	    <DependentUpon>EditAccountSettings.xaml</DependentUpon>
 	  </Compile>
@@ -176,6 +179,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Handlers\ButtonControlActivityIndicator.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\BottomSheets\EditProfilePictureBottomSheet.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\EditAccountSettings.xaml">
