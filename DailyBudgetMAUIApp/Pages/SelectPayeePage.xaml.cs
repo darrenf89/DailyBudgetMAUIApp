@@ -98,27 +98,6 @@ public partial class SelectPayeePage : ContentPage
     {
 
         base.OnNavigatedTo(args);
-        _vm.SelectedPayee = _vm.Transaction.Payee;
-        if (string.Equals(_vm.PageType, "Bill", StringComparison.OrdinalIgnoreCase))
-        {
-            entBillPayee.IsVisible = true;
-        }
-        else
-        {
-            entTransactionPayee.IsVisible = true;
-        }
-
-        _vm.PayeeList = _ds.GetPayeeList(_vm.BudgetID).Result;
-
-        LoadHeader();
-        if (_vm.PageType == "Bill")
-        {
-            LoadPayeeList(_vm.Bill.BillPayee);
-        }
-        else if (_vm.PageType == "Transaction")
-        {
-            LoadPayeeList(_vm.Transaction.Payee);
-        }
 
         if (App.CurrentPopUp != null)
         {
@@ -170,7 +149,29 @@ public partial class SelectPayeePage : ContentPage
         MainAbs.WidthRequest = ScreenWidth;
         MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
         MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
-        base.OnAppearing();          
+        base.OnAppearing();
+
+        _vm.SelectedPayee = _vm.Transaction.Payee;
+        if (string.Equals(_vm.PageType, "Bill", StringComparison.OrdinalIgnoreCase))
+        {
+            entBillPayee.IsVisible = true;
+        }
+        else
+        {
+            entTransactionPayee.IsVisible = true;
+        }
+
+        _vm.PayeeList = _ds.GetPayeeList(_vm.BudgetID).Result;
+
+        LoadHeader();
+        if (_vm.PageType == "Bill")
+        {
+            LoadPayeeList(_vm.Bill.BillPayee);
+        }
+        else if (_vm.PageType == "Transaction")
+        {
+            LoadPayeeList(_vm.Transaction.Payee);
+        }
     }
 
 

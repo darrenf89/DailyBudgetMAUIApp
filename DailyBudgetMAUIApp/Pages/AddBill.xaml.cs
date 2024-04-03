@@ -27,6 +27,12 @@ public partial class AddBill : ContentPage
         dtpckBillDueDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(1);
     }
 
+    async protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    {
+        base.OnNavigatedFrom(args);
+        _vm.NavigatedFrom = "";
+    }
+
     async protected override void OnAppearing()
     {
         base.OnAppearing();
@@ -39,6 +45,20 @@ public partial class AddBill : ContentPage
             _vm.BillCategory = "";
             _vm.RedirectTo = "";
             _vm.BillName = "";
+
+            SelectBillType.IsVisible = true;
+            BillTypeSelected.IsVisible = false;
+            lblSelectedBillTitle.Text = "";
+            lblSelectedBillParaOne.Text = "";
+            lblSelectedBillParaTwo.Text = "";
+
+            brdBillDetails.IsVisible = false;
+            vslBillDetails.IsVisible = false;
+            brdBillTypes.IsVisible = false;
+
+            UpdateSelectedOption("");
+
+            _vm.BillRecurringText = "";
         }
         else if(string.Equals(_vm.NavigatedFrom, "ViewBillsNew", StringComparison.OrdinalIgnoreCase))
         {
@@ -294,7 +314,10 @@ public partial class AddBill : ContentPage
             vslOption1.IsVisible = false;
             vslOption2.IsVisible = false;
             
-            _vm.Bill.BillType = null;
+            if(_vm.Bill != null)
+            {
+                _vm.Bill.BillType = null;
+            }
             _vm.BillTypeText = "";
             entOfEveryMonthValue.Text = "";
             entEverynthValue.Text = "";
