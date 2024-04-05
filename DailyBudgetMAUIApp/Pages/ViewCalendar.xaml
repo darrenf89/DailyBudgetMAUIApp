@@ -23,7 +23,7 @@
         <Border Grid.Row="0" Grid.Column="0" Style="{DynamicResource DashboardMainContent}">
             <scheduler:SfScheduler SelectedAppointmentBackground="{StaticResource Primary}" Tapped="Scheduler_Tapped" TodayHighlightBrush="{StaticResource PrimaryDark}" x:Name="Scheduler" View="Agenda" MinimumHeightRequest="{Binding SchedulerHeight}" AppointmentsSource="{Binding EventList}" ShowBusyIndicator="{Binding ShowBusyIndicator}" QueryAppointmentsCommand="{Binding LoadMoreEventsCommand}" MinimumDateTime="{Binding Today}">
                 <scheduler:SfScheduler.HeaderView>
-                    <scheduler:SchedulerHeaderView Height="50" Background="White" />
+                    <scheduler:SchedulerHeaderView Height="50" Background="White" TextFormat="MMM yy" />
                 </scheduler:SfScheduler.HeaderView>
                 <scheduler:SfScheduler.AgendaView>  
                     <scheduler:SchedulerAgendaView>

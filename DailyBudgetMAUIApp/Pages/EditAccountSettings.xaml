@@ -46,31 +46,118 @@
                     <BoxView x:Name="TopBV" HeightRequest="9" Color="{DynamicResource InfoLL}" HorizontalOptions="Center" Margin="0,0,0,10"/>
                     <Label CharacterSpacing="1.5" Margin="0,165,0,0" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="Medium" FontAttributes="Bold" TextColor="{DynamicResource Primary}" Text="{Binding User.NickName}"/>
                     <Label CharacterSpacing="0" Margin="0,4,0,0" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="Caption" FontAttributes="Bold" TextColor="{DynamicResource Gray500}" Text="{Binding User.Email}"/>
-                    <BoxView HeightRequest="1" Color="{DynamicResource InfoLL}" Margin="0,10,0,5"/>
+                    <BoxView HeightRequest="6" Color="{DynamicResource Primary}" Margin="0,10,0,5"/>
                 </VerticalStackLayout>
                 <ScrollView x:Name="MainScrollView" Margin="0" Grid.Column="0" Grid.Row="1">
-                    <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" x:Name="grdFilters" Margin="0,0,0,20">
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Margin="8,0,20,0">  
-                            <Grid VerticalOptions="Center"  ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">     
-                                <Label Grid.Column="1" Grid.Row="0" Text="Update Details" Margin="15,5,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>      
-                                <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">          
-                                    <Image.Source>              
-                                        <FontImageSource x:Name="CurrencySettingIcon" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_more}" Size="30"  Color="{DynamicResource Info}"/>          
+                    <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" x:Name="grdFilters" Margin="0,0,0,0">
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Margin="5,0,5,0">  
+                            <Grid VerticalOptions="Center"  ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto" Margin="0,10,0,10">
+                                <Label Grid.Column="1" Grid.Row="0" Text="Update Password" VerticalOptions="Center" Margin="15,0,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>      
+                                <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,20,0">          
+                                    <Image.Source>
+                                        <FontImageSource x:Name="UpdatePasswordIcon" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_more}" Size="30"  Color="{DynamicResource Info}"/>          
                                     </Image.Source>      
                                 </Image>     
-                                <Grid.GestureRecognizers>          
-                                    <TapGestureRecognizer x:Name="acrCurrencySetting" Tapped="acrCurrencySetting_Tapped" />      
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="acrUpdatePassword" Tapped="acrUpdatePassword_Tapped" />      
                                 </Grid.GestureRecognizers>  
-                            </Grid> 
-                            <VerticalStackLayout Margin="10,5,10,0" x:Name="CurrencySetting" HorizontalOptions="Fill">        
-                                
+                            </Grid>
+                            <VerticalStackLayout Margin="10,0,10,0" x:Name="UpdatePassword" HorizontalOptions="Fill">
+                                <VerticalStackLayout Margin="0,0,0,0">
+                                    <Label Text="Current Password" FontSize="Small" TextColor="{DynamicResource Gray900}" Padding="5,15,0,4"/>
+                                    <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
+                                        <handlers:BorderlessEntry HeightRequest="44" Text="{Binding CurrentPassword}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" >
+                                            <Entry.Behaviors>
+                                                <xct:TextValidationBehavior x:Name="PasswordRequiredValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding PasswordRequired}" />
+                                            </Entry.Behaviors>
+                                        </handlers:BorderlessEntry>
+                                    </Border>
+                                    <HorizontalStackLayout IsVisible="{Binding PasswordRequired, Converter={StaticResource BoolConverter}}" Margin="10,4,10,0">
+                                        <Image>
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                            </Image.Source>
+                                        </Image>
+                                        <Label Text="You have to enter a passowrd" Style="{StaticResource ErrorMessage}"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout IsVisible="{Binding CurrentPasswordValid, Converter={StaticResource BoolConverter}}" Margin="10,4,10,0">
+                                        <Image>
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="MaterialDesignIcons"  Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                            </Image.Source>
+                                        </Image>
+                                        <Label Text="Thats not your password, is this really you?!" Style="{StaticResource ErrorMessage}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout>
+                                    <Label Text="New Password" FontSize="Small" TextColor="{DynamicResource Gray900}" Padding="5,15,0,4"/>
+                                    <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
+                                        <handlers:BorderlessEntry Focused="NewPassword_Focused" HeightRequest="44" Text="{Binding NewPassword}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" >
+                                            <Entry.Behaviors>
+                                                <xct:TextValidationBehavior x:Name="NewPasswordRequiredValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding NewPasswordRequired}" />
+                                                <xct:TextValidationBehavior x:Name="NewPasswordValidValidator" RegexPattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding NewPasswordValid}"/>
+                                            </Entry.Behaviors>
+                                        </handlers:BorderlessEntry>
+                                    </Border>
+                                    <HorizontalStackLayout IsVisible="{Binding NewPasswordRequired, Converter={StaticResource BoolConverter}}" Margin="10,4,10,0">
+                                        <Image>
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                            </Image.Source>
+                                        </Image>
+                                        <Label Text="You have to enter a passowrd" Style="{StaticResource ErrorMessage}"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout IsVisible="{Binding NewPasswordValid, Converter={StaticResource BoolConverter}}" Margin="10,4,10,0">
+                                        <Image>
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="MaterialDesignIcons"  Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                            </Image.Source>
+                                        </Image>
+                                        <Label Text="Password must be at least 8 characters long, have an Uppercase, Lowercase, Number  and Special character!" Style="{StaticResource ErrorMessage}"/>
+                                    </HorizontalStackLayout>                                    
+                                </VerticalStackLayout>
+                                <VerticalStackLayout>
+                                    <Label Text="Confirm Password" FontSize="Small" TextColor="{DynamicResource Gray900}" Padding="5,15,0,4"/>
+                                    <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
+                                        <handlers:BorderlessEntry Focused="PasswordConfirm_Focused" HeightRequest="44" Text="{Binding NewPasswordConfirm}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True">
+                                            <Entry.Behaviors>
+                                                <xct:TextValidationBehavior x:Name="PasswordConfirmValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding PasswordConfirmRequired}" />
+                                            </Entry.Behaviors>
+                                        </handlers:BorderlessEntry>
+                                    </Border>
+                                </VerticalStackLayout>
+                                <HorizontalStackLayout IsVisible="{Binding PasswordConfirmRequired, Converter={StaticResource BoolConverter}}" Margin="10,4,10,0">
+                                    <Image>
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Label Text="You have to enter a passowrd" Style="{StaticResource ErrorMessage}"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout IsVisible="{Binding NewPasswordMatch, Converter={StaticResource BoolConverter}}" Margin="10,4,10,0">
+                                    <Image>
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialDesignIcons"  Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Label Text="You new password has to match, just in case you got it wrong. Would be awkward" Style="{StaticResource ErrorMessage}"/>
+                                </HorizontalStackLayout>
+                                <VerticalStackLayout Margin="5,25,5,10">
+                                    <Border Style="{StaticResource brdSuccess}" Margin="0,0,0,10" VerticalOptions="Center" HorizontalOptions="Center" IsVisible="{Binding PasswordChangedMessageVisible}">
+                                        <Label Text="Your Password has been successfully updated!" HorizontalTextAlignment="Center" VerticalOptions="Center" HorizontalOptions="Center" TextColor="{DynamicResource Success}" FontAttributes="Bold" FontSize="Small"/>
+                                    </Border>
+                                    <Border Style="{StaticResource brdDanger}" Margin="0,0,0,10" VerticalOptions="Center" HorizontalOptions="Center" IsVisible="{Binding PasswordNotChangedMessageVisible}">
+                                        <Label Text="Something went wrong, your password wasn't updated!" HorizontalTextAlignment="Center" VerticalOptions="Center" HorizontalOptions="Center" TextColor="{DynamicResource Danger}" FontAttributes="Bold" FontSize="Small"/>
+                                    </Border>
+                                    <Button Clicked="UpdatePassword_Clicked" Command="{Binding UpdatePasswordCommand}" Padding="0,0,0,0" FontSize="Small" Text="Update Password" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Info}" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
+                                </VerticalStackLayout>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
-                        <BoxView HeightRequest="1" Grid.Row="1" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
-                        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Margin="8,0,20,0">  
-                            <Grid VerticalOptions="Center"  ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">     
-                                <Label Grid.Column="1" Grid.Row="0" Text="Date Time Settings" Margin="15,5,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>      
-                                <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">          
+                        <BoxView HeightRequest="1" Grid.Row="1" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,0,0,0"/>
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Margin="5,0,5,0">
+                            <Grid VerticalOptions="Center"  ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" Margin="0,10,0,10">
+                                <Label Grid.Column="1" Grid.Row="0" Text="Date Time Settings" Margin="15,0,0,0" FontSize="Medium" FontAttributes="Bold" VerticalOptions="Center" TextColor="{StaticResource Primary}"/>
+                                <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center"  Margin="0,0,20,0">          
                                     <Image.Source>              
                                         <FontImageSource x:Name="DateTimeIcon" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_more}" Size="30"  Color="{DynamicResource Info}"/>          
                                     </Image.Source>     
@@ -78,15 +165,15 @@
                                 <Grid.GestureRecognizers>          
                                     <TapGestureRecognizer x:Name="acrDateTimeSetting" Tapped="acrDateTimeSetting_Tapped" />     
                                 </Grid.GestureRecognizers>  
-                            </Grid>  
-                            <VerticalStackLayout Margin="10,5,10,0" x:Name="DateTimeSetting" HorizontalOptions="Fill">
+                            </Grid>
+                            <VerticalStackLayout Margin="10,0,10,0" x:Name="DateTimeSetting" HorizontalOptions="Fill">
                             </VerticalStackLayout>
                         </VerticalStackLayout>
-                        <BoxView HeightRequest="1" Grid.Row="3" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
-                        <VerticalStackLayout Grid.Row="6" Grid.Column="0" Margin="8,0,20,0">  
-                            <Grid VerticalOptions="Center" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">      
-                                <Label Grid.Column="1" Grid.Row="0" Text="Pay Day Settings" Margin="15,5,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>      
-                                <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">          
+                        <BoxView HeightRequest="1" Grid.Row="3" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,0,0,0"/>
+                        <VerticalStackLayout Grid.Row="6" Grid.Column="0" Margin="5,0,5,0">
+                            <Grid VerticalOptions="Center"  ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" Margin="0,10,0,10">
+                                <Label Grid.Column="1" Grid.Row="0" Text="Pay Day Settings" Margin="15,0,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                                <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,20,0">          
                                     <Image.Source>              
                                         <FontImageSource x:Name="PayDayIcon" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_more}" Size="30"  Color="{DynamicResource Info}"/>          
                                     </Image.Source>      
@@ -95,15 +182,15 @@
                                     <TapGestureRecognizer x:Name="acrPayDaySetting" Tapped="acrPayDaySetting_Tapped" />      
                                 </Grid.GestureRecognizers>  
                             </Grid>
-                            <VerticalStackLayout Margin="10,5,10,0" x:Name="PayDaySetting" HorizontalOptions="Fill">
+                            <VerticalStackLayout Margin="10,0,10,0" x:Name="PayDaySetting" HorizontalOptions="Fill">
                                 
                             </VerticalStackLayout>
                         </VerticalStackLayout>
-                        <BoxView HeightRequest="1" Grid.Row="5" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
-                        <VerticalStackLayout Grid.Row="4" Grid.Column="0" Margin="8,0,20,0">  
-                            <Grid VerticalOptions="Center" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">      
-                                <Label Grid.Column="1" Grid.Row="0" Text="Toggle Options" Margin="15,5,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>      
-                                <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">          
+                        <BoxView HeightRequest="1" Grid.Row="5" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,0,0,0"/>
+                        <VerticalStackLayout Grid.Row="4" Grid.Column="0" Margin="5,0,5,0">
+                            <Grid VerticalOptions="Center"  ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" Margin="0,10,0,10">
+                                <Label Grid.Column="1" Grid.Row="0" Text="Toggle Options" Margin="15,0,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                                <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,20,0">          
                                     <Image.Source>              
                                         <FontImageSource x:Name="BudgetToggleIcon" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_more}" Size="30"  Color="{DynamicResource Info}"/>          
                                     </Image.Source>      
@@ -112,11 +199,11 @@
                                     <TapGestureRecognizer x:Name="acrBudgetToggleSetting" Tapped="acrBudgetToggleSetting_Tapped" />      
                                 </Grid.GestureRecognizers>  
                             </Grid>
-                            <VerticalStackLayout Margin="10,5,10,0" x:Name="BudgetToggleSetting" HorizontalOptions="Fill">
+                            <VerticalStackLayout Margin="10,0,10,0" x:Name="BudgetToggleSetting" HorizontalOptions="Fill">
                                 
                             </VerticalStackLayout>
                         </VerticalStackLayout>
-                        <BoxView HeightRequest="1" Grid.Row="7" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
+                        <BoxView HeightRequest="1" Grid.Row="7" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,0,0,0"/>
                     </Grid>
                 </ScrollView>
                 <VerticalStackLayout x:Name="BtnApply" Grid.Column="0" Grid.Row="2" Margin="0,0,0,25">

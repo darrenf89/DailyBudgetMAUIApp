@@ -35,7 +35,6 @@ public partial class MainPage : ContentPage
 
         this.BindingContext = viewModel;
         _vm = viewModel;
- 
     }
 
     protected async override void OnNavigatedTo(NavigatedToEventArgs args)

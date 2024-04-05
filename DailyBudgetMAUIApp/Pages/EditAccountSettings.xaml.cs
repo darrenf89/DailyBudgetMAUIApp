@@ -112,17 +112,17 @@ public partial class EditAccountSettings : ContentPage
         base.OnNavigatingFrom(args);
     }
 
-    private void acrCurrencySetting_Tapped(object sender, TappedEventArgs e)
+    private void acrUpdatePassword_Tapped(object sender, TappedEventArgs e)
     {
-        if (!CurrencySetting.IsVisible)
+        if (!UpdatePassword.IsVisible)
         {
-            CurrencySetting.IsVisible = true;
-            CurrencySettingIcon.Glyph = "\ue5cf";
+            UpdatePassword.IsVisible = true;
+            UpdatePasswordIcon.Glyph = "\ue5cf";
         }
         else
         {
-            CurrencySetting.IsVisible = false;
-            CurrencySettingIcon.Glyph = "\ue5ce";
+            UpdatePassword.IsVisible = false;
+            UpdatePasswordIcon.Glyph = "\ue5ce";
         }
     }
 
@@ -166,5 +166,28 @@ public partial class EditAccountSettings : ContentPage
             BudgetToggleSetting.IsVisible = false;
             BudgetToggleIcon.Glyph = "\ue5ce";
         }
-    }    
+    }
+
+    private void NewPassword_Focused(object sender, FocusEventArgs e)
+    {
+        _vm.CurrentPasswordValid = true;
+        
+    }
+
+    private void PasswordConfirm_Focused(object sender, FocusEventArgs e)
+    {
+        _vm.NewPasswordMatch = true;
+    }
+
+    private void UpdatePassword_Clicked(object sender, EventArgs e)
+    {
+        PasswordConfirmValidator.ForceValidate();
+        PasswordRequiredValidator.ForceValidate();
+        NewPasswordRequiredValidator.ForceValidate();
+        if (_vm.NewPasswordRequired)
+        {
+            NewPasswordValidValidator.ForceValidate();
+        }
+        
+    }
 }
