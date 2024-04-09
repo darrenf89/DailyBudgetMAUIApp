@@ -1,22 +1,37 @@
 ﻿
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace DailyBudgetMAUIApp.Models
 {
-    public class UserDetailsModel
+    public partial class UserDetailsModel : ObservableObject
     {
-        public int UserID { get; set; }
-        public string NickName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public bool isEmailVerified { get; set; }
-        public DateTime SessionExpiry { get; set; }
-        public int DefaultBudgetID { get; set; }
-        public string? DefaultBudgetType { get; set; }
+        [ObservableProperty]
+        public int userID;
+        [ObservableProperty]
+        public string nickName;
+        [ObservableProperty]
+        public string email;
+        [ObservableProperty]
+        public string password;
+        [ObservableProperty]
+        public bool isEmailVerified;
+        [ObservableProperty]
+        public DateTime sessionExpiry;
+        [ObservableProperty]
+        public int defaultBudgetID;
+        [ObservableProperty]
+        public string? defaultBudgetType;
         public ErrorClass? Error { get; set; } = null;
-        public bool isDPAPermissions { get; set; }
-        public bool isAgreedToTerms { get; set; }
-        public string? SubscriptionType { get; set; }
-        public DateTime SubscriptionExpiry { get; set; }
-        public string? ProfilePicture {get; set;}
+        [ObservableProperty]
+        public bool isDPAPermissions;
+        [ObservableProperty]
+        public bool isAgreedToTerms;
+        [ObservableProperty]
+        public string? subscriptionType;
+        [ObservableProperty]
+        public DateTime subscriptionExpiry;
+        [ObservableProperty]
+        public string? profilePicture;
 
     }
 }

@@ -155,7 +155,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     }
                                     else
                                     {
-                                        if (!userDetails.isEmailVerified)
+                                        if (!userDetails.IsEmailVerified)
                                         {
                                             await App.CurrentPopUp.CloseAsync();
                                             App.CurrentPopUp = null;

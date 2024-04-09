@@ -1,11 +1,14 @@
-﻿using CommunityToolkit.Maui.Behaviors;
+﻿using CommunityToolkit.Maui.ApplicationModel;
+using CommunityToolkit.Maui.Behaviors;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DailyBudgetMAUIApp.Converters;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
+using System.Globalization;
 using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -20,7 +23,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private string currentPassword;
         [ObservableProperty]
-        private string newPassword;
+        private string newEmail;
+        [ObservableProperty]
+        private string newPassword;        
+        [ObservableProperty]
+        private string newNickName;
         [ObservableProperty]
         private string newPasswordConfirm;
         [ObservableProperty]
@@ -39,6 +46,31 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool passwordChangedMessageVisible;
         [ObservableProperty]
         private bool passwordNotChangedMessageVisible;
+        [ObservableProperty]
+        private bool emailChangedMessageVisible;
+        [ObservableProperty]
+        private bool emailNotChangedMessageVisible;
+        [ObservableProperty]
+        private bool emailValid;
+        [ObservableProperty]
+        private bool emailRequired;
+        [ObservableProperty]
+        private bool nicknameChangedMessageVisible;
+        [ObservableProperty]
+        private bool nicknameNotChangedMessageVisible;
+        [ObservableProperty]
+        private bool nickNameRequired;
+        [ObservableProperty]
+        private string currentBudgetName;
+        [ObservableProperty]
+        private List<Budgets> userBudgets;  
+        [ObservableProperty]
+        private string currentSubStatus;
+        [ObservableProperty]
+        public BorderlessPicker switchBudgetPicker;        
+        [ObservableProperty]
+        public Budgets selectedBudget;
+
 
         public EditAccountSettingsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -49,10 +81,50 @@ namespace DailyBudgetMAUIApp.ViewModels
         public async Task OnLoad()
         {
             User = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
+            CurrentSubStatus = $"{User.SubscriptionType} expires on {User.SubscriptionExpiry.ToString("d", CultureInfo.CurrentCulture)}";
+
+            UserBudgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, "EditAccountSettings");
+
+            Application.Current.Resources.TryGetValue("White", out var White);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
+            Application.Current.Resources.TryGetValue("Primary", out var Primary);
+            Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+
+            BorderlessPicker picker = new BorderlessPicker
+            {
+                Title = "Select a budget",
+                ItemsSource = UserBudgets,
+                TitleColor = (Color)Gray900,
+                BackgroundColor = (Color)White,
+                TextColor = (Color)Info,
+                Margin = new Thickness(20, 0, 0, 0),
+            };
+
+            picker.ItemDisplayBinding = new Binding(".", BindingMode.Default, new ChangeBudgetStringConvertor());
+
+            picker.SelectedIndexChanged += async (s, e) =>
+            {
+                var picker = (Picker)s;
+                var SelectedBudget = (Budgets)picker.SelectedItem;
+
+                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, SelectedBudget.BudgetID, false);
+                CurrentBudgetName = SelectedBudget.BudgetName;
+            };            
+            
+            for (int i = 0; i < UserBudgets.Count; i++)
+            {
+                if (UserBudgets[i].BudgetID == User.DefaultBudgetID)
+                {
+                    CurrentBudgetName = UserBudgets[i].BudgetName;
+                    picker.SelectedItem = UserBudgets[i];
+                }
+            }
+
+            SwitchBudgetPicker = picker;
         }
 
         [RelayCommand]
-        private async void CloseSettings(object obj)
+        private async Task CloseSettings(object obj)
         {
             if (App.CurrentPopUp == null)
             {
@@ -67,7 +139,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void DeleteUserAccount()
+        private async Task DeleteUserAccount()
         {
             bool DeleteUser = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to delete {App.DefaultBudget.BudgetName} budget?", $"Deleting the budget is permanent make sure you are sure before hitting yes?", "Yes", "No");
             if (DeleteUser)
@@ -77,10 +149,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void UpdatePassword()
+        private async Task UpdatePassword()
         {
-
-
             await Task.Delay(5);
 
             if (NewPasswordRequired & PasswordRequired & PasswordConfirmRequired & NewPasswordValid)
@@ -193,7 +263,110 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void ChangeSelectedProfilePic()
+        private async Task UpdateNickname()
+        {
+            await Task.Delay(15);
+
+            if (NickNameRequired)
+            {
+                bool UpdateNickName = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to update your nickname?", $"Are you sure you want to update your nickaname to {NewNickName}?", "Yes", "No");
+                if (UpdateNickName)
+                {
+                    List<PatchDoc> UserUpdate = new List<PatchDoc>();
+
+                    PatchDoc EmailPatch = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/NickName",
+                        value = NewNickName
+                    };
+
+                    UserUpdate.Add(EmailPatch);
+
+                    string result = await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+
+                    if (result == "OK")
+                    {
+                        User.NickName = NewNickName;
+
+                        NicknameChangedMessageVisible = true;
+                        NicknameNotChangedMessageVisible = false;
+                        NewNickName = "";
+                        NickNameRequired = true;
+                        
+                    }
+                    else
+                    {
+                        NicknameChangedMessageVisible = false;
+                        NicknameNotChangedMessageVisible = true;
+                        NewNickName = "";
+                        NickNameRequired = true;
+                    }
+
+                }
+            }
+        }
+
+
+        [RelayCommand]
+        private async Task UpdateEmail()
+        {
+            await Task.Delay(5);
+
+            if (EmailRequired & EmailValid)
+            {
+                bool UpdateEmail = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to update your email?", $"Are you sure you want to update your email to {NewEmail}? Make sure you have access to this email or you might have some issues!", "Yes", "No");
+                if (UpdateEmail)
+                {
+                    UserDetailsModel UserDetails = await _ds.GetUserDetailsAsync(NewEmail);
+                    if (UserDetails.Error != null)
+                    {
+                        List<PatchDoc> UserUpdate = new List<PatchDoc>();
+
+                        PatchDoc EmailPatch = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/Email",
+                            value = NewEmail
+                        };
+
+                        UserUpdate.Add(EmailPatch);
+
+                        string result = await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+
+                        if(result == "OK")
+                        {
+                            User.Email = NewEmail;
+
+                            EmailChangedMessageVisible = true;
+                            EmailNotChangedMessageVisible = false;
+                            NewEmail = "";
+                            EmailValid = true;
+                            EmailRequired = true;
+                            
+                        }
+                        else
+                        {
+                            EmailChangedMessageVisible = false;
+                            EmailNotChangedMessageVisible = true;
+                            NewEmail = "";
+                            EmailValid = true;
+                            EmailRequired = true;
+                        }
+                    }
+                    else
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Opps", "An account already exists with this email. Please use a different email or recover the account if this is your email", "OK");
+                    }
+
+
+                }
+            }
+        }
+            
+
+        [RelayCommand]
+        private async Task ChangeSelectedProfilePic()
         {
             EditProfilePictureBottomSheet page = new EditProfilePictureBottomSheet( new ProductTools(new RestDataService()), new RestDataService());
 
@@ -212,12 +385,48 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             App.CurrentBottomSheet = page;
 
-            page.ShowAsync();
+            await page.ShowAsync();
         }
 
         public async Task<Stream> GetUserProfilePictureStream(int UserID)
         {
             return await _ds.DownloadUserProfilePicture(UserID);
+        }
+
+        [RelayCommand]
+        private async Task CreateNewBudget()
+        {
+            string? SubType = "Basic";
+            string BudgetType = "";
+
+            if (!string.IsNullOrEmpty(App.UserDetails.SubscriptionType))
+            {
+                SubType = App.UserDetails.SubscriptionType;
+            }
+
+            string action = "Basic";
+
+            if (SubType == "Premium")
+            {
+                action = await Shell.Current.DisplayActionSheet("What type of budget would you like to create?", "Cancel", null, "Basic", "Premium");
+            }
+            else if (SubType == "PremiumPlus")
+            {
+                action = await Shell.Current.DisplayActionSheet("What type of budget would you like to create?", "Cancel", null, "Basic", "Premium", "PremiumPlus");
+            }
+
+            if (action != "Cancel")
+            {
+                BudgetType = action;
+
+                bool result = await Shell.Current.DisplayAlert("Create a new budget?", $"Are you sure you want to create a new {BudgetType} budget?", "Yes", "No");
+                if (result)
+                {
+                    Budgets NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email, BudgetType);
+                    await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
+
+                }
+            }
         }
 
     }

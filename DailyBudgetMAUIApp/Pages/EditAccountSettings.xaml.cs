@@ -1,3 +1,4 @@
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.ViewModels;
 using Microsoft.Maui.Layouts;
 using Syncfusion.Maui.Core;
@@ -98,7 +99,9 @@ public partial class EditAccountSettings : ContentPage
         else
         {
             ProfilePicStream = await _vm.GetUserProfilePictureStream(App.UserDetails.UserID);
-        }        
+        }
+
+        vslPckrSwitchBudget.Content = _vm.SwitchBudgetPicker;
 
         if (App.CurrentPopUp != null)
         {
@@ -126,45 +129,45 @@ public partial class EditAccountSettings : ContentPage
         }
     }
 
-    private void acrDateTimeSetting_Tapped(object sender, TappedEventArgs e)
+    private void acrUpdateDetails_Tapped(object sender, TappedEventArgs e)
     {
-        if (!DateTimeSetting.IsVisible)
+        if (!UpdateDetails.IsVisible)
         {
-            DateTimeSetting.IsVisible = true;
-            DateTimeIcon.Glyph = "\ue5cf";
+            UpdateDetails.IsVisible = true;
+            UpdateDetailsIcon.Glyph = "\ue5cf";
         }
         else
         {
-            DateTimeSetting.IsVisible = false;
-            DateTimeIcon.Glyph = "\ue5ce";
+            UpdateDetails.IsVisible = false;
+            UpdateDetailsIcon.Glyph = "\ue5ce";
         }
     }
 
-    private void acrPayDaySetting_Tapped(object sender, TappedEventArgs e)
+    private void acrBudgetDetails_Tapped(object sender, TappedEventArgs e)
     {
-        if (!PayDaySetting.IsVisible)
+        if (!BudgetDetails.IsVisible)
         {
-            PayDaySetting.IsVisible = true;
-            PayDayIcon.Glyph = "\ue5cf";
+            BudgetDetails.IsVisible = true;
+            BudgetDetailsIcon.Glyph = "\ue5cf";
         }
         else
         {
-            PayDaySetting.IsVisible = false;
-            PayDayIcon.Glyph = "\ue5ce";
+            BudgetDetails.IsVisible = false;
+            BudgetDetailsIcon.Glyph = "\ue5ce";
         }
     }
 
-    private void acrBudgetToggleSetting_Tapped(object sender, TappedEventArgs e)
+    private void acrSubDetails_Tapped(object sender, TappedEventArgs e)
     {
-        if (!BudgetToggleSetting.IsVisible)
+        if (!SubDetails.IsVisible)
         {
-            BudgetToggleSetting.IsVisible = true;
-            BudgetToggleIcon.Glyph = "\ue5cf";
+            SubDetails.IsVisible = true;
+            SubDetailsIcon.Glyph = "\ue5cf";
         }
         else
         {
-            BudgetToggleSetting.IsVisible = false;
-            BudgetToggleIcon.Glyph = "\ue5ce";
+            SubDetails.IsVisible = false;
+            SubDetailsIcon.Glyph = "\ue5ce";
         }
     }
 
@@ -189,5 +192,19 @@ public partial class EditAccountSettings : ContentPage
             NewPasswordValidValidator.ForceValidate();
         }
         
+    }
+
+    private void UpdateEmail_Clicked(object sender, EventArgs e)
+    {
+        EmailRequiredValidator.ForceValidate();
+        if (_vm.EmailRequired)
+        {
+            EmailValidValidator.ForceValidate();
+        }
+    }
+
+    private void UpdateNickname_Clicked(object sender, EventArgs e)
+    {
+        NickNameRequiredValidator.ForceValidate();
     }
 }
