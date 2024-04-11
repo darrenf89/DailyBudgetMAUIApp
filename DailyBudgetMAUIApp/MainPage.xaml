@@ -472,6 +472,25 @@
                             </Grid>
                         </Grid>
                     </Border>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetSharedBudgetToBool}}" >
+                        <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
+                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                                <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="View Shared Budget!"  FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
+                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to find out the details of who you shared your budget with!" FontSize="Caption" TextColor="{DynamicResource Gray600}"/>
+                            </VerticalStackLayout>
+                            <Grid BackgroundColor="{DynamicResource Info}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                                <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="ViewShareBudget" Tapped="ViewShareBudget_Tapped" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </Grid>
+                    </Border>
                     <AbsoluteLayout x:Name="absSaving" IsVisible="false">
                         <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">
                             <Border.StrokeShape>

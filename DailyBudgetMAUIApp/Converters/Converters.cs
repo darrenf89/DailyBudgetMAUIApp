@@ -211,8 +211,7 @@ namespace DailyBudgetMAUIApp.Converters
             return null;
         }
 
-    }
-
+    }    
     public class IsBudgetSharedBudgetToBool : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -1325,6 +1324,31 @@ namespace DailyBudgetMAUIApp.Converters
             else
             {
                 return "Use current balance only";
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }    
+    
+    public class IsDPATextConverter : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            bool IsDPA = (bool)value;
+
+            if (IsDPA)
+            {
+                return "I am happy for dBudget to contact me";
+            }
+            else
+            {
+                return "I never want to hear from dBudget";
             }
         }
 

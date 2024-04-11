@@ -37,8 +37,7 @@ public partial class EditBudgetSettings : ContentPage
         TopBV.WidthRequest = ScreenWidth;
         MainAbs.WidthRequest = ScreenWidth;
         MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
-        MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
-
+        MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));       
 
         lblTitle.Text = $"Budget settings";
 
@@ -72,6 +71,8 @@ public partial class EditBudgetSettings : ContentPage
             await _vm.UpdateTime();
         };
         timer.Start();
+
+        _vm.BtnApply = BtnApply;
 
         if (App.CurrentPopUp != null)
         {

@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.Maui.ApplicationModel;
-using CommunityToolkit.Maui.Behaviors;
-using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.Converters;
@@ -69,7 +67,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         public BorderlessPicker switchBudgetPicker;        
         [ObservableProperty]
-        public Budgets selectedBudget;
+        public Budgets selectedBudget;        
+        [ObservableProperty]
+        public bool isDPA;
 
 
         public EditAccountSettingsViewModel(IProductTools pt, IRestDataService ds)
@@ -121,6 +121,8 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
 
             SwitchBudgetPicker = picker;
+
+            IsDPA = User.IsDPAPermissions;
         }
 
         [RelayCommand]
@@ -141,10 +143,17 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         private async Task DeleteUserAccount()
         {
-            bool DeleteUser = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to delete {App.DefaultBudget.BudgetName} budget?", $"Deleting the budget is permanent make sure you are sure before hitting yes?", "Yes", "No");
-            if (DeleteUser)
+            var Email = await Application.Current.MainPage.DisplayPromptAsync($"Are you sure you want to delete your account?", $"Enter the accounts email address to delete the account", "Ok", "Cancel");
+            if (Email != null)
             {
+                if(string.Equals(Email, App.UserDetails.Email, StringComparison.OrdinalIgnoreCase))
+                {
 
+                }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlert("That is not the correct email", "Your account has not been deleted please try again." ,"OK");
+                }
             }
         }
 
@@ -427,6 +436,22 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 }
             }
+        }
+
+        partial void OnIsDPAChanged(bool oldValue, bool newValue)
+        {
+            List<PatchDoc> UserUpdate = new List<PatchDoc>();
+
+            PatchDoc IsDPAPermissions = new PatchDoc
+            {
+                op = "replace",
+                path = "/IsDPAPermissions",
+                value = IsDPA
+            };
+
+            UserUpdate.Add(IsDPAPermissions);
+
+            _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
         }
 
     }

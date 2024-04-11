@@ -1,6 +1,5 @@
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Handlers;
 using The49.Maui.BottomSheet;
 using CommunityToolkit.Maui.Views;
@@ -22,6 +21,8 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
     {
         InitializeComponent();
 
+        BindingContext = this;
+
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         var ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
         ButtonWidth = ScreenWidth - 40;
@@ -34,6 +35,18 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         MainScrollView.MaximumHeightRequest = ScreenHeight - 280;
         _pt = pt;
         _ds = ds;
+
+        if (Budget.IsSharedValidated && Budget.SharedUserID != 0)
+        {
+            ViewShareBudget.IsVisible = true;
+            NewShareBudget.IsVisible = false;
+        }
+        else
+        {
+            ViewShareBudget.IsVisible = false;
+            NewShareBudget.IsVisible = true;
+        }
+
     }
 
     private void btnDismiss_Clicked(object sender, EventArgs e)
@@ -166,49 +179,58 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
     private async void CreateNewBudget_Tapped(object sender, TappedEventArgs e)
     {
-        string? SubType = "Basic";
-        string BudgetType = "";
-
-        if (!string.IsNullOrEmpty(App.UserDetails.SubscriptionType))
+        var result = await Shell.Current.DisplayPromptAsync("Create a new budget?", "Before you start creating a new budget give it a name and then let's get going!","Ok","Cancel");
+        if (result != null)
         {
-            SubType = App.UserDetails.SubscriptionType;
-        }
-
-        string action = "Basic";
-
-        if(SubType == "Premium")
-        {
-            action = await Shell.Current.DisplayActionSheet("What type of budget would you like to create?", "Cancel", null, "Basic", "Premium");
-        }
-        else if (SubType == "PremiumPlus")
-        {
-            action = await Shell.Current.DisplayActionSheet("What type of budget would you like to create?", "Cancel", null, "Basic", "Premium", "PremiumPlus");
-        }        
-
-        if(action != "Cancel")
-        {
-            BudgetType = action;
-
-            bool result = await Shell.Current.DisplayAlert("Create a new budget?", $"Are you sure you want to create a new {BudgetType} budget?", "Yes", "No");
-            if (result)
+            try
             {
-                try
+                if (App.CurrentBottomSheet != null)
                 {
-                    if (App.CurrentBottomSheet != null)
-                    {
-                        await this.DismissAsync();
-                        App.CurrentBottomSheet = null;
-                    }
+                    await this.DismissAsync();
+                    App.CurrentBottomSheet = null;
                 }
-                catch (Exception)
-                {
-
-                }
-
-                Budgets NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email, BudgetType);
-                await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
+            }
+            catch (Exception)
+            {
 
             }
+
+
+            Budgets NewBudget = new Budgets();
+
+            if (!string.IsNullOrEmpty(result)) 
+            {
+                NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email, "PremiumPlus");
+
+                List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+                PatchDoc BudgetName = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/BudgetName",
+                    value = result
+                };
+
+                BudgetUpdate.Add(BudgetName);
+
+                await _ds.PatchBudget(NewBudget.BudgetID, BudgetUpdate);
+                NewBudget.BudgetName = result;
+                
+            }
+            await _pt.ChangeDefaultBudget(App.UserDetails.UserID, NewBudget.BudgetID, false);
+            App.DefaultBudgetID = NewBudget.BudgetID;
+            App.DefaultBudget = NewBudget;
+            App.HasVisitedCreatePage = true;
+
+            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+            {
+                Preferences.Remove(nameof(App.DefaultBudgetID));
+            }
+            Preferences.Set(nameof(App.DefaultBudgetID), NewBudget.BudgetID);
+
+
+            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
+
         }
     }
 

@@ -49,6 +49,27 @@ public partial class MainPage : ContentPage
         }
     }
 
+    private async Task UpdateDefaultBudget()
+    {
+        List<Budgets> UserBudgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, "EditAccountSettings");
+        _vm.DefaultBudget = UserBudgets[0];
+        App.DefaultBudgetID = _vm.DefaultBudget.BudgetID;
+        _vm.DefaultBudgetID = _vm.DefaultBudget.BudgetID;
+
+        List<PatchDoc> UserUpdate = new List<PatchDoc>();
+
+        PatchDoc DefaultBudgetID = new PatchDoc
+        {
+            op = "replace",
+            path = "/DefaultBudgetID",
+            value = App.DefaultBudgetID
+        };
+
+        UserUpdate.Add(DefaultBudgetID);
+
+        await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+    }
+
     protected async override void OnAppearing()
     {
 
@@ -56,65 +77,97 @@ public partial class MainPage : ContentPage
 
         ProcessSnackBar();
 
-        _vm.DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID), 1);
-        if (_vm.DefaultBudgetID != 0)
+        try
         {
-            App.DefaultBudgetID = _vm.DefaultBudgetID;
-        }
-
-        if (App.DefaultBudgetID != 0)
-        {
-            if (App.CurrentSettings == null || App.CurrentSettings.IsUpdatedFlag)
+            _vm.DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID), 1);
+            if (_vm.DefaultBudgetID != 0)
             {
-                BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
-                App.CurrentSettings = Settings;
+                App.DefaultBudgetID = _vm.DefaultBudgetID;
             }
 
-            _pt.SetCultureInfo(App.CurrentSettings);
-        }
-        else
-        {
-            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-gb");
-        }
 
-        if (App.DefaultBudget == null || App.DefaultBudget.BudgetID == 0)
-        {
-            _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
-
-            App.DefaultBudget = _vm.DefaultBudget;
-            _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
-            App.SessionLastUpdate = DateTime.UtcNow;
-        }
-        else
-        {
-            if (App.SessionLastUpdate == default(DateTime))
+            if (App.DefaultBudget == null || App.DefaultBudget.BudgetID == 0)
             {
 
-                _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+                App.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+                if (_vm.DefaultBudget.Error != null)
+                {
+                    if (_vm.DefaultBudget.Error.ErrorMessage == "Budget Not found")
+                    {
+                        await UpdateDefaultBudget();
+                    }
+                }
 
-                App.DefaultBudget = _vm.DefaultBudget;
                 _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
                 App.SessionLastUpdate = DateTime.UtcNow;
-
             }
             else
             {
-                if (DateTime.UtcNow.Subtract(App.SessionLastUpdate) > new TimeSpan(0, 0, 3, 0))
+                if (App.SessionLastUpdate == default(DateTime))
                 {
-                    DateTime LastUpdated = _ds.GetBudgetLastUpdatedAsync(_vm.DefaultBudgetID).Result;
+                    App.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
 
-                    if (App.SessionLastUpdate < LastUpdated)
+                    if(_vm.DefaultBudget.Error != null)
                     {
-                        _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
-                        App.DefaultBudget = _vm.DefaultBudget;
-                        _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
-                        App.SessionLastUpdate = DateTime.UtcNow;
+                        if (_vm.DefaultBudget.Error.ErrorMessage == "Budget Not found")
+                        {
+                            await UpdateDefaultBudget();
+                        }
+                    }
+
+                    _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+                    App.SessionLastUpdate = DateTime.UtcNow;
+
+                }
+                else
+                {
+                    if (DateTime.UtcNow.Subtract(App.SessionLastUpdate) > new TimeSpan(0, 0, 3, 0))
+                    {
+                        DateTime LastUpdated = _ds.GetBudgetLastUpdatedAsync(_vm.DefaultBudgetID).Result;
+
+                        if (App.SessionLastUpdate < LastUpdated)
+                        {
+
+                            App.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+                            if (_vm.DefaultBudget.Error != null)
+                            {
+                                if (_vm.DefaultBudget.Error.ErrorMessage == "Budget Not found")
+                                {
+                                    await UpdateDefaultBudget();
+                                }
+                            }
+                            _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+                            App.SessionLastUpdate = DateTime.UtcNow;
+                        }
                     }
                 }
             }
+
+            _vm.DefaultBudget = App.DefaultBudget;
+
+            if (App.DefaultBudgetID != 0)
+            {
+                BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+                App.CurrentSettings = Settings;
+
+                _pt.SetCultureInfo(App.CurrentSettings);
+            }
+            else
+            {
+                CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-gb");
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorLog Error = await _pt.HandleCatchedException(ex, "MainPage", "LoadDefaultBudget");
+            await Shell.Current.GoToAsync(nameof(ErrorPage),
+                new Dictionary<string, object>
+                {
+                    ["Error"] = Error
+                });
         }
 
-        if(App.DefaultBudget.IsCreated)
+        if (App.DefaultBudget.IsCreated)
         {
             App.DefaultBudget = await _pt.BudgetDailyCycle(App.DefaultBudget);
             _vm.DefaultBudget = App.DefaultBudget;
@@ -1021,6 +1074,12 @@ public partial class MainPage : ContentPage
 
         App.CurrentBottomSheet = page;
         page.ShowAsync();
+
+    }
+
+    private void ViewShareBudget_Tapped(object sender, TappedEventArgs e)
+    {
+
 
     }
 

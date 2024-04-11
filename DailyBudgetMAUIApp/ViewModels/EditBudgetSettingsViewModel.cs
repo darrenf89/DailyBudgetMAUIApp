@@ -15,6 +15,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
 
+        public Picker SwitchBudgetPicker { get; set; }
+        public VerticalStackLayout BtnApply { get; set; }
+
         [ObservableProperty]
         private List<lut_CurrencySymbol> currencySearchResults;
         [ObservableProperty]
@@ -692,46 +695,55 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         private async void DeleteBudget()
         {
-
-            bool EditBudget = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to delete {App.DefaultBudget.BudgetName} budget?", $"Deleting the budget is permanent make sure you are sure before hitting yes?", "Yes", "No");
-            if (EditBudget)
+            var BudgetName = await Application.Current.MainPage.DisplayPromptAsync($"Are you sure you want to delete {App.DefaultBudget.BudgetName} budget?", $"Deleting the budget is permanent, enter the budget name to delete the budget", "Ok", "Cancel");
+            if (BudgetName != null)
             {
-                if (App.CurrentPopUp == null)
+                if (string.Equals(BudgetName, App.DefaultBudget.BudgetName, StringComparison.OrdinalIgnoreCase))
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    await Task.Delay(100);
 
-                await Task.Delay(100);
-
-                string result = await _ds.DeleteBudget(App.DefaultBudgetID, App.UserDetails.UserID);
-                if (result == "LastBudget")
-                {
-                    await Application.Current.MainPage.DisplayAlert($"You can't delete this!", $"You can't delete this budget as it is your last budget and you must have at least one budget on the app", "Ok");
-                    if (App.CurrentPopUp != null)
+                    string result = await _ds.DeleteBudget(App.DefaultBudgetID, App.UserDetails.UserID);
+                    if (result == "LastBudget")
                     {
-                        await App.CurrentPopUp.CloseAsync();
-                        App.CurrentPopUp = null;
-                    }
+                        await Application.Current.MainPage.DisplayAlert($"You can't delete this!", $"You can't delete this budget as it is your last budget and you must have at least one budget on the app", "Ok");
 
-                }
-                else if(result == "SharedBudget")
-                {
-                    await Application.Current.MainPage.DisplayAlert($"This is a shared budget!", $"You can't delete a budget that you didnt create, someone kindly shared it with you so don't try and delete it", "Ok");
-                    if (App.CurrentPopUp != null)
+                    }
+                    else if (result == "SharedBudget")
                     {
-                        await App.CurrentPopUp.CloseAsync();
-                        App.CurrentPopUp = null;
-                    }
+                        await Application.Current.MainPage.DisplayAlert($"This is a shared budget!", $"You can't delete a budget that you didn't create, someone kindly shared it with you so don't try and delete it", "Ok");
 
+                    }
+                    else
+                    {
+                        List<Budgets> Budgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, "EditBudgetSettings");
+
+                        App.DefaultBudgetID = Budgets[0].BudgetID;
+                        App.DefaultBudget = Budgets[0];
+                        BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+                        App.CurrentSettings = Settings;
+
+                        if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                        {
+                            Preferences.Remove(nameof(App.DefaultBudgetID));
+                        }
+                        Preferences.Set(nameof(App.DefaultBudgetID), Budgets[0].BudgetID);
+
+                        List<PatchDoc> UserUpdate = new List<PatchDoc>();
+
+                        PatchDoc DefaultBudgetID = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/DefaultBudgetID",
+                            value = App.DefaultBudgetID
+                        };
+
+                        UserUpdate.Add(DefaultBudgetID);
+                        await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+
+                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                    }
+                    
                 }
-                else
-                {
-                    List<Budgets> Budgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, "EditBudgetSettings");
-                    await _pt.ChangeDefaultBudget(App.UserDetails.UserID, Budgets[0].BudgetID, false);
-                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=BudgetDeleted&SnackID=0");           
-                }                
 
             }
         }

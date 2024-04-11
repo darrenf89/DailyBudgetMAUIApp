@@ -1,5 +1,8 @@
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.ViewModels;
+using IeuanWalker.Maui.Switch;
+using IeuanWalker.Maui.Switch.Events;
+using IeuanWalker.Maui.Switch.Helpers;
 using Microsoft.Maui.Layouts;
 using Syncfusion.Maui.Core;
 
@@ -115,20 +118,6 @@ public partial class EditAccountSettings : ContentPage
         base.OnNavigatingFrom(args);
     }
 
-    private void acrUpdatePassword_Tapped(object sender, TappedEventArgs e)
-    {
-        if (!UpdatePassword.IsVisible)
-        {
-            UpdatePassword.IsVisible = true;
-            UpdatePasswordIcon.Glyph = "\ue5cf";
-        }
-        else
-        {
-            UpdatePassword.IsVisible = false;
-            UpdatePasswordIcon.Glyph = "\ue5ce";
-        }
-    }
-
     private void acrUpdateDetails_Tapped(object sender, TappedEventArgs e)
     {
         if (!UpdateDetails.IsVisible)
@@ -140,20 +129,6 @@ public partial class EditAccountSettings : ContentPage
         {
             UpdateDetails.IsVisible = false;
             UpdateDetailsIcon.Glyph = "\ue5ce";
-        }
-    }
-
-    private void acrBudgetDetails_Tapped(object sender, TappedEventArgs e)
-    {
-        if (!BudgetDetails.IsVisible)
-        {
-            BudgetDetails.IsVisible = true;
-            BudgetDetailsIcon.Glyph = "\ue5cf";
-        }
-        else
-        {
-            BudgetDetails.IsVisible = false;
-            BudgetDetailsIcon.Glyph = "\ue5ce";
         }
     }
 
@@ -206,5 +181,26 @@ public partial class EditAccountSettings : ContentPage
     private void UpdateNickname_Clicked(object sender, EventArgs e)
     {
         NickNameRequiredValidator.ForceValidate();
+    }
+
+    static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
+    {
+        Application.Current.Resources.TryGetValue("Primary", out var Primary);
+        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
+        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
+
+        //Switch Color Animation
+        Color fromSwitchColor = e.IsToggled ? (Color)Primary : (Color)Gray400;
+        Color toSwitchColor = e.IsToggled ? (Color)Gray400 : (Color)Primary;
+
+        //BackGroundColor Animation
+        Color fromColor = e.IsToggled ? (Color)Tertiary : (Color)PrimaryLight;
+        Color toColor = e.IsToggled ? (Color)PrimaryLight : (Color)Tertiary;
+
+        double t = e.Percentage * 0.01;
+
+        customSwitch.KnobBackgroundColor = ColorAnimationUtil.ColorAnimation(fromSwitchColor, toSwitchColor, t);
+        customSwitch.BackgroundColor = ColorAnimationUtil.ColorAnimation(fromColor, toColor, t);
     }
 }

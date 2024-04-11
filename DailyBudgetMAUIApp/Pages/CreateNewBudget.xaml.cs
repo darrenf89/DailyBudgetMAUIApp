@@ -36,7 +36,15 @@ public partial class CreateNewBudget : ContentPage
 
         try
         {
+
+            if(App.CurrentSettings == null)
+            {
+                BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+                App.CurrentSettings = Settings;
+            }
+
             _pt.SetCultureInfo(App.CurrentSettings);
+
             base.OnNavigatedTo(args);
             if (_vm.BudgetID == 0)
             {
@@ -182,7 +190,7 @@ public partial class CreateNewBudget : ContentPage
         catch (Exception ex)
         {
             Debug.WriteLine($" --> {ex.Message}");
-            ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "Constructor").Result;
+            ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "OnNavigatedTo").Result;
             await Shell.Current.GoToAsync(nameof(ErrorPage),
                 new Dictionary<string, object>
                 {
