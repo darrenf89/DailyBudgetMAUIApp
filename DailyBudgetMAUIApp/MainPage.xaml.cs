@@ -2165,7 +2165,7 @@ public partial class MainPage : ContentPage
         var Carousel = (SfCarousel)Sender;
         var Elements = IncomeCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+        int Index = (Carousel.SelectedIndex) + 1;
 
         Border button = (Border)Elements[Index];
         await button.BackgroundColorTo((Color)Gray100, 16, 500, Easing.CubicIn);
@@ -2178,7 +2178,7 @@ public partial class MainPage : ContentPage
         var Carousel = (SfCarousel)Sender;
         var Elements = IncomeCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+        int Index = (Carousel.SelectedIndex) + 1;
 
         Border button = (Border)Elements[Index];
         await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
@@ -2191,7 +2191,7 @@ public partial class MainPage : ContentPage
         var Carousel = (SfCarousel)Sender;
         var Elements = SavingCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+        int Index = (Carousel.SelectedIndex) + 1;
 
         Border button = (Border)Elements[Index];
         await button.BackgroundColorTo((Color)Gray100,16,500,Easing.CubicIn);
@@ -2205,7 +2205,7 @@ public partial class MainPage : ContentPage
         var Carousel = (SfCarousel)Sender;
         var Elements = SavingCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+        int Index = (Carousel.SelectedIndex) + 1;
 
         Border button = (Border)Elements[Index];
         await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
@@ -2217,7 +2217,7 @@ public partial class MainPage : ContentPage
         var Carousel = (SfCarousel)Sender;
         var Elements = BillCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+        int Index = (Carousel.SelectedIndex) + 1;
 
         Border button = (Border)Elements[Index];
         await button.BackgroundColorTo((Color)Gray100, 16, 500, Easing.CubicIn);
@@ -2231,7 +2231,7 @@ public partial class MainPage : ContentPage
         var Carousel = (SfCarousel)Sender;
         var Elements = BillCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+        int Index = (Carousel.SelectedIndex) + 1;
 
         Border button = (Border)Elements[Index];
         await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);

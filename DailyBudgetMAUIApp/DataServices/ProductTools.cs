@@ -1513,16 +1513,22 @@ namespace DailyBudgetMAUIApp.DataServices
         }
         public DateTime GetBudgetLocalTime(DateTime UtcDate)
         {
-            DateTime LocalDate = new DateTime();
+            DateTime LocalDate = UtcDate;
 
-            try
+            if(App.CurrentSettings != null)
             {
-                TimeZoneInfo BudgetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(App.CurrentSettings.TimeZoneName);
-                LocalDate = TimeZoneInfo.ConvertTime(UtcDate, BudgetTimeZone);
-            }
-            catch (TimeZoneNotFoundException)
-            {
-                LocalDate = UtcDate.AddHours(App.CurrentSettings.TimeZoneUTCOffset);
+                if(!string.IsNullOrEmpty(App.CurrentSettings.TimeZoneName))
+                {
+                    try
+                    {
+                        TimeZoneInfo BudgetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(App.CurrentSettings.TimeZoneName);
+                        LocalDate = TimeZoneInfo.ConvertTime(UtcDate, BudgetTimeZone);
+                    }
+                    catch (TimeZoneNotFoundException)
+                    {
+                        LocalDate = UtcDate.AddHours(App.CurrentSettings.TimeZoneUTCOffset);
+                    }
+                }
             }
 
             return LocalDate;
