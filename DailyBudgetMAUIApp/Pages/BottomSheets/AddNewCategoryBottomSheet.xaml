@@ -85,7 +85,7 @@
                             <VerticalStackLayout Margin="20,5,10,0" x:Name="SubCategory" HorizontalOptions="Fill">
                                 <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
                                     <Entry VerticalOptions="Center" x:Name="entSubCategory" Grid.Row="0" Grid.Column="0" FontSize="Medium" Placeholder="Enter a category name" TextColor="{StaticResource Gray900}" Margin="0,0,20,0"/>
-                                    <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource buttonApply}" HeightRequest="38" WidthRequest="38" Margin="0,0,12,0" VerticalOptions="Center" x:Name="AddSubCat" Clicked="AddSubCat_Clicked">
+                                    <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource buttonApply}" HeightRequest="38" WidthRequest="38" Margin="0,0,12,0" VerticalOptions="Center" x:Name="AddSubCat" Clicked="AddSubCat_Clicked" Padding="0">
                                         <Button.ImageSource>
                                             <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Done_all}" Size="20" Color="{DynamicResource Success}"/>
                                         </Button.ImageSource>

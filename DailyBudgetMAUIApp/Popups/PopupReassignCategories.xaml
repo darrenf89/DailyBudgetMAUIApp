@@ -8,25 +8,31 @@
             CanBeDismissedByTappingOutsideOfPopup="False"
             Color="Transparent">
     <AbsoluteLayout x:Name="AbsLayout" HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}">
-        <ImageButton x:Name="btnClose" Clicked="Close_Window" WidthRequest="22" HeightRequest="22" Background="{DynamicResource Gray400}" CornerRadius="11" ZIndex="99" AbsoluteLayout.LayoutBounds="20,105">
-            <ImageButton.Source>
-                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Cancel}" Color="White"/>
-            </ImageButton.Source>
-        </ImageButton>
+        <HorizontalStackLayout AbsoluteLayout.LayoutBounds="0.95,54" AbsoluteLayout.LayoutFlags="XProportional" Margin="0,15,10,0" ZIndex="99">
+            <Label TextColor="{StaticResource Info}" Text="Close" TextDecorations="Underline" FontSize="Small"/>
+            <Image Background="{DynamicResource White}" Margin="5,0,0,0" VerticalOptions="End">
+                <Image.Source>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Close}" Size="16" Color="{DynamicResource Info}"/>
+                </Image.Source>
+            </Image>
+            <HorizontalStackLayout.GestureRecognizers>
+                <TapGestureRecognizer Tapped="BackButton_Clicked"/>
+            </HorizontalStackLayout.GestureRecognizers>
+        </HorizontalStackLayout>
         <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0" HorizontalOptions="Center" VerticalOptions="Center">
-            <Border BackgroundColor="{DynamicResource White}" Margin="0,100,0,0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16">
+            <Border BackgroundColor="{DynamicResource White}" Margin="0,60,0,0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16" Stroke="{StaticResource Info}">
                 <VerticalStackLayout>
                     <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                        <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Medium"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,30,5,10" Text="Reassign category transactions"/>
+                        <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,30,5,30" Text="Reassign Transactions"/>
                     </HorizontalStackLayout>
                     <VerticalStackLayout>
                         <ScrollView x:Name="vslSelectors" MaximumHeightRequest="{Binding MaxHeight}">
 
                         </ScrollView>
                         <Grid RowDefinitions="Auto" ColumnDefinitions="*">
-                            <VerticalStackLayout Grid.Column="0" Grid.Row="0" Margin="20,15,20,15">
-                                <Button x:Name="ApplyCategoryReAssign" Clicked="ApplyCategoryReAssign_Clicked" Text="Apply" Style="{StaticResource SuccessButton}" HeightRequest="44" />
-                                <Button x:Name="Cancel" Clicked="Cancel_Clicked" Text="Cancel" Style="{StaticResource DangerButton}" HeightRequest="44" Margin="0,5,0,0"/>
+                            <VerticalStackLayout Grid.Column="0" Grid.Row="0" Margin="20,30,20,15">
+                                <Button x:Name="ApplyCategoryReAssign" Clicked="ApplyCategoryReAssign_Clicked" Text="Apply" Style="{StaticResource SuccessButton}" HeightRequest="34"/>
+                                <Button x:Name="Cancel" Clicked="Cancel_Clicked" Text="Cancel" Style="{StaticResource DangerButton}" HeightRequest="34" Margin="0,5,0,0"/>
                             </VerticalStackLayout>
                         </Grid>
                     </VerticalStackLayout>

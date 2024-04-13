@@ -2438,38 +2438,36 @@ public partial class MainPage : ContentPage
 
     private void CategoryOptions_Tapped(object sender, TappedEventArgs e)
     {
+        CategoryOptionsBottomSheet page = new CategoryOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
 
-    }
-
-    private async void ViewCategories_Tapped(object sender, TappedEventArgs e)
-    {
-        if (App.CurrentPopUp == null)
+        page.Detents = new DetentsCollection()
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);        
-        }
+            new FixedContentDetent()
+        };
 
+        page.HasBackdrop = true;
+        page.CornerRadius = 0;
 
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewCategories)}");
+        App.CurrentBottomSheet = page;
+
+        page.ShowAsync();
     }
 
     private void PayeeOptions_Tapped(object sender, TappedEventArgs e)
     {
+        PayeeOptionsBottomSheet page = new PayeeOptionsBottomSheet();
 
-    }
-
-    private async void ViewPayees_Tapped(object sender, TappedEventArgs e)
-    {
-        if (App.CurrentPopUp == null)
+        page.Detents = new DetentsCollection()
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            new FixedContentDetent()
+        };
 
+        page.HasBackdrop = true;
+        page.CornerRadius = 0;
 
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewPayees)}");
+        App.CurrentBottomSheet = page;
+
+        page.ShowAsync();
     }
 
     private void YourBudgetCalendarOptions_Tapped(object sender, TappedEventArgs e)

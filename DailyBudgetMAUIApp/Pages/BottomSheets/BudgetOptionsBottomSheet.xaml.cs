@@ -47,6 +47,17 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             NewShareBudget.IsVisible = true;
         }
 
+        if(App.UserDetails.SubscriptionType == "Basic")
+        {
+            VSLUpgradeSubscription.IsVisible = true;
+            VSLViewSubscription.IsVisible = false;
+        }
+        else
+        {
+            VSLUpgradeSubscription.IsVisible = false;
+            VSLViewSubscription.IsVisible = true;
+        }
+
     }
 
     private void btnDismiss_Clicked(object sender, EventArgs e)
@@ -297,7 +308,12 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewEnvelopes)}");
     }
 
-    private void UpgradeBudget_Tapped(object sender, TappedEventArgs e)
+    private void UpgradeSubscription_Tapped(object sender, TappedEventArgs e)
+    {
+
+    }
+
+    private void ViewSubscription_Tapped(object sender, TappedEventArgs e)
     {
 
     }

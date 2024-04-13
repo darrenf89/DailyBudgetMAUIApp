@@ -200,6 +200,32 @@
                                 <TapGestureRecognizer x:Name="CreateNewBudget" Tapped="CreateNewBudget_Tapped" />
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="VSLViewSubscription">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Subscriptions}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Small" Text="Your Subscription" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="ViewSubscription" Tapped="ViewSubscription_Tapped" />
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="VSLUpgradeSubscription">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Upgrade}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Small" Text="UpgradeAccount" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="UpgradeSubscription" Tapped="UpgradeSubscription_Tapped" />
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
                         <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
                             <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
                                 <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
@@ -212,9 +238,6 @@
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="SwitchBudget" Tapped="SwitchBudget_Tapped" />
                             </VerticalStackLayout.GestureRecognizers>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
-
                         </VerticalStackLayout>
                         <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
 

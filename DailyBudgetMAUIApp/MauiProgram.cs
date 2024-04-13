@@ -132,6 +132,8 @@ public static class MauiProgram
         builder.Services.AddTransient<AddNewCategoryBottomSheet>();
         builder.Services.AddTransient<AddSubCategoryBottomSheet>();
         builder.Services.AddTransient<EditProfilePictureBottomSheet>();
+        builder.Services.AddTransient<CategoryOptionsBottomSheet>();
+        builder.Services.AddTransient<PayeeOptionsBottomSheet>();
 
 #if WINDOWS
         SetWindowHandlers(); 

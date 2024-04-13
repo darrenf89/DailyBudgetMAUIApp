@@ -44,7 +44,10 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
         lblTitle.Text = $"Create a new category";
 
         this.Categories.Clear();
-        this.Categories.AddRange(Categories);
+        if (Categories != null)
+        {
+            this.Categories.AddRange(Categories);
+        }
 
         this.PropertyChanged += ViewTransactionFilterBottomSheet_PropertyChanged;
 
@@ -131,30 +134,33 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
 
         int CategoryID = await _ds.AddNewCategory(App.DefaultBudgetID, cat);
 
-        Categories NewCat = new Categories
+        if(Categories.Count > 0)
         {
-            CategoryIcon = SelectedIcon,
-            CategoryName = entCategoryName.Text,
-            CategoryGroupID = CategoryID,
-            CategoryID = CategoryID,
-            CategorySpendPayPeriod = 0,
-            CategorySpendAllTime = 0
-        };
+            Categories NewCat = new Categories
+            {
+                CategoryIcon = SelectedIcon,
+                CategoryName = entCategoryName.Text,
+                CategoryGroupID = CategoryID,
+                CategoryID = CategoryID,
+                CategorySpendPayPeriod = 0,
+                CategorySpendAllTime = 0
+            };
 
-        Categories? AddNewCat = Categories.Where(c => c.CategoryID == -1).FirstOrDefault();
+            Categories? AddNewCat = Categories.Where(c => c.CategoryID == -1).FirstOrDefault();
 
-        if(Categories.Contains(AddNewCat))
-        {
-            Categories.Remove(AddNewCat);
-        }
+            if (Categories.Contains(AddNewCat))
+            {
+                Categories.Remove(AddNewCat);
+            }
 
-        Categories.Add(NewCat);
-        Categories.Add(AddNewCat);
+            Categories.Add(NewCat);
+            Categories.Add(AddNewCat);
 
-        ViewCategories CurrentPage = (ViewCategories)Shell.Current.CurrentPage;
-        CurrentPage.AddCategoryList.Clear();
-        //CurrentPage.AddCategoryList = new List<Categories>();
-        CurrentPage.AddCategoryList = Categories;
+            ViewCategories CurrentPage = (ViewCategories)Shell.Current.CurrentPage;
+            CurrentPage.AddCategoryList.Clear();
+            //CurrentPage.AddCategoryList = new List<Categories>();
+            CurrentPage.AddCategoryList = Categories;
+        }        
 
         if (App.CurrentBottomSheet != null)
         {
@@ -225,7 +231,8 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
             Button FilterButton = new Button
             {
                 HeightRequest = 30,
-                WidthRequest = 30
+                WidthRequest = 30,
+                Padding = new Thickness(0)
             };
 
             FilterButton.Style = (Style)buttonUnclicked;

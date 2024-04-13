@@ -588,18 +588,6 @@
                                     </VerticalStackLayout>
                                 </ScrollView>
                             </Grid>
-                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource SuccessLight}" Margin="0,5,0,0">
-                                <BoxView HeightRequest="2" Color="{StaticResource Success}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="View your category spend" TextColor="{DynamicResource Success}"/>
-                                <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="1" Grid.Column="1" >
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Success}"/>
-                                    </Image.Source>
-                                </Image>
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer x:Name="ViewCategories" Tapped="ViewCategories_Tapped"/>
-                                </Grid.GestureRecognizers>
-                            </Grid>
                         </VerticalStackLayout>
                     </Border>
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdPayeeDetails" IsVisible="True">
@@ -631,18 +619,6 @@
                                 <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" RowDefinitions="Auto" ColumnDefinitions="*,*" x:Name="PreviousNextPayee" Margin="0,0,0,0" Padding="0">
 
                                 </Grid>
-                            </Grid>
-                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource SuccessLight}" Margin="0,0,0,0">
-                                <BoxView HeightRequest="2" Color="{StaticResource Success}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                                <Label FontAttributes="Bold" Grid.Row="2" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="Small" Text="View your payee spend" TextColor="{DynamicResource Success}"/>
-                                <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="2" Grid.Column="1" >
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Success}"/>
-                                    </Image.Source>
-                                </Image>
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer x:Name="ViewPayees" Tapped="ViewPayees_Tapped"/>
-                                </Grid.GestureRecognizers>
                             </Grid>
                         </VerticalStackLayout>
                     </Border>

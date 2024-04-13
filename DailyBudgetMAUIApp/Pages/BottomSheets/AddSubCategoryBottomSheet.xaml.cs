@@ -110,8 +110,19 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
         entCategoryName.IsEnabled = false;
         entCategoryName.IsEnabled = true;
 
-        ViewCategory CurrentPage = (ViewCategory)Shell.Current.CurrentPage;
-        CurrentPage.AddCategory = NewCat;
+        try
+        {
+            ViewCategory CurrentPage = (ViewCategory)Shell.Current.CurrentPage;
+            CurrentPage.AddCategory = NewCat;
+        } 
+        catch (Exception) 
+        {
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
+        }
 
         if (App.CurrentBottomSheet != null)
         {

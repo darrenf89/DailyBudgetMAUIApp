@@ -28,6 +28,7 @@ public partial class PopupReassignCategories : Popup
         Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
         Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
         Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+        Application.Current.Resources.TryGetValue("Info", out var Info);
 
         Grid grid = new Grid
         {
@@ -49,7 +50,7 @@ public partial class PopupReassignCategories : Popup
         Label Current = new Label
         {
             Text = "Current",
-            TextColor = (Color)Gray900,
+            TextColor = (Color)Info,
             FontSize = 16,
             CharacterSpacing = 0,
             HorizontalOptions = LayoutOptions.Center,
@@ -60,7 +61,7 @@ public partial class PopupReassignCategories : Popup
         Label To = new Label
         {
             Text = "New",
-            TextColor = (Color)Gray900,
+            TextColor = (Color)Info,
             FontSize = 16,
             CharacterSpacing = 0,
             HorizontalOptions = LayoutOptions.Center,
@@ -88,7 +89,7 @@ public partial class PopupReassignCategories : Popup
             Label CurrentLabel = new Label
             {
                 Text = Category.CategoryName,
-                TextColor = (Color)Gray900,
+                TextColor = (Color)Info,
                 FontSize = 12,
                 CharacterSpacing = 0,
                 Padding = new Thickness(10,0,0,0),
@@ -133,7 +134,7 @@ public partial class PopupReassignCategories : Popup
                     FontFamily = "MaterialDesignIcons",
                     Glyph = "\uea50",
                     Size = 20,
-                    Color = (Color)Gray900                    
+                    Color = (Color)Info
                 }
             };
 
@@ -167,7 +168,7 @@ public partial class PopupReassignCategories : Popup
     {
         this.Close("Cancel");
     }
-    private void Close_Window(object sender, EventArgs e)
+    private void BackButton_Clicked(object sender, TappedEventArgs e)
     {
         this.Close("Cancel");
     }
