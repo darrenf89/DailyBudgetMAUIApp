@@ -218,7 +218,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                     LoginExpiryDate = userDetails.SessionExpiry
                                                 };
 
-                                                await _ds.UpdateDeviceUserDetails(UserDevice);
+                                                try
+                                                {
+                                                    await _ds.UpdateDeviceUserDetails(UserDevice);
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    //Log as non fatal error
+                                                }
                                             }
 
                                             await _pt.LoadTabBars(App.UserDetails.SubscriptionType, App.UserDetails.SubscriptionExpiry, App.UserDetails.DefaultBudgetType);

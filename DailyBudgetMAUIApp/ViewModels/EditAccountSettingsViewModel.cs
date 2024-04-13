@@ -6,6 +6,7 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
+using Microsoft.Maui.Primitives;
 using System.Globalization;
 using The49.Maui.BottomSheet;
 
@@ -148,7 +149,20 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 if(string.Equals(Email, App.UserDetails.Email, StringComparison.OrdinalIgnoreCase))
                 {
+                    string result = await _ds.DeleteUserAccount(App.UserDetails.UserID);
+                    if (result == "OK")
+                    {
+                        AppShell Shell = new AppShell();
+                        await Shell.Logout();
 
+                        await Application.Current.MainPage.DisplayAlert($"Account Deleted", $"Your account has been permanently deleted and there is no way to recover it now. If you want to start budgeting again create a new account", "Ok");
+
+                    }
+                    else
+                    {
+                        await Application.Current.MainPage.DisplayAlert($"Opps something went wrong", $"There was an issue deleting your account, please try again and if the issue persists please contact us so can help", "Ok");
+
+                    }
                 }
                 else
                 {
@@ -445,7 +459,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             PatchDoc IsDPAPermissions = new PatchDoc
             {
                 op = "replace",
-                path = "/IsDPAPermissions",
+                path = "/isDPAPermissions",
                 value = IsDPA
             };
 

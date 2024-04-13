@@ -59,9 +59,25 @@ namespace DailyBudgetMAUIApp.Models
             }
         }
 
+        string _profilePicture;
+        public string ProfilePicture
+        {
+            get => _profilePicture;
+            set
+            {
+                if (_profilePicture == value)
+                {
+                    return;
+                }
+
+                _profilePicture = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfilePicture)));
+            }
+        }
+
 
         bool _isDPAPermissions;
-        public bool isDPAPermissions
+        public bool IsDPAPermissions
         {
             get => _isDPAPermissions;
             set
@@ -72,12 +88,12 @@ namespace DailyBudgetMAUIApp.Models
                 }
 
                 _isDPAPermissions = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(isDPAPermissions)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDPAPermissions)));
             }
         }
 
         bool _isAgreedToTerms;
-        public bool isAgreedToTerms
+        public bool IsAgreedToTerms
         {
             get => _isAgreedToTerms;
             set
@@ -88,7 +104,7 @@ namespace DailyBudgetMAUIApp.Models
                 }
 
                 _isAgreedToTerms = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(isAgreedToTerms)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsAgreedToTerms)));
             }
         }
 

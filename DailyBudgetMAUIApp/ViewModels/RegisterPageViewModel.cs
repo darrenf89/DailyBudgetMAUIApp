@@ -107,9 +107,10 @@ namespace DailyBudgetMAUIApp.ViewModels
                         RegisterModel NewUser = new RegisterModel();
                         NewUser.Email = Email;
                         NewUser.Password = Password;
-                        NewUser.isDPAPermissions = IsDPAPermissions;
-                        NewUser.isAgreedToTerms = IsAgreedToTerms;
+                        NewUser.IsDPAPermissions = IsDPAPermissions;
+                        NewUser.IsAgreedToTerms = IsAgreedToTerms;
                         NewUser.NickName = NickName;
+                        NewUser.ProfilePicture = "Avatar1";
                         
                         NewUser = _pt.CreateUserSecurityDetails(NewUser);
 

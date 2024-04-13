@@ -433,6 +433,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         BudgetUpdate.Add(BudgetStage6);
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
+
                     }
 
                     break;
@@ -462,7 +463,9 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         await _ds.PatchBudget(BudgetID, BudgetUpdate);
                     break;
-                }                
+                }
+
+                Budget = _ds.GetBudgetDetailsAsync(BudgetID, "Full").Result;
             }
             catch (Exception ex)
             {

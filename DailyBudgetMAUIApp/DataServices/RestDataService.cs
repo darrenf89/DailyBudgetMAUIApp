@@ -719,6 +719,53 @@ namespace DailyBudgetMAUIApp.DataServices
                 return null;
             }
         }
+        
+        public async Task<string> DeleteUserAccount(int UserID)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/deleteaccount/{UserID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                            Dictionary<string,string> result = serializer.Deserialize<Dictionary<string, string>>(reader);
+                            string returnString = result["result"];
+                            return returnString;
+                        }
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        HandleError(new Exception(error.ErrorMessage), "DeleteUserAccount", "DeleteUserAccount");
+                        return null;
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "DeleteUserAccount", "DeleteUserAccount");
+                return null;
+            }
+        }
 
         public async Task<List<lut_CurrencySymbol>> GetCurrencySymbols(string SearchQuery)
         {

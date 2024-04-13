@@ -1758,18 +1758,34 @@ namespace DailyBudgetMAUIApp.DataServices
 
             App.MainTabBar.Items.Add(new ShellContent()
             {
+                Title = "Outgoings",
+                Route = "AddBill",
+                Icon = "bill.svg",
+                ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.MainTabBar.Items.Add(new ShellContent()
+            {
                 Title = "Transaction",
                 Route = "AddTransactions",
                 Icon = "transaction.svg",
                 ContentTemplate = new DataTemplate(() => new AddTransaction(new AddTransactionViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
-            App.MainTabBar.Items.Add(new ShellContent()
+            App.MainTabBar.Items.Add(new ShellContentDI()
             {
-                Title = "Outgoings",
-                Route = "AddBill",
-                Icon = "bill.svg",
-                ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+                Title = "Income",
+                Route = "AddIncome",
+                Icon = "income.svg",
+                ContentTemplate = new DataTemplate(() => new AddIncome(new AddIncomeViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Saving",
+                Route = "AddSaving",
+                Icon = "saving.svg",
+                ContentTemplate = new DataTemplate(() => new AddSaving(new AddSavingViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
             App.ViewTabBar.Items.Add(new ShellContentDI()
@@ -1782,10 +1798,26 @@ namespace DailyBudgetMAUIApp.DataServices
 
             App.ViewTabBar.Items.Add(new ShellContentDI()
             {
+                Title = "Savings",
+                Route = "ViewSavings",
+                Icon = "saving.svg",
+                ContentTemplate = new DataTemplate(() => new ViewSavings(new ViewSavingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
                 Title = "Outgoings",
                 Route = "ViewBills",
                 Icon = "bill.svg",
                 ContentTemplate = new DataTemplate(() => new ViewBills(new ViewBillsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Envelopes",
+                Route = "ViewEnvelopes",
+                Icon = "envelope.svg",
+                ContentTemplate = new DataTemplate(() => new ViewEnvelopes(new ViewEnvelopesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
             App.ViewTabBar.Items.Add(new ShellContentDI()
@@ -1894,18 +1926,34 @@ namespace DailyBudgetMAUIApp.DataServices
 
             App.MainTabBar.Items.Add(new ShellContent()
             {
+                Title = "Outgoings",
+                Route = "AddBill",
+                Icon = "bill.svg",
+                ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.MainTabBar.Items.Add(new ShellContent()
+            {
                 Title = "Transaction",
                 Route = "AddTransactions",
                 Icon = "transaction.svg",
                 ContentTemplate = new DataTemplate(() => new AddTransaction(new AddTransactionViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
-            App.MainTabBar.Items.Add(new ShellContent()
+            App.MainTabBar.Items.Add(new ShellContentDI()
             {
-                Title = "Outgoings",
-                Route = "AddBill",
-                Icon = "bill.svg",
-                ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+                Title = "Income",
+                Route = "AddIncome",
+                Icon = "income.svg",
+                ContentTemplate = new DataTemplate(() => new AddIncome(new AddIncomeViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.MainTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Saving",
+                Route = "AddSaving",
+                Icon = "saving.svg",
+                ContentTemplate = new DataTemplate(() => new AddSaving(new AddSavingViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
             App.ViewTabBar.Items.Add(new ShellContentDI()
@@ -1918,10 +1966,26 @@ namespace DailyBudgetMAUIApp.DataServices
 
             App.ViewTabBar.Items.Add(new ShellContentDI()
             {
+                Title = "Savings",
+                Route = "ViewSavings",
+                Icon = "saving.svg",
+                ContentTemplate = new DataTemplate(() => new ViewSavings(new ViewSavingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
                 Title = "Outgoings",
                 Route = "ViewBills",
                 Icon = "bill.svg",
                 ContentTemplate = new DataTemplate(() => new ViewBills(new ViewBillsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
+            });
+
+            App.ViewTabBar.Items.Add(new ShellContentDI()
+            {
+                Title = "Envelopes",
+                Route = "ViewEnvelopes",
+                Icon = "envelope.svg",
+                ContentTemplate = new DataTemplate(() => new ViewEnvelopes(new ViewEnvelopesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
             });
 
             App.ViewTabBar.Items.Add(new ShellContentDI()

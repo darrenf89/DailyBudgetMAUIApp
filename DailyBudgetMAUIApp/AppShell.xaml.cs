@@ -46,7 +46,7 @@ public partial class AppShell : Shell
     }
 
     [RelayCommand]
-    async void Logout()
+    public async Task Logout()
     {
         if (Preferences.ContainsKey(nameof(App.UserDetails)))
         {

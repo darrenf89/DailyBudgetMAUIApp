@@ -451,14 +451,24 @@ public partial class AddTransaction : ContentPage
 
     private async void swhNotes_Toggled(object sender, ToggledEventArgs e)
     {
-        entTransactionAmount.IsEnabled = false;
-        entTransactionAmount.IsEnabled = true;
-        edtNotes.IsEnabled = false;
-        edtNotes.IsEnabled = true;
+        if(entTransactionAmount != null)
+        {
+            entTransactionAmount.IsEnabled = false;
+            entTransactionAmount.IsEnabled = true;
+        }    
+        
+        if(edtNotes != null)
+        {
+            edtNotes.IsEnabled = false;
+            edtNotes.IsEnabled = true;
+        }
 
         if (!_vm.IsNote)
         {
-            _vm.Transaction.Notes = "";
+            if(_vm.Transaction!= null)
+            {
+                _vm.Transaction.Notes = "";
+            }            
         }
     }
 

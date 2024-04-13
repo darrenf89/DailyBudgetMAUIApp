@@ -29,6 +29,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<BudgetSettings> GetBudgetSettings(int BudgetID);
         public Task<Budgets> CreateNewBudget(string UserEmail, string? BudgetType = "Basic");
         public Task<string> DeleteBudget(int BudgetID, int UserID);
+        public Task<string> DeleteUserAccount(int UserID);
         public Task<List<lut_CurrencySymbol>> GetCurrencySymbols(string SearchQuery);
         public Task<List<lut_CurrencyPlacement>> GetCurrencyPlacements(string SearchQuery);
         public Task<List<lut_BudgetTimeZone>> GetBudgetTimeZones(string SearchQuery);
@@ -51,7 +52,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> SaveNewBill(Bills Bill, int BudgetID);
         public Task<string> UpdateBill(Bills Bill);
         public Task<string> PatchBill(int BillID, List<PatchDoc> PatchDoc);
-        public Task<string> DeleteBill(int BillID);
+        public Task<string> DeleteBill(int BillID);        
         public Task<List<Bills>> GetBudgetBills(int BudgetID, string page);
         public Task<Savings> GetSavingFromID(int SavingID);
         public Task<int> SaveNewSaving(Savings Saving, int BudgetID);

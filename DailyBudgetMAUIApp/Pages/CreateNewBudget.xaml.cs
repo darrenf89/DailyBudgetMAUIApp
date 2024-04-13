@@ -321,7 +321,7 @@ public partial class CreateNewBudget : ContentPage
                 _vm.Budget.Stage = 6;
             }
 
-            await MainScrollView.ScrollToAsync(0, 395, true);
+            await MainScrollView.ScrollToAsync(0, 395, true);            
         }
 
         if (_vm.Budget.Stage > 5)
@@ -638,9 +638,8 @@ public partial class CreateNewBudget : ContentPage
             }
 
             App.SessionLastUpdate = default(DateTime);
-
-            await Application.Current.MainPage.Navigation.PopModalAsync();
-            await Shell.Current.GoToAsync($"//{nameof(MainPage)}?SnackBar=Budget Created&SnackID={_vm.BudgetID}");
+;
+            await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=Budget Created&SnackID={_vm.BudgetID}");
 
         }
 
