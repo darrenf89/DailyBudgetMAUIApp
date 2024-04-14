@@ -143,6 +143,14 @@ public partial class SelectPayeePage : ContentPage
             Application.Current.MainPage.ShowPopup(PopUp);
         }
 
+        if (_vm.PageType == "ViewList")
+        {
+            _vm.Transaction = new Transactions
+            {
+                Payee = ""
+            };
+        }
+
         await Task.Delay(10);
 
         TopBV.WidthRequest = ScreenWidth;
@@ -169,6 +177,10 @@ public partial class SelectPayeePage : ContentPage
             LoadPayeeList(_vm.Bill.BillPayee);
         }
         else if (_vm.PageType == "Transaction")
+        {
+            LoadPayeeList(_vm.Transaction.Payee);
+        }
+        else
         {
             LoadPayeeList(_vm.Transaction.Payee);
         }
@@ -207,6 +219,21 @@ public partial class SelectPayeePage : ContentPage
                 btnClearPayee.IsVisible = true;
             }
         }
+        else
+        {
+            if (string.IsNullOrEmpty(_vm.Transaction.Payee))
+            {
+                entTransactionPayee.WidthRequest = _vm.EntryWidth;
+                bvHeader.WidthRequest = _vm.EntryWidth;
+                btnClearPayee.IsVisible = false;
+            }
+            else
+            {
+                entTransactionPayee.WidthRequest = _vm.EntryButtonWidth;
+                bvHeader.WidthRequest = _vm.EntryButtonWidth;
+                btnClearPayee.IsVisible = true;
+            }
+        }
 
         if(_vm.PageType == "Transaction")
         {
@@ -216,11 +243,22 @@ public partial class SelectPayeePage : ContentPage
         {
             _vm.PayeeDoesntExists = !_vm.PayeeList.Contains(_vm.Bill.BillPayee) && _vm.Bill.BillPayee != "";
         }
+        else
+        {
+            _vm.PayeeDoesntExists = !_vm.PayeeList.Contains(_vm.Transaction.Payee) && _vm.Transaction.Payee != "";
+        }
         
 
         if(_vm.PayeeDoesntExists)
         {
-            hslAddNewPayee.IsVisible = true;
+            if(_vm.PageType != "ViewList")
+            {
+                hslAddNewPayee.IsVisible = true;
+            }
+            else
+            {
+                hslAddNewPayee.IsVisible = false;
+            }            
         }
         else
         {
@@ -296,11 +334,17 @@ public partial class SelectPayeePage : ContentPage
                     Margin = new Thickness(5,0,5,4)                   
                 };
 
-                TapGestureRecognizer PayeeTapGesture = new TapGestureRecognizer {
-                    CommandParameter = Payee
-                };
-                PayeeTapGesture.Tapped += (s, e) => SelectExistingPayee_Tapped(s, e);
-                PayeeBorder.GestureRecognizers.Add(PayeeTapGesture);
+                if (_vm.PageType != "ViewList")
+                {
+                    TapGestureRecognizer PayeeTapGesture = new TapGestureRecognizer
+                    {
+                        CommandParameter = Payee
+                    };
+
+                    PayeeTapGesture.Tapped += (s, e) => SelectExistingPayee_Tapped(s, e);
+                    PayeeBorder.GestureRecognizers.Add(PayeeTapGesture);
+                }
+
 
                 Label PayeeLabel = new Label
                 {
@@ -449,8 +493,10 @@ public partial class SelectPayeePage : ContentPage
                 ["Bill"] = _vm.Bill
             });
         }
-
-
+        else
+        {
+            await Shell.Current.GoToAsync($"..");
+        }
     }
 
     private void ClearEntPayee_Clicked(object sender, EventArgs e)
@@ -466,6 +512,16 @@ public partial class SelectPayeePage : ContentPage
             entBillPayee.Unfocus();
         }
         else if(_vm.PageType == "Transaction")
+        {
+            _vm.Transaction.Payee = "";
+            LoadHeader();
+            LoadPayeeList(_vm.Transaction.Payee);
+
+            entTransactionPayee.IsEnabled = false;
+            entTransactionPayee.IsEnabled = true;
+            entTransactionPayee.Unfocus();
+        }
+        else
         {
             _vm.Transaction.Payee = "";
             LoadHeader();
@@ -497,6 +553,12 @@ public partial class SelectPayeePage : ContentPage
             _vm.PayeeName = _vm.Bill.BillPayee;
         }
         else if (_vm.PageType == "Transaction")
+        {
+            LoadPayeeList(_vm.Transaction.Payee);
+            LastSearchPayee = _vm.Transaction.Payee;
+            _vm.PayeeName = _vm.Transaction.Payee;
+        }
+        else
         {
             LoadPayeeList(_vm.Transaction.Payee);
             LastSearchPayee = _vm.Transaction.Payee;

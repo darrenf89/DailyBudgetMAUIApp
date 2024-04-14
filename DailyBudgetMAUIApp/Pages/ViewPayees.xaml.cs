@@ -2,12 +2,8 @@ using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.ViewModels;
 using Syncfusion.Maui.Carousel;
-using The49.Maui.BottomSheet;
-
-
 
 namespace DailyBudgetMAUIApp.Pages;
 

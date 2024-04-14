@@ -300,55 +300,59 @@ public partial class SelectCategoryPage : ContentPage
                     Margin = new Thickness(0, 0, 0, 15)
                 };
 
-                Grid AddNewCatVSL = new Grid
+                if (_vm.PageType != "ViewList")
                 {
-                    Margin = new Thickness(0),
-                    Padding = new Thickness(0),
-                    HeightRequest = 38,
-                    ColumnDefinitions =
+                    Grid AddNewCatVSL = new Grid
+                    {
+                        Margin = new Thickness(0),
+                        Padding = new Thickness(0),
+                        HeightRequest = 38,
+                        ColumnDefinitions =
                     {
                         new ColumnDefinition{Width = new GridLength(35)},
-                        new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)}                        
+                        new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)}
                     }
-                };
+                    };
 
-                Button AddNewCategoryButton = new Button
-                {
-                    Margin = new Thickness(0,0,5,0),
-                    Padding = new Thickness(0),
-                    TextColor = (Color)White,
-                    BackgroundColor = (Color)White,
-                    HorizontalOptions = LayoutOptions.End,
-                    Style = (Style)TitleButtons,
-                    VerticalOptions = LayoutOptions.Center,
-                    ImageSource = new FontImageSource
+                    Button AddNewCategoryButton = new Button
                     {
-                        FontFamily = "MaterialDesignIcons",
-                        Glyph = "\ue146",
-                        Size = 30,
-                        Color = (Color)Success
-                    }
-                };
+                        Margin = new Thickness(0, 0, 5, 0),
+                        Padding = new Thickness(0),
+                        TextColor = (Color)White,
+                        BackgroundColor = (Color)White,
+                        HorizontalOptions = LayoutOptions.End,
+                        Style = (Style)TitleButtons,
+                        VerticalOptions = LayoutOptions.Center,
+                        ImageSource = new FontImageSource
+                        {
+                            FontFamily = "MaterialDesignIcons",
+                            Glyph = "\ue146",
+                            Size = 30,
+                            Color = (Color)Success
+                        }
+                    };
 
-                AddNewCategoryButton.Clicked += (s, e) => ShowAddNewSubCategory(CategoryString, GroupCat.CategoryGroupID.GetValueOrDefault());
+                    AddNewCategoryButton.Clicked += (s, e) => ShowAddNewSubCategory(CategoryString, GroupCat.CategoryGroupID.GetValueOrDefault());
 
-                AddNewCatVSL.Add(AddNewCategoryButton, 0, 0);
+                    AddNewCatVSL.Add(AddNewCategoryButton, 0, 0);
 
-                Label AddNewHeaderLabel = new Label
-                {
-                    Text = "Add New Category",
-                    Margin = new Thickness(10, 0, 0, 0),
-                    TextColor = (Color)Gray400,
-                    FontSize = 14,
-                    HorizontalOptions = LayoutOptions.Start,
-                    VerticalOptions = LayoutOptions.Center
-                };
+                    Label AddNewHeaderLabel = new Label
+                    {
+                        Text = "Add New Category",
+                        Margin = new Thickness(10, 0, 0, 0),
+                        TextColor = (Color)Gray400,
+                        FontSize = 14,
+                        HorizontalOptions = LayoutOptions.Start,
+                        VerticalOptions = LayoutOptions.Center
+                    };
 
-                AddNewCatVSL.Add(AddNewHeaderLabel, 1, 0);
+                    AddNewCatVSL.Add(AddNewHeaderLabel, 1, 0);
 
-                AddNewCat.Add(CategoryString, AddNewCatVSL);
+                    AddNewCat.Add(CategoryString, AddNewCatVSL);
 
-                SubCategoryVSL.Children.Add(AddNewCatVSL);                
+
+                    SubCategoryVSL.Children.Add(AddNewCatVSL);
+                }
 
                 foreach (Categories SubCat in _vm.SubCategoryList)
                 {
@@ -360,13 +364,16 @@ public partial class SelectCategoryPage : ContentPage
                             Margin = new Thickness(35, 0, 0, 5)
                         };
 
-                        TapGestureRecognizer SubCategoryTapGesture = new TapGestureRecognizer
+                        if (_vm.PageType != "ViewList")
                         {
-                            CommandParameter = SubCat
-                        };
+                            TapGestureRecognizer SubCategoryTapGesture = new TapGestureRecognizer
+                            {
+                                CommandParameter = SubCat
+                            };
 
-                        SubCategoryTapGesture.Tapped += (s, e) => SelectCategory_Tapped(s, e);
-                        SubCategoryBorder.GestureRecognizers.Add(SubCategoryTapGesture);
+                            SubCategoryTapGesture.Tapped += (s, e) => SelectCategory_Tapped(s, e);
+                            SubCategoryBorder.GestureRecognizers.Add(SubCategoryTapGesture);
+                        }
 
                         Label SubCategoryLabel = new Label
                         {
@@ -778,6 +785,10 @@ public partial class SelectCategoryPage : ContentPage
             {
                 ["Bill"] = _vm.Bill
             });
+        }
+        else
+        {
+            await Shell.Current.GoToAsync($"..");
         }
 
     }

@@ -4,7 +4,8 @@
              x:Class="DailyBudgetMAUIApp.Pages.AddSaving"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
-             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch">
     <Shell.BackButtonBehavior>
         <BackButtonBehavior Command="{Binding BackButtonCommand}" />
     </Shell.BackButtonBehavior>
@@ -134,7 +135,7 @@
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout Margin="0,10,0,5" x:Name="vslGoalDate">
-                        <Label Text="Saving Goal Date" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
+                        <Label Text="Saving Goal Date" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5" x:Name="SavingGoalDateLabel"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White" x:Name="brdGoalDate">
                             <DatePicker CharacterSpacing="1" Margin="20,0,0,0" x:Name="dtpckGoalDate" Date="{Binding Saving.GoalDate}" DateSelected="dtpckGoalDate_DateSelected"/>
                         </Border>
@@ -174,6 +175,29 @@
                         <CheckBox x:Name="chbxIsAutoComplete" IsChecked="{Binding Saving.IsAutoComplete}" />
                         <Label Text="Complete and close Savings when Goal Reached?" FontSize="Caption" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
                     </HorizontalStackLayout>
+                    <VerticalStackLayout x:Name="VSLCalculator" Margin="5,10,0,5">
+                        <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40">
+                            <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding ShowCalculator}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" x:Name="swhSpendCategory"/>
+                            <Label HorizontalOptions="Start" VerticalOptions="Center" Text="Calcualte daily amount" Grid.Column="1" TextColor="{StaticResource Primary}"  FontSize="Small" Padding="0,0,0,0" IsVisible="{Binding ShowCalculator, Converter={StaticResource BoolConverter}}"/>
+                        </Grid>
+                        <Grid IsVisible="{Binding ShowCalculator}" ColumnDefinitions="Auto,*" RowDefinitions="Auto">
+                            <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource StandardInputBorder}" Padding="15,0,35,0" Margin="5,0,5,0" HeightRequest="38">
+                                <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="5,0,0,0" x:Name="pckrEverynthDuration" SelectedIndexChanged="pckrEverynthDuration_SelectedIndexChanged" Title="Select a duration" SelectedIndex="{Binding SelectedCalculatorIndex}">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>Week</x:String>
+                                            <x:String>Pay</x:String>
+                                            <x:String>Month</x:String>
+                                            <x:String>Year</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </handlers:BorderlessPicker>
+                            </Border>
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,5,0" HeightRequest="38" BackgroundColor="White" HorizontalOptions="Fill" Grid.Row="0" Grid.Column="1">
+                                <handlers:BorderlessEntry TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="15,0,0,0" x:Name="entCalculateAmount" TextChanged="CalculateAmount_Changed" Keyboard="Numeric" />
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
             <Grid ColumnDefinitions="30,*,30" RowDefinitions="10,*,40">

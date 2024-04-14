@@ -13,7 +13,7 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
 
-    public PayeeOptionsBottomSheet()
+    public PayeeOptionsBottomSheet(IRestDataService ds, IProductTools pt)
     {
         InitializeComponent();
 
@@ -22,7 +22,10 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
         ButtonWidth = ScreenWidth - 40;
         btnDismiss.WidthRequest = ButtonWidth;
         //MainScrollView.MaximumHeightRequest = ScreenHeight - 280;
-  
+
+
+        _ds = ds;
+        _pt = pt;
     }
 
     private void btnDismiss_Clicked(object sender, EventArgs e)
@@ -32,12 +35,59 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
 
     private async void DeletePayee_Tapped(object sender, TappedEventArgs e)
     {
+        List<string> Payees = await _ds.GetPayeeList(App.DefaultBudgetID);
+        string[] PayeeList = Payees.ToArray();
 
+        var DeletePayee = await Application.Current.MainPage.DisplayActionSheet($"What Payee do you want to delete?", "Cancel", null, PayeeList);
+        if (DeletePayee == "Cancel")
+        {
+
+        }
+        else
+        {
+            Payees.Remove(DeletePayee);
+            PayeeList = Payees.ToArray();
+            var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
+            if (reassign == "Cancel")
+            {
+
+            }
+            else if (reassign == "No")
+            {
+                await _ds.DeletePayee(App.DefaultBudgetID, DeletePayee, "");
+
+                if (App.CurrentBottomSheet != null)
+                {
+                    await App.CurrentBottomSheet.DismissAsync();
+                    App.CurrentBottomSheet = null;
+                }
+
+                await Application.Current.MainPage.DisplayAlert($"Payee Deleted", $"Congrats you have deleted {DeletePayee}, hopefully you meant to!", "Ok");
+            }
+            else
+            {
+                await _ds.DeletePayee(App.DefaultBudgetID, DeletePayee, reassign);
+
+                if (App.CurrentBottomSheet != null)
+                {
+                    await App.CurrentBottomSheet.DismissAsync();
+                    App.CurrentBottomSheet = null;
+                }
+
+                await Application.Current.MainPage.DisplayAlert($"Category Deleted", $"Congrats you have deleted {DeletePayee} and reassigned its transactions to {reassign}, hopefully you meant to!", "Ok");
+            }
+        }
     }
 
     private async void ViewPayeeList_Tapped(object sender, TappedEventArgs e)
     {
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
+        }
 
+        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={App.DefaultBudgetID}&PageType=ViewList");
     }
 
     private async void ViewPayees_Tapped(object sender, TappedEventArgs e)

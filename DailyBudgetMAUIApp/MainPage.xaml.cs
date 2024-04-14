@@ -2455,7 +2455,7 @@ public partial class MainPage : ContentPage
 
     private void PayeeOptions_Tapped(object sender, TappedEventArgs e)
     {
-        PayeeOptionsBottomSheet page = new PayeeOptionsBottomSheet();
+        PayeeOptionsBottomSheet page = new PayeeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
 
         page.Detents = new DetentsCollection()
         {

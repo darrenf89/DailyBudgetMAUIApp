@@ -3,6 +3,9 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
+using IeuanWalker.Maui.Switch;
+using IeuanWalker.Maui.Switch.Events;
+using IeuanWalker.Maui.Switch.Helpers;
 using System.Globalization;
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -95,6 +98,9 @@ public partial class AddSaving : ContentPage
                 else if (_vm.Saving.SavingsType == "SavingsBuilder")
                 {
                     UpdateSelectedOption("SavingsBuilder");
+
+                    double CalcAmount = 0;
+                    entCalculateAmount.Text = CalcAmount.ToString("c", CultureInfo.CurrentCulture);
                 }
                 else if (_vm.Saving.SavingsType == "TargetAmount")
                 {
@@ -223,11 +229,13 @@ public partial class AddSaving : ContentPage
     private void Option1Select_Tapped(object sender, TappedEventArgs e)
     {
         UpdateSelectedOption("TargetDate");
+        pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
     }
 
     private void Option2Select_Tapped(object sender, TappedEventArgs e)
     {
         UpdateSelectedOption("SavingsBuilder");
+        pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
     }
 
     private void Option3Select_Tapped(object sender, TappedEventArgs e)
@@ -394,6 +402,7 @@ public partial class AddSaving : ContentPage
             vslSavingTarget.IsVisible = true;
             vslCurrentBalance.IsVisible = true;
             vslGoalDate.IsVisible = true;
+            SavingGoalDateLabel.Text = "Saving Goal Date";
             vslSavingAmount.IsVisible = true;            
 
             _vm.Saving.IsDailySaving = true;
@@ -414,6 +423,7 @@ public partial class AddSaving : ContentPage
             brdGoalDate.IsEnabled = true;
             brdSavingAmount.IsEnabled = false;
             brdSavingPeriod.IsEnabled = false;
+            VSLCalculator.IsVisible = false;
 
         }
         else if (option == "SavingsBuilder")
@@ -429,6 +439,7 @@ public partial class AddSaving : ContentPage
             vslSavingTarget.IsVisible = false;
             vslCurrentBalance.IsVisible = true;
             vslGoalDate.IsVisible = false;
+            SavingGoalDateLabel.Text = "Saving Goal Date";
             vslSavingAmount.IsVisible = true;
 
             hslIsAutoComplete.IsVisible = false;
@@ -452,6 +463,10 @@ public partial class AddSaving : ContentPage
             chbxCanExceedGoal.IsChecked = false;
             _vm.Saving.IsDailySaving = true;
             _vm.Saving.DdlSavingsPeriod = "PerDay";
+            VSLCalculator.IsVisible = true;
+
+
+
         }
         else if (option == "TargetAmount")
         {
@@ -466,6 +481,7 @@ public partial class AddSaving : ContentPage
             vslSavingTarget.IsVisible = true;
             vslCurrentBalance.IsVisible = true;
             vslGoalDate.IsVisible = true;
+            SavingGoalDateLabel.Text = "Saving Goal Date";
             vslSavingAmount.IsVisible = true;
             
             _vm.Saving.IsDailySaving = true; 
@@ -484,6 +500,7 @@ public partial class AddSaving : ContentPage
             brdGoalDate.IsEnabled = false;
             brdSavingAmount.IsEnabled = true;
             brdSavingPeriod.IsEnabled = true;
+            VSLCalculator.IsVisible = false;
         }
         else if(option == "Envelope")
         {
@@ -498,7 +515,10 @@ public partial class AddSaving : ContentPage
 
             vslSavingTarget.IsVisible = false;
             vslCurrentBalance.IsVisible = true;
-            vslGoalDate.IsVisible = false;
+            vslGoalDate.IsVisible = true;
+            SavingGoalDateLabel.Text = "Next Stash Date";
+            _vm.Saving.GoalDate = _vm.BudgetNextPayDate;
+
             vslSavingAmount.IsVisible = true;
 
             hslIsAutoComplete.IsVisible = false;
@@ -506,13 +526,13 @@ public partial class AddSaving : ContentPage
 
             entSavingTarget.IsEnabled = true;
             entCurrentBalance.IsEnabled = true;
-            dtpckGoalDate.IsEnabled = true;
+            dtpckGoalDate.IsEnabled = false;
             entSavingAmount.IsEnabled = true;
             pckrSavingPeriod.IsEnabled = false;
 
             brdSavingTarget.IsEnabled = true;
-            brdCurrentBalance.IsEnabled = false;
-            brdGoalDate.IsEnabled = true;
+            brdCurrentBalance.IsEnabled = true;
+            brdGoalDate.IsEnabled = false;
             brdSavingAmount.IsEnabled = true;
             brdSavingPeriod.IsEnabled = false;
 
@@ -522,6 +542,7 @@ public partial class AddSaving : ContentPage
             chbxCanExceedGoal.IsChecked = true;
             _vm.Saving.IsDailySaving = false;
             _vm.Saving.DdlSavingsPeriod = "PerPayPeriod";
+            VSLCalculator.IsVisible = false;
         }
         else
         {
@@ -529,11 +550,33 @@ public partial class AddSaving : ContentPage
             SavingTypeSelected.IsVisible = false;
             brdSavingDetails.IsVisible = false;
             vslSavingRecurringTypeSelected.IsVisible = false;
+            SavingGoalDateLabel.Text = "Saving Goal Date";
 
             _vm.SavingRecurringText = "";
             _vm.SavingTypeText = "";
 
         }
+    }
+
+    static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
+    {
+        Application.Current.Resources.TryGetValue("Primary", out var Primary);
+        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
+        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
+        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
+
+        //Switch Color Animation
+        Color fromSwitchColor = e.IsToggled ? (Color)Primary : (Color)Gray400;
+        Color toSwitchColor = e.IsToggled ? (Color)Gray400 : (Color)Primary;
+
+        //BackGroundColor Animation
+        Color fromColor = e.IsToggled ? (Color)Tertiary : (Color)PrimaryLight;
+        Color toColor = e.IsToggled ? (Color)PrimaryLight : (Color)Tertiary;
+
+        double t = e.Percentage * 0.01;
+
+        customSwitch.KnobBackgroundColor = ColorAnimationUtil.ColorAnimation(fromSwitchColor, toSwitchColor, t);
+        customSwitch.BackgroundColor = ColorAnimationUtil.ColorAnimation(fromColor, toColor, t);
     }
 
     void SavingTarget_Changed(object sender, TextChangedEventArgs e)
@@ -568,8 +611,11 @@ public partial class AddSaving : ContentPage
 
         if(!_vm.Saving.IsRegularSaving)
         {
-            entCurrentBalance.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
-            _vm.Saving.CurrentBalance = SavingValue;
+            if(_vm.NavigatedFrom != "ViewSavings")
+            {
+                entCurrentBalance.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
+                _vm.Saving.CurrentBalance = SavingValue;
+            }
         }
 
         if(_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
@@ -585,6 +631,47 @@ public partial class AddSaving : ContentPage
 
         RecalculateValues("entSavingAmount");
     }
+    void CalculateAmount_Changed(object sender, TextChangedEventArgs e)
+    {
+        decimal CalculateAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+        entCalculateAmount.Text = CalculateAmount.ToString("c", CultureInfo.CurrentCulture);
+        if(_vm.ShowCalculator)
+        {
+            entCalculateAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingAmount.Text);
+        }
+        
+
+        string SelectedDuration = (string)pckrEverynthDuration.SelectedItem ?? "Week";
+        decimal DailyAmount = 0;
+
+        if (SelectedDuration == "Week")
+        {
+            DailyAmount = CalculateAmount / 7;
+        }
+        else if(SelectedDuration == "Fortnight")
+        {
+            DailyAmount = CalculateAmount / 14;
+        }        
+        else if(SelectedDuration == "Pay")
+        {
+            DailyAmount = CalculateAmount / _vm.BudgetDaysBetweenPay;
+        }
+        else if(SelectedDuration == "Month")
+        {
+            DailyAmount = CalculateAmount / 30;
+        }
+        else if(SelectedDuration == "Year")
+        {
+            DailyAmount = CalculateAmount / 365;
+        }
+
+        if(_vm.ShowCalculator)
+        {
+            entSavingAmount.Text = DailyAmount.ToString("c", CultureInfo.CurrentCulture);
+        }
+        
+    }
+
     private void pckrSavingPeriod_SelectedIndexChanged(object sender, EventArgs e)
     {
         PickerClass SavingPeriodClass = (PickerClass)pckrSavingPeriod.SelectedItem;
@@ -848,7 +935,43 @@ public partial class AddSaving : ContentPage
                     pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
                 }
             }
+        }        
+    }
+
+    private void pckrEverynthDuration_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if(!string.IsNullOrEmpty(entCalculateAmount.Text))
+        {
+            decimal CalculateAmount = (decimal)_pt.FormatCurrencyNumber(entCalculateAmount.Text);
+
+            if (CalculateAmount > 0)
+            {
+                string SelectedDuration = (string)pckrEverynthDuration.SelectedItem ?? "Week";
+                decimal DailyAmount = 0;
+
+                if (SelectedDuration == "Week")
+                {
+                    DailyAmount = CalculateAmount / 7;
+                }
+                else if (SelectedDuration == "Fortnight")
+                {
+                    DailyAmount = CalculateAmount / 14;
+                }
+                else if (SelectedDuration == "Pay")
+                {
+                    DailyAmount = CalculateAmount / _vm.BudgetDaysBetweenPay;
+                }
+                else if (SelectedDuration == "Month")
+                {
+                    DailyAmount = CalculateAmount / 30;
+                }
+                else if (SelectedDuration == "Year")
+                {
+                    DailyAmount = CalculateAmount / 365;
+                }
+
+                entSavingAmount.Text = DailyAmount.ToString("c", CultureInfo.CurrentCulture);
+            }
         }
-        
     }
 }

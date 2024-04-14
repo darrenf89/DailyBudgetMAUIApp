@@ -69,6 +69,6 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
             App.CurrentBottomSheet = null;
         }
 
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewEnvelopes)}");
+        await Shell.Current.GoToAsync($"///{nameof(DailyBudgetMAUIApp.Pages.ViewEnvelopes)}");
     }
 }

@@ -23,7 +23,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private int  budgetID;
         [ObservableProperty]
-        private int  savingID;
+        private int  savingID;        
+        [ObservableProperty]
+        private int selectedCalculatorIndex = 0;
         [ObservableProperty]
         private Savings  saving;
         [ObservableProperty]
@@ -33,7 +35,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private string  savingType;
         [ObservableProperty]
-        private string  navigatedFrom;
+        private string  navigatedFrom;        
+        [ObservableProperty]
+        private bool showCalculator;
 
         public string SavingTypeText { get; set; } = "";
         public string SavingRecurringText { get; set; } = "";

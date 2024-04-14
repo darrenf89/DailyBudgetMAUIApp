@@ -60,6 +60,14 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
     private async void ViewCategoryList_Tapped(object sender, TappedEventArgs e)
     {
 
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
+        }
+
+        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={App.DefaultBudgetID}&PageType=ViewList");
+
     }    
     
     private async void DeleteSubCategory_Tapped(object sender, TappedEventArgs e)
