@@ -568,21 +568,17 @@ namespace DailyBudgetMAUIApp.DataServices
                     int DaysToBill = (int)Math.Ceiling((Bill.BillDueDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
                     if (Bill.IsRecuring)
                     {
-                        if (DaysToBill < DaysToPayDay)
+                        DateTime BillDueAfterNext = Bill.BillDueDate.GetValueOrDefault().Date;
+                        while(BillDueAfterNext < Budget.NextIncomePayday.GetValueOrDefault().Date)
                         {
-                            PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
-
-                            DateTime BillDueAfterNext = CalculateNextDate(Bill.BillDueDate.GetValueOrDefault(), Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
-                            int NumberOfDaysBill = (int)Math.Ceiling((BillDueAfterNext - Bill.BillDueDate.GetValueOrDefault()).TotalDays);
-                            decimal? BillRegularValue = Bill.BillAmount / NumberOfDaysBill;
-
-                            PeriodTotalBillOutgoing += BillRegularValue.GetValueOrDefault() * (DaysToPayDay - DaysToBill);
-
+                            BillDueAfterNext = CalculateNextDate(Bill.BillDueDate.GetValueOrDefault(), Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
+                            if(BillDueAfterNext < Budget.NextIncomePayday.GetValueOrDefault().Date)
+                            {
+                                DaysToBill = (int)Math.Ceiling((BillDueAfterNext.Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
+                            }
                         }
-                        else
-                        {
-                            PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToPayDay;
-                        }
+
+                        PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
                     }
                     else
                     {
@@ -590,13 +586,9 @@ namespace DailyBudgetMAUIApp.DataServices
                         {
                             PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
                         }
-                        else
-                        {
-                            PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToPayDay;
-                        }
                     }
 
-                    PeriodTotalBillOutgoing += Bill.BillCurrentBalance;
+                    PeriodTotalBillOutgoing += Bill.BillBalanceAtLastPayDay;
 
                 }
             }
@@ -1132,6 +1124,17 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         budget.Savings[i] = Saving;
                     }
+
+                    for (int i = budget.Bills.Count - 1; i >= 0; i--)
+                    {
+                        Bills Bill = budget.Bills[i];
+                        if(!Bill.IsClosed)
+                        {
+                            Bill.BillBalanceAtLastPayDay = Bill.BillCurrentBalance;
+                        }
+
+                        budget.Bills[i] = Bill;
+                    }
                 }
                 else
                 {
@@ -1169,6 +1172,17 @@ namespace DailyBudgetMAUIApp.DataServices
                             }
 
                             budget.Savings[i] = Saving;
+                        }
+
+                        for (int i = budget.Bills.Count - 1; i >= 0; i--)
+                        {
+                            Bills Bill = budget.Bills[i];
+                            if(!Bill.IsClosed)
+                            {
+                                Bill.BillBalanceAtLastPayDay = Bill.BillCurrentBalance;
+                            }
+
+                            budget.Bills[i] = Bill;
                         }
                     }
                 }

@@ -22,6 +22,8 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public decimal  billCurrentBalance;
         [ObservableProperty]
+        public decimal  billBalanceAtLastPayDay;
+        [ObservableProperty]
         public bool  isRecuring;
         [ObservableProperty]
         public DateTime  lastUpdatedDate;
