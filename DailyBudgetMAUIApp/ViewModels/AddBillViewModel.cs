@@ -60,6 +60,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
+                Bill.BillBalanceAtLastPayDay = Bill.BillCurrentBalance;
                 string SuccessCheck = _ds.SaveNewBill(Bill,BudgetID).Result;
                 if(SuccessCheck == "OK")
                 {
@@ -108,6 +109,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
+                if(Bill.BillCurrentBalance < Bill.BillBalanceAtLastPayDay)
+                {
+                    Bill.BillBalanceAtLastPayDay = Bill.BillCurrentBalance;
+                }
                 string SuccessCheck = _ds.UpdateBill(Bill).Result;
                 if(SuccessCheck == "OK")
                 {
@@ -153,7 +158,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        public async void BackButton()
+        public async Task BackButton()
         {
             Bill.BillName = "";
             Bill.BillPayee = "";
@@ -186,7 +191,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        public async void ChangeBillName()
+        public async Task ChangeBillName()
         {
             try
             {
