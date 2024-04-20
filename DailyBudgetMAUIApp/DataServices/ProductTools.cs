@@ -571,7 +571,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         DateTime BillDueAfterNext = Bill.BillDueDate.GetValueOrDefault().Date;
                         while(BillDueAfterNext < Budget.NextIncomePayday.GetValueOrDefault().Date)
                         {
-                            BillDueAfterNext = CalculateNextDate(Bill.BillDueDate.GetValueOrDefault(), Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
+                            BillDueAfterNext = CalculateNextDate(BillDueAfterNext.Date, Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
                             if(BillDueAfterNext < Budget.NextIncomePayday.GetValueOrDefault().Date)
                             {
                                 DaysToBill = (int)Math.Ceiling((BillDueAfterNext.Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
