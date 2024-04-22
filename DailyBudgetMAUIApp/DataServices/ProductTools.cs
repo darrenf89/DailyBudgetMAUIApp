@@ -297,20 +297,22 @@ namespace DailyBudgetMAUIApp.DataServices
             status = status == "OK" ? UpdateBudgetCreateBills(ref Budget) : status;
             status = status == "OK" ? UpdateBudgetCreateIncome(ref Budget) : status;
             status = status == "OK" ? UpdateBudgetCreateSavingsSpend(ref Budget) : status;
-            status = status == "OK" ? UpdateBudgetCreateBillsSpend(ref Budget) : status;
+            //IF BORROW PAY THEN DONT PAY BILLS UNTIL NEXT PAYDAY
+            if(Budget.IsBorrowPay)
+            {
+                status = status == "OK" ? UpdateBudgetCreateBillsSpendBorrowPay(ref Budget) : status;
+            }
+            else
+            {
+                status = status == "OK" ? UpdateBudgetCreateBillsSpend(ref Budget) : status;
+            }
+
 
             Budget.LastUpdated = DateTime.UtcNow;
             int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
             if(DaysToPayDay == 0)
             {
                 DaysToPayDay = 1;
-            }
-
-            //If Budget is Borrow Pay add Next Pay day value to MaB and Lts
-            if(Budget.IsBorrowPay)
-            {
-                Budget.MoneyAvailableBalance += Budget.PaydayAmount;
-                Budget.LeftToSpendBalance += Budget.PaydayAmount;
             }
 
             Budget.LeftToSpendDailyAmount = (Budget.LeftToSpendBalance ?? 0) / DaysToPayDay;
@@ -559,6 +561,59 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             decimal DailyBillOutgoing = new();
             decimal PeriodTotalBillOutgoing = new();
+            int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
+            foreach (Bills Bill in Budget.Bills)
+            {
+                if (!Bill.IsClosed)
+                {
+                    DailyBillOutgoing += Bill.RegularBillValue ?? 0;
+                    //Check if Due Date is before Pay Dat
+                    int DaysToBill = (int)Math.Ceiling((Bill.BillDueDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
+                    if (Bill.IsRecuring)
+                    {
+                        if (DaysToBill < DaysToPayDay)
+                        {
+                            PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
+
+                            DateTime BillDueAfterNext = CalculateNextDate(Bill.BillDueDate.GetValueOrDefault(), Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
+                            int NumberOfDaysBill = (int)Math.Ceiling((BillDueAfterNext - Bill.BillDueDate.GetValueOrDefault()).TotalDays);
+                            decimal? BillRegularValue = Bill.BillAmount / NumberOfDaysBill;
+
+                            PeriodTotalBillOutgoing += BillRegularValue.GetValueOrDefault() * (DaysToPayDay - DaysToBill);
+
+                        }
+                        else
+                        {
+                            PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToPayDay;
+                        }
+                    }
+                    else
+                    {
+                        if (DaysToBill < DaysToPayDay)
+                        {
+                            PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
+                        }
+                        else
+                        {
+                            PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToPayDay;
+                        }
+                    }
+
+                    PeriodTotalBillOutgoing += Bill.BillCurrentBalance;
+
+                }
+            }
+            Budget.DailyBillOutgoing = DailyBillOutgoing;
+            Budget.LeftToSpendBalance = Budget.LeftToSpendBalance - PeriodTotalBillOutgoing;
+            Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance - PeriodTotalBillOutgoing;
+            return "OK";
+        }
+
+
+        public string UpdateBudgetCreateBillsSpendBorrowPay(ref Budgets Budget)
+        {
+            decimal DailyBillOutgoing = new();
+            decimal PeriodTotalBillOutgoing = new();
 
             int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
 
@@ -569,24 +624,25 @@ namespace DailyBudgetMAUIApp.DataServices
                     DailyBillOutgoing += Bill.RegularBillValue ?? 0;
                     //Check if Due Date is before Pay Dat
                     int DaysToBill = (int)Math.Ceiling((Bill.BillDueDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
-                    if (Bill.IsRecuring)
+                    if (DaysToBill < DaysToPayDay)
                     {
-                        DateTime BillDueAfterNext = Bill.BillDueDate.GetValueOrDefault().Date;
-                        while(BillDueAfterNext < Budget.NextIncomePayday.GetValueOrDefault().Date)
+                        if (Bill.IsRecuring)
                         {
-                            BillDueAfterNext = CalculateNextDate(BillDueAfterNext.Date, Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
-                            if(BillDueAfterNext < Budget.NextIncomePayday.GetValueOrDefault().Date)
+                            DateTime BillDueAfterNext = Bill.BillDueDate.GetValueOrDefault().Date;
+                            while(BillDueAfterNext < Budget.NextIncomePayday.GetValueOrDefault().Date)
                             {
-                                DaysToBill = (int)Math.Ceiling((BillDueAfterNext.Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
+                                BillDueAfterNext = CalculateNextDate(BillDueAfterNext.Date, Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
+                                if(BillDueAfterNext < Budget.NextIncomePayday.GetValueOrDefault().Date)
+                                {
+                                    DaysToBill = (int)Math.Ceiling((BillDueAfterNext.Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
+                                }
                             }
-                        }
 
-                        PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
-                    }
-                    else
-                    {
-                        if (DaysToBill < DaysToPayDay)
+                            PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
+                        }
+                        else
                         {
+
                             PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
                         }
                     }
@@ -859,6 +915,7 @@ namespace DailyBudgetMAUIApp.DataServices
             if (BillTransaction.TransactionID != 0)
             {
                 Bill.BillCurrentBalance = 0;
+                Bill.BillBalanceAtLastPayDay = 0;
             }
 
             if (Bill.IsRecuring)

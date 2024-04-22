@@ -262,10 +262,6 @@ public partial class MainPage : ContentPage
 
             _vm.MaxBankBalance = _vm.DefaultBudget.BankBalance.GetValueOrDefault();
             _vm.MaxBankBalance += _vm.DefaultBudget.CurrentActiveIncome;
-            if (_vm.DefaultBudget.IsBorrowPay)
-            {
-                _vm.MaxBankBalance += _vm.DefaultBudget.PaydayAmount.GetValueOrDefault();
-            }
 
             decimal Amount = 0;
             entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);

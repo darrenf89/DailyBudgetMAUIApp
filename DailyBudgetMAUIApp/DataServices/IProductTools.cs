@@ -29,6 +29,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public string UpdateBudgetCreateIncome(ref Budgets Budget);
         public string UpdateBudgetCreateSavingsSpend(ref Budgets Budget);
         public string UpdateBudgetCreateBillsSpend(ref Budgets Budget);
+        public string UpdateBudgetCreateBillsSpendBorrowPay(ref Budgets Budget);
         public DateTime CalculateNextDate(DateTime LastDate, string Type, int Value, string? Duration);
         public string CalculateNextDateEverynth(ref DateTime NextDate, DateTime LastDate, int Value, string? Duration);
         public string CalculateNextDateWorkingDays(ref DateTime NextDate, DateTime LastDate, int Value);
