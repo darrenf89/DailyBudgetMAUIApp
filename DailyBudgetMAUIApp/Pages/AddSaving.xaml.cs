@@ -99,8 +99,7 @@ public partial class AddSaving : ContentPage
                 {
                     UpdateSelectedOption("SavingsBuilder");
 
-                    double CalcAmount = 0;
-                    entCalculateAmount.Text = CalcAmount.ToString("c", CultureInfo.CurrentCulture);
+
                 }
                 else if (_vm.Saving.SavingsType == "TargetAmount")
                 {
@@ -115,6 +114,9 @@ public partial class AddSaving : ContentPage
                 UpdateDisplaySelection("Envelope");
             }
         }
+
+        double CalcAmount = 0;
+        entCalculateAmount.Text = CalcAmount.ToString("c", CultureInfo.CurrentCulture);
 
         double SavingTarget = (double?)_vm.Saving.SavingsGoal ?? 0;
         entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
@@ -611,7 +613,7 @@ public partial class AddSaving : ContentPage
 
         if(!_vm.Saving.IsRegularSaving)
         {
-            if(_vm.NavigatedFrom != "ViewSavings")
+            if(!(_vm.NavigatedFrom == "ViewSavings" || _vm.NavigatedFrom == "ViewEnvelopes"))
             {
                 entCurrentBalance.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
                 _vm.Saving.CurrentBalance = SavingValue;

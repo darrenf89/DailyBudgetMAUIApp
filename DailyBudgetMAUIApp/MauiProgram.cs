@@ -11,6 +11,7 @@ using Maui.FixesAndWorkarounds;
 using The49.Maui.BottomSheet;
 using DotNet.Meteor.HotReload.Plugin;
 using DailyBudgetMAUIApp.Popups;
+using Maui.FreakyEffects;
 
 
 namespace DailyBudgetMAUIApp;
@@ -45,6 +46,10 @@ public static class MauiProgram
                 handlers.AddHandler(typeof(RefreshView), typeof(Handlers.CustomRefreshViewHandler));
                 handlers.AddHandler(typeof(Shell), typeof(DailyBudgetMAUIApp.Platforms.Android.Renderers.MyShellRenderer));
 #endif
+            })
+            .ConfigureEffects(effects =>
+            {
+                  effects.InitFreakyEffects();
             });
 
         builder.Services.AddSingleton<IRestDataService, RestDataService>();

@@ -64,7 +64,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private List<Budgets> userBudgets;  
         [ObservableProperty]
-        private string currentSubStatus;
+        private string currentSubStatus;        
+        [ObservableProperty]
+        private string subscriptionRenewal;
         [ObservableProperty]
         public BorderlessPicker switchBudgetPicker;        
         [ObservableProperty]
@@ -83,6 +85,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             User = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
             CurrentSubStatus = $"{User.SubscriptionType} expires on {User.SubscriptionExpiry.ToString("d", CultureInfo.CurrentCulture)}";
+            SubscriptionRenewal = "Monthly";
 
             UserBudgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, "EditAccountSettings");
 

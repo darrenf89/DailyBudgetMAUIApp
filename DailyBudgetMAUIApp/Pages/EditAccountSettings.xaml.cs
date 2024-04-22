@@ -203,4 +203,54 @@ public partial class EditAccountSettings : ContentPage
         customSwitch.KnobBackgroundColor = ColorAnimationUtil.ColorAnimation(fromSwitchColor, toSwitchColor, t);
         customSwitch.BackgroundColor = ColorAnimationUtil.ColorAnimation(fromColor, toColor, t);
     }
+
+    private void ViewSubDetails_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+    
+    private void TOS_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+
+    private void PrivacyPolicy_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }   
+    
+    private void Licences_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+
+    private void Rate_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+    
+    private void Share_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+    
+    private void Version_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+    
+    private void Logout_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+    
+    private void ContactUs_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+    
+    private void Help_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }
 }

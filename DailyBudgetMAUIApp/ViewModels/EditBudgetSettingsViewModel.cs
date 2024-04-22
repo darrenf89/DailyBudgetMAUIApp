@@ -365,6 +365,47 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
+        async Task ChangeBudgetName()
+        {
+            try
+            {
+                string Description = "Every budget needs a name, let us know how you'd like your budget to be known so we can use this to identify it for you in the future.";
+                string DescriptionSub = "Call it something useful or call it something silly up to you really!";
+                var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", Budget.BudgetName, new PopUpPageSingleInputViewModel());
+                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+                if (result != null || (string)result != "")
+                {
+                    Budget.BudgetName = (string)result;
+
+                    List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+                    PatchDoc BudgetName = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/BudgetName",
+                        value = Budget.BudgetName
+                    };
+
+                    BudgetUpdate.Add(BudgetName);
+                    await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+                    App.DefaultBudget.BudgetName = Budget.BudgetName;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($" --> {ex.Message}");
+                ErrorLog Error = _pt.HandleCatchedException(ex, "EditBudgetSettings", "ChangeName").Result;
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });
+            }
+        }
+
+        [RelayCommand]
         async void CurrencySearch(string query)
         {
             try

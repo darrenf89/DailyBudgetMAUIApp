@@ -543,7 +543,10 @@ namespace DailyBudgetMAUIApp.DataServices
                     }
                 }
 
-                PeriodTotalSavingOutgoing += Saving.CurrentBalance ?? 0;
+                if (Saving.CurrentBalance >= 0)
+                {
+                    PeriodTotalSavingOutgoing += Saving.CurrentBalance ?? 0;
+                }                
             }
 
             Budget.DailySavingOutgoing = DailySavingOutgoing;
