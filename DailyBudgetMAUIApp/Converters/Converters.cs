@@ -1319,11 +1319,11 @@ namespace DailyBudgetMAUIApp.Converters
 
             if (IsBorrowPay)
             {
-                return "Borrow from next pay";
+                return "Cover bills when paid";
             }
             else
             {
-                return "Use current balance only";
+                return "Cover bills from balance every day";
             }
         }
 

@@ -23,7 +23,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private BudgetSettings budgetSettings;
         [ObservableProperty]
-        private Budgets budget;
+        private Budgets budget;        
         [ObservableProperty]
         private string budgetName;
         [ObservableProperty]
@@ -155,6 +155,23 @@ namespace DailyBudgetMAUIApp.ViewModels
         async void ContinueSettings()
         {
             await SaveStage("Budget Settings");
+        }
+
+        partial void OnIsBorrowPayChanged(bool oldValue, bool newValue)
+        {
+            if (oldValue)
+            {
+                CheckIsBorrowPay();
+            }
+        }
+
+        private async Task CheckIsBorrowPay()
+        {
+            bool result = await Shell.Current.DisplayAlert("Start paying outgoings each day?", "\nAre you sure you want to change the setting and start \"paying\" your outgoings each day?\n \nCareful! If you don't have the money put aside you might end up with no money left to spend.", "Yes", "Cancel");
+            if (!result)
+            {
+                IsBorrowPay = true;
+            }
         }
 
         public async Task SaveStage(string CurrentStage)

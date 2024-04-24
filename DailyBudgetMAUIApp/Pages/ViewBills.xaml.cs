@@ -90,7 +90,7 @@ public partial class ViewBills : ContentPage
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            await Shell.Current.GoToAsync($"/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=ViewBills");
+            await Shell.Current.GoToAsync($"///{nameof(ViewBills)}/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=ViewBills");
         }   
     }
     private async void CloseBill_Tapped(object sender, TappedEventArgs e)
@@ -237,7 +237,7 @@ public partial class ViewBills : ContentPage
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            await Shell.Current.GoToAsync($"/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewBills");
+            await Shell.Current.GoToAsync($"///{nameof(ViewBills)}/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewBills");
         }
     }
 }

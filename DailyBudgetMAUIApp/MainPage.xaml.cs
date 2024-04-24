@@ -172,7 +172,7 @@ public partial class MainPage : ContentPage
         {
             App.HasVisitedCreatePage = true;
 
-            await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={App.DefaultBudgetID}&NavigatedFrom=Budget Settings");
+            await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={App.DefaultBudgetID}&NavigatedFrom=Budget Settings");
             return;
         }
 
@@ -990,7 +990,7 @@ public partial class MainPage : ContentPage
 
             await _ds.DeleteTransaction(ID);
 
-            await Shell.Current.GoToAsync($"{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}",
+            await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}&NavigatedFrom=ViewMainPage",
                     new Dictionary<string, object>
                     {
                         ["Transaction"] = Transaction
@@ -1003,7 +1003,7 @@ public partial class MainPage : ContentPage
 
             await _ds.DeleteSaving(ID);
 
-            await Shell.Current.GoToAsync($"//{nameof(AddSaving)}?BudgetID={_vm.DefaultBudgetID}&SavingID={-1}",
+            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(AddSaving)}?BudgetID={_vm.DefaultBudgetID}&SavingID={-1}",
                     new Dictionary<string, object>
                     {
                         ["Saving"] = saving
@@ -1036,7 +1036,7 @@ public partial class MainPage : ContentPage
 
         if(PatchBudgetResult == "OK")
         {
-            await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Finalise Budget");
+            await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Finalise Budget");
         }
 
     }
@@ -2322,11 +2322,11 @@ public partial class MainPage : ContentPage
         bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
         if (EditTransaction)
         {
-            Transactions transaction = (Transactions)e.Parameter;
-            await Shell.Current.GoToAsync($"{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}&TransactionID={transaction.TransactionID}",
+            Transactions T = (Transactions)e.Parameter;
+            await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={T.TransactionID}&NavigatedFrom=ViewMainPage",
                 new Dictionary<string, object>
                 {
-                    ["Transaction"] = transaction
+                    ["Transaction"] = T
                 });
         }
     }

@@ -307,7 +307,7 @@
                                 </VerticalStackLayout>
                                 <VerticalStackLayout Grid.Row="9" Grid.Column="0" touchEffects:TouchEffect.Color="{StaticResource Gray200}" Padding="15,5,15,5">
                                     <Label Text="App Version" FontSize="Caption" TextColor="{StaticResource Gray900}" FontAttributes="Bold" Margin="0,0,0,2" Padding="0"/>
-                                    <Label  VerticalTextAlignment="Center" FontSize="Micro" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="V1.21.086"/>
+                                    <Label VerticalTextAlignment="Center" FontSize="Micro" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="{Binding VersionNumber}"/>
                                     <VerticalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="Version_Tapped"/>
                                     </VerticalStackLayout.GestureRecognizers>

@@ -598,7 +598,7 @@ public partial class AddBill : ContentPage
         {
             _vm.Bill.BillPayee = "";
         }
-        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
+        await Shell.Current.GoToAsync($"/{nameof(SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
             new Dictionary<string, object>
             {
                 ["Bill"] = _vm.Bill
@@ -628,7 +628,7 @@ public partial class AddBill : ContentPage
             _vm.Bill.Category = "";
         }
 
-        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
+        await Shell.Current.GoToAsync($"/{nameof(SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
             new Dictionary<string, object>
             {
                 ["Bill"] = _vm.Bill

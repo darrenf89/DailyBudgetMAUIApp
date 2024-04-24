@@ -92,7 +92,7 @@ public partial class ViewSavings : ContentPage
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            await Shell.Current.GoToAsync($"/{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=ViewSavings");
+            await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}//{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=ViewSavings");
         }        
     }
 
@@ -166,7 +166,7 @@ public partial class ViewSavings : ContentPage
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            await Shell.Current.GoToAsync($"/{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewSavings");
+            await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}//{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewSavings");
         }
     }
 }

@@ -31,13 +31,18 @@ public partial class CreateNewBudget : ContentPage
         _ds = ds;
     }
 
-    async protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
+        base.OnNavigatedTo(args);
+    }
 
+    protected async override void OnAppearing()
+    {
+       
+        base.OnAppearing();
         try
         {
-
-            if(App.CurrentSettings == null)
+            if (App.CurrentSettings == null)
             {
                 BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
                 App.CurrentSettings = Settings;
@@ -45,7 +50,7 @@ public partial class CreateNewBudget : ContentPage
 
             _pt.SetCultureInfo(App.CurrentSettings);
 
-            base.OnNavigatedTo(args);
+            
             if (_vm.BudgetID == 0)
             {
                 string BudgetType = "Basic";
@@ -69,7 +74,7 @@ public partial class CreateNewBudget : ContentPage
             }
             else
             {
-                if(_vm.Budget == null || _vm.NavigatedFrom != null)
+                if (_vm.Budget == null || _vm.NavigatedFrom != null)
                 {
                     _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
                     _vm.BudgetSettings = _ds.GetBudgetSettings(_vm.BudgetID).Result;
@@ -124,7 +129,7 @@ public partial class CreateNewBudget : ContentPage
 
             }
 
-            UpdateStageDisplay();            
+            UpdateStageDisplay();
 
             if (_vm.SelectedCurrencySymbol == null)
             {
@@ -135,7 +140,7 @@ public partial class CreateNewBudget : ContentPage
                 _vm.SelectedTimeZone = _ds.GetTimeZoneById(_vm.BudgetSettings.TimeZone.GetValueOrDefault()).Result;
             }
 
-            pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;            
+            pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;
             pckrDateFormat.SelectedIndex = _vm.SelectedDateFormats.Id - 1;
             pckrNumberFormat.SelectedIndex = _vm.SelectedNumberFormats.Id - 1;
             pckrTimeZone.SelectedIndex = _vm.SelectedTimeZone.TimeZoneID - 1;
@@ -153,7 +158,7 @@ public partial class CreateNewBudget : ContentPage
 
             UpdateSelectedOption(_vm.Budget.PaydayType);
 
-            if(_vm.Budget.Bills.Count == 0)
+            if (_vm.Budget.Bills.Count == 0)
             {
                 vslOutgoingList.IsVisible = false;
             }
@@ -162,7 +167,7 @@ public partial class CreateNewBudget : ContentPage
                 vslOutgoingList.IsVisible = true;
             }
 
-            if(_vm.Budget.Savings.Count == 0)
+            if (_vm.Budget.Savings.Count == 0)
             {
                 vslSavingList.IsVisible = false;
             }
@@ -197,12 +202,6 @@ public partial class CreateNewBudget : ContentPage
                     ["Error"] = Error
                 });
         }
-
-    }
-
-    protected async override void OnAppearing()
-    {
-        base.OnAppearing();
 
         if (App.CurrentPopUp != null)
         {
@@ -793,7 +792,7 @@ public partial class CreateNewBudget : ContentPage
             Application.Current.MainPage.ShowPopup(PopUp);
         }
 
-        await Shell.Current.GoToAsync($"{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}&NavigatedFrom=CreateNewBudget");
+        await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}&NavigatedFrom=CreateNewBudget");
     }
 
     private async void AddSavingsNewBudget_Clicked(object sender, EventArgs e)
@@ -805,7 +804,7 @@ public partial class CreateNewBudget : ContentPage
             Application.Current.MainPage.ShowPopup(PopUp);
         }
 
-        await Shell.Current.GoToAsync($"{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}&NavigatedFrom=CreateNewBudget");
+        await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}&NavigatedFrom=CreateNewBudget");
     }
 
     private async void AddIncomeNewBudget_Clicked(object sender, EventArgs e)
@@ -817,7 +816,7 @@ public partial class CreateNewBudget : ContentPage
             Application.Current.MainPage.ShowPopup(PopUp);
         }
 
-        await Shell.Current.GoToAsync($"{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={0}&NavigatedFrom=CreateNewBudget");
+        await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={0}&NavigatedFrom=CreateNewBudget");
     }
 
     private async void BankBalanceInfo(object sender, EventArgs e)
@@ -1333,7 +1332,7 @@ public partial class CreateNewBudget : ContentPage
 
         var Bill = (Bills)e.Parameter;
 
-        await Shell.Current.GoToAsync($"{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=CreateNewBudget");
+        await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=CreateNewBudget");
     }
 
     private void OutgoingViewCell_Appearing(object sender, EventArgs e)
@@ -1374,7 +1373,7 @@ public partial class CreateNewBudget : ContentPage
 
         var Saving = (Savings)e.Parameter;
 
-        await Shell.Current.GoToAsync($"{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=CreateNewBudget");
+        await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=CreateNewBudget");
     }
 
     private async void DeleteBudgetSavings_Tapped(object sender, TappedEventArgs e)
@@ -1507,7 +1506,7 @@ public partial class CreateNewBudget : ContentPage
 
         var Income = (IncomeEvents)e.Parameter;
 
-        await Shell.Current.GoToAsync($"{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=CreateNewBudget");
+        await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=CreateNewBudget");
     }
 
     private async void DeleteBudgetIncome_Tapped(object sender, TappedEventArgs e)

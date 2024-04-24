@@ -74,7 +74,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                             App.CurrentPopUp = PopUp;
                             Application.Current.MainPage.ShowPopup(PopUp);
                         }
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                        await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings", false);
                     }
                     else if (RedirectTo == "ViewBills")
                     {
@@ -127,7 +127,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                             Application.Current.MainPage.ShowPopup(PopUp);
                         }
 
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                        await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
                     }
                     else if (RedirectTo == "ViewBills")
                     {
@@ -171,7 +171,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     Application.Current.MainPage.ShowPopup(PopUp);
                 }
 
-                await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
             }
             else if (RedirectTo == "ViewBills")
             {

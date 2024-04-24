@@ -316,7 +316,7 @@
                                 </Grid.GestureRecognizers>
                             </Grid>
                             <VerticalStackLayout Margin="10,5,10,0" x:Name="BudgetToggleSetting" HorizontalOptions="Fill">
-                                <Label Text="Pay in Advance" FontSize="Small" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
+                                <Label Text="Outgoings accrual?" FontSize="Small" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
                                 <Grid ColumnDefinitions="60,*" Margin="5,0,0,10" HeightRequest="40">
                                     <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsBorrowPay}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate"/>
                                     <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">

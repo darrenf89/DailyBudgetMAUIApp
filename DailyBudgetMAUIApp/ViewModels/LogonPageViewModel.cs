@@ -228,7 +228,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 }
                                             }
 
-                                            await _pt.LoadTabBars(App.UserDetails.SubscriptionType, App.UserDetails.SubscriptionExpiry, App.UserDetails.DefaultBudgetType);
+                                            //await _pt.LoadTabBars(App.UserDetails.SubscriptionType, App.UserDetails.SubscriptionExpiry, App.UserDetails.DefaultBudgetType);
                                             await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                                         }
                                     }

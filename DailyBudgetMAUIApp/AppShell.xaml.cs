@@ -11,36 +11,26 @@ public partial class AppShell : Shell
 	{
 		InitializeComponent();
 
-        Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
-        Routing.RegisterRoute(nameof(LoadUpPage), typeof(LoadUpPage));
-        Routing.RegisterRoute(nameof(LandingPage), typeof(LandingPage));
-        Routing.RegisterRoute(nameof(LogonPage), typeof(LogonPage));
-        Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
-        Routing.RegisterRoute(nameof(ErrorPage), typeof(ErrorPage));
-        Routing.RegisterRoute(nameof(AddBill), typeof(AddBill));
-        Routing.RegisterRoute(nameof(AddTransaction), typeof(AddTransaction));
-        Routing.RegisterRoute(nameof(AddIncome), typeof(AddIncome));
-        Routing.RegisterRoute(nameof(AddSaving), typeof(AddSaving));
+        Routing.RegisterRoute($"{nameof(ViewTransactions)}/{nameof(AddTransaction)}", typeof(AddTransaction));
+        Routing.RegisterRoute($"{nameof(MainPage)}/{nameof(AddTransaction)}", typeof(AddTransaction));
+        Routing.RegisterRoute($"{nameof(ViewBills)}/{nameof(AddBill)}", typeof(AddBill));
+        Routing.RegisterRoute($"{nameof(MainPage)}/{nameof(AddBill)}", typeof(AddBill));
+        Routing.RegisterRoute($"{nameof(ViewSavings)}/{nameof(AddSaving)}", typeof(AddSaving));
+        Routing.RegisterRoute($"{nameof(MainPage)}/{nameof(AddSaving)}", typeof(AddSaving));
+        Routing.RegisterRoute($"{nameof(ViewIncomes)}/{nameof(AddIncome)}", typeof(AddIncome));
+        Routing.RegisterRoute($"{nameof(MainPage)}/{nameof(AddIncome)}", typeof(AddIncome));
+        Routing.RegisterRoute($"{nameof(ViewEnvelopes)}/{nameof(AddSaving)}", typeof(AddSaving));
+        Routing.RegisterRoute($"{nameof(CreateNewBudget)}/{nameof(AddBill)}", typeof(AddBill));
+        Routing.RegisterRoute($"{nameof(CreateNewBudget)}/{nameof(AddIncome)}", typeof(AddIncome));
+        Routing.RegisterRoute($"{nameof(CreateNewBudget)}/{nameof(AddSaving)}", typeof(AddSaving));
+        Routing.RegisterRoute($"{nameof(CreateNewBudget)}", typeof(CreateNewBudget));
         Routing.RegisterRoute(nameof(LogoutPage), typeof(LogoutPage));
-        Routing.RegisterRoute(nameof(CreateNewBudget), typeof(CreateNewBudget));
         Routing.RegisterRoute(nameof(LoadingPage), typeof(LoadingPage));
         Routing.RegisterRoute(nameof(LoadingPageTwo), typeof(LoadingPageTwo));
-        Routing.RegisterRoute(nameof(ViewTransactions), typeof(ViewTransactions));
-        Routing.RegisterRoute(nameof(ViewCategories), typeof(ViewCategories));
-        Routing.RegisterRoute(nameof(ViewCategory), typeof(ViewCategory));
-        Routing.RegisterRoute(nameof(ViewSavings), typeof(ViewSavings));
-        Routing.RegisterRoute(nameof(ViewBills), typeof(ViewBills));
-        Routing.RegisterRoute(nameof(ViewEnvelopes), typeof(ViewEnvelopes));
-        Routing.RegisterRoute(nameof(ViewIncomes), typeof(ViewIncomes));
-        Routing.RegisterRoute(nameof(ViewFilteredTransactions), typeof(ViewFilteredTransactions));
-        Routing.RegisterRoute(nameof(ViewPayees), typeof(ViewPayees));
-        Routing.RegisterRoute(nameof(ViewCalendar), typeof(ViewCalendar));
         Routing.RegisterRoute(nameof(SelectPayeePage), typeof(SelectPayeePage));
         Routing.RegisterRoute(nameof(SelectCategoryPage), typeof(SelectCategoryPage));
         Routing.RegisterRoute(nameof(SelectSavingCategoryPage), typeof(SelectSavingCategoryPage));
-
-        App.MainTabBar = MainTabBar;
-        App.ViewTabBar = ViewTabBar;
+        Routing.RegisterRoute(nameof(ErrorPage), typeof(ErrorPage));
 
         this.BindingContext = this;
     }

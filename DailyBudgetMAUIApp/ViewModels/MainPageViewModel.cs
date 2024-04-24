@@ -134,7 +134,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             await Application.Current.MainPage.Navigation.PushModalAsync(page);
 
             await Application.Current.MainPage.Navigation.PopModalAsync();
-            await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
+            await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
         }
 
 

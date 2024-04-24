@@ -50,7 +50,7 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
 
             }
 
-            await Shell.Current.GoToAsync($"{nameof(AddSaving)}?SavingType=Envelope");
+            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(AddSaving)}?SavingType=Envelope");
         }
     }
 

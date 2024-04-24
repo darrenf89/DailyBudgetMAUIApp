@@ -93,7 +93,7 @@ public partial class ViewEnvelopes : ContentPage
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            await Shell.Current.GoToAsync($"/{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=ViewEnvelopes");
+            await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}//{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=ViewEnvelopes");
         }        
     }
 
@@ -167,7 +167,7 @@ public partial class ViewEnvelopes : ContentPage
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            await Shell.Current.GoToAsync($"/{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewEnvelopes");
+            await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}//{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewEnvelopes");
         }
     }
 }

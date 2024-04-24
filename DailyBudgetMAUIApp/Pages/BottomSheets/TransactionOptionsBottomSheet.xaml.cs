@@ -1,6 +1,7 @@
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Models;
 using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp.Pages.BottomSheets;
@@ -55,7 +56,12 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
 
             }
 
-            await Shell.Current.GoToAsync($"{nameof(AddTransaction)}");
+            Transactions transaction = new Transactions();
+            await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={transaction.TransactionID}&NavigatedFrom=ViewMainPage",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = transaction
+                });
         }
     }
 

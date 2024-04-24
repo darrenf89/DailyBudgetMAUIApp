@@ -318,19 +318,6 @@
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,20" HeightRequest="38">
                     <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entPayAmount" TextChanged="PayAmount_Changed" Keyboard="Numeric" />
                 </Border>
-                <HorizontalStackLayout Padding="5,0,0,2">
-                    <Label Text="Pay in Advance" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
-                </HorizontalStackLayout>                
-                <Grid ColumnDefinitions="60,*" Margin="5,5,0,10" HeightRequest="40">
-                    <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsBorrowPay}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate"/>
-                    <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">
-                        <Label HorizontalOptions="Start" Text="{Binding IsBorrowPay, Converter={StaticResource IsBorrowPayTextConverter}}" TextColor="{StaticResource Primary}" FontAttributes="Bold" FontSize="Medium" Padding="10,0,0,0"/>
-                    </HorizontalStackLayout>
-                </Grid>
-                <Label IsVisible="{Binding IsBorrowPay}" Text="We will add your next pay day to the money you have available to spend right now and use this to calculate how much you have to spend each day." FontSize="Caption" TextColor="{DynamicResource Gray400}" Padding="7,0,5,4"/>
-                <Label IsVisible="{Binding IsBorrowPay}" Text="Don't worry, this is how most of us budget we are paying for bills with our next pay, however we have to be careful we don't end up spending more than we have in the bank. If you'd rather only calculate using the money you have in the bank right now don't worry just toggle this option off." FontSize="Caption" TextColor="{DynamicResource Gray400}" Padding="7,0,5,30"/>
-                <Label IsVisible="{Binding IsBorrowPay, Converter={StaticResource BoolConverter}}" Text="Got enough money in the bank and got all your bills covered already, the most sensible way to budget is to use what you have to cover your bills and savings." FontSize="Caption" TextColor="{DynamicResource Gray400}" Padding="7,0,5,4"/>
-                <Label IsVisible="{Binding IsBorrowPay, Converter={StaticResource BoolConverter}}" Text="Keep this option toggled off and we will only use the money you have in the bank to calculate your money available and how much you have to spend each day.Don't worry if you need to borrow from next pay day like the rest of us just toggle this option on!" FontSize="Caption" TextColor="{DynamicResource Gray400}" Padding="7,0,5,30"/>
                 <HorizontalStackLayout>
                     <Border Style="{StaticResource ClearInfoBorder}" Margin="5,0,20,0">
                         <Button  Margin="0" WidthRequest="80" Text="Back" Clicked="BackBudgetDetailsButton_Clicked" HorizontalOptions="Start" Style="{StaticResource ClearInfoButton}"/>
@@ -465,6 +452,17 @@
                         </Image>
                         <Label x:Name="MessagevalidatorBillsYesNo" Text="Let us know if you want to add any outgoings or not." Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
                     </HorizontalStackLayout>
+                    <HorizontalStackLayout Padding="0,10,0,2">
+                        <Label Text="When to accrue your outgoings?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                    </HorizontalStackLayout>
+                    <Label IsVisible="{Binding IsBorrowPay}" Text="We will only accrue the balance of your outgoings every time you are paid" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="0,5,0,0"/>
+                    <Label IsVisible="{Binding IsBorrowPay, Converter={StaticResource BoolConverter}}" Text="We will accrue your outgoings each and every day!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="0,5,0,0"/>
+                    <Grid ColumnDefinitions="60,*" Margin="5,5,0,10" HeightRequest="40">
+                        <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsBorrowPay}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate"/>
+                        <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">
+                            <Label HorizontalOptions="Start" Text="{Binding IsBorrowPay, Converter={StaticResource IsBorrowPayTextConverter}}" TextColor="{StaticResource Primary}" FontAttributes="Bold" FontSize="Small" Padding="10,0,0,0"/>
+                        </HorizontalStackLayout>
+                    </Grid>
                 </VerticalStackLayout>
                 <HorizontalStackLayout Margin="5,0,20,0">
                     <Border Style="{StaticResource ClearInfoBorder}">

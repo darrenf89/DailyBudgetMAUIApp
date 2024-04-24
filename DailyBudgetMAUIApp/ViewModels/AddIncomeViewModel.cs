@@ -84,7 +84,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     Application.Current.MainPage.ShowPopup(PopUp);
                 }
 
-                await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
             }
             else if (NavigatedFrom == "ViewIncomes")
             {
@@ -119,7 +119,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                             Application.Current.MainPage.ShowPopup(PopUp);
                         }
 
-                        await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
                     }
                     else if (NavigatedFrom == "ViewIncomes")
                     {
@@ -165,7 +165,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                             Application.Current.MainPage.ShowPopup(PopUp);
                         }
 
-                        await Shell.Current.GoToAsync($"{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
                     }
                     else if (NavigatedFrom == "ViewIncomes")
                     {

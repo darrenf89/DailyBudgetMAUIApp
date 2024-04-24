@@ -406,11 +406,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void CurrencySearch(string query)
+        async Task CurrencySearch(string query)
         {
             try
             {
-                CurrencySearchResults = _ds.GetCurrencySymbols(query).Result;
+                CurrencySearchResults = await _ds.GetCurrencySymbols(query);
             }
             catch (Exception ex)
             {
@@ -434,6 +434,8 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
+        
+
         [RelayCommand]
         private void CurrencySymbolSelected(lut_CurrencySymbol item)
         {
@@ -443,7 +445,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void CloseSettings(object obj)
+        private async Task CloseSettings(object obj)
         {
             if (App.CurrentPopUp == null)
             {
@@ -459,12 +461,13 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public async Task UpdateTime()
         {
+            await Task.Delay(1);
             DateTime CurrentDateTime = DateTime.UtcNow.AddHours(SelectedTimeZone.TimeZoneUTCOffset);
             CurrentTime = CurrentDateTime.ToString(TimeCultureInfo.DateTimeFormat.LongDatePattern, CultureInfo.InvariantCulture);
         }
 
         [RelayCommand]
-        private async void SaveBudgetSettings()
+        private async Task SaveBudgetSettings()
         {
 
             bool EditBudget = await Application.Current.MainPage.DisplayAlert($"Update settings?", $"Are you sure you want to update your budgets settings?", "Yes", "No");
@@ -734,7 +737,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void DeleteBudget()
+        private async Task DeleteBudget()
         {
             var BudgetName = await Application.Current.MainPage.DisplayPromptAsync($"Are you sure you want to delete {App.DefaultBudget.BudgetName} budget?", $"Deleting the budget is permanent, enter the budget name to delete the budget", "Ok", "Cancel");
             if (BudgetName != null)
@@ -786,6 +789,23 @@ namespace DailyBudgetMAUIApp.ViewModels
                     
                 }
 
+            }
+        }
+
+        partial void OnIsBorrowPayChanged(bool oldValue, bool newValue)
+        {
+            if(oldValue)
+            {
+                CheckIsBorrowPay();
+            }
+        }
+
+        private async Task CheckIsBorrowPay()
+        {
+            bool result = await Shell.Current.DisplayAlert("Start paying outgoings each day?", "\nAre you sure you want to change the setting and start \"paying\" your outgoings each day? \n \nCareful! If you don't have the money put aside you might end up with no money left to spend. \n \nIf you would like more information on how dBudget calculates your daily budget using this setting check out our cool videos and documentation!", "Yes", "Cancel");
+            if (!result)
+            {
+                IsBorrowPay = true;
             }
         }
     }

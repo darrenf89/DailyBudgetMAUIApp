@@ -8,6 +8,8 @@ using IeuanWalker.Maui.Switch.Helpers;
 using Microsoft.Maui.Handlers;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
+using Android.Graphics.Drawables.Shapes;
+using Java.Lang;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -58,7 +60,7 @@ public partial class AddTransaction : ContentPage
             _vm.IsNote = false;
             _vm.RedirectTo = "";
         }
-        else if(string.Equals(_vm.NavigatedFrom, "ViewTransactions", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewSavings", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase))
+        else if(string.Equals(_vm.NavigatedFrom, "ViewMainPage", StringComparison.OrdinalIgnoreCase) ||string.Equals(_vm.NavigatedFrom, "ViewTransactions", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewSavings", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase))
         {
             _vm.RedirectTo = _vm.NavigatedFrom;
         }

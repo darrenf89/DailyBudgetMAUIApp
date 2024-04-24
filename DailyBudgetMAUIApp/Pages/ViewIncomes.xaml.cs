@@ -79,7 +79,7 @@ public partial class ViewIncomes : ContentPage
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            await Shell.Current.GoToAsync($"/{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=ViewIncomes");
+            await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}/{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=ViewIncomes");
         }   
     }
     private async void CloseIncome_Tapped(object sender, TappedEventArgs e)
@@ -176,7 +176,7 @@ public partial class ViewIncomes : ContentPage
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            await Shell.Current.GoToAsync($"/{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewIncomes");
+            await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}//{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewIncomes");
         }
     }
 }

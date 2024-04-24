@@ -60,7 +60,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     Application.Current.MainPage.ShowPopup(PopUp);
                 }
 
-                await Shell.Current.GoToAsync($"//{nameof(ViewTransactions)}");
+                await Shell.Current.GoToAsync($"///{nameof(ViewTransactions)}");
             }
             else if (string.Equals(RedirectTo, "ViewSavings", StringComparison.OrdinalIgnoreCase))
             {
@@ -71,7 +71,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     Application.Current.MainPage.ShowPopup(PopUp);
                 }
 
-                await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
+                await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
             }
             else if (string.Equals(RedirectTo, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase))
             {
@@ -82,11 +82,22 @@ namespace DailyBudgetMAUIApp.ViewModels
                     Application.Current.MainPage.ShowPopup(PopUp);
                 }
 
-                await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
+                await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
+            }
+            else if (string.Equals(RedirectTo, "ViewMainPage", StringComparison.OrdinalIgnoreCase))
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
             }
             else
             {
-                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
             }
         }
     }
