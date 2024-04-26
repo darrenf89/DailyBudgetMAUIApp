@@ -24,7 +24,7 @@
                                     </Image.Source>
                                 </Image>
                             </Border>
-                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Small" Text="Edit Pay Info" WidthRequest="100"/>
+                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Small" Text="Edit Next Pay Info" WidthRequest="100"/>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="EditPayInfo" Tapped="EditPayInfo_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>

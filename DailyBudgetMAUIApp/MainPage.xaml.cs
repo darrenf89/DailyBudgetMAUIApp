@@ -517,7 +517,7 @@ public partial class MainPage : ContentPage
                         }
                 };
 
-                await Shell.Current.GoToAsync($"{nameof(ViewFilteredTransactions)}",
+                await Shell.Current.GoToAsync($"/{nameof(ViewFilteredTransactions)}",
                     new Dictionary<string, object>
                     {
                         ["Filters"] = Filters
@@ -742,7 +742,7 @@ public partial class MainPage : ContentPage
                             }
                         };
 
-                        await Shell.Current.GoToAsync($"{nameof(ViewFilteredTransactions)}",
+                        await Shell.Current.GoToAsync($"/{nameof(ViewFilteredTransactions)}",
                             new Dictionary<string, object>
                             {
                                 ["Filters"] = Filters

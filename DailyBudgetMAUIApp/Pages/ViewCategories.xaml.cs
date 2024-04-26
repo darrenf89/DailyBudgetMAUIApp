@@ -208,7 +208,7 @@ public partial class ViewCategories : ContentPage
         {
             await Task.Delay(1000);
 
-            await Shell.Current.GoToAsync($"{nameof(ViewCategory)}?HeaderCatId={Category.CategoryID}");
+            await Shell.Current.GoToAsync($"///{nameof(ViewCategories)}/{nameof(ViewCategory)}?HeaderCatId={Category.CategoryID}");
         }
     }
 

@@ -361,7 +361,7 @@ public partial class ViewPayees : ContentPage
                 }
             };
 
-            await Shell.Current.GoToAsync($"{nameof(ViewFilteredTransactions)}",
+            await Shell.Current.GoToAsync($"/{nameof(ViewFilteredTransactions)}",
                 new Dictionary<string, object>
                 {
                     ["Filters"] = Filters

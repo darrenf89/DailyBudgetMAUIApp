@@ -1,5 +1,6 @@
 ﻿using DailyBudgetMAUIApp.Models;
 using System.Globalization;
+using OnScreenSizeMarkup.Maui.Helpers;
 
 
 namespace DailyBudgetMAUIApp.Converters
@@ -1535,6 +1536,57 @@ namespace DailyBudgetMAUIApp.Converters
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return null;
+        }
+    }
+
+    public class StringToSizeConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if(value == null) return 12;
+
+            double output;
+
+            switch(value.ToString())
+            {                  
+                case "Caption":
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(12,8,10,12,12,14);
+                    break;                
+                case "Subtitle":
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(16,12,14,16,16,20);
+                    break;
+                case "Title":
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(24, 20, 22, 24, 24, 30);
+                    break;
+                case "Header":
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(13, 9, 11, 13, 13, 15);
+                    break;
+                case "Body":
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(15, 11, 13, 15, 15, 17);
+                    break;
+                case "Large":
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(22, 18, 20, 22, 22, 28);
+                    break;
+                case "Medium":
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(18, 14, 16, 18, 18, 22);
+                    break;
+                case "Small":
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(14, 10, 12, 14, 14, 16);
+                    break;
+                case "Micro":
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(10, 6, 8, 10, 10, 12);
+                    break;
+                default:
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(14, 10, 12, 14, 14, 16);
+                    break;
+            }
+
+            return output; 
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

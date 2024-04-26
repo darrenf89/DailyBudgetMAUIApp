@@ -144,6 +144,12 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
+        private void GoToBorrowPayVideos()
+        {
+
+        }
+
+        [RelayCommand]
         private void CurrencySymbolSelected(lut_CurrencySymbol item)
         {
             SelectedCurrencySymbol = item;
@@ -332,21 +338,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                         PayDayDuration = LastOfTheMonthDuration ?? "Monday";
                     }
 
-                    AproxDaysBetweenPay = _pt.CalculateBudgetDaysBetweenPay(Budget);
-
-                    if (AproxDaysBetweenPay != Budget.AproxDaysBetweenPay)
-                    {
-                        UpdateBudgetFlag= true;
-                        Budget.AproxDaysBetweenPay = AproxDaysBetweenPay;
-                        PatchDoc AproxDaysBetweenPayPatch = new PatchDoc
-                        {
-                            op = "replace",
-                            path = "/AproxDaysBetweenPay",
-                            value = Budget.AproxDaysBetweenPay
-                        };
-                        BudgetUpdate.Add(AproxDaysBetweenPayPatch);
-                    }
-
                     if(PayDayDuration != Budget.PaydayDuration)
                     {
                         Budget.PaydayDuration = PayDayDuration;
@@ -369,6 +360,21 @@ namespace DailyBudgetMAUIApp.ViewModels
                             value = Budget.PaydayValue
                         };
                         BudgetUpdate.Add(PayDayValuePatch); 
+                    }
+
+                    AproxDaysBetweenPay = _pt.CalculateBudgetDaysBetweenPay(Budget);
+
+                    if (AproxDaysBetweenPay != Budget.AproxDaysBetweenPay)
+                    {
+                        UpdateBudgetFlag = true;
+                        Budget.AproxDaysBetweenPay = AproxDaysBetweenPay;
+                        PatchDoc AproxDaysBetweenPayPatch = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/AproxDaysBetweenPay",
+                            value = Budget.AproxDaysBetweenPay
+                        };
+                        BudgetUpdate.Add(AproxDaysBetweenPayPatch);
                     }
 
                     decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(PayAmountText);

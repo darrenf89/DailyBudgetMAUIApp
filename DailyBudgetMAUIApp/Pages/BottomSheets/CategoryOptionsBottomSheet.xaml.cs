@@ -200,7 +200,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
                 await App.CurrentBottomSheet.DismissAsync();
                 App.CurrentBottomSheet = null;
             }
-            await Shell.Current.GoToAsync($"{nameof(ViewCategory)}?HeaderCatId={CategoryID}");
+            await Shell.Current.GoToAsync($"///{nameof(ViewCategories)}/{nameof(ViewCategory)}?HeaderCatId={CategoryID}");
         }
     }
 
