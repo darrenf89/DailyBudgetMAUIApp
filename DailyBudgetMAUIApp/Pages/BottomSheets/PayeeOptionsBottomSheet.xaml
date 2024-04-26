@@ -10,11 +10,11 @@
                    x:DataType="the49:BottomSheet">
     <VerticalStackLayout x:Name="MainVSL">
         <BoxView WidthRequest="60" HeightRequest="6" Color="{DynamicResource Primary}" HorizontalOptions="Center" Margin="0,10,0,10"/>
-        <Label Margin="0,10,0,30" HorizontalOptions="Center" VerticalOptions="Center" Text="Payees" Grid.Column="0" Grid.Row="0" FontSize="Title" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
+        <Label FontAutoScalingEnabled="False" Margin="0,10,0,30" HorizontalOptions="Center" VerticalOptions="Center" Text="Payees" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
         <ScrollView x:Name="MainScrollView" VerticalScrollBarVisibility="Default">
             <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" x:Name="grdShareBudget" Padding="16,0,16,0">
                 <VerticalStackLayout Grid.Column="0" Grid.Row="0" Margin="0,0,0,20">
-                    <Label Margin="0,0,0,40" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="2" FontSize="Subtitle" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Text="Payee Options"/>
+                    <Label FontAutoScalingEnabled="False" Margin="0,0,0,40" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="2" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Text="Payee Options"/>
                     <FlexLayout Wrap="Wrap" AlignItems="Start" JustifyContent="SpaceBetween" Margin="0,0,0,15">
                         <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10">
                             <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
@@ -24,7 +24,7 @@
                                     </Image.Source>
                                 </Image>
                             </Border>
-                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Small" Text="View Payees" WidthRequest="100"/>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="View Payees" WidthRequest="100"/>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="ViewPayees" Tapped="ViewPayees_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>
@@ -37,7 +37,7 @@
                                     </Image.Source>
                                 </Image>
                             </Border>
-                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Small" Text="View Payee List" WidthRequest="100"/>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="View Payee List" WidthRequest="100"/>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="ViewPayeeList" Tapped="ViewPayeeList_Tapped" />
                             </VerticalStackLayout.GestureRecognizers>
@@ -50,7 +50,7 @@
                                     </Image.Source>
                                 </Image>
                             </Border>
-                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Small" Text="Delete Payee" WidthRequest="100"/>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Delete Payee" WidthRequest="100"/>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="DeletePayee" Tapped="DeletePayee_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>

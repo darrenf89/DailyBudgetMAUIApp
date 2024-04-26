@@ -11,7 +11,7 @@
              HeightRequest="100">
     <AbsoluteLayout x:Name="MainAbs" MinimumHeightRequest="{Binding MinHeight}">
         <HorizontalStackLayout AbsoluteLayout.LayoutBounds="1,0" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,15,10,0">
-            <Label TextColor="{StaticResource Info}" Text="Close" TextDecorations="Underline" FontSize="Small"/>
+            <Label TextColor="{StaticResource Info}" Text="Close" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
             <Image Background="{DynamicResource White}" Margin="5,0,0,0" VerticalOptions="End">
                 <Image.Source>
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Close}" Size="16" Color="{DynamicResource Info}"/>
@@ -24,13 +24,13 @@
         <Grid x:Name="MainVSL" AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,0,0,0" RowDefinitions="Auto,*" ColumnDefinitions="*">
             <VerticalStackLayout Grid.Column="0" Grid.Row="0">
                 <BoxView x:Name="TopBV" HeightRequest="9" Color="{DynamicResource InfoLL}" HorizontalOptions="Center" Margin="0,0,0,10"/>
-                <Label CharacterSpacing="1.5" Margin="20,10,0,0" HorizontalOptions="Start" VerticalOptions="Center" Text="Select a Payee" x:Name="lblTitle" FontSize="Title" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
+                <Label CharacterSpacing="1.5" Margin="20,10,0,0" HorizontalOptions="Start" VerticalOptions="Center" Text="Select a Payee" x:Name="lblTitle" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
                 <BoxView HeightRequest="1" Color="{DynamicResource InfoLL}" Margin="0,10,0,5"/>
             </VerticalStackLayout>
             <ScrollView Margin="0" Grid.Column="0" Grid.Row="1">
                 <VerticalStackLayout Margin="0,0,0,0">
                     <Grid VerticalOptions="Center"  ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" Margin="0,5,0,5">
-                        <Label Grid.Column="1" Grid.Row="0" Text="Enter a payee name" Margin="20,5,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                        <Label Grid.Column="1" Grid.Row="0" Text="Enter a payee name" Margin="20,5,0,0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
                         <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">
                             <Image.Source>
                                 <FontImageSource x:Name="PayeeNameIcon" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_more}" Size="30"  Color="{DynamicResource Info}"/>
@@ -56,12 +56,12 @@
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
                         <HorizontalStackLayout x:Name="hslAddNewPayee" HorizontalOptions="Center" Margin="0,20,0,10">
-                            <Button Clicked="SavePayeeName_Clicked" WidthRequest="{Binding EntryWidth}" Padding="0,10,0,10" FontSize="Small" x:Name="SavePayeeName" Text="{Binding PayeeName, Converter={StaticResource CreateNewPayeeConverter}}" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Info}" Margin="20,0,20,0" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
+                            <Button Clicked="SavePayeeName_Clicked" WidthRequest="{Binding EntryWidth}" Padding="0,10,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" x:Name="SavePayeeName" Text="{Binding PayeeName, Converter={StaticResource CreateNewPayeeConverter}}" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Info}" Margin="20,0,20,0" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <BoxView HeightRequest="1" Color="{DynamicResource InfoLL}" Margin="0,10,0,5"/>
                     <Grid VerticalOptions="Center"  ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" Margin="0,5,0,5">
-                        <Label Grid.Column="1" Grid.Row="0" Text="Select a payee" Margin="20,5,0,0" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                        <Label Grid.Column="1" Grid.Row="0" Text="Select a payee" Margin="20,5,0,0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
                         <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">
                             <Image.Source>
                                 <FontImageSource x:Name="PayeeListIcon" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_more}" Size="30"  Color="{DynamicResource Info}"/>
@@ -72,7 +72,7 @@
                         </Grid.GestureRecognizers>
                     </Grid>
                     <Border  Style="{StaticResource brdInfo}" Margin="20,10,20,25" VerticalOptions="Center" HorizontalOptions="Center" x:Name="brdPayeeNotSetUp">
-                        <Label HorizontalTextAlignment="Center" x:Name="lblPayeeNotSetUp" VerticalOptions="Center" HorizontalOptions="Center" Text="{Binding FilteredListEmptyText}" TextColor="{DynamicResource Info}" FontAttributes="Bold" FontSize="Small"/>
+                        <Label HorizontalTextAlignment="Center" x:Name="lblPayeeNotSetUp" VerticalOptions="Center" HorizontalOptions="Center" Text="{Binding FilteredListEmptyText}" TextColor="{DynamicResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
                     </Border>
                     <VerticalStackLayout x:Name="PayeeList">
                         <Border Style="{DynamicResource AddEditTransContentTwo}" x:Name="brdPayeeList" Margin="20,10,20,25" Padding="10,10,10,10">

@@ -5,7 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
-    xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch">
+    xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
+    xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+    >
 
     <xct:InvertedBoolConverter x:Key="BoolConverter"/>
     <xct:IsStringNullOrEmptyConverter x:Key="IsStringNullOrEmptyConverter" />
@@ -465,6 +467,7 @@
     </Style>
 
     <Style TargetType="Button">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="CornerRadius" Value="8"/>
@@ -990,6 +993,7 @@
     </Style>
 
     <Style TargetType="DatePicker">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
         <Setter Property="TextColor" Value="{StaticResource Gray900}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
@@ -1011,6 +1015,7 @@
     </Style>
 
     <Style TargetType="Editor">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
         <Setter Property="TextColor" Value="{StaticResource Black}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
@@ -1032,7 +1037,20 @@
         </Setter>
     </Style>
 
+    <Style TargetType="handlers:BorderlessEntry">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
+    </Style>
+
+    <Style TargetType="handlers:BorderlessDatePicker">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
+    </Style>
+
+    <Style TargetType="handlers:BorderlessPicker">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
+    </Style>
+
     <Style TargetType="Entry">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
         <Setter Property="TextColor" Value="{StaticResource Black}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
@@ -1079,11 +1097,28 @@
         </Setter>
     </Style>
 
+    <Style TargetType="FontImageSource">
+        <Setter Property="FontAutoScalingEnabled" Value="False" />
+    </Style>
+
+    <Style TargetType="Span">
+        <Setter Property="TextColor" Value="{StaticResource Gray900}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontAutoScalingEnabled" Value="False" />
+    </Style>
+
+    <Style TargetType="Label" x:Key="FontAutoScalingEnabled">
+        <Setter Property="FontAutoScalingEnabled" Value="False" />
+    </Style>
+
     <Style TargetType="Label">
         <Setter Property="TextColor" Value="{StaticResource Gray900}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontAutoScalingEnabled" Value="False" />
     </Style>
 
     <Style TargetType="ListView">
@@ -1092,6 +1127,7 @@
     </Style>
 
     <Style TargetType="Picker">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
         <Setter Property="TextColor" Value="{StaticResource Gray900}" />
         <Setter Property="TitleColor" Value="{StaticResource Gray900}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
@@ -1131,6 +1167,7 @@
     </Style>
 
     <Style TargetType="RadioButton">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
         <Setter Property="BackgroundColor" Value="Transparent"/>
         <Setter Property="TextColor" Value="{StaticResource Black}" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
@@ -1156,6 +1193,7 @@
     </Style>
 
     <Style TargetType="SearchBar">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
         <Setter Property="TextColor" Value="{StaticResource Gray900}" />
         <Setter Property="PlaceholderColor" Value="{StaticResource Gray500}" />
         <Setter Property="CancelButtonColor" Value="{StaticResource Gray500}" />
@@ -1180,6 +1218,7 @@
     </Style>
 
     <Style TargetType="SearchHandler">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
         <Setter Property="TextColor" Value="{StaticResource Gray900}" />
         <Setter Property="PlaceholderColor" Value="{StaticResource Gray500}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
@@ -1313,6 +1352,7 @@
     </Style>
 
     <Style TargetType="TimePicker">
+        <Setter Property="FontAutoScalingEnabled" Value="False"/>
         <Setter Property="TextColor" Value="{StaticResource Gray900}" />
         <Setter Property="BackgroundColor" Value="Transparent"/>
         <Setter Property="FontFamily" Value="OpenSansRegular"/>

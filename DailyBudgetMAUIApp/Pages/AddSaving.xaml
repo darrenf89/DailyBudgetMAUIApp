@@ -39,7 +39,7 @@
             <Border Style="{DynamicResource AddEditTransContent}" x:Name="brdSavingSelection" Margin="20,5,20,25">
                 <VerticalStackLayout>
                     <VerticalStackLayout x:Name="SelectSavingType">
-                        <Label Text="What type of saving?" HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}"/>
+                        <Label Text="What type of saving?" HorizontalTextAlignment="Center" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}"/>
                         <Label Margin="0,20,0,20" Text="Let us do the work for you. Set up a Saving goal and we will figure everything else out, well apart from what you should wear!" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center"/>
                         <VerticalStackLayout Margin="0,0,0,20">
                             <Grid x:Name="grdSavingTypeButtons" ColumnDefinitions="*,6*,2*,6*,*" RowDefinitions="*" >
@@ -57,7 +57,7 @@
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="SavingTypeSelected" IsVisible="False">
-                        <Label HorizontalTextAlignment="Center" FontSize="Subtitle" TextColor="{DynamicResource Tertiary}" x:Name="lblSelectedSavingTitle"/>
+                        <Label HorizontalTextAlignment="Center" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}" x:Name="lblSelectedSavingTitle"/>
                         <Label Margin="0,20,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedSavingParaOne"/>
                         <Label Margin="0,2,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedSavingParaTwo"/>
                     </VerticalStackLayout>
@@ -65,26 +65,26 @@
             </Border>
             <Border Style="{DynamicResource AddEditTransContent}" x:Name="vslSavingRecurringTypeSelected" IsVisible="False" Margin="20,0,20,5">
                 <VerticalStackLayout>
-                    <Label Text="Ongoing Saving Type" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
+                    <Label Text="Ongoing Saving Type" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     <VerticalStackLayout Margin="0,0,0,10" x:Name="vslSavingRecurringType">
                         <Border Style="{StaticResource StandardInputBorderOptionSelect}" Padding="0" Margin="5,10,5,0" HeightRequest="39">
                             <Grid RowDefinitions="*" ColumnDefinitions="*,*,*" VerticalOptions="Center">
                                 <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="Transparent" >
-                                    <Label Margin="0,8,0,0" HeightRequest="55" x:Name="lblOption1" Text="Target Date" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                    <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="38" VerticalTextAlignment="Center" x:Name="lblOption1" Text="Target Date" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center" >
                                     </Label>
                                     <VerticalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="Option1Select_Tapped"/>
                                     </VerticalStackLayout.GestureRecognizers>
                                 </VerticalStackLayout>
                                 <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="Transparent">
-                                    <Label Margin="0,8,0,0" HeightRequest="55" x:Name="lblOption2" Text="Savings Builder" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                    <Label HeightRequest="38" VerticalTextAlignment="Center" x:Name="lblOption2" Text="Savings Builder" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}">
                                     </Label>
                                     <VerticalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="Option2Select_Tapped"/>
                                     </VerticalStackLayout.GestureRecognizers>
                                 </VerticalStackLayout>
                                 <VerticalStackLayout x:Name="vslOption3Select" Grid.Column="2" BackgroundColor="Transparent" >
-                                    <Label Margin="0,8,0,0" HeightRequest="55" x:Name="lblOption3" Text="Target Amount" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                    <Label HeightRequest="38" VerticalTextAlignment="Center" x:Name="lblOption3" Text="Target Amount" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}">
                                     </Label>
                                     <VerticalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="Option3Select_Tapped"/>
@@ -105,9 +105,9 @@
             </Border>
             <Border Style="{DynamicResource AddEditTransContent}" Margin="20,20,20,20" x:Name="brdSavingDetails" IsVisible="False">
                 <VerticalStackLayout x:Name="vslSavingDetails">
-                    <Label Text="Saving Details" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="Medium" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
+                    <Label Text="Saving Details" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     <VerticalStackLayout Margin="0,10,0,5" x:Name="vslSavingTarget">
-                        <Label Text="Saving Target" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
+                        <Label Text="Saving Target" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White" x:Name="brdSavingTarget">
                             <handlers:BorderlessEntry TextColor="{DynamicResource Danger}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entSavingTarget" TextChanged="SavingTarget_Changed" Keyboard="Numeric" />
                         </Border>
@@ -121,7 +121,7 @@
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout Margin="0,10,0,5" x:Name="vslCurrentBalance">
-                        <Label Text="Current Balance" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
+                        <Label Text="Current Balance" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White" x:Name="brdCurrentBalance">
                             <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entCurrentBalance" TextChanged="CurrentBalance_Changed" Keyboard="Numeric" />
                         </Border>
@@ -135,7 +135,7 @@
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout Margin="0,10,0,5" x:Name="vslGoalDate">
-                        <Label Text="Saving Goal Date" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5" x:Name="SavingGoalDateLabel"/>
+                        <Label Text="Saving Goal Date" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5" x:Name="SavingGoalDateLabel"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White" x:Name="brdGoalDate">
                             <DatePicker CharacterSpacing="1" Margin="20,0,0,0" x:Name="dtpckGoalDate" Date="{Binding Saving.GoalDate}" DateSelected="dtpckGoalDate_DateSelected"/>
                         </Border>
@@ -150,7 +150,7 @@
                     </VerticalStackLayout>
                     <VerticalStackLayout Margin="0,10,0,5" x:Name="vslSavingAmount">
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
-                            <Label Text="Saving Amount" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                            <Label Text="Saving Amount" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" x:Name="brdSavingAmount" Margin="5,0,10,0" HeightRequest="38" BackgroundColor="White" Grid.Column="0" Grid.Row="1">
                                 <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entSavingAmount" TextChanged="SavingAmount_Changed" Keyboard="Numeric" />
                             </Border>
@@ -178,7 +178,7 @@
                     <VerticalStackLayout x:Name="VSLCalculator" Margin="5,10,0,5">
                         <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40">
                             <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding ShowCalculator}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" x:Name="swhSpendCategory"/>
-                            <Label HorizontalOptions="Start" VerticalOptions="Center" Text="Calcualte daily amount" Grid.Column="1" TextColor="{StaticResource Primary}"  FontSize="Small" Padding="0,0,0,0" IsVisible="{Binding ShowCalculator, Converter={StaticResource BoolConverter}}"/>
+                            <Label HorizontalOptions="Start" VerticalOptions="Center" Text="Calcualte daily amount" Grid.Column="1" TextColor="{StaticResource Primary}"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,0,0" IsVisible="{Binding ShowCalculator, Converter={StaticResource BoolConverter}}"/>
                         </Grid>
                         <Grid IsVisible="{Binding ShowCalculator}" ColumnDefinitions="Auto,*" RowDefinitions="Auto">
                             <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource StandardInputBorder}" Padding="15,0,35,0" Margin="5,0,5,0" HeightRequest="38">

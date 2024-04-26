@@ -21,7 +21,7 @@
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Home}" Size="35" />
                 </Button.ImageSource>
             </Button>
-            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Medium"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
         </Grid>
     </Shell.TitleView>
     <sfList:SfListView IsScrollingEnabled="True" x:Name="listView" AllowSwiping="True" IsStickyHeader="True" BackgroundColor="White" SelectionMode="None" ItemsSource="{Binding Payees}" AutoFitMode="DynamicHeight">
@@ -59,7 +59,7 @@
                                         <DataTemplate>
                                             <Border Stroke="{StaticResource White}" BackgroundColor="{StaticResource White}" StrokeShape="RoundRectangle 2" StrokeThickness="1">
                                                 <HorizontalStackLayout Padding="10,0,10,0" VerticalOptions="Center" HorizontalOptions="Center">
-                                                    <Label Text="{Binding .}" TextColor="{StaticResource Primary}" FontSize="Small" FontAttributes="Bold"/>
+                                                    <Label Text="{Binding .}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold"/>
                                                 </HorizontalStackLayout>
                                             </Border>
                                         </DataTemplate>
@@ -100,7 +100,7 @@
                                 <Grid ColumnDefinitions="Auto, *" RowDefinitions="24,24">
                                     <HorizontalStackLayout IsVisible="{Binding IsEditMode,Converter={StaticResource BoolConverter}}" Grid.Column="0" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Center">
                                         <Border StrokeShape="RoundRectangle 6" HeightRequest="16" WidthRequest="16" VerticalOptions="Center" BackgroundColor="{Binding Index, Converter={StaticResource IndexToChartColor}}" StrokeThickness="0" Margin="10,0,10,0"/>
-                                        <Label VerticalOptions="Center" Text="{Binding Payee}" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Gray900}"/>
+                                        <Label VerticalOptions="Center" Text="{Binding Payee}" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
                                     </HorizontalStackLayout>
                                     <HorizontalStackLayout Margin="10,0,0,0" Grid.Column="0" Grid.Row="1" HorizontalOptions="Start" VerticalOptions="Center" IsVisible="{Binding IsEditMode,Converter={StaticResource BoolConverter}}">
                                         <HorizontalStackLayout Margin="0,0,20,0" HorizontalOptions="End" VerticalOptions="Center">
@@ -109,7 +109,7 @@
                                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Primary}"/>
                                                 </Image.Source>
                                             </Image>
-                                            <Label Text="Edit" TextColor="{DynamicResource Primary}" FontAttributes="Bold" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                            <Label Text="Edit" TextColor="{DynamicResource Primary}" FontAttributes="Bold" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
                                             <HorizontalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer x:Name="EditCategory" Tapped="EditCategory_Tapped" CommandParameter="{Binding .}"/>
                                             </HorizontalStackLayout.GestureRecognizers>
@@ -120,14 +120,14 @@
                                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete}" Size="12" Color="{DynamicResource Primary}"/>
                                                 </Image.Source>
                                             </Image>
-                                            <Label Text="Delete" TextColor="{DynamicResource Primary}" FontAttributes="Bold" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                            <Label Text="Delete" TextColor="{DynamicResource Primary}" FontAttributes="Bold" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
                                             <HorizontalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer x:Name="DeleteCategory" Tapped="DeleteCategory_Tapped" CommandParameter="{Binding .}"/>
                                             </HorizontalStackLayout.GestureRecognizers>
                                         </HorizontalStackLayout>
                                     </HorizontalStackLayout>
                                     <HorizontalStackLayout IsVisible="{Binding IsEditMode}" Padding="10,0,0,0" Grid.RowSpan="2" Grid.Column="0" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Center">
-                                        <handlers:BorderlessEntry VerticalOptions="Center" HorizontalOptions="Start"  TextColor="{DynamicResource Primary}" FontAttributes="Bold" FontSize="Medium" Text="{Binding Payee}"/>
+                                        <handlers:BorderlessEntry VerticalOptions="Center" HorizontalOptions="Start"  TextColor="{DynamicResource Primary}" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Text="{Binding Payee}"/>
                                     </HorizontalStackLayout>
                                     <HorizontalStackLayout IsVisible="{Binding IsEditMode}" Padding="10,0,10,0" Grid.RowSpan="2" Grid.Column="1" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center">
                                         <Button Text="Apply Changes" x:Name="ApplyChanges" Clicked="ApplyChanges_Clicked" TextColor="White" BackgroundColor="{StaticResource Success}" Style="{StaticResource TitleButtons}"/>

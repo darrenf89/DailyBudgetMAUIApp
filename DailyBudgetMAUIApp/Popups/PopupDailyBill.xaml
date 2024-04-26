@@ -34,8 +34,8 @@
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Monetization_on}" Size="24"  Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>
-                                <Label x:Name="lblBillAmount" CharacterSpacing="2" TextColor="{DynamicResource Danger}" FontSize="Medium" VerticalOptions="Center"/>
-                                <handlers:BorderlessEntry Margin="0" VerticalOptions="Center" IsVisible="False" TextColor="{DynamicResource Danger}" FontSize="Medium" CharacterSpacing="2" x:Name="entBillAmount" TextChanged="BillAmount_Changed" Keyboard="Numeric" />
+                                <Label x:Name="lblBillAmount" CharacterSpacing="2" TextColor="{DynamicResource Danger}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" VerticalOptions="Center"/>
+                                <handlers:BorderlessEntry Margin="0" VerticalOptions="Center" IsVisible="False" TextColor="{DynamicResource Danger}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" CharacterSpacing="2" x:Name="entBillAmount" TextChanged="BillAmount_Changed" Keyboard="Numeric" />
                             </HorizontalStackLayout>
                             <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorBillAmount">
                                 <Image>
@@ -53,8 +53,8 @@
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Calendar_month}" Size="24"  Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>
-                                <Label VerticalOptions="Center" x:Name="lblTargetDate" CharacterSpacing="1" FontSize="Medium" />
-                                <DatePicker CharacterSpacing="1" x:Name="entTargetDate" Date="{Binding Bill.BillDueDate}" IsVisible="False" VerticalOptions="Center" FontSize="Medium" Margin="0"/>
+                                <Label VerticalOptions="Center" x:Name="lblTargetDate" CharacterSpacing="1" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" />
+                                <DatePicker CharacterSpacing="1" x:Name="entTargetDate" Date="{Binding Bill.BillDueDate}" IsVisible="False" VerticalOptions="Center" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Margin="0"/>
                             </HorizontalStackLayout>
                             <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorBillDate">
                                 <Image>

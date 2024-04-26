@@ -34,8 +34,8 @@
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Monetization_on}" Size="24"  Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>
-                                <Label x:Name="lblSavingTarget" CharacterSpacing="2" TextColor="{DynamicResource Danger}" FontSize="Medium" VerticalOptions="Center"/>
-                                <handlers:BorderlessEntry Margin="0" VerticalOptions="Center" IsVisible="False" TextColor="{DynamicResource Danger}" FontSize="Medium" CharacterSpacing="2" x:Name="entSavingTarget" TextChanged="SavingTarget_Changed" Keyboard="Numeric" />
+                                <Label x:Name="lblSavingTarget" CharacterSpacing="2" TextColor="{DynamicResource Danger}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" VerticalOptions="Center"/>
+                                <handlers:BorderlessEntry Margin="0" VerticalOptions="Center" IsVisible="False" TextColor="{DynamicResource Danger}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" CharacterSpacing="2" x:Name="entSavingTarget" TextChanged="SavingTarget_Changed" Keyboard="Numeric" />
                             </HorizontalStackLayout>
                             <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorSavingsGoal">
                                 <Image>
@@ -53,8 +53,8 @@
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Calendar_month}" Size="24"  Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>
-                                <Label x:Name="lblTargetDate" CharacterSpacing="1" FontSize="Medium" VerticalOptions="Center" />
-                                <DatePicker CharacterSpacing="1" x:Name="entTargetDate" Date="{Binding Saving.GoalDate}" IsVisible="False" VerticalOptions="Center" FontSize="Medium" Margin="0"/>
+                                <Label x:Name="lblTargetDate" CharacterSpacing="1" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" VerticalOptions="Center" />
+                                <DatePicker CharacterSpacing="1" x:Name="entTargetDate" Date="{Binding Saving.GoalDate}" IsVisible="False" VerticalOptions="Center" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Margin="0"/>
                             </HorizontalStackLayout>
                             <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorSavingsDate">
                                 <Image>
@@ -72,8 +72,8 @@
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Refresh}" Size="24"  Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>
-                                <Label VerticalOptions="Center" x:Name="lblSavingAmount" CharacterSpacing="1" TextColor="{DynamicResource Success}" FontSize="Medium"/>
-                                <handlers:BorderlessEntry Margin="0" FontSize="Medium" VerticalOptions="Center" IsVisible="False" TextColor="{DynamicResource Success}" CharacterSpacing="2" x:Name="entSavingAmount" TextChanged="SavingAmount_Changed" Keyboard="Numeric" />
+                                <Label VerticalOptions="Center" x:Name="lblSavingAmount" CharacterSpacing="1" TextColor="{DynamicResource Success}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"/>
+                                <handlers:BorderlessEntry Margin="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" VerticalOptions="Center" IsVisible="False" TextColor="{DynamicResource Success}" CharacterSpacing="2" x:Name="entSavingAmount" TextChanged="SavingAmount_Changed" Keyboard="Numeric" />
                             </HorizontalStackLayout>
                             <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorSavingsDailyAmount">
                                 <Image>

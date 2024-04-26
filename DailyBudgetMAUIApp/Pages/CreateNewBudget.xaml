@@ -55,7 +55,7 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
                             </Image.Source>
                         </Image>
-                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0" x:Name="lblSettingsEdit"/>
+                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0" x:Name="lblSettingsEdit"/>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Tapped="GoToStageSettings_Tapped" />
@@ -63,7 +63,7 @@
                 </Grid>
             </VerticalStackLayout>
             <VerticalStackLayout x:Name="SettingsDetails" IsVisible="true" Margin="0,0,0,15">
-                <Label Text="Currency Symbol" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
+                <Label Text="Currency Symbol" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
                 <Label Text="Select your local or preferred currency, we will try and show all figures using your preferred currency symbol. If you want to change your choice click on your selection below" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <VerticalStackLayout x:Name="CurrencySearchBarLayout" IsVisible="{Binding SearchVisible}">
                     <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,0">
@@ -85,7 +85,7 @@
                     </ListView>
                 </VerticalStackLayout>
                 <Border x:Name="CurrencySearchResultLayout" Style="{StaticResource StandardInputBorder}" IsVisible="{Binding SearchVisible, Converter={StaticResource BoolConverter}}" Margin="5,0,40,20">
-                    <Label x:Name="lblSelectedCurrency" FontSize="Small" TextColor="{DynamicResource Gray900}">
+                    <Label x:Name="lblSelectedCurrency" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}">
                         <MultiBinding StringFormat="{}{2}">
                             <Binding Path="SelectedCurrencySymbol.CurrencySymbol"/>
                             <Binding Path="SelectedCurrencySymbol.Name"/>
@@ -96,22 +96,22 @@
                         </Label.GestureRecognizers>
                     </Label>
                 </Border>
-                <Label Text="Symbol Placement" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
+                <Label Text="Symbol Placement" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
                 <Label Text="Select how you would like your choosen currency symbol to be palced." FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
                     <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrSymbolPlacement" Title="Select your currency symbol placement" ItemsSource="{Binding CurrencyPlacements}" ItemDisplayBinding="{Binding CurrencyPlacement}" SelectedItem="{Binding SelectedCurrencyPlacement}"/>
                 </Border>
-                <Label Text="Date Format" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
+                <Label Text="Date Format" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
                 <Label Text="Select your preferred date format, when presenting a date in numbers we will use this format." FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
                     <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrDateFormat" Title="Select your preferred Date Format" ItemsSource="{Binding DateFormats}" ItemDisplayBinding="{Binding DateFormat}" SelectedItem="{Binding SelectedDateFormats}"/>
                 </Border>
-                <Label Text="Number Format" FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
+                <Label Text="Number Format" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
                 <Label Text="Select your preferred number format. Number of decimals, decimal symbol and number group seperator. " FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
                     <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrNumberFormat" Title="Select your preferred number format" ItemsSource="{Binding NumberFormats}" ItemDisplayBinding="{Binding NumberFormat}" SelectedItem="{Binding SelectedNumberFormats}"/>
                 </Border>
-                <Label Text="Budget Time Zone " FontSize="Subtitle" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
+                <Label Text="Budget Time Zone " FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,2"/>
                 <Label Text="Select the time zone for your budget. This will dictate when the daily budgetting happens so choose carefully!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
                     <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrTimeZone" Title="Select your Time Zone" ItemsSource="{Binding TimeZones}" ItemDisplayBinding="{Binding TimeZoneDisplayName}" SelectedItem="{Binding SelectedTimeZone}"/>
@@ -135,7 +135,7 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
                             </Image.Source>
                         </Image>
-                        <Label x:Name="lblDetailsEdit" Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
+                        <Label x:Name="lblDetailsEdit" Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0"/>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Tapped="GoToStageBudget_Tapped"/>
@@ -144,7 +144,7 @@
             </VerticalStackLayout>
             <VerticalStackLayout x:Name="BudgetDetails" IsVisible="false" Margin="0,0,0,15">
                 <HorizontalStackLayout Padding="5,0,0,2">
-                    <Label Text="Whats in the Bank?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                    <Label Text="Whats in the Bank?" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                     <ImageButton Clicked="BankBalanceInfo" WidthRequest="14" HeightRequest="14" CornerRadius="5" VerticalOptions="Center" Margin="5,0,0,0">
                         <ImageButton.Source>
                             <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Info}" Color="{DynamicResource Info}"/>
@@ -156,7 +156,7 @@
                     <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entBankBalance" TextChanged="BankBalance_Changed" Keyboard="Numeric" />
                 </Border>
                 <HorizontalStackLayout Padding="5,0,0,2">
-                    <Label Text="When is Pay Day?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                    <Label Text="When is Pay Day?" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                     <ImageButton Clicked="PayDayInfo" WidthRequest="14" HeightRequest="14" CornerRadius="5" VerticalOptions="Center" Margin="5,0,0,0">
                         <ImageButton.Source>
                             <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Info}" Color="{DynamicResource Info}"/>
@@ -178,7 +178,7 @@
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
                 <HorizontalStackLayout Padding="5,0,0,10">
-                    <Label Text="How do you get paid?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                    <Label Text="How do you get paid?" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                     <ImageButton Clicked="PayDetailsInfo" WidthRequest="14" HeightRequest="14" CornerRadius="5" VerticalOptions="Center" Margin="5,0,0,0">
                         <ImageButton.Source>
                             <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Info}" Color="{DynamicResource Info}"/>
@@ -186,31 +186,31 @@
                     </ImageButton>
                 </HorizontalStackLayout>
                 <VerticalStackLayout Margin="0,0,0,5">
-                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,5,0" HeightRequest="45">
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,5,0" HeightRequest="44">
                         <Grid RowDefinitions="*" ColumnDefinitions="*,*,*,*" VerticalOptions="Center">
                             <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="Transparent">
-                                <Label Margin="0,11,0,0" HeightRequest="55" x:Name="lblOption1" Text="Option 1" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption1" Text="Option 1" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                 </Label>
                                 <VerticalStackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="Option1Select_Tapped"/>
                                 </VerticalStackLayout.GestureRecognizers>
                             </VerticalStackLayout>
                             <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="Transparent">
-                                <Label Margin="0,11,0,0" HeightRequest="55" x:Name="lblOption2" Text="Option 2" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption2" Text="Option 2" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                 </Label>
                                 <VerticalStackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="Option2Select_Tapped"/>
                                 </VerticalStackLayout.GestureRecognizers>
                             </VerticalStackLayout>
                             <VerticalStackLayout x:Name="vslOption3Select" Grid.Column="2" BackgroundColor="Transparent" >
-                                <Label Margin="0,11,0,0" HeightRequest="55" x:Name="lblOption3" Text="Option 3" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption3" Text="Option 3" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                 </Label>
                                 <VerticalStackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="Option3Select_Tapped"/>
                                 </VerticalStackLayout.GestureRecognizers>
                             </VerticalStackLayout>
                             <VerticalStackLayout x:Name="vslOption4Select" Grid.Column="3" BackgroundColor="Transparent" >
-                                <Label Margin="0,11,0,0" HeightRequest="55" x:Name="lblOption4" Text="Option 4" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption4" Text="Option 4" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
                                 </Label>
                                 <VerticalStackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="Option4Select_Tapped"/>
@@ -228,7 +228,7 @@
                     </HorizontalStackLayout>
                 </VerticalStackLayout>                
                 <VerticalStackLayout x:Name="vslOption1" IsVisible="false" Margin="0,0,0,20">
-                    <Label Text="Every nth ..." FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
+                    <Label Text="Every nth ..." FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="0" Grid.Row="1">
@@ -257,7 +257,7 @@
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
                 <VerticalStackLayout x:Name="vslOption2" IsVisible="false">
-                    <Label Text=" ... Working days before the end of the month" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
+                    <Label Text=" ... Working days before the end of the month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
@@ -274,7 +274,7 @@
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
                 <VerticalStackLayout x:Name="vslOption3" IsVisible="false">
-                    <Label Text="On the ... of every month" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
+                    <Label Text="On the ... of every month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
@@ -291,7 +291,7 @@
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
                 <VerticalStackLayout x:Name="vslOption4" IsVisible="false">
-                    <Label Text="On the last ... of the month" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
+                    <Label Text="On the last ... of the month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                         <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
@@ -312,7 +312,7 @@
                     </Grid>
                 </VerticalStackLayout>
                 <HorizontalStackLayout Padding="5,0,0,2">
-                    <Label Text="Pay Amount" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                    <Label Text="Pay Amount" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                 </HorizontalStackLayout>
                 <Label Text="Let us know how much you get paid each period!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="7,0,0,10"/>
                 <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,20" HeightRequest="38">
@@ -335,7 +335,7 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
                             </Image.Source>
                         </Image>
-                        <Label x:Name="lblBillsEdit" Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
+                        <Label x:Name="lblBillsEdit" Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0"/>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Tapped="GoToStageBills_Tapped"/>
@@ -345,7 +345,7 @@
             <VerticalStackLayout x:Name="BillDetails" IsVisible="false" Margin="0,0,0,15">
                 <VerticalStackLayout x:Name="vslOutgoingList" Margin="0,0,0,10">
                     <HorizontalStackLayout Padding="5,0,0,2">
-                        <Label Text="Current Outgoings" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                        <Label Text="Current Outgoings" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                     </HorizontalStackLayout>
                     <Label Text="Edit or delete your previously saved outgoings" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                     <ListView ItemsSource="{Binding Budget.Bills}" Margin="10,0,20,0" SeparatorVisibility="None" x:Name="LVOutgoings" RowHeight="130" SelectionMode="None" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
@@ -393,7 +393,7 @@
                                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
                                                             </Image.Source>
                                                         </Image>
-                                                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
                                                         <HorizontalStackLayout.GestureRecognizers>
                                                             <TapGestureRecognizer Tapped="EditBudgetOutgoings_Tapped" CommandParameter="{Binding .}"/>
                                                         </HorizontalStackLayout.GestureRecognizers>
@@ -404,7 +404,7 @@
                                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete}" Size="12" Color="{DynamicResource Info}"/>
                                                             </Image.Source>
                                                         </Image>
-                                                        <Label Text="Delete" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                                        <Label Text="Delete" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
                                                         <HorizontalStackLayout.GestureRecognizers>
                                                             <TapGestureRecognizer Tapped="DeleteBudgetOutgoings_Tapped" CommandParameter="{Binding .}"/>
                                                         </HorizontalStackLayout.GestureRecognizers>
@@ -419,7 +419,7 @@
                     </ListView>
                 </VerticalStackLayout>
                 <HorizontalStackLayout Padding="5,0,0,2">
-                    <Label Text="Add Outgoings to your Budget?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                    <Label Text="Add Outgoings to your Budget?" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                 </HorizontalStackLayout>
                 <Label Text="Dont worry if you don't want to add them now, you can add them at any time!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,25"/>
                 <Border Style="{StaticResource ClearInfoBorder}" x:Name="btnAddBillsNewBudget" IsVisible="false" WidthRequest="120" HorizontalOptions="Start" Margin="5,0,0,20">
@@ -453,14 +453,14 @@
                         <Label x:Name="MessagevalidatorBillsYesNo" Text="Let us know if you want to add any outgoings or not." Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
                     </HorizontalStackLayout>
                     <HorizontalStackLayout Padding="0,5,0,2">
-                        <Label Text="When to accrue your outgoings?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                        <Label Text="When to accrue your outgoings?" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                     </HorizontalStackLayout>
                     <Label IsVisible="{Binding IsBorrowPay}" Text="We will only accrue the balance of your outgoings every time you are paid" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="0,5,0,0"/>
                     <Label IsVisible="{Binding IsBorrowPay, Converter={StaticResource BoolConverter}}" Text="We will accrue your outgoings each and every day!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="0,5,0,0"/>
                     <Grid ColumnDefinitions="60,*" Margin="5,5,0,10" HeightRequest="40">
                         <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsBorrowPay}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">
-                            <Label HorizontalOptions="Start" Text="{Binding IsBorrowPay, Converter={StaticResource IsBorrowPayTextConverter}}" TextColor="{StaticResource Primary}" FontAttributes="Bold" FontSize="Small" Padding="10,0,0,0"/>
+                            <Label HorizontalOptions="Start" Text="{Binding IsBorrowPay, Converter={StaticResource IsBorrowPayTextConverter}}" TextColor="{StaticResource Primary}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
                         </HorizontalStackLayout>
                     </Grid>
                     <Label>
@@ -493,7 +493,7 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
                             </Image.Source>
                         </Image>
-                        <Label x:Name="lblSavingsEdit" Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
+                        <Label x:Name="lblSavingsEdit" Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0"/>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Tapped="GoToStageSavings_Tapped"/>
@@ -503,7 +503,7 @@
             <VerticalStackLayout x:Name="SavingsDetails" IsVisible="false" Margin="0,0,0,15">
                 <VerticalStackLayout x:Name="vslSavingList" Margin="0,0,0,10">
                     <HorizontalStackLayout Padding="5,0,0,2">
-                        <Label Text="Current Savings" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                        <Label Text="Current Savings" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                     </HorizontalStackLayout>
                     <Label Text="Edit or delete your previously saved savings" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                     <ListView ItemsSource="{Binding Budget.Savings}" Margin="10,0,20,0" SeparatorVisibility="None" x:Name="LVSavings" RowHeight="130" SelectionMode="None" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
@@ -573,7 +573,7 @@
                                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
                                                             </Image.Source>
                                                         </Image>
-                                                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
                                                         <HorizontalStackLayout.GestureRecognizers>
                                                             <TapGestureRecognizer Tapped="EditBudgetSavings_Tapped" CommandParameter="{Binding .}"/>
                                                         </HorizontalStackLayout.GestureRecognizers>
@@ -584,7 +584,7 @@
                                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete}" Size="12" Color="{DynamicResource Info}"/>
                                                             </Image.Source>
                                                         </Image>
-                                                        <Label Text="Delete" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                                        <Label Text="Delete" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
                                                         <HorizontalStackLayout.GestureRecognizers>
                                                             <TapGestureRecognizer Tapped="DeleteBudgetSavings_Tapped" CommandParameter="{Binding .}"/>
                                                         </HorizontalStackLayout.GestureRecognizers>
@@ -599,7 +599,7 @@
                     </ListView>
                 </VerticalStackLayout>
                 <HorizontalStackLayout Padding="5,0,0,2">
-                    <Label Text="Add Savings to your Budget?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                    <Label Text="Add Savings to your Budget?" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                 </HorizontalStackLayout>
                 <Label Text="Dont worry if you don't want to add them now, you can add them at any time!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,25"/>
                 <Border Style="{StaticResource ClearInfoBorder}" x:Name="btnAddSavingsNewBudget" IsVisible="false" WidthRequest="120" HorizontalOptions="Start" Margin="5,0,0,20">
@@ -650,7 +650,7 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
                             </Image.Source>
                         </Image>
-                        <Label x:Name="lblIncomeEdit" Text="Edit" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
+                        <Label x:Name="lblIncomeEdit" Text="Edit" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0"/>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Tapped="GoToStageIncomes_Tapped"/>
@@ -660,7 +660,7 @@
             <VerticalStackLayout x:Name="IncomeDetails" IsVisible="false" Margin="0,0,0,15">
                 <VerticalStackLayout x:Name="vslIncomeList" Margin="0,0,0,10">
                     <HorizontalStackLayout Padding="5,0,0,2">
-                        <Label Text="Current Income Events" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                        <Label Text="Current Income Events" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                     </HorizontalStackLayout>
                     <Label Text="Edit or delete your previously added Income Events" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                     <ListView ItemsSource="{Binding Budget.IncomeEvents}" Margin="10,0,20,0" SeparatorVisibility="None" x:Name="LVIncomes" RowHeight="130" SelectionMode="None" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
@@ -714,7 +714,7 @@
                                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
                                                             </Image.Source>
                                                         </Image>
-                                                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                                        <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
                                                         <HorizontalStackLayout.GestureRecognizers>
                                                             <TapGestureRecognizer Tapped="EditBudgetIncome_Tapped" CommandParameter="{Binding .}"/>
                                                         </HorizontalStackLayout.GestureRecognizers>
@@ -725,7 +725,7 @@
                                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete}" Size="12" Color="{DynamicResource Info}"/>
                                                             </Image.Source>
                                                         </Image>
-                                                        <Label Text="Delete" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="5,0,0,0"/>
+                                                        <Label Text="Delete" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
                                                         <HorizontalStackLayout.GestureRecognizers>
                                                             <TapGestureRecognizer Tapped="DeleteBudgetIncome_Tapped" CommandParameter="{Binding .}"/>
                                                         </HorizontalStackLayout.GestureRecognizers>
@@ -740,7 +740,7 @@
                     </ListView>
                 </VerticalStackLayout>
                 <HorizontalStackLayout Padding="5,0,0,2">
-                    <Label Text="Add Income to your Budget?" FontSize="Subtitle" TextColor="{DynamicResource Gray900}"/>
+                    <Label Text="Add Income to your Budget?" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                 </HorizontalStackLayout>
                 <Label Text="Dont worry if you don't want to add them now, you can add them at any time!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,25"/>
                 <Border Style="{StaticResource ClearInfoBorder}" x:Name="btnAddIncomeNewBudget" IsVisible="false" WidthRequest="120" HorizontalOptions="Start" Margin="5,0,0,20">
@@ -791,7 +791,7 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
                             </Image.Source>
                         </Image>
-                        <Label x:Name="lblFinalEdit" Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="Small" Padding="0,0,5,0"/>
+                        <Label x:Name="lblFinalEdit" Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0"/>
                     </HorizontalStackLayout>
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Tapped="GoToStageFinalBudget_Tapped"/>
@@ -800,26 +800,26 @@
             </VerticalStackLayout>
             <VerticalStackLayout x:Name="FinalBudgetDetails" IsVisible="false" Margin="0,0,0,15">
                 <HorizontalStackLayout Padding="5,10,0,0">
-                    <Label Text="Your New Budget's Stats" FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
+                    <Label Text="Your New Budget's Stats" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                 </HorizontalStackLayout>
-                <Label Text="Bank Balance (BB)" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
+                <Label Text="Bank Balance (BB)" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
                 <Label Text="Your Bank Balance is what it says, its the amount of money you currently hold in your bank account or accounts ... or under the mattress if thats the way you are inclined" FontSize="Caption" TextColor="{DynamicResource Gray500}" Padding="5,0,0,2"/>
-                <Label Padding="15,0,0,15" Text="{Binding Budget.BankBalance, StringFormat='{0:c}'}" FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
-                <Label Text="Money Available Balance (MaB)" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
+                <Label Padding="15,0,0,15" Text="{Binding Budget.BankBalance, StringFormat='{0:c}'}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                <Label Text="Money Available Balance (MaB)" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
                 <Label Text="Your Money available Balance is the amount of money you have at your disposal that hasn't already been committed to one of your finanical liabilities ... your budget's outgoings." FontSize="Caption" TextColor="{DynamicResource Gray500}" Padding="5,0,0,2"/>
-                <Label Padding="15,0,0,15" Text="{Binding Budget.MoneyAvailableBalance, StringFormat='{0:c}'}" FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
-                <Label Text="Left To Spend Balance (LtSB)" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
+                <Label Padding="15,0,0,15" Text="{Binding Budget.MoneyAvailableBalance, StringFormat='{0:c}'}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                <Label Text="Left To Spend Balance (LtSB)" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
                 <Label Text="Your Left to Spend Balance is what we think you have left to spend in your budget between now and pay day. So your Bank Balance minus any savings goals and outgoing liabilities." FontSize="Caption" TextColor="{DynamicResource Gray500}" Padding="5,0,0,2"/>
-                <Label Padding="15,0,0,15" Text="{Binding Budget.LeftToSpendBalance, StringFormat='{0:c}'}" FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
-                <Label Text="Daily Budget" FontSize="Subtitle" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
+                <Label Padding="15,0,0,15" Text="{Binding Budget.LeftToSpendBalance, StringFormat='{0:c}'}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                <Label Text="Daily Budget" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
                 <Label Text="We used all the information you provided and have calculated that you have this amount to spend each day between now and your next pay day!" FontSize="Caption" TextColor="{DynamicResource Gray500}" Padding="5,0,0,2"/>
-                <Label Padding="15,0,0,15" Text="{Binding Budget.LeftToSpendDailyAmount, StringFormat='{0:c}'}" FontSize="Medium" TextColor="{DynamicResource Gray900}"/>
+                <Label Padding="15,0,0,15" Text="{Binding Budget.LeftToSpendDailyAmount, StringFormat='{0:c}'}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                 <Grid RowDefinitions="*,*,*" ColumnDefinitions="*" Margin="5,10,0,25">
                     <Label Grid.Row = "0" Grid.Column="0" LineBreakMode="WordWrap" Text="By creating your new budget you are agreeing to our terms of service, and as a fully conscious autonomous being are still wholey responsible for your finanices. Daily budget is a tool, an amazing one, to help you do that but please do still budget responsibly!" FontSize="Caption" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
                     <Border x:Name="brdIsAcceptTerms" Grid.Row="1" Grid.Column="0" Margin="0,20,0,0" Style="{StaticResource StandardInputBorder}" BackgroundColor="White" Padding="0">
                         <HorizontalStackLayout VerticalOptions="Center" x:Name="hslIsAcceptTerms">
                             <CheckBox CheckedChanged="IsAcceptTerms_CheckChanged" x:Name="chbxIsAcceptTerms" IsChecked="False" Scale="1.3" Margin="0,0,15,0" Color="{StaticResource PrimaryLight}"/>
-                            <Label Padding="0" Margin="0" FontSize="Medium" Text="I Agree" x:Name="lblIsAcceptTerms" TextColor="{DynamicResource Gray500}" VerticalOptions="Center" VerticalTextAlignment="Center"/>
+                            <Label Padding="0" Margin="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Text="I Agree" x:Name="lblIsAcceptTerms" TextColor="{DynamicResource Gray500}" VerticalOptions="Center" VerticalTextAlignment="Center"/>
                         </HorizontalStackLayout>
                     </Border>
                     <HorizontalStackLayout IsVisible="false" Margin="5,2,0,0" x:Name="validatorAcceptTerms" Grid.Row="2" Grid.Column="0">

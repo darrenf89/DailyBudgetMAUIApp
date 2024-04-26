@@ -17,10 +17,6 @@
         <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:LoadUpPage}"/>
     </ShellItem>
 
-    <!--<ShellItem Route="ErrorPage" FlyoutItemIsVisible="False">
-        <ContentDI:ShellContentDI  ContentTemplate="{DataTemplate Pages:ErrorPage}"/>
-    </ShellItem>-->
-
     <TabBar x:Name="MainTabBar">
         <Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
             <ContentDI:ShellContentDI ContentTemplate="{DataTemplate local:MainPage}" />
@@ -61,10 +57,6 @@
         <ShellContent ContentTemplate="{DataTemplate Pages:ViewCalendar}"/>
     </ShellItem>
 
-    <!--<ShellItem Route="CreateNewBudget" FlyoutItemIsVisible="False">
-        <ShellContent ContentTemplate="{DataTemplate Pages:CreateNewBudget}"/>
-    </ShellItem>-->
-
     <ShellItem Route="ViewCategories" FlyoutItemIsVisible="True">
         <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
     </ShellItem>
@@ -76,21 +68,5 @@
     <ShellItem Route="ViewPayees" FlyoutItemIsVisible="True">
         <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewPayees}"/>
     </ShellItem>
-
-    <!--<ShellItem Route="ViewFilteredTransactions" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewFilteredTransactions}"/>
-    </ShellItem>-->
-
-    <!--<ShellItem Route="SelectPayeePage" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:SelectPayeePage}"/>
-    </ShellItem>
-
-    <ShellItem Route="SelectCategoryPage" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:SelectCategoryPage}"/>
-    </ShellItem>
-
-    <ShellItem Route="SelectSavingCategoryPage" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:SelectSavingCategoryPage}"/>
-    </ShellItem>-->
 
 </Shell>

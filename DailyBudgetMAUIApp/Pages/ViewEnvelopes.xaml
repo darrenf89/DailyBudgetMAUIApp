@@ -19,7 +19,7 @@
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Home}" Size="35" />
                 </Button.ImageSource>
             </Button>
-            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Medium"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
         </Grid>
     </Shell.TitleView>
     <sfList:SfListView IsStickyHeader="True" StickyFooterPosition="Default" IsStickyFooter="True" IsScrollingEnabled="True" ScrollBarVisibility="Default" BackgroundColor="Transparent" SelectionMode="None" x:Name="listView" AllowSwiping="False" ItemsSource="{Binding Savings}" AutoFitMode="DynamicHeight" Margin="0,0,0,0" Padding="0">
@@ -28,11 +28,11 @@
                 <VerticalStackLayout>
                     <Grid BackgroundColor="{StaticResource Primary}" ColumnDefinitions="*,*" RowDefinitions="28,30,22,32,Auto" x:Name="BudgetDetailsGrid">
                         <Label Margin="30,0,0,0" Grid.Row="0" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding EnvelopeBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
-                        <Label Margin="30,0,0,0" Grid.Row="2" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding DaysToPayDay}" TextColor="White" FontSize="Medium" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+                        <Label Margin="30,0,0,0" Grid.Row="2" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding DaysToPayDay}" TextColor="White" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
                         <Label Margin="30,0,0,10" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Envelope balances remaining" TextColor="White" FontSize="Caption" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
                         <Label Margin="30,0,0,5" Grid.Row="3" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Days to next stash" TextColor="White" FontSize="Caption" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
                         <Label Margin="0,0,30,5" Grid.Row="3" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Put away each day" TextColor="White" FontSize="Caption" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
-                        <Label Margin="0,0,30,0" Grid.Row="2" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding RegularValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Medium" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
+                        <Label Margin="0,0,30,0" Grid.Row="2" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding RegularValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
                         <Label Margin="0,0,30,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Total put in envelopes" TextColor="White" FontSize="Caption" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
                         <Label Margin="0,0,30,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding EnvelopeTotal, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
                         <BoxView HeightRequest="8" Color="{StaticResource White}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4"/>
@@ -61,7 +61,7 @@
                                         <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="envelope.svg"/>
                                     </Border>
                                     <Label Margin="0,0,0,0" Padding="0" VerticalOptions="Start" Text="{Binding SavingsName}" TextColor="{StaticResource Primary}" FontSize="Large" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
-                                    <Label Margin="0,0,0,10" FontAttributes="Bold" Padding="0" Text="{Binding SavingsType, Converter={StaticResource SavingsTypeToText}}" TextColor="{StaticResource Tertiary}" FontSize="Medium" Grid.Column="1" Grid.Row="1" IsVisible="{Binding IsSavingsClosed, Converter={StaticResource BoolConverter}}"/>
+                                    <Label Margin="0,0,0,10" FontAttributes="Bold" Padding="0" Text="{Binding SavingsType, Converter={StaticResource SavingsTypeToText}}" TextColor="{StaticResource Tertiary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="1" IsVisible="{Binding IsSavingsClosed, Converter={StaticResource BoolConverter}}"/>
                                     <VerticalStackLayout Grid.Row="2" Grid.Column="1">
                                         <Grid  ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
                                             <HorizontalStackLayout Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
@@ -158,7 +158,7 @@
                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="35"  Color="{DynamicResource PrimaryDark}" />
                     </Image.Source>
                 </Image>
-                <Label Text="You don't have any envelopes, to start saving click add new envelope now!" FontSize="Medium" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray900}" />
+                <Label Text="You don't have any envelopes, to start saving click add new envelope now!" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray900}" />
             </VerticalStackLayout>
         </sfList:SfListView.EmptyView>
     </sfList:SfListView>

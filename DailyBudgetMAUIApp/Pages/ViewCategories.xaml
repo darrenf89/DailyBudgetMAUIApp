@@ -21,7 +21,7 @@
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Home}" Size="35" />
                 </Button.ImageSource>
             </Button>
-            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Medium"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
         </Grid>
     </Shell.TitleView>
     <sfList:SfListView IsStickyHeader="True" BackgroundColor="White" SelectionMode="None" x:Name="listView" ItemsSource="{Binding Categories}" AutoFitMode="Height" IsScrollingEnabled="True">
@@ -58,7 +58,7 @@
                                     <DataTemplate>
                                         <Border Stroke="{StaticResource White}" BackgroundColor="{StaticResource White}" StrokeShape="RoundRectangle 2" StrokeThickness="1">
                                             <HorizontalStackLayout Padding="10,0,10,0" VerticalOptions="Center" HorizontalOptions="Center">
-                                                <Label Text="{Binding .}" TextColor="{StaticResource Primary}" FontSize="Small" FontAttributes="Bold"/>
+                                                <Label Text="{Binding .}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold"/>
                                             </HorizontalStackLayout>
                                         </Border>
                                     </DataTemplate>
@@ -98,7 +98,7 @@
                         <VerticalStackLayout Padding="10">
                             <Border Style="{StaticResource brdCardViewSquare}">
                                 <Grid ColumnDefinitions="*" RowDefinitions="Auto,*,Auto,Auto">
-                                    <Label Grid.Column="0" Grid.Row="0" HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategoryName}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource Gray900}"/>
+                                    <Label Grid.Column="0" Grid.Row="0" HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategoryName}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
                                     <Border Grid.Column="0" Grid.Row="1" WidthRequest="75" HeightRequest="75" StrokeThickness="0" BackgroundColor="{Binding CategoryID,Converter={StaticResource CategoryIDToColor}}" StrokeShape="RoundRectangle 30">
                                         <Image  HorizontalOptions="Center" VerticalOptions="Center" >
                                             <Image.Source>

@@ -9,7 +9,7 @@
             Color="Transparent">
     <AbsoluteLayout x:Name="AbsLayout" HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}">
         <HorizontalStackLayout AbsoluteLayout.LayoutBounds="0.95,54" AbsoluteLayout.LayoutFlags="XProportional" Margin="0,15,10,0" ZIndex="99">
-            <Label TextColor="{StaticResource Info}" Text="Close" TextDecorations="Underline" FontSize="Small"/>
+            <Label TextColor="{StaticResource Info}" Text="Close" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
             <Image Background="{DynamicResource White}" Margin="5,0,0,0" VerticalOptions="End">
                 <Image.Source>
                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Close}" Size="16" Color="{DynamicResource Info}"/>

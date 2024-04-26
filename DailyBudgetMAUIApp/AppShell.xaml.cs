@@ -33,6 +33,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ErrorPage), typeof(ErrorPage));
         Routing.RegisterRoute($"{nameof(ViewCategories)}/{nameof(ViewCategory)}", typeof(ViewCategory));
         Routing.RegisterRoute($"{nameof(ViewFilteredTransactions)}", typeof(ViewFilteredTransactions));
+        Routing.RegisterRoute($"{nameof(LogonPage)}", typeof(LogonPage));
+        Routing.RegisterRoute($"{nameof(RegisterPage)}", typeof(RegisterPage));
 
         this.BindingContext = this;
     }

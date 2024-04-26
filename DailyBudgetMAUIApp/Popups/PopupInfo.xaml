@@ -14,7 +14,7 @@
                     <Label 
                         x:Name="lblTitle"
                         FontAttributes="Bold"
-                        FontSize="Medium"
+                        FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"
                         VerticalOptions="Center" 
                         HorizontalOptions="Center"
                         FontFamily="OpenSansSemibold"

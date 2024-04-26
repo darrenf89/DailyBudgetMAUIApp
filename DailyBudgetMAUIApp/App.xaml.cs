@@ -41,7 +41,8 @@ public partial class App : Application
     public App()
 	{
         Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzE2MzM0NkAzMjM1MmUzMDJlMzBoekdJNGg3VHVJc2VjZjVOMEx3dk1rTTllb2hrL1pRRzRWSUhUeC9LME5BPQ==");
-		InitializeComponent();
+		
+        InitializeComponent();
         LoadChartBrush();
 
         Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping(nameof(Microsoft.Maui.Controls.Button), (handler, view) =>

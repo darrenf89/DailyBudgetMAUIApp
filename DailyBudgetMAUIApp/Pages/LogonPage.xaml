@@ -26,7 +26,7 @@
                                 Margin="0,10,0,2"/>
                         <Label Text="Login and continue the daily grind to freedom!" 
                                 TextColor="{DynamicResource Primary}" 
-                                FontSize="Small" 
+                                FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" 
                                 HorizontalOptions="Center" />
                         <Border Stroke="{DynamicResource Tertiary}" 
                                 WidthRequest="280"
@@ -215,13 +215,13 @@
                     <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
                         <Label Text="Need an Account? "
                                 FontAttributes="Bold" 
-                                FontSize="Small">
+                                FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}">
                         </Label>
                         <Label Text="Register"
                                 TextColor="{DynamicResource Primary}"
                                 TextDecorations="Underline"
                                 FontAttributes="Bold"
-                                FontSize="Small">
+                                FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding NavigateRegisterCommand}"/>
                             </Label.GestureRecognizers>

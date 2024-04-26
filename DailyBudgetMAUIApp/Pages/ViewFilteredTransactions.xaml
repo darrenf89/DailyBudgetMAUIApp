@@ -14,7 +14,7 @@
              Shell.TabBarIsVisible="False">
     <Shell.TitleView>
         <Grid ColumnDefinitions="*,75">
-            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Medium"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="0"/>
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="0"/>
         </Grid>
     </Shell.TitleView>
     <sfList:SfListView IsStickyHeader="True" SwipeOffset="128" SelectionMode="Single" x:Name="listView" AllowSwiping="True" AutoFitMode="DynamicHeight" LoadMoreOption="Auto" LoadMoreCommand="{Binding LoadMoreItemsCommand}" LoadMoreCommandParameter="{Binding Source={x:Reference listView}}" ItemsSource="{Binding Transactions}">
@@ -74,7 +74,7 @@
                 <ViewCell>
                     <ViewCell.View>
                         <Grid BackgroundColor="{StaticResource Primary}" Grid.ColumnDefinitions="*">
-                            <Label Text="{Binding Key, StringFormat='{0:dd MMMM}'}" TextColor="White" FontSize="Small" HorizontalTextAlignment="Start" VerticalOptions="Center" Margin="15,5,0,5"/>
+                            <Label Text="{Binding Key, StringFormat='{0:dd MMMM}'}" TextColor="White" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalOptions="Center" Margin="15,5,0,5"/>
                         </Grid>
                     </ViewCell.View>
                 </ViewCell>
@@ -93,8 +93,8 @@
                                         </Border.Shadow>
                                         <Image  HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="12" Source="{Binding EventType, Converter={StaticResource TransactionTypePngConverter}}"/>
                                     </Border>
-                                    <Label FontSize="Medium" Grid.Row="0" Grid.RowSpan="1" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Start" Text="{Binding ., Converter={StaticResource TransactionDisplayName}}" Margin="20,0,0,0" TextColor="{StaticResource Gray900}"/>
-                                    <Label Padding="10,0,20,0" Grid.Row="0" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding ., Converter={StaticResource TransactionAmountToCurrencyString}}" TextColor="{Binding IsIncome, Converter={StaticResource BoolToColor}}" FontSize="Medium" CharacterSpacing="0"/>
+                                    <Label FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Grid.Row="0" Grid.RowSpan="1" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Start" Text="{Binding ., Converter={StaticResource TransactionDisplayName}}" Margin="20,0,0,0" TextColor="{StaticResource Gray900}"/>
+                                    <Label Padding="10,0,20,0" Grid.Row="0" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding ., Converter={StaticResource TransactionAmountToCurrencyString}}" TextColor="{Binding IsIncome, Converter={StaticResource BoolToColor}}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" CharacterSpacing="0"/>
                                 </Grid>
                                 <VerticalStackLayout IsVisible="{Binding IsVisible}" Grid.Row="1" Grid.Column="0">
                                     <Grid BackgroundColor="{Binding IsTransacted,Converter={StaticResource BoolToColorDisabled}}" Grid.Row="0" Grid.Column="0" RowDefinitions="62" ColumnDefinitions="Auto,Auto,*" IsVisible="True">
@@ -104,8 +104,8 @@
                                             </Border.Shadow>
                                             <Image  HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="12" Source="{Binding EventType, Converter={StaticResource TransactionTypePngConverter}}"/>
                                         </Border>
-                                        <Label FontSize="Medium" Grid.Row="0" Grid.RowSpan="1" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Start" Text="{Binding ., Converter={StaticResource TransactionDisplayName}}" Margin="20,0,0,0" TextColor="{StaticResource Gray900}"/>
-                                        <Label Padding="10,0,20,0" Grid.Row="0" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding ., Converter={StaticResource TransactionAmountToCurrencyString}}" TextColor="{Binding IsIncome, Converter={StaticResource BoolToColor}}" FontSize="Medium" CharacterSpacing="0"/>
+                                        <Label FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Grid.Row="0" Grid.RowSpan="1" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Start" Text="{Binding ., Converter={StaticResource TransactionDisplayName}}" Margin="20,0,0,0" TextColor="{StaticResource Gray900}"/>
+                                        <Label Padding="10,0,20,0" Grid.Row="0" Grid.Column="2" HorizontalOptions="End" HorizontalTextAlignment="End" VerticalOptions="Center" Text="{Binding ., Converter={StaticResource TransactionAmountToCurrencyString}}" TextColor="{Binding IsIncome, Converter={StaticResource BoolToColor}}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" CharacterSpacing="0"/>
                                     </Grid>
                                     <Grid BackgroundColor="{Binding IsTransacted,Converter={StaticResource BoolToColorDisabled}}" Padding="0,5,0,15" Grid.ColumnDefinitions="Auto,*" Grid.RowDefinitions="Auto,Auto,Auto,Auto,Auto">
                                         <Image Grid.Row="0" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center" Margin="35,0,20,5">
@@ -113,31 +113,31 @@
                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Watch}" Size="18" Color="{DynamicResource Primary}" />
                                             </Image.Source>
                                         </Image>
-                                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding TransactionDate, StringFormat='{0:hh:mm tt}'}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="Small"/>
+                                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding TransactionDate, StringFormat='{0:hh:mm tt}'}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
                                         <Image Grid.Row="1" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center" Margin="35,5,20,5">
                                             <Image.Source>
                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Category}" Size="18" Color="{DynamicResource Primary}" />
                                             </Image.Source>
                                         </Image>
-                                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding Category, Converter={StaticResource IsCategoryStringText}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="Small"/>
+                                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding Category, Converter={StaticResource IsCategoryStringText}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
                                         <Image Grid.Row="2" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center" Margin="35,5,20,5">
                                             <Image.Source>
                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Savings}" Size="18" Color="{DynamicResource Primary}" />
                                             </Image.Source>
                                         </Image>
-                                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding SavingName, Converter={StaticResource IsSpendCategoryStringText}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="Small"/>
+                                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding SavingName, Converter={StaticResource IsSpendCategoryStringText}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
                                         <Image Grid.Row="3" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center" Margin="35,5,20,5">
                                             <Image.Source>
                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Description}" Size="18" Color="{DynamicResource Primary}" />
                                             </Image.Source>
                                         </Image>
-                                        <Label Grid.Row="3" Grid.Column="1" Text="{Binding Notes, Converter={StaticResource IsNoteStringText}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="Small"/>
+                                        <Label Grid.Row="3" Grid.Column="1" Text="{Binding Notes, Converter={StaticResource IsNoteStringText}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
                                         <Image Grid.Row="4" Grid.Column="0" HorizontalOptions="Start" VerticalOptions="Center" Margin="35,5,20,5">
                                             <Image.Source>
                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Celebration}" Size="18" Color="{DynamicResource Primary}" />
                                             </Image.Source>
                                         </Image>
-                                        <Label Grid.Row="4" Grid.Column="1" Text="{Binding EventType, Converter={StaticResource EventTypeToString}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="Small"/>
+                                        <Label Grid.Row="4" Grid.Column="1" Text="{Binding EventType, Converter={StaticResource EventTypeToString}}" TextColor="{StaticResource Info}" HorizontalTextAlignment="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
                                     </Grid>
                                 </VerticalStackLayout>
                             </Grid>
