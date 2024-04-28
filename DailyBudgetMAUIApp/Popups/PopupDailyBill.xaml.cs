@@ -39,7 +39,7 @@ public partial class PopupDailyBill : Popup
     {
         decimal BillAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
-        entBillAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entBillAmount.Text);
+        //entBillAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entBillAmount.Text);
 
         _vm.Bill.BillAmount = BillAmount;
     }

@@ -27,14 +27,14 @@
             <DataTemplate>
                 <VerticalStackLayout>
                     <Grid BackgroundColor="{StaticResource Primary}" ColumnDefinitions="*,*" RowDefinitions="28,30,22,32,Auto" x:Name="BudgetDetailsGrid">
-                        <Label Margin="30,0,0,0" Grid.Row="0" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding EnvelopeBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+                        <Label Margin="30,0,0,0" Grid.Row="0" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding EnvelopeBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
                         <Label Margin="30,0,0,0" Grid.Row="2" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding DaysToPayDay}" TextColor="White" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
-                        <Label Margin="30,0,0,10" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Envelope balances remaining" TextColor="White" FontSize="Caption" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
-                        <Label Margin="30,0,0,5" Grid.Row="3" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Days to next stash" TextColor="White" FontSize="Caption" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
-                        <Label Margin="0,0,30,5" Grid.Row="3" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Put away each day" TextColor="White" FontSize="Caption" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
+                        <Label Margin="30,0,0,10" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Envelope balances remaining" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+                        <Label Margin="30,0,0,5" Grid.Row="3" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Days to next stash" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+                        <Label Margin="0,0,30,5" Grid.Row="3" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Put away each day" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
                         <Label Margin="0,0,30,0" Grid.Row="2" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding RegularValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
-                        <Label Margin="0,0,30,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Total put in envelopes" TextColor="White" FontSize="Caption" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
-                        <Label Margin="0,0,30,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding EnvelopeTotal, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
+                        <Label Margin="0,0,30,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Total put in envelopes" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
+                        <Label Margin="0,0,30,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding EnvelopeTotal, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
                         <BoxView HeightRequest="8" Color="{StaticResource White}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4"/>
                     </Grid>
                 </VerticalStackLayout>
@@ -60,21 +60,21 @@
                                         </Border.Shadow>
                                         <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="envelope.svg"/>
                                     </Border>
-                                    <Label Margin="0,0,0,0" Padding="0" VerticalOptions="Start" Text="{Binding SavingsName}" TextColor="{StaticResource Primary}" FontSize="Large" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
+                                    <Label Margin="0,0,0,0" Padding="0" VerticalOptions="Start" Text="{Binding SavingsName}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
                                     <Label Margin="0,0,0,10" FontAttributes="Bold" Padding="0" Text="{Binding SavingsType, Converter={StaticResource SavingsTypeToText}}" TextColor="{StaticResource Tertiary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="1" IsVisible="{Binding IsSavingsClosed, Converter={StaticResource BoolConverter}}"/>
                                     <VerticalStackLayout Grid.Row="2" Grid.Column="1">
                                         <Grid  ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
                                             <HorizontalStackLayout Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
-                                                <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Put away each period |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
-                                                <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding PeriodSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" Text="Put away each period |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding PeriodSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
                                             </HorizontalStackLayout>
                                             <HorizontalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
-                                                <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Left in envelope |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
-                                                <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding CurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" Text="Left in envelope |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding CurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
                                             </HorizontalStackLayout>
                                             <HorizontalStackLayout Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">
-                                                <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Daily required |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
-                                                <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding RegularSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" Text="Daily required |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding RegularSavingValue, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
                                             </HorizontalStackLayout>
                                         </Grid>                                        
                                     </VerticalStackLayout>
@@ -90,7 +90,7 @@
                                                     </Image.Source>
                                                 </Image>
                                             </Border>
-                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Edit"/>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Edit"/>
                                             <VerticalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer Tapped="EditSaving_Tapped" CommandParameter="{Binding .}"/>
                                             </VerticalStackLayout.GestureRecognizers>
@@ -106,7 +106,7 @@
                                                     </Image.Source>
                                                 </Image>
                                             </Border>
-                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Spend"/>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Spend"/>
                                             <VerticalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer Tapped="SpendSaving_Tapped" CommandParameter="{Binding .}"/>
                                             </VerticalStackLayout.GestureRecognizers>
@@ -122,7 +122,7 @@
                                                     </Image.Source>
                                                 </Image>
                                             </Border>
-                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Delete"/>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Delete"/>
                                             <VerticalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer Tapped="DeleteSavings_Tapped" CommandParameter="{Binding .}"/>
                                             </VerticalStackLayout.GestureRecognizers>
@@ -138,7 +138,7 @@
                                                     </Image.Source>
                                                 </Image>
                                             </Border>
-                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Move balance"/>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Move balance"/>
                                             <VerticalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer Tapped="MoveBalance_Tapped" CommandParameter="{Binding .}"/>
                                             </VerticalStackLayout.GestureRecognizers>

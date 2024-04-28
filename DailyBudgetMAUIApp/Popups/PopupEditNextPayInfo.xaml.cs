@@ -6,33 +6,33 @@ using DailyBudgetMAUIApp.DataServices;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupDailyPayDay : Popup
+public partial class PopupEditNextPayInfo : Popup
 {
-    private readonly PopupDailyPayDayViewModel _vm;
+    private readonly PopupEditNextPayInfoViewModel _vm;
     private readonly IProductTools _pt;
+    private readonly IRestDataService _ds;
 
-    public PopupDailyPayDay(Budgets Budget, PopupDailyPayDayViewModel viewModel, IProductTools pt)
+    public PopupEditNextPayInfo(Budgets Budget, PopupEditNextPayInfoViewModel viewModel, IProductTools pt, IRestDataService ds)
 	{
         InitializeComponent();
 
-        viewModel.Budget = Budget;
+        viewModel.Budget = Budget;        
 
         BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
+        _ds = ds;
 
         _vm.OriginalDate = _vm.Budget.NextIncomePayday.GetValueOrDefault();
         _vm.OriginalAmount = _vm.Budget.PaydayAmount.GetValueOrDefault();
+        _vm.Date = _vm.Budget.NextIncomePayday.GetValueOrDefault();
+        _vm.Amount = _vm.Budget.PaydayAmount.GetValueOrDefault();
 
         hslPayDayAmount.IsVisible = true;
         hslNextIncomePayday.IsVisible = true;
 
-        double PayDayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        lblPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
-
-        string NextIncomePayday = _vm.Budget.NextIncomePayday.GetValueOrDefault().ToShortDateString();
-        lblNextIncomePayday.Text = NextIncomePayday;
-   
+        double PayDayAmount = (double?)_vm.Amount ?? 0;
+        entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);   
     }
 
     void PayDayAmount_Changed(object sender, TextChangedEventArgs e)
@@ -41,27 +41,7 @@ public partial class PopupDailyPayDay : Popup
         entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
         //entPayDayAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entPayDayAmount.Text);
 
-        _vm.Budget.PaydayAmount = PayDayAmount;
-    }
-
-    private void Close_Saving(object sender, EventArgs e)
-    {
-        this.Close("OK");
-    }
-
-    private void Update_Saving(object sender, EventArgs e)
-    {
-        grdFirstBtns.IsVisible = false;
-        grdUpdateBtns.IsVisible = true;
-
-        lblPayDayAmount.IsVisible = false;
-        lblNextIncomePayday.IsVisible = false;
-
-        entPayDayAmount.IsVisible = true;
-        entNextIncomePayday.IsVisible = true;
-
-        double PaydayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        entPayDayAmount.Text = PaydayAmount.ToString("c", CultureInfo.CurrentCulture);        
+        _vm.Amount = PayDayAmount;
     }
 
     private bool ValidatePage()
@@ -95,29 +75,50 @@ public partial class PopupDailyPayDay : Popup
     {
         if(ValidatePage())
         {
+            List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+            PatchDoc PayDayAmount = new PatchDoc
+            {
+                op = "replace",
+                path = "/PayDayAmount",
+                value = _vm.Amount
+            };
+
+            BudgetUpdate.Add(PayDayAmount);
+
+            PatchDoc NextIncomePayday = new PatchDoc
+            {
+                op = "replace",
+                path = "/NextIncomePayday",
+                value = _vm.Date.Date
+            };
+
+            BudgetUpdate.Add(NextIncomePayday);
+
+            _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+
+            App.DefaultBudget.NextIncomePayday = _vm.Date.Date;
+            App.DefaultBudget.PaydayAmount = _vm.Amount;
             this.Close(_vm.Budget);
         }
     }
 
+    private void CancelUpdate_Saving(object sender, EventArgs e)
+    {
+        this.Close("Closed");
+    }
+
     private void Reset_Saving(object sender, EventArgs e)
     {
-        grdFirstBtns.IsVisible = true;
-        grdUpdateBtns.IsVisible = false;
+        grdUpdateBtns.IsVisible = true;
 
         _vm.Budget.PaydayAmount = _vm.OriginalAmount;
         _vm.Budget.NextIncomePayday = _vm.OriginalDate;
 
-        lblPayDayAmount.IsVisible = true;
-        lblNextIncomePayday.IsVisible = true;
+        double PayDayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
+        entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
 
-        entPayDayAmount.IsVisible = false;
-        entNextIncomePayday.IsVisible = false;
-
-        double PaydayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        lblPayDayAmount.Text = PaydayAmount.ToString("c", CultureInfo.CurrentCulture);
-
-        string GoalDate = _vm.Budget.NextIncomePayday.GetValueOrDefault().ToShortDateString();
-        lblNextIncomePayday.Text = GoalDate;        
+        entNextIncomePayday.Date = _vm.Budget.NextIncomePayday.GetValueOrDefault();
 
     }
 }

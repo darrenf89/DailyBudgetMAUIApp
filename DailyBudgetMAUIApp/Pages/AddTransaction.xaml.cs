@@ -8,8 +8,6 @@ using IeuanWalker.Maui.Switch.Helpers;
 using Microsoft.Maui.Handlers;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
-using Android.Graphics.Drawables.Shapes;
-using Java.Lang;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -327,7 +325,7 @@ public partial class AddTransaction : ContentPage
 
         decimal TransactionAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
-        entTransactionAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entTransactionAmount.Text);
+        //entTransactionAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entTransactionAmount.Text);
         _vm.Transaction.TransactionAmount = TransactionAmount;
     }
 

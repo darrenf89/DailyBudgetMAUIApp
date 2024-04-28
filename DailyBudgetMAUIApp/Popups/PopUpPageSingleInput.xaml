@@ -6,7 +6,7 @@
            xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
            xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
            CanBeDismissedByTappingOutsideOfPopup="False"
-           Color="Transparent">
+           Color="#80000000">
     <AbsoluteLayout 
         x:Name="AbsLayout">
         <ImageButton
@@ -35,7 +35,7 @@
                     <Label 
                         x:Name="lblTitle"
                         FontAttributes="Bold"
-                        FontSize="Large"
+                        FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"
                         VerticalOptions="Center" 
                         HorizontalOptions="Center"
                         FontFamily="OpenSansSemibold"
@@ -44,7 +44,7 @@
                     <Label 
                         x:Name="lblDescription"
                         FontAttributes="Bold"
-                        FontSize="Caption"
+                        FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"
                         VerticalOptions="Center" 
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"
@@ -55,7 +55,7 @@
                         IsVisible="{Binding IsSubDesc}"
                         x:Name="lblDescriptionSub"
                         FontAttributes="Bold"
-                        FontSize="Caption"
+                        FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"
                         VerticalOptions="Center" 
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"

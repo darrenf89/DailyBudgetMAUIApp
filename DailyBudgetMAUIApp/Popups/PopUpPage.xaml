@@ -6,11 +6,11 @@
            xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
            xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
            CanBeDismissedByTappingOutsideOfPopup="False"
-           Color="Transparent">
+           Color="#80000000">
     <Grid ColumnDefinitions="*" RowDefinitions="*" x:Name="MainGrid" BackgroundColor="#CC000000">
         <Border x:Name="border" Grid.Row="0" Grid.Column="0" Style="{DynamicResource DashboardMainContent}" StrokeThickness="0" VerticalOptions="Center" HorizontalOptions="Center" StrokeShape="RoundRectangle 10">
             <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Margin="0,0,0,15">
-                <Label Text="Please wait" FontAttributes="Bold" FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,0,0,30"/>
+                <Label Text="Please wait" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,0,0,30"/>
                 <ActivityIndicator AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="0,0" IsRunning="True" IsVisible="True" VerticalOptions="Center" HorizontalOptions="Center" Margin="0" Color="{DynamicResource Primary}" Scale="1.2"/>
             </VerticalStackLayout>
         </Border>

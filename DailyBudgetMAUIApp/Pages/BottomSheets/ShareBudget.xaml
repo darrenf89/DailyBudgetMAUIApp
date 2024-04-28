@@ -27,7 +27,7 @@
             <Label FontAutoScalingEnabled="False" Text="You are allowed to share your budget with a friend or family member. Do you and someone share finances or a bank account and want to use the same budget to manage it, don't worry we got you!" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Padding="5,0,0,5" Grid.Row="2"/>
             <VerticalStackLayout  Grid.Column="0" Grid.Row="3" Margin="15,20,15,20">
                 <handlers:BorderlessEntry Focused="entSharedWithUserEmail_Focused" x:Name="entSharedWithUserEmail" FontSize="25" Placeholder="Please Enter Email" PlaceholderColor="{DynamicResource Gray200}" TextColor="{DynamicResource Gray900}"/>
-                <Label FontAutoScalingEnabled="False" TextColor="{DynamicResource Primary}" HorizontalOptions="Center" TextDecorations="Underline" FontAttributes="Bold" FontSize="Caption" Padding="0" x:Name="btnCancelCurrentRequest" Text="Cancel Active Requests" IsVisible="false" Margin="0,10,0,10">
+                <Label FontAutoScalingEnabled="False" TextColor="{DynamicResource Primary}" HorizontalOptions="Center" TextDecorations="Underline" FontAttributes="Bold" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" x:Name="btnCancelCurrentRequest" Text="Cancel Active Requests" IsVisible="false" Margin="0,10,0,10">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="btnCancelCurrentRequest_Tapped"/>
                     </Label.GestureRecognizers>

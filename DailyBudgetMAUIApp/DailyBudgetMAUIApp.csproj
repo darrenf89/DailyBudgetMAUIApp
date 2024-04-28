@@ -17,8 +17,8 @@
 		<ApplicationIdGuid>a9e0258c-e381-49fa-aa43-d11c44cf7b75</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.21</ApplicationDisplayVersion>
-		<ApplicationVersion>21</ApplicationVersion>
+		<ApplicationDisplayVersion>1.25</ApplicationDisplayVersion>
+		<ApplicationVersion>25</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -110,6 +110,9 @@
 	  </Compile>
 	  <Compile Update="Pages\ViewPayees.xaml.cs">
 	    <DependentUpon>ViewPayees.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Popups\PopupEditNextPayInfo.xaml.cs">
+	    <DependentUpon>PopupEditNextPayInfo.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Popups\PopupReassignCategories.xaml.cs">
 	    <DependentUpon>PopupReassignCategories.xaml</DependentUpon>
@@ -208,6 +211,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewPayees.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Popups\PopupEditNextPayInfo.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Popups\PopupReassignCategories.xaml">

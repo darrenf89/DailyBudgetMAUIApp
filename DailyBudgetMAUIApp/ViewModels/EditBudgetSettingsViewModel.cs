@@ -233,7 +233,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 PayAmount = ValueNumber;
                 PayAmountString = PayAmount.ToString("c", CultureInfo.CurrentCulture);
-                PayAmountCursorPosition = _pt.FindCurrencyCursorPosition(PayAmountString);
+                //PayAmountCursorPosition = _pt.FindCurrencyCursorPosition(PayAmountString);
                 HasPayAmountChanged = true;
                 UpdatePayDaySettingsValue();
             }

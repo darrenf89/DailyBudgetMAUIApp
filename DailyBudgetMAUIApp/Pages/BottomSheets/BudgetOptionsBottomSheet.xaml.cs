@@ -134,9 +134,14 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewIncomes)}");
     }
 
-    private void EditPayInfo_Tapped(object sender, TappedEventArgs e)
+    private async void EditPayInfo_Tapped(object sender, TappedEventArgs e)
     {
-
+        var popup = new PopupEditNextPayInfo(App.DefaultBudget, new PopupEditNextPayInfoViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        if(result is Budgets)
+        {
+            App.DefaultBudget = (Budgets)result;
+        }
     }
 
     private async void EditBudgetSettings_Tapped(object sender, TappedEventArgs e)
@@ -270,7 +275,10 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
         page.Detents = new DetentsCollection()
         {
-            new FixedContentDetent(),
+            new FixedContentDetent
+            {
+                IsDefault = true                
+            },
             new FullscreenDetent()
 
         };

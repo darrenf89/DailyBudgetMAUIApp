@@ -6,7 +6,7 @@
             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
             CanBeDismissedByTappingOutsideOfPopup="False"
-            Color="Transparent">
+            Color="#80000000">
     <AbsoluteLayout x:Name="AbsLayout">
         <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0">
             <Border BackgroundColor="{DynamicResource White}" Margin="15,160,15,0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16">
@@ -18,15 +18,15 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Celebration}" Size="24"  Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
-                            <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="More Money .. Less Problems!"/>
+                            <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="More Money .. Less Problems!"/>
                             <Image Margin="0,20,0,0">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Celebration}" Size="24"  Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Nice one, you have more money coming in which means more money to spend ... or save if you want to be a bore!"/>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,2,20,5" Text="Or do these details not seem right? You forget you had this Income added or does the amount seem different ... or is the person paying you late?"/>
+                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Nice one, you have more money coming in which means more money to spend ... or save if you want to be a bore!"/>
+                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,2,20,5" Text="Or do these details not seem right? You forget you had this Income added or does the amount seem different ... or is the person paying you late?"/>
                         <VerticalStackLayout Margin="40,0,20,0">
                             <HorizontalStackLayout x:Name="hslIncomeAmount" Margin="0" IsVisible="False" HeightRequest="45">
                                 <Image Margin="0,0,5,0" VerticalOptions="Center">
@@ -73,19 +73,19 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="24"  Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
-                            <Label FontAttributes="Bold" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Delete Outgoing?"/>
+                            <Label FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Delete Outgoing?"/>
                             <Image Margin="0,20,0,0">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="24"  Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Uh oh, Did you forget about this Income?"/>
-                        <Label FontSize="Caption" TextColor="{DynamicResource Gray400}" Margin="20,5,20,5" Text="Or did someone change your mind last minute? It's ok you can still delete the income, unfortunately you wont have the money to spend!"/>
+                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Uh oh, Did you forget about this Income?"/>
+                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,5,20,5" Text="Or did someone change your mind last minute? It's ok you can still delete the income, unfortunately you wont have the money to spend!"/>
                     </VerticalStackLayout>
                     <Grid Margin="20,5,20,20" RowDefinitions="*" ColumnDefinitions="*,20,*" x:Name="grdFirstBtns">
-                        <Button WidthRequest="{Binding ButtonOneWidth}" Grid.Row="0" Grid.Column="0" Margin="0" x:Name="btnUpdate" Text="That's not right!" FontSize="Caption" Clicked="Update_Saving" HorizontalOptions="Center" BackgroundColor="{StaticResource Tertiary}" TextColor="White" Padding="15,0"/>
-                        <Button WidthRequest="{Binding ButtonOneWidth}" Grid.Row="0" Grid.Column="2" Margin="0" x:Name="btnFinsih" Text="Yes, Let's go!" FontSize="Caption" Clicked="Close_Saving" HorizontalOptions="Center" BackgroundColor="{StaticResource Primary}" TextColor="White" Padding="15,0"/>
+                        <Button WidthRequest="{Binding ButtonOneWidth}" Grid.Row="0" Grid.Column="0" Margin="0" x:Name="btnUpdate" Text="That's not right!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Clicked="Update_Saving" HorizontalOptions="Center" BackgroundColor="{StaticResource Tertiary}" TextColor="White" Padding="15,0"/>
+                        <Button WidthRequest="{Binding ButtonOneWidth}" Grid.Row="0" Grid.Column="2" Margin="0" x:Name="btnFinsih" Text="Yes, Let's go!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Clicked="Close_Saving" HorizontalOptions="Center" BackgroundColor="{StaticResource Primary}" TextColor="White" Padding="15,0"/>
                     </Grid>
                     <Grid Margin="20,5,20,20" RowDefinitions="*" ColumnDefinitions="80,*,10,*,10,*" x:Name="grdUpdateBtns" IsVisible="False">
                         <Button WidthRequest="{Binding ButtonTwoWidth}" Grid.Row="0" Grid.Column="1" Margin="0" x:Name="btnReset" Text="Reset" Clicked="Reset_Saving" HorizontalOptions="Center" BackgroundColor="{StaticResource Tertiary}" TextColor="White" Padding="5,0"/>

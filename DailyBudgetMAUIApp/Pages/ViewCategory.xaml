@@ -13,7 +13,7 @@
              Shell.TabBarIsVisible="False">
     <Shell.TitleView>
         <Grid ColumnDefinitions="*,75">
-            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="Large"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="0"/>
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="0"/>
         </Grid>
     </Shell.TitleView>
     <sfList:SfListView IsScrollingEnabled="True"  x:Name="listView" AllowSwiping="True" IsStickyHeader="True" StickyFooterPosition="Default" IsStickyFooter="True" BackgroundColor="White" SelectionMode="None" ItemsSource="{Binding Categories}" AutoFitMode="DynamicHeight">
@@ -167,12 +167,12 @@
                                         <Button Text="Apply Changes" x:Name="ApplyChanges" Clicked="ApplyChanges_Clicked" TextColor="White" BackgroundColor="{StaticResource Success}" Style="{StaticResource TitleButtons}"/>
                                     </HorizontalStackLayout>
                                     <HorizontalStackLayout Padding="0,0,10,0" Grid.Column="1" Grid.Row="0" HorizontalOptions="End" IsVisible="{Binding IsEditMode,Converter={StaticResource BoolConverter}}">
-                                        <Label HorizontalOptions="End" VerticalOptions="Center" Text="Spend pay period | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="Caption"/>
-                                        <Label HorizontalOptions="End" VerticalOptions="Center" Text="{Binding CategorySpendPayPeriod, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="Caption"/>
+                                        <Label HorizontalOptions="End" VerticalOptions="Center" Text="Spend pay period | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"/>
+                                        <Label HorizontalOptions="End" VerticalOptions="Center" Text="{Binding CategorySpendPayPeriod, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"/>
                                     </HorizontalStackLayout>
                                     <HorizontalStackLayout Padding="0,0,10,0" Grid.Column="1" Grid.Row="1" HorizontalOptions="End" IsVisible="{Binding IsEditMode,Converter={StaticResource BoolConverter}}">
-                                        <Label HorizontalOptions="End" VerticalOptions="Center" Text="Spend all time | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="Caption"/>
-                                        <Label HorizontalOptions="End" VerticalOptions="Center" Text="{Binding CategorySpendAllTime, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="Caption"/>
+                                        <Label HorizontalOptions="End" VerticalOptions="Center" Text="Spend all time | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"/>
+                                        <Label HorizontalOptions="End" VerticalOptions="Center" Text="{Binding CategorySpendAllTime, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"/>
                                     </HorizontalStackLayout>
                                 </Grid>
                                 <Border.GestureRecognizers>

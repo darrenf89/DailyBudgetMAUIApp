@@ -20,7 +20,7 @@
                     <VerticalStackLayout HorizontalOptions="Fill" >
                         <Label Text="Welcome!" 
                             TextColor="{DynamicResource Primary}" 
-                            FontSize="Large" 
+                            FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" 
                             HorizontalOptions="Center" 
                             FontAttributes="Bold"
                             Margin="0,10,0,2"/>
@@ -251,7 +251,7 @@
                             <Label Text="I have read and agree to the Terms of Service"
                                VerticalOptions="Center"
                                TextColor="{DynamicResource Gray400}"
-                               FontSize="Caption"
+                               FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"
                                Padding="0" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="0,0,0,10">
@@ -259,7 +259,7 @@
                             <Label Text="I agree to be contacted by dBuget"
                                VerticalOptions="Center"
                                TextColor="{DynamicResource Gray400}"
-                               FontSize="Caption"
+                               FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"
                                Padding="0" />
                         </HorizontalStackLayout>
                         <Button Text="Register Now"
@@ -276,7 +276,7 @@
                         </Button>
                         <Label Text="Or register using your social media" 
                             TextColor="{DynamicResource Primary}" 
-                            FontSize="Caption"
+                            FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"
                             FontAttributes="Bold"
                             HorizontalOptions="Center"
                             Margin="0,25,0,15"/>

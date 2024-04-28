@@ -44,8 +44,8 @@
             <Border Style="{DynamicResource AddEditTransContent}" x:Name="brdTransaction" Margin="20,0,20,25" Padding="10,0,10,10">
                 <VerticalStackLayout Padding="5,0,5,10">
                     <HorizontalStackLayout Margin="0,0,0,5" Padding="0" HorizontalOptions="Center" VerticalOptions="Center">
-                        <Label Text="-" HorizontalOptions="End" VerticalOptions="Center" Padding="0,0,0,7" FontSize="55" TextColor="{DynamicResource Danger}" IsVisible="{Binding Transaction.IsIncome, Converter={StaticResource BoolConverter}}"/>
-                        <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" x:Name="entTransactionAmount" TextChanged="TransactionAmount_Changed" Keyboard="Numeric" HorizontalOptions="Center" FontSize="55" />
+                        <Label Text="-" HorizontalOptions="End" VerticalOptions="Center" Padding="0,0,0,7" FontSize="{Binding Source=XL, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Danger}" IsVisible="{Binding Transaction.IsIncome, Converter={StaticResource BoolConverter}}"/>
+                        <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="1" x:Name="entTransactionAmount" TextChanged="TransactionAmount_Changed" Keyboard="Numeric" HorizontalOptions="Center" FontSize="{Binding Source=XL, Converter={StaticResource StringToSizeConverter}}" />
                     </HorizontalStackLayout>
                     <HorizontalStackLayout IsVisible="false" Margin="5,5,5,5" x:Name="validatorTransactionAmount" HorizontalOptions="Center">
                         <Image>
@@ -53,7 +53,7 @@
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="20" Color="{DynamicResource Danger}"/>
                             </Image.Source>
                         </Image>
-                        <Label Text="You can't add a transaction worth 0!" Style="{StaticResource ErrorMessage}" FontSize="Caption" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                        <Label Text="You can't add a transaction worth 0!" Style="{StaticResource ErrorMessage}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
                     </HorizontalStackLayout>
                     <HorizontalStackLayout Margin="0,0,0,0" >
                         <Image>
@@ -152,7 +152,7 @@
                         </HorizontalStackLayout>
                         <VerticalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding IsNote}">
                             <Editor Margin="0" HeightRequest="140" Placeholder="Enter your note here" Text="{Binding Transaction.Notes}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" IsVisible="{Binding IsNote}" MaxLength="250" x:Name="edtNotes" TextChanged="edtNotes_TextChanged"/>
-                            <Label FontSize="Micro" Padding="0" Margin="0" Text="250 characters remaining" x:Name="lblNoteCharacterLeft"/>
+                            <Label FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0" Text="250 characters remaining" x:Name="lblNoteCharacterLeft"/>
                         </VerticalStackLayout>
                     </Grid>
                 </VerticalStackLayout>

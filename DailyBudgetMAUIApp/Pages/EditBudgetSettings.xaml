@@ -137,8 +137,8 @@
                                     </Image.Source>
                                 </Image>
                                 <VerticalStackLayout Margin="15,0,0,10" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1">
-                                    <Label Text="{Binding PayDaySettings}" TextColor="{StaticResource Info}" FontSize="Caption" FontAttributes="Bold"/>
-                                    <Label Text="{Binding PayDayTwoSettings}" TextColor="{StaticResource Info}" FontSize="Caption" FontAttributes="Bold" Margin="0,2,0,0"/>
+                                    <Label Text="{Binding PayDaySettings}" TextColor="{StaticResource Info}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold"/>
+                                    <Label Text="{Binding PayDayTwoSettings}" TextColor="{StaticResource Info}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" Margin="0,2,0,0"/>
                                 </VerticalStackLayout>
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer x:Name="acrPayDaySetting" Tapped="acrPayDaySetting_Tapped" />
@@ -219,11 +219,11 @@
                                 <VerticalStackLayout x:Name="vslOption1" IsVisible="false" Margin="0,0,0,20">
                                     <Label Text="Every nth ..." FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
-                                        <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                                        <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
                                             <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed" TextColor="{DynamicResource Gray900}" Text="{Binding EveryNthValue}"/>
                                         </Border>
-                                        <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
+                                        <Label Text="Duration of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
                                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="1" Grid.Row="1" Stroke="{StaticResource Info}">
                                             <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration" SelectedItem="{Binding EveryNthDuration}">
                                                 <Picker.ItemsSource>
@@ -248,7 +248,7 @@
                                 <VerticalStackLayout x:Name="vslOption2" IsVisible="false">
                                     <Label Text=" ... Working days before the end of the month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
-                                        <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                                        <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
                                             <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entWorkingDaysValue" Keyboard="Numeric" TextChanged="WorkingDaysValue_Changed" TextColor="{DynamicResource Gray900}" Text="{Binding WorkingDaysValue}"/>
                                         </Border>
@@ -265,7 +265,7 @@
                                 <VerticalStackLayout x:Name="vslOption3" IsVisible="false">
                                     <Label Text="On the ... of every month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
-                                        <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                                        <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
                                             <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entOfEveryMonthValue" Keyboard="Numeric" TextChanged="OfEveryMonthValue_Changed" TextColor="{DynamicResource Gray900}" Text="{Binding EveryMonthValue}"/>
                                         </Border>
@@ -282,7 +282,7 @@
                                 <VerticalStackLayout x:Name="vslOption4" IsVisible="false">
                                     <Label Text="On the last ... of the month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
-                                        <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                                        <Label Text="Duration of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                                         <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
                                             <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrLastOfTheMonthDuration" Title="Select a duration" BackgroundColor="Transparent" SelectedItem="{Binding LastOfTheMonthDuration}">
                                                 <Picker.ItemsSource>

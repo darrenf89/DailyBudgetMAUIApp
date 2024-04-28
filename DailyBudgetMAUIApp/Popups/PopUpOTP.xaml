@@ -6,7 +6,7 @@
            xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
            xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
            CanBeDismissedByTappingOutsideOfPopup="False"
-           Color="Transparent">
+           Color="#80000000">
     <AbsoluteLayout x:Name="AbsLayout">
         <ImageButton x:Name="btnClose" Clicked="Close_Window" WidthRequest="22" HeightRequest="22" Background="{DynamicResource Gray400}" CornerRadius="11" ZIndex="99">
             <ImageButton.Source>
@@ -57,7 +57,7 @@
                         </Label>
                     </Border>
                     <VerticalStackLayout IsVisible="false" x:Name="entEmail" Margin="0,0,0,10">
-                        <Label WidthRequest="{Binding EntryWidth}" x:Name="lblTitleEmail" FontAttributes="Bold" FontSize="Large" HorizontalOptions="Center" HorizontalTextAlignment="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0" LineBreakMode="CharacterWrap"/>
+                        <Label WidthRequest="{Binding EntryWidth}" x:Name="lblTitleEmail" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Center" HorizontalTextAlignment="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0" LineBreakMode="CharacterWrap"/>
                         <Label WidthRequest="{Binding EntryWidth}" x:Name="lblDescriptionEmail" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray400}" Margin="10,15,10,5" LineBreakMode="CharacterWrap"/>
                         <handlers:BorderlessEntry x:Name="entEmailBox" Margin="0,0,0,0" Loaded="txtEmail_Loaded" HorizontalOptions="Center" WidthRequest="{Binding EntryWidth}" Text="{Binding UserEmail}" Keyboard="Text" Style="{StaticResource LogonEntry}" HeightRequest="50" FontSize="20" Placeholder="Enter your account's Email!">
                             <Entry.Behaviors>
@@ -91,7 +91,7 @@
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout IsVisible="false" x:Name="entOTPCode" HorizontalOptions="Center" WidthRequest="{Binding EntryWidth}">
-                        <Label x:Name="lblTitleOTPCode" FontAttributes="Bold" FontSize="Large" HorizontalOptions="Center" HorizontalTextAlignment="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0" LineBreakMode="CharacterWrap"/>
+                        <Label x:Name="lblTitleOTPCode" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Center" HorizontalTextAlignment="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0" LineBreakMode="CharacterWrap"/>
                         <Label x:Name="lblDescriptionOTPCode" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray400}" Margin="10,15,10,5" LineBreakMode="CharacterWrap"/>
                         <HorizontalStackLayout Margin="0,5,0,0" WidthRequest="{Binding EntryWidth}" HorizontalOptions="Center">
                             <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,0,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
@@ -149,7 +149,7 @@
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout IsVisible="false" x:Name="entPasswordReset" WidthRequest="{Binding EntryWidth}" HorizontalOptions="Center">
-                        <Label HorizontalOptions="Center" x:Name="lblTitlePassword" FontAttributes="Bold" FontSize="Large" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0"/>
+                        <Label HorizontalOptions="Center" x:Name="lblTitlePassword" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0"/>
                         <Label HorizontalOptions="Center" x:Name="lblDescriptionPassword" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="0,15,0,5"/>
                         <VerticalStackLayout Margin="0,5,0,15" >
                             <Label WidthRequest="{Binding EntryWidth}" Text="Password" FontAttributes="Bold" HorizontalOptions="Start" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Margin="0,0,0,5"/>

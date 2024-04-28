@@ -35,7 +35,7 @@ public partial class PopUpPageVariableInput : Popup
             entCurrencyInput.IsVisible = true;
             entCurrencyInput.Focus();
             entCurrencyInput.Text = _vm.DecimalInput.ToString("c", CultureInfo.CurrentCulture);
-            entCurrencyInput.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrencyInput.Text);
+            //entCurrencyInput.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrencyInput.Text);
         }
 
         lblTitle.Text = Title;
@@ -109,7 +109,7 @@ public partial class PopUpPageVariableInput : Popup
     {       
         decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entCurrencyInput.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-        entCurrencyInput.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrencyInput.Text);
+        //entCurrencyInput.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrencyInput.Text);
         _vm.DecimalInput = Amount;
     }
 }

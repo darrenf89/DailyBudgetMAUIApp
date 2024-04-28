@@ -395,7 +395,7 @@ public partial class AddIncome : ContentPage
     {
         decimal IncomeAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
-        entIncomeAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entIncomeAmount.Text);
+        //entIncomeAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entIncomeAmount.Text);
         _vm.Income.IncomeAmount = IncomeAmount;
     }
 

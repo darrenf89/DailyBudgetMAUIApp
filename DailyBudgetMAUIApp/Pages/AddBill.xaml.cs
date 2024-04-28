@@ -215,7 +215,7 @@ public partial class AddBill : ContentPage
 
         decimal AmountDue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
-        entAmountDue.CursorPosition = _pt.FindCurrencyCursorPosition(entAmountDue.Text);
+        //entAmountDue.CursorPosition = _pt.FindCurrencyCursorPosition(entAmountDue.Text);
         _vm.Bill.BillAmount = AmountDue;
 
         lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
@@ -227,7 +227,7 @@ public partial class AddBill : ContentPage
 
         decimal CurrentSaved = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
-        entCurrentSaved.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrentSaved.Text);
+        //entCurrentSaved.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrentSaved.Text);
         _vm.Bill.BillCurrentBalance = CurrentSaved;
 
         lblRegularBillValue.Text = _vm.CalculateRegularBillValue();

@@ -73,6 +73,7 @@ public partial class MainPage : ContentPage
     protected async override void OnAppearing()
     {
 
+
         base.OnAppearing();
 
         ProcessSnackBar();
@@ -183,6 +184,7 @@ public partial class MainPage : ContentPage
             await App.CurrentPopUp.CloseAsync();
             App.CurrentPopUp = null;
         }
+
     }
 
     private async Task LoadMainDashboardContent()
@@ -781,7 +783,7 @@ public partial class MainPage : ContentPage
     {
         decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-        entTransactionAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entTransactionAmount.Text);
+        //entTransactionAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entTransactionAmount.Text);
         _vm.TransactionAmount = Amount;
     }
 
@@ -1183,8 +1185,8 @@ public partial class MainPage : ContentPage
                 ColumnDefinitions =
                 {
                     new ColumnDefinition{Width = new GridLength(45)},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))}
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)-50)},
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)+50)}
                 },
                 RowDefinitions =
                 {
@@ -1510,8 +1512,8 @@ public partial class MainPage : ContentPage
                 ColumnDefinitions =
                 {
                     new ColumnDefinition{Width = new GridLength(45)},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))}
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)-50)},
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)+50)}
                 },
                 RowDefinitions =
                 {
@@ -1868,8 +1870,8 @@ public partial class MainPage : ContentPage
                 ColumnDefinitions =
                 {
                     new ColumnDefinition{Width = new GridLength(45)},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2))}
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)-50)},
+                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)+50)}
                 },
                 RowDefinitions =
                 {

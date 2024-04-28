@@ -253,7 +253,7 @@ public partial class ViewTransactions : ContentPage
     {
         decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entSearchAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-        entSearchAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSearchAmount.Text);
+        //entSearchAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSearchAmount.Text);
 
         if (listView.DataSource != null)
         {

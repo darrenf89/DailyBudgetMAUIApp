@@ -52,7 +52,7 @@
                     IsVisible="{Binding BillName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}"
                     VerticalOptions="Center" 
                     HorizontalOptions="Center"
-                    FontSize="Large"
+                    FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"
                     FontFamily="OpenSansSemibold"
                     TextColor="{DynamicResource Tertiary}"/>
                 <VerticalStackLayout.GestureRecognizers>
@@ -66,7 +66,7 @@
                 <VerticalStackLayout>
                     <VerticalStackLayout x:Name="SelectBillType">
                         <Label Text="Do you want to set up a One-off or a Recurring Outgoing?" HorizontalTextAlignment="Center" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}"/>
-                        <Label Margin="0,20,0,20" Text="Set up a Recurring Bill and we will make sure you are saving for it every day! Or a one-off if you are never going to have to pay for it again, sounds more like a Saving to me though!" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center"/>
+                        <Label Margin="0,20,0,20" Text="Set up a Recurring Bill and we will make sure you are saving for it every day! Or a one-off if you are never going to have to pay for it again, sounds more like a Saving to me though!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center"/>
                         <Grid x:Name="grdBillTypeButtons" ColumnDefinitions="*,6*,2*,6*,*" RowDefinitions="*" Margin="0,0,0,20">
                             <Button x:Name="btnOneoffBill" Style="{DynamicResource PrimaryInfoButton}" Text="One-off" TextColor="White" BackgroundColor="{StaticResource Primary}" Grid.Column="1" Grid.Row="0" Clicked="btnOneoffBill_Clicked"/>
                             <Button x:Name="btnRecurringBill" Style="{DynamicResource PrimaryInfoButton}" Text="Recurring" TextColor="White" BackgroundColor="{StaticResource Tertiary}" Grid.Column="3" Grid.Row="0" Clicked="btnRecurringBill_Clicked"/>
@@ -82,8 +82,8 @@
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="BillTypeSelected" IsVisible="False">
                         <Label HorizontalTextAlignment="Center" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}" x:Name="lblSelectedBillTitle"/>
-                        <Label Margin="0,20,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedBillParaOne"/>
-                        <Label Margin="0,20,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedBillParaTwo"/>
+                        <Label Margin="0,20,0,5" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedBillParaOne"/>
+                        <Label Margin="0,20,0,5" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedBillParaTwo"/>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
@@ -122,11 +122,11 @@
                     <VerticalStackLayout x:Name="vslOption1" IsVisible="false" Margin="0,0,0,20">
                         <Label Text="Every nth ..." FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
-                            <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                            <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="0" Grid.Row="1">
                                 <handlers:BorderlessEntry ReturnType="Next" Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed" TextColor="{DynamicResource Gray900}"/>
                             </Border>
-                            <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
+                            <Label Text="Duration of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="1" Grid.Row="1">
                                 <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration">
                                     <Picker.ItemsSource>
@@ -152,7 +152,7 @@
                     <VerticalStackLayout x:Name="vslOption2" IsVisible="false">
                         <Label Text="On the ... of every month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
-                            <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                            <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1">
                                 <handlers:BorderlessEntry ReturnType="Next" Margin="20,0,0,0" x:Name="entOfEveryMonthValue" Keyboard="Numeric" TextChanged="OfEveryMonthValue_Changed" TextColor="{DynamicResource Gray900}"/>
                             </Border>

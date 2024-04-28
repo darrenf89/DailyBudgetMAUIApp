@@ -6,7 +6,7 @@
            xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
            xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
            CanBeDismissedByTappingOutsideOfPopup="False"
-           Color="Transparent">
+           Color="#80000000">
     <AbsoluteLayout 
         x:Name="AbsLayout">
         <ImageButton x:Name="btnClose" Clicked="Close_Window" WidthRequest="22" HeightRequest="22" Background="{DynamicResource Gray400}" CornerRadius="11" ZIndex="99">
@@ -17,9 +17,9 @@
         <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0">
             <Border BackgroundColor="{DynamicResource White}" Margin="15,120,15,0" HorizontalOptions="Start" VerticalOptions="Center"  WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16">
                 <VerticalStackLayout>
-                    <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0"/>
-                    <Label  x:Name="lblDescription" FontAttributes="Bold" FontSize="Caption" VerticalOptions="Center" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray400}" Margin="30,15,30,0" />
-                    <Label IsVisible="{Binding IsSubDesc}" x:Name="lblDescriptionSub" FontAttributes="Bold" FontSize="Caption" VerticalOptions="Center"  HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray400}" Margin="30,15,30,0" />
+                    <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0"/>
+                    <Label  x:Name="lblDescription" FontAttributes="Bold" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" VerticalOptions="Center" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray400}" Margin="30,15,30,0" />
+                    <Label IsVisible="{Binding IsSubDesc}" x:Name="lblDescriptionSub" FontAttributes="Bold" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" VerticalOptions="Center"  HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray400}" Margin="30,15,30,0" />
                     <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*">
                         <Entry TextColor="{StaticResource Gray900}" IsVisible="False" Margin="30,15,30,0" HorizontalOptions="Center" WidthRequest="{Binding EntryWidth}" Text="{Binding StringInput}" x:Name="txtStringInput" Keyboard="Text" Style="{StaticResource LogonEntry}" MaxLength="20" Grid.Row="0" HeightRequest="50" FontSize="20"/>
                         <handlers:BorderlessDatePicker TextColor="{StaticResource Gray900}" IsVisible="False" Margin="30,15,30,0" HorizontalOptions="Center" WidthRequest="{Binding EntryWidth}" Date="{Binding DateTimeInput}" x:Name="pckDateTimeInput" Grid.Row="0" HeightRequest="50" FontSize="20"/>

@@ -28,7 +28,7 @@
     <ScrollView>
         <VerticalStackLayout VerticalOptions="Start">
             <VerticalStackLayout Margin="20,20,20,4" IsVisible="{Binding Saving.SavingsName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}">
-                <Label Text="{Binding Saving.SavingsName}" IsVisible="{Binding Saving.SavingsName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Tertiary}"/>
+                <Label Text="{Binding Saving.SavingsName}" IsVisible="{Binding Saving.SavingsName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Tertiary}"/>
                 <VerticalStackLayout.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding ChangeSavingsNameCommand}"/>
                 </VerticalStackLayout.GestureRecognizers>
@@ -40,7 +40,7 @@
                 <VerticalStackLayout>
                     <VerticalStackLayout x:Name="SelectSavingType">
                         <Label Text="What type of saving?" HorizontalTextAlignment="Center" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}"/>
-                        <Label Margin="0,20,0,20" Text="Let us do the work for you. Set up a Saving goal and we will figure everything else out, well apart from what you should wear!" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center"/>
+                        <Label Margin="0,20,0,20" Text="Let us do the work for you. Set up a Saving goal and we will figure everything else out, well apart from what you should wear!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center"/>
                         <VerticalStackLayout Margin="0,0,0,20">
                             <Grid x:Name="grdSavingTypeButtons" ColumnDefinitions="*,6*,2*,6*,*" RowDefinitions="*" >
                                 <Button x:Name="btnOneOffSaving" Style="{DynamicResource PrimaryInfoButton}" Text="Ongoing" TextColor="White" BackgroundColor="{StaticResource Primary}" Grid.Column="1" Grid.Row="0" Clicked="btnOngoingSaving_Clicked"/>
@@ -58,8 +58,8 @@
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="SavingTypeSelected" IsVisible="False">
                         <Label HorizontalTextAlignment="Center" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}" x:Name="lblSelectedSavingTitle"/>
-                        <Label Margin="0,20,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedSavingParaOne"/>
-                        <Label Margin="0,2,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedSavingParaTwo"/>
+                        <Label Margin="0,20,0,5" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedSavingParaOne"/>
+                        <Label Margin="0,2,0,5" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedSavingParaTwo"/>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
@@ -169,11 +169,11 @@
                     </VerticalStackLayout>
                     <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="5,10,0,5" x:Name="hslCanExceedGoal">
                         <CheckBox x:Name="chbxCanExceedGoal" IsChecked="{Binding Saving.CanExceedGoal}" />
-                        <Label Text="Don't allow Goal Value to be exceeded?" FontSize="Caption" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
+                        <Label Text="Don't allow Goal Value to be exceeded?" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
                     </HorizontalStackLayout>
                     <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="5,10,0,5" x:Name="hslIsAutoComplete">
                         <CheckBox x:Name="chbxIsAutoComplete" IsChecked="{Binding Saving.IsAutoComplete}" />
-                        <Label Text="Complete and close Savings when Goal Reached?" FontSize="Caption" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
+                        <Label Text="Complete and close Savings when Goal Reached?" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="0,0,0,0" VerticalTextAlignment="Center"/>
                     </HorizontalStackLayout>
                     <VerticalStackLayout x:Name="VSLCalculator" Margin="5,10,0,5">
                         <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40">

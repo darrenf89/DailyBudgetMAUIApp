@@ -1102,10 +1102,6 @@
     </Style>
 
     <Style TargetType="Span">
-        <Setter Property="TextColor" Value="{StaticResource Gray900}" />
-        <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="OpenSansRegular" />
-        <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAutoScalingEnabled" Value="False" />
     </Style>
 

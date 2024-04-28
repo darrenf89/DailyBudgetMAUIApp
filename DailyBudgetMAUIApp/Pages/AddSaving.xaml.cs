@@ -585,7 +585,7 @@ public partial class AddSaving : ContentPage
     {
         decimal SavingTarget = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
-        entSavingTarget.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingTarget.Text);
+        //entSavingTarget.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingTarget.Text);
         _vm.Saving.SavingsGoal = SavingTarget;
 
         RecalculateValues("entSavingTarget");
@@ -594,7 +594,7 @@ public partial class AddSaving : ContentPage
     {
         decimal CurrentBalance = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entCurrentBalance.Text = CurrentBalance.ToString("c", CultureInfo.CurrentCulture);
-        entCurrentBalance.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrentBalance.Text);
+        //entCurrentBalance.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrentBalance.Text);
         _vm.Saving.CurrentBalance = CurrentBalance;
 
         RecalculateValues("entCurrentBalance");
@@ -609,7 +609,7 @@ public partial class AddSaving : ContentPage
     {
         decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entSavingAmount.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
-        entSavingAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingAmount.Text);
+        //entSavingAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingAmount.Text);
 
         if(!_vm.Saving.IsRegularSaving)
         {
@@ -639,7 +639,7 @@ public partial class AddSaving : ContentPage
         entCalculateAmount.Text = CalculateAmount.ToString("c", CultureInfo.CurrentCulture);
         if(_vm.ShowCalculator)
         {
-            entCalculateAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingAmount.Text);
+            //entCalculateAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingAmount.Text);
         }
         
 

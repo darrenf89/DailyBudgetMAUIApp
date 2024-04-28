@@ -6,7 +6,7 @@
            xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
            xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
            CanBeDismissedByTappingOutsideOfPopup="False"
-           Color="Transparent">
+           Color="#80000000">
     <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent">
         <Border BackgroundColor="{DynamicResource White}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 4" Margin="0,180,0,0">
             <VerticalStackLayout>
@@ -29,7 +29,7 @@
                     Clicked="Close_Popup"
                     HorizontalOptions="Center"
                     BackgroundColor="Transparent"
-                    FontSize="Header"
+                    FontSize="{Binding Source=Header, Converter={StaticResource StringToSizeConverter}}"
                     TextColor="{DynamicResource Gray600}">
                 </Button>
             </VerticalStackLayout>           

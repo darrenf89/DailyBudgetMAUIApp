@@ -22,10 +22,10 @@
             <DataTemplate>
                 <VerticalStackLayout>
                     <Grid ColumnDefinitions="*,*" RowDefinitions="28,30" x:Name="BudgetDetailsGrid" BackgroundColor="{StaticResource Primary}">
-                        <Label Margin="30,0,0,0" Grid.Row="0" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
-                        <Label Margin="30,0,0,10" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Current Balance" TextColor="White" FontSize="Caption" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
-                        <Label Margin="0,0,30,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding TotalSpendTypeHeader}" TextColor="White" FontSize="Caption" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
-                        <Label Margin="0,0,30,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding TotalSpend, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
+                        <Label Margin="30,0,0,0" Grid.Row="0" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+                        <Label Margin="30,0,0,10" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Current Balance" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+                        <Label Margin="0,0,30,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding TotalSpendTypeHeader}" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
+                        <Label Margin="0,0,30,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding TotalSpend, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
                     </Grid>
                     <BoxView HeightRequest="4" Color="{StaticResource White}" />
                 </VerticalStackLayout>
@@ -38,7 +38,7 @@
                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="42"  Color="{DynamicResource PrimaryDark}" />
                     </Image.Source>
                 </Image>
-                <Label Text="No Transactions Found" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Primary}" />
+                <Label Text="No Transactions Found" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Primary}" />
             </VerticalStackLayout>
         </sfList:SfListView.EmptyView>
         <sfList:SfListView.StartSwipeTemplate>

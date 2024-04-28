@@ -6,7 +6,7 @@
             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
             CanBeDismissedByTappingOutsideOfPopup="False"
-            Color="Transparent">
+            Color="#80000000">
     <AbsoluteLayout x:Name="AbsLayout" HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}">
         <HorizontalStackLayout AbsoluteLayout.LayoutBounds="0.95,54" AbsoluteLayout.LayoutFlags="XProportional" Margin="0,15,10,0" ZIndex="99">
             <Label TextColor="{StaticResource Info}" Text="Close" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
@@ -23,7 +23,7 @@
             <Border BackgroundColor="{DynamicResource White}" Margin="0,60,0,0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16" Stroke="{StaticResource Info}">
                 <VerticalStackLayout>
                     <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                        <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,30,5,30" Text="Reassign Transactions"/>
+                        <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,30,5,30" Text="Reassign Transactions"/>
                     </HorizontalStackLayout>
                     <VerticalStackLayout>
                         <ScrollView x:Name="vslSelectors" MaximumHeightRequest="{Binding MaxHeight}">

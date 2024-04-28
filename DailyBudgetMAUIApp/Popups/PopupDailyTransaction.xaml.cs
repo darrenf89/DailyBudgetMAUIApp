@@ -39,7 +39,7 @@ public partial class PopupDailyTransaction : Popup
     {
         decimal TransactionAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
-        entTransactionAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entTransactionAmount.Text);
+        //entTransactionAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entTransactionAmount.Text);
 
         _vm.Transaction.TransactionAmount = TransactionAmount;
     }

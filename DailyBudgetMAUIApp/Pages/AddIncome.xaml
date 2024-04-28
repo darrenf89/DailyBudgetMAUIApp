@@ -26,7 +26,7 @@
     <ScrollView>
         <VerticalStackLayout VerticalOptions="Start" >
             <VerticalStackLayout Margin="20,20,20,4" IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}">
-                <Label Text="{Binding Income.IncomeName}" IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="Large"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Tertiary}"/>
+                <Label Text="{Binding Income.IncomeName}" IsVisible="{Binding Income.IncomeName, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Tertiary}"/>
                 <VerticalStackLayout.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding ChangeIncomeNameCommand}"/>
                 </VerticalStackLayout.GestureRecognizers>
@@ -38,7 +38,7 @@
                 <VerticalStackLayout>
                     <VerticalStackLayout x:Name="SelectIncomeType">
                         <Label Text="One-off or a Recurring Income?" HorizontalTextAlignment="Center" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}"/>
-                        <Label Margin="0,20,0,20" Text="Set up a Recurring Income, maybe pay from a second job or money from investments? Or did you get a gift or sell something big, set up a one-off income then!" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center"/>
+                        <Label Margin="0,20,0,20" Text="Set up a Recurring Income, maybe pay from a second job or money from investments? Or did you get a gift or sell something big, set up a one-off income then!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center"/>
                         <VerticalStackLayout Margin="0,0,0,20">
                             <Grid x:Name="grdIncomeTypeButtons" ColumnDefinitions="*,6*,2*,6*,*" RowDefinitions="*" >
                                 <Button x:Name="btnOneOffIncome" Style="{DynamicResource PrimaryInfoButton}" Text="One-off" TextColor="White" BackgroundColor="{StaticResource Primary}" Grid.Column="1" Grid.Row="0" Clicked="btnOneOffIncome_Clicked"/>
@@ -56,8 +56,8 @@
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="IncomeTypeSelected" IsVisible="False">
                         <Label HorizontalTextAlignment="Center" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}" x:Name="lblSelectedIncomeTitle"/>
-                        <Label Margin="0,20,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedIncomeParaOne"/>
-                        <Label Margin="0,2,0,5" FontSize="Caption" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedIncomeParaTwo"/>
+                        <Label Margin="0,20,0,5" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedIncomeParaOne"/>
+                        <Label Margin="0,2,0,5" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" HorizontalTextAlignment="Center" x:Name="lblSelectedIncomeParaTwo"/>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
@@ -95,11 +95,11 @@
                     <VerticalStackLayout x:Name="vslOption1" IsVisible="false" Margin="0,0,0,10">
                         <Label Text="Every nth ..." FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
-                            <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                            <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="0" Grid.Row="1" BackgroundColor="White">
                                 <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed" TextColor="{DynamicResource Gray900}"/>
                             </Border>
-                            <Label Text="Duration of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
+                            <Label Text="Duration of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="1" Grid.Row="1">
                                 <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration" BackgroundColor="Transparent">
                                     <Picker.ItemsSource>
@@ -124,7 +124,7 @@
                     <VerticalStackLayout x:Name="vslOption2" IsVisible="false">
                         <Label Text="On the ... of every month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
-                            <Label Text="Number of" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                            <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,10" HeightRequest="38" Grid.Column="0" Grid.Row="1">
                                 <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entOfEveryMonthValue" Keyboard="Numeric" TextChanged="OfEveryMonthValue_Changed" TextColor="{DynamicResource Gray900}"/>
                             </Border>
@@ -147,7 +147,7 @@
                         <HorizontalStackLayout Padding="5,0,0,5">
                             <Label Text="Instant Active!" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}"/>
                         </HorizontalStackLayout>
-                        <Label Text="Do you want the income to be added to your allowed spending instantly rather than when it is due?" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5"/>
+                        <Label Text="Do you want the income to be added to your allowed spending instantly rather than when it is due?" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5"/>
                         <VerticalStackLayout Margin="5,0,5,5">
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="0,0,0,2" HeightRequest="38" WidthRequest="200" HorizontalOptions="Start">
                                 <Grid RowDefinitions="*" ColumnDefinitions="*,*" VerticalOptions="Center">
@@ -191,7 +191,7 @@
                         <HorizontalStackLayout Padding="5,0,0,5">
                             <Label Text="Income Amount and Date!" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}"/>
                         </HorizontalStackLayout>
-                        <Label Text="Let us know how much you are getting and when!" FontSize="Caption" TextColor="{DynamicResource Gray700}" Padding="5,0,0,0"/>
+                        <Label Text="Let us know how much you are getting and when!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,0"/>
                         <VerticalStackLayout Margin="0,0,0,5" x:Name="vslIncomeAmount">
                             <Label Text="Income Amount" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,0" HeightRequest="38" BackgroundColor="White" x:Name="brdIncomeAmount">

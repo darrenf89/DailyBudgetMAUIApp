@@ -27,14 +27,14 @@
             <DataTemplate>
                 <VerticalStackLayout>
                     <Grid BackgroundColor="{StaticResource Primary}" ColumnDefinitions="*,*" RowDefinitions="28,30,22,32,Auto" x:Name="BudgetDetailsGrid">
-                        <Label Margin="30,0,0,0" Grid.Row="0" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
-                        <Label Margin="30,0,0,10" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Bank balance" TextColor="White" FontSize="Caption" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+                        <Label Margin="30,0,0,0" Grid.Row="0" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+                        <Label Margin="30,0,0,10" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Bank balance" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
                         <Label Margin="30,0,0,0" Grid.Row="2" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.CurrentActiveIncome, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
-                        <Label Margin="30,0,0,5" Grid.Row="3" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Extra instant active income" TextColor="White" FontSize="Caption" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
-                        <Label Margin="0,0,30,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding BalanceExtraPeriodIncome, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="Large" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
-                        <Label Margin="0,0,30,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Balance after instant active" TextColor="White" FontSize="Caption" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
+                        <Label Margin="30,0,0,5" Grid.Row="3" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Extra instant active income" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+                        <Label Margin="0,0,30,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding BalanceExtraPeriodIncome, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
+                        <Label Margin="0,0,30,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Balance after instant active" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
                         <Label Margin="0,0,30,0" Grid.Row="2" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.AccountInfo.IncomeThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
-                        <Label Margin="0,0,30,5" Grid.Row="3" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Income to date this period" TextColor="White" FontSize="Caption" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
+                        <Label Margin="0,0,30,5" Grid.Row="3" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Income to date this period" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
                         <BoxView HeightRequest="8" Color="{StaticResource White}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"/>
                     </Grid>
                 </VerticalStackLayout>
@@ -60,18 +60,18 @@
                                         </Border.Shadow>
                                         <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="income.svg"/>
                                     </Border>
-                                    <Label Margin="0,0,0,8" Padding="0" VerticalOptions="Start" Text="{Binding IncomeName}" TextColor="{StaticResource Primary}" FontSize="Large" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
+                                    <Label Margin="0,0,0,8" Padding="0" VerticalOptions="Start" Text="{Binding IncomeName}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
                                     <Label Margin="0,0,0,0" FontAttributes="Bold" Padding="0" Text="{Binding ., Converter={StaticResource IncomeTypeConverter}}" TextColor="{StaticResource Tertiary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="1"/>
                                     <Label IsVisible="{Binding IsRecuringIncome}" Margin="0,2,0,0" FontAttributes="Bold" Padding="0" Text="{Binding ., Converter={StaticResource RecurringIncomeDetails}}" TextColor="{StaticResource Gray400}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="2"/>
                                     <VerticalStackLayout Grid.Row="3" Grid.Column="1" Margin="0,10,0,0">
                                         <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
                                             <HorizontalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
-                                                <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Extra Income amount |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
-                                                <Label FontAttributes="Bold" Text="{Binding IncomeAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" Text="Extra Income amount |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label FontAttributes="Bold" Text="{Binding IncomeAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
                                             </HorizontalStackLayout>
                                             <HorizontalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
-                                                <Label FontSize="Caption" TextColor="{StaticResource Info}" Text="Due Date |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
-                                                <Label FontAttributes="Bold" Text="{Binding DateOfIncomeEvent, StringFormat='{0: dd MMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="Caption" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" Text="Due Date |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
+                                                <Label FontAttributes="Bold" Text="{Binding DateOfIncomeEvent, StringFormat='{0: dd MMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
                                             </HorizontalStackLayout>
                                         </Grid>
                                     </VerticalStackLayout>
@@ -87,7 +87,7 @@
                                                     </Image.Source>
                                                 </Image>
                                             </Border>
-                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Edit"/>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Edit"/>
                                             <VerticalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer CommandParameter="{Binding .}" Tapped="EditIncome_Tapped"/>
                                             </VerticalStackLayout.GestureRecognizers>
@@ -103,7 +103,7 @@
                                                     </Image.Source>
                                                 </Image>
                                             </Border>
-                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Close"/>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Close"/>
                                             <VerticalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer CommandParameter="{Binding .}" Tapped="CloseIncome_Tapped"/>
                                             </VerticalStackLayout.GestureRecognizers>
@@ -119,7 +119,7 @@
                                                     </Image.Source>
                                                 </Image>
                                             </Border>
-                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Update date"/>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Update date"/>
                                             <VerticalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer CommandParameter="{Binding .}" Tapped="UpdateDate_Tapped"/>
                                             </VerticalStackLayout.GestureRecognizers>
@@ -135,7 +135,7 @@
                                                     </Image.Source>
                                                 </Image>
                                             </Border>
-                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="Micro" Text="Update amount"/>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Update amount"/>
                                             <VerticalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer CommandParameter="{Binding .}" Tapped="UpdateAmount_Tapped"/>
                                             </VerticalStackLayout.GestureRecognizers>

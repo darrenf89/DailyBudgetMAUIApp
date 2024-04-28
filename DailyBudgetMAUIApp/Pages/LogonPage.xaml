@@ -20,7 +20,7 @@
                     <VerticalStackLayout HorizontalOptions="Fill" >
                         <Label Text="Welcome!" 
                                 TextColor="{DynamicResource Primary}" 
-                                FontSize="Large" 
+                                FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" 
                                 HorizontalOptions="Center" 
                                 FontAttributes="Bold"
                                 Margin="0,10,0,2"/>
@@ -171,7 +171,7 @@
                                         TextColor="{DynamicResource Primary}"
                                         TextDecorations="Underline"
                                         FontAttributes="Bold"
-                                        FontSize="Caption">
+                                        FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding ResetPasswordCommand}"/>
                                     </Label.GestureRecognizers>
@@ -183,7 +183,7 @@
                             <Label Text="Remember Me!"
                                    VerticalOptions="Center"
                                    TextColor="{DynamicResource Gray400}"
-                                   FontSize="Caption"
+                                   FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"
                                    Padding="0" />
                         </HorizontalStackLayout>
                         <Button Text="Sign in"
@@ -200,7 +200,7 @@
                         </Button>
                         <Label Text="Or sign in using your social media" 
                                 TextColor="{DynamicResource Primary}" 
-                                FontSize="Caption"
+                                FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"
                                 FontAttributes="Bold"
                                 HorizontalOptions="Center"
                                 Margin="0,25,0,15"/>

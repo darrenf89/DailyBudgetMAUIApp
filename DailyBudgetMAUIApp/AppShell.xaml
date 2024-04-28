@@ -19,7 +19,7 @@
 
     <TabBar x:Name="MainTabBar">
         <Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate local:MainPage}" />
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
         </Tab>
         <Tab Title="Bill" Route="AddBill" Icon="bill.svg">
             <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddBill}"/>

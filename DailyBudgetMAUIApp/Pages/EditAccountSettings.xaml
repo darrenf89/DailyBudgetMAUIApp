@@ -42,7 +42,7 @@
                 <VerticalStackLayout Grid.Column="0" Grid.Row="0">
                     <BoxView x:Name="TopBV" HeightRequest="9" Color="{DynamicResource InfoLL}" HorizontalOptions="Center" Margin="0,0,0,10"/>
                     <Label CharacterSpacing="1.5" Margin="0,165,0,0" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" Text="{Binding User.NickName}"/>
-                    <Label CharacterSpacing="0" Margin="0,4,0,0" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="Caption" FontAttributes="Bold" TextColor="{DynamicResource Gray500}" Text="{Binding User.Email}"/>
+                    <Label CharacterSpacing="0" Margin="0,4,0,0" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Gray500}" Text="{Binding User.Email}"/>
                     <BoxView HeightRequest="3" Color="{DynamicResource PrimaryDark}" Margin="0,10,0,0">
                         <BoxView.Shadow>
                             <Shadow Offset="0,14" Opacity="0.3" Brush="{DynamicResource Gray900}" Radius="10" />
@@ -241,7 +241,7 @@
                             <Grid Margin="0,0,0,0" x:Name="SubDetails" HorizontalOptions="Fill" ColumnDefinitions="*" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, AUto, Auto, Auto">
                                 <VerticalStackLayout Grid.Row="0" Grid.Column="0" touchEffects:TouchEffect.Color="{StaticResource Gray200}" Padding="15,5,15,5" VerticalOptions="Center">
                                     <Label VerticalTextAlignment="Center" Text="{Binding User.SubscriptionType, StringFormat='Your plan: {0}'}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" FontAttributes="Bold" Margin="0,0,0,2" Padding="0"/>
-                                    <Label  VerticalTextAlignment="Center" FontSize="Caption" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0">
+                                    <Label  VerticalTextAlignment="Center" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0">
                                         <Label.Text>
                                             <MultiBinding StringFormat="{}Renews {0} on {1:ddd d MMM yy}">
                                                 <Binding Path="SubscriptionRenewal"/>
@@ -255,28 +255,28 @@
                                 </VerticalStackLayout>
                                 <VerticalStackLayout Grid.Row="1" Grid.Column="0" touchEffects:TouchEffect.Color="{StaticResource Gray200}" Padding="15,5,15,5" VerticalOptions="Center">
                                     <Label VerticalTextAlignment="Center" Text="Budgetting help" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" FontAttributes="Bold" Margin="0,0,0,2" Padding="0"/>
-                                    <Label  VerticalTextAlignment="Center" FontSize="Caption" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="Need help &amp; advice on how to budget?"/>
+                                    <Label  VerticalTextAlignment="Center" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="Need help &amp; advice on how to budget?"/>
                                     <VerticalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="ContactUs_Tapped"/>
                                     </VerticalStackLayout.GestureRecognizers>
                                 </VerticalStackLayout>
                                 <VerticalStackLayout Grid.Row="2" Grid.Column="0" touchEffects:TouchEffect.Color="{StaticResource Gray200}" Padding="15,5,15,5" VerticalOptions="Center">
                                     <Label VerticalTextAlignment="Center" Text="Contact us" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" FontAttributes="Bold" Margin="0,0,0,2" Padding="0"/>
-                                    <Label  VerticalTextAlignment="Center" FontSize="Caption" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="Got feedback or want to report an issue?"/>
+                                    <Label  VerticalTextAlignment="Center" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="Got feedback or want to report an issue?"/>
                                     <VerticalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="Help_Tapped"/>
                                     </VerticalStackLayout.GestureRecognizers>
                                 </VerticalStackLayout>
                                 <VerticalStackLayout Grid.Row="3" Grid.Column="0" touchEffects:TouchEffect.Color="{StaticResource Gray200}" Padding="15,5,15,5" VerticalOptions="Center">
                                     <Label VerticalTextAlignment="Center" Text="Send some love" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" FontAttributes="Bold" Margin="0,0,0,2" Padding="0"/>
-                                    <Label  VerticalTextAlignment="Center" FontSize="Caption" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="Rate dBudget on app store"/>
+                                    <Label  VerticalTextAlignment="Center" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="Rate dBudget on app store"/>
                                     <VerticalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="Rate_Tapped"/>
                                     </VerticalStackLayout.GestureRecognizers>
                                 </VerticalStackLayout>
                                 <VerticalStackLayout Grid.Row="4" Grid.Column="0" touchEffects:TouchEffect.Color="{StaticResource Gray200}" Padding="15,5,15,5" VerticalOptions="Center">
                                     <Label VerticalTextAlignment="Center" Text="Invite your friends" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" FontAttributes="Bold" Margin="0,0,0,2" Padding="0"/>
-                                    <Label  VerticalTextAlignment="Center" FontSize="Caption" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="Enjoy budgeting with dBudget? Share it with friends"/>
+                                    <Label  VerticalTextAlignment="Center" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="Enjoy budgeting with dBudget? Share it with friends"/>
                                     <VerticalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="Share_Tapped"/>
                                     </VerticalStackLayout.GestureRecognizers>
@@ -306,14 +306,14 @@
                                     </VerticalStackLayout.GestureRecognizers>
                                 </VerticalStackLayout>
                                 <VerticalStackLayout Grid.Row="9" Grid.Column="0" touchEffects:TouchEffect.Color="{StaticResource Gray200}" Padding="15,5,15,5">
-                                    <Label Text="App Version" FontSize="Caption" TextColor="{StaticResource Gray900}" FontAttributes="Bold" Margin="0,0,0,2" Padding="0"/>
-                                    <Label VerticalTextAlignment="Center" FontSize="Micro" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="{Binding VersionNumber}"/>
+                                    <Label Text="App Version" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" FontAttributes="Bold" Margin="0,0,0,2" Padding="0"/>
+                                    <Label VerticalTextAlignment="Center" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0" Text="{Binding VersionNumber}"/>
                                     <VerticalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="Version_Tapped"/>
                                     </VerticalStackLayout.GestureRecognizers>
                                 </VerticalStackLayout>
                                 <VerticalStackLayout Grid.Row="10" Grid.Column="0" Padding="15,15,15,5">
-                                    <Label  VerticalTextAlignment="Center" FontSize="Micro" FontAttributes="Bold" TextColor="{StaticResource Gray900}" Margin="0,0,0,10" Padding="0" Text="FIND US ON SOCIAL MEDIA" CharacterSpacing="0"/>
+                                    <Label  VerticalTextAlignment="Center" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{StaticResource Gray900}" Margin="0,0,0,10" Padding="0" Text="FIND US ON SOCIAL MEDIA" CharacterSpacing="0"/>
                                     <HorizontalStackLayout>
 
                                     </HorizontalStackLayout>

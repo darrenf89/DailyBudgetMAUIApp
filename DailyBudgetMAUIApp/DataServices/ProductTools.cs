@@ -645,9 +645,15 @@ namespace DailyBudgetMAUIApp.DataServices
 
                             PeriodTotalBillOutgoing += (Bill.RegularBillValue ?? 0) * DaysToBill;
                         }
+
+                        PeriodTotalBillOutgoing += Bill.BillCurrentBalance;
+                    }
+                    else
+                    {
+                        PeriodTotalBillOutgoing += Bill.BillBalanceAtLastPayDay;
                     }
 
-                    PeriodTotalBillOutgoing += Bill.BillBalanceAtLastPayDay;
+                    
 
                 }
             }
