@@ -39,7 +39,11 @@ public partial class PopupDailyPayDay : Popup
     {
         decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
-        //entPayDayAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entPayDayAmount.Text);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entPayDayAmount.CursorPosition > position)
+        {
+            entPayDayAmount.CursorPosition = entPayDayAmount.Text.Length;
+        }
 
         _vm.Budget.PaydayAmount = PayDayAmount;
     }

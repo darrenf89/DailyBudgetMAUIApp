@@ -17,8 +17,8 @@
 		<ApplicationIdGuid>a9e0258c-e381-49fa-aa43-d11c44cf7b75</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.25</ApplicationDisplayVersion>
-		<ApplicationVersion>25</ApplicationVersion>
+		<ApplicationDisplayVersion>1.27</ApplicationDisplayVersion>
+		<ApplicationVersion>27</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -84,6 +84,7 @@
 		<PackageReference Include="Syncfusion.Maui.Charts" Version="25.1.41" />
 		<PackageReference Include="Syncfusion.Maui.Expander" Version="25.1.41" />
 		<PackageReference Include="Syncfusion.Maui.Gauges" Version="25.1.41" />
+		<PackageReference Include="Syncfusion.Maui.Inputs" Version="25.1.41" />
 		<PackageReference Include="Syncfusion.Maui.ListView" Version="25.1.41" />
 		<PackageReference Include="Syncfusion.Maui.Picker" Version="25.1.41" />
 		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="25.1.41" />
@@ -110,6 +111,9 @@
 	  </Compile>
 	  <Compile Update="Pages\ViewPayees.xaml.cs">
 	    <DependentUpon>ViewPayees.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Popups\PopupMoveBalance.xaml.cs">
+	    <DependentUpon>PopupMoveBalance.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Popups\PopupEditNextPayInfo.xaml.cs">
 	    <DependentUpon>PopupEditNextPayInfo.xaml</DependentUpon>
@@ -211,6 +215,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewPayees.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Popups\PopupMoveBalance.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Popups\PopupEditNextPayInfo.xaml">

@@ -343,4 +343,15 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewCalendar)}");
     }
+
+    private async void MoveBalance_Tapped(object sender, TappedEventArgs e)
+    {
+        var popup = new PopupMoveBalance(App.DefaultBudget, "Budget",0, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        await Task.Delay(100);
+        if (result.ToString() == "OK")
+        {
+            App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+        }
+    }
 }

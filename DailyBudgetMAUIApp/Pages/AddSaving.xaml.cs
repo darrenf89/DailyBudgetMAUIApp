@@ -585,7 +585,11 @@ public partial class AddSaving : ContentPage
     {
         decimal SavingTarget = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
-        //entSavingTarget.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingTarget.Text);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingTarget.CursorPosition > position)
+        {
+            entSavingTarget.CursorPosition = entSavingTarget.Text.Length;
+        }
         _vm.Saving.SavingsGoal = SavingTarget;
 
         RecalculateValues("entSavingTarget");
@@ -594,7 +598,11 @@ public partial class AddSaving : ContentPage
     {
         decimal CurrentBalance = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entCurrentBalance.Text = CurrentBalance.ToString("c", CultureInfo.CurrentCulture);
-        //entCurrentBalance.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrentBalance.Text);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrentBalance.CursorPosition > position)
+        {
+            entCurrentBalance.CursorPosition = entCurrentBalance.Text.Length;
+        }
         _vm.Saving.CurrentBalance = CurrentBalance;
 
         RecalculateValues("entCurrentBalance");
@@ -609,9 +617,13 @@ public partial class AddSaving : ContentPage
     {
         decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entSavingAmount.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
-        //entSavingAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingAmount.Text);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingAmount.CursorPosition > position)
+        {
+            entSavingAmount.CursorPosition = entSavingAmount.Text.Length;
+        }
 
-        if(!_vm.Saving.IsRegularSaving)
+        if (!_vm.Saving.IsRegularSaving)
         {
             if(!(_vm.NavigatedFrom == "ViewSavings" || _vm.NavigatedFrom == "ViewEnvelopes"))
             {
@@ -639,7 +651,11 @@ public partial class AddSaving : ContentPage
         entCalculateAmount.Text = CalculateAmount.ToString("c", CultureInfo.CurrentCulture);
         if(_vm.ShowCalculator)
         {
-            //entCalculateAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingAmount.Text);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCalculateAmount.CursorPosition > position)
+            {
+                entCalculateAmount.CursorPosition = entCalculateAmount.Text.Length;
+            }
         }
         
 

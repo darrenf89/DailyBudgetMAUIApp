@@ -215,7 +215,11 @@ public partial class AddBill : ContentPage
 
         decimal AmountDue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
-        //entAmountDue.CursorPosition = _pt.FindCurrencyCursorPosition(entAmountDue.Text);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entAmountDue.CursorPosition > position)
+        {
+            entAmountDue.CursorPosition = entAmountDue.Text.Length;
+        }
         _vm.Bill.BillAmount = AmountDue;
 
         lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
@@ -227,7 +231,11 @@ public partial class AddBill : ContentPage
 
         decimal CurrentSaved = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
-        //entCurrentSaved.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrentSaved.Text);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrentSaved.CursorPosition > position)
+        {
+            entCurrentSaved.CursorPosition = entCurrentSaved.Text.Length;
+        }
         _vm.Bill.BillCurrentBalance = CurrentSaved;
 
         lblRegularBillValue.Text = _vm.CalculateRegularBillValue();

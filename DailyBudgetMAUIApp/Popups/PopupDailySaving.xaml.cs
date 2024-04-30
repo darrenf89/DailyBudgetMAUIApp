@@ -53,7 +53,11 @@ public partial class PopupDailySaving : Popup
     {
         decimal SavingTarget = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
-        //entSavingTarget.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingTarget.Text);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingTarget.CursorPosition > position)
+        {
+            entSavingTarget.CursorPosition = entSavingTarget.Text.Length;
+        }
 
         _vm.Saving.SavingsGoal = SavingTarget;
     }
@@ -62,7 +66,11 @@ public partial class PopupDailySaving : Popup
     {
         decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entSavingAmount.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
-        //entSavingAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entSavingAmount.Text);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingAmount.CursorPosition > position)
+        {
+            entSavingAmount.CursorPosition = entSavingAmount.Text.Length;
+        }
 
         _vm.Saving.RegularSavingValue = SavingValue;
     }

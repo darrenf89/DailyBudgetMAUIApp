@@ -321,6 +321,38 @@ namespace DailyBudgetMAUIApp.Converters
 
     }
 
+    public class AmountToColor : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            Application.Current.Resources.TryGetValue("Success", out var Success);
+            Application.Current.Resources.TryGetValue("Danger", out var Danger);
+
+            if (value == null) return (Color)Success;
+
+            decimal Amount = (decimal)value;
+
+            Color OutputColor;
+            if (Amount > 0)
+            {
+                OutputColor = (Color)Success;
+            }
+            else
+            {
+                OutputColor = (Color)Danger;
+            }
+
+            return OutputColor;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
     public class GreaterLessZeroColor : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -849,6 +881,10 @@ namespace DailyBudgetMAUIApp.Converters
             else if (EventType == "Saving")
             {
                 ReturnGlyph = "\ue2eb";
+            }            
+            else if (EventType == "Budget")
+            {
+                ReturnGlyph = "\ue84f";
             }
 
             return ReturnGlyph;

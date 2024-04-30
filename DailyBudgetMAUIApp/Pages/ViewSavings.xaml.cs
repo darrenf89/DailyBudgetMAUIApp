@@ -149,7 +149,28 @@ public partial class ViewSavings : ContentPage
 
     private async void MoveBalance_Tapped(object sender, TappedEventArgs e)
     {
-        
+        var Saving = (Savings)e.Parameter;
+        var popup = new PopupMoveBalance(App.DefaultBudget, "Saving", Saving.SavingID, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+        await Task.Delay(100);
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        if (result.ToString() == "OK")
+        {
+            List<Savings> S = _ds.GetBudgetRegularSaving(App.DefaultBudgetID).Result;
+
+            _vm.TotalSavings = 0;
+            _vm.Budget.DailySavingOutgoing = 0;
+            _vm.Savings.Clear();
+
+            foreach (Savings saving in S)
+            {
+                _vm.TotalSavings += saving.CurrentBalance.GetValueOrDefault();
+                _vm.Budget.DailySavingOutgoing += saving.RegularSavingValue.GetValueOrDefault();
+                _vm.Savings.Add(saving);
+            }
+
+            App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+
+        }
     }
 
     private async void AddNewSaving_Clicked(object sender, EventArgs e)

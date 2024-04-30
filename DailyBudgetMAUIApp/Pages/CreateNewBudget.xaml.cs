@@ -842,14 +842,22 @@ public partial class CreateNewBudget : ContentPage
 
         double BankBalance = _pt.FormatCurrencyNumber(e.NewTextValue);
         entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
-        //entBankBalance.CursorPosition = _pt.FindCurrencyCursorPosition(entBankBalance.Text);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entBankBalance.CursorPosition > position)
+        {
+            entBankBalance.CursorPosition = entBankBalance.Text.Length;
+        }
 
     }
     void PayAmount_Changed(object sender, TextChangedEventArgs e)
     {
         double PayAmount = _pt.FormatCurrencyNumber(e.NewTextValue);
         entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
-        //entPayAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entPayAmount.Text);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entPayAmount.CursorPosition > position)
+        {
+            entPayAmount.CursorPosition = entPayAmount.Text.Length;
+        }
     }
     private async void PayDayInfo(object sender, EventArgs e)
     {

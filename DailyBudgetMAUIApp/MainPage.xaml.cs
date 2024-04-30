@@ -783,7 +783,11 @@ public partial class MainPage : ContentPage
     {
         decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-        //entTransactionAmount.CursorPosition = _pt.FindCurrencyCursorPosition(entTransactionAmount.Text);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entTransactionAmount.CursorPosition > position)
+        {
+            entTransactionAmount.CursorPosition = entTransactionAmount.Text.Length;
+        }
         _vm.TransactionAmount = Amount;
     }
 
