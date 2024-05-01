@@ -48,10 +48,6 @@ public partial class ViewSavings : ContentPage
         int DaysToPayDay = (int)Math.Ceiling((_vm.Budget.NextIncomePayday.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
         _vm.PayDaySavings = _vm.Budget.DailySavingOutgoing * DaysToPayDay;
 
-        listView.RefreshItem();
-        listView.RefreshView();
-
-
         if (App.CurrentPopUp != null)
         {
             await App.CurrentPopUp.CloseAsync();
@@ -140,8 +136,6 @@ public partial class ViewSavings : ContentPage
             if (result)
             {
                 _vm.Savings.Remove(Saving);
-                listView.RefreshItem();
-                listView.RefreshView();
             }
 
         }

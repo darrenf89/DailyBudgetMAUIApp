@@ -22,35 +22,32 @@
             <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
         </Grid>
     </Shell.TitleView>
-    <sfList:SfListView MinimumHeightRequest="{Binding MinHeight}" IsStickyHeader="True" StickyFooterPosition="Default" IsStickyFooter="True" IsScrollingEnabled="True" ScrollBarVisibility="Default" BackgroundColor="Transparent" SelectionMode="None" x:Name="listView" AllowSwiping="False" ItemsSource="{Binding Bills}" AutoFitMode="Height" Margin="0" Padding="0" >
-        <sfList:SfListView.HeaderTemplate>
-            <DataTemplate>
-                <VerticalStackLayout>
-                    <Grid BackgroundColor="{StaticResource Primary}" ColumnDefinitions="*,*" RowDefinitions="28,30,22,32,Auto" x:Name="BudgetDetailsGrid">
-                        <Label Margin="30,0,0,0" Grid.Row="0" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
-                        <Label Margin="30,0,0,0" Grid.Row="2" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.DailyBillOutgoing, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
-                        <Label Margin="30,0,0,10" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Left to spend" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
-                        <Label Margin="30,0,0,5" Grid.Row="3" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Outgoings per day" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
-                        <Label Margin="0,0,30,5" Grid.Row="3" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Approx outgoings per period" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
-                        <Label Margin="0,0,30,0" Grid.Row="2" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding BillsPerPayPeriod, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
-                        <Label Margin="0,0,30,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Current outgoing balance" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
-                        <Label Margin="0,0,30,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding TotalBills, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
-                        <BoxView HeightRequest="8" Color="{StaticResource White}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </DataTemplate>
-        </sfList:SfListView.HeaderTemplate>            
-        <sfList:SfListView.FooterTemplate>
-            <DataTemplate>
-                <Grid RowDefinitions="Auto" ColumnDefinitions="*" BackgroundColor="{StaticResource Primary}" >
-                    <Button x:Name="AddNewBill" Clicked="AddNewBill_Clicked" WidthRequest="{Binding SignOutButtonWidth}" Grid.Row="0" Grid.Column="0" Style="{DynamicResource buttonClicked}" Text="Add new outgoing" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,10,5,10" FontSize="18" CornerRadius="20" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
-                </Grid>
-            </DataTemplate>
-        </sfList:SfListView.FooterTemplate>
-        <sfList:SfListView.ItemTemplate>
-            <DataTemplate>
-                <ViewCell>
-                    <ViewCell.View>
+    <Grid ColumnDefinitions="*" RowDefinitions="Auto, *, Auto">
+        <Grid BackgroundColor="{StaticResource Primary}" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,10,Auto" x:Name="BudgetDetailsGrid" Grid.Row="0" Grid.Column="0">
+            <Label Margin="20,0,0,0" Grid.Row="0" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding BudgetAllocated, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+            <Label Margin="20,0,0,0" Grid.Row="2" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding Budget.DailyBillOutgoing, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+            <Label Margin="20,0,0,10" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Budget allocated to outgoings" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+            <Label Margin="20,0,0,5" Grid.Row="3" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Outgoings per day" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+            <Label Margin="0,0,20,5" Grid.Row="3" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Outgoings this period" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
+            <Label Margin="0,0,20,0" Grid.Row="2" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding BillsPerPayPeriod, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
+            <Label Margin="0,0,20,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Current outgoing balance" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
+            <Label Margin="0,0,20,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding TotalBills, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
+            <BoxView HeightRequest="8" Color="{StaticResource White}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"/>
+        </Grid>
+        <ScrollView Grid.Row="1" Grid.Column="0">
+            <StackLayout BindableLayout.ItemsSource="{Binding Bills}" >
+                <BindableLayout.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Start" BackgroundColor="{StaticResource White}" Margin="20">
+                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0,0,0,10">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="35"  Color="{DynamicResource PrimaryDark}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="You don't have any outgoings, to start saving click add new outgoing now!" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray900}" />
+                    </VerticalStackLayout>
+                </BindableLayout.EmptyView>
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
                         <VerticalStackLayout Padding="20,10,20,10">
                             <Border Style="{StaticResource brdCardViewRectange}">
                                 <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
@@ -152,19 +149,12 @@
                                 </Grid>
                             </Border>
                         </VerticalStackLayout>
-                    </ViewCell.View>
-                </ViewCell>
-            </DataTemplate>                
-        </sfList:SfListView.ItemTemplate>
-        <sfList:SfListView.EmptyView>
-            <VerticalStackLayout VerticalOptions="Start" BackgroundColor="{StaticResource White}" Margin="20">
-                <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0,0,0,10">
-                    <Image.Source>
-                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="35"  Color="{DynamicResource PrimaryDark}" />
-                    </Image.Source>
-                </Image>
-                <Label Text="You don't have any outgoings, to start saving click add new outgoing now!" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray900}" />
-            </VerticalStackLayout>
-        </sfList:SfListView.EmptyView>
-    </sfList:SfListView>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </StackLayout>
+        </ScrollView>
+        <Grid RowDefinitions="Auto" ColumnDefinitions="*" BackgroundColor="{StaticResource Primary}" Grid.Row="2" Grid.Column="0" >
+            <Button x:Name="AddNewBill" Clicked="AddNewBill_Clicked" WidthRequest="{Binding SignOutButtonWidth}" Grid.Row="0" Grid.Column="0" Style="{DynamicResource buttonClicked}" Text="Add new outgoing" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,10,5,10" FontSize="18" CornerRadius="20" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
+        </Grid>
+    </Grid>
 </ContentPage>

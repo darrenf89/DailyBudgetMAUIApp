@@ -32,22 +32,23 @@ public partial class ViewBills : ContentPage
 
         _vm.TotalBills = 0;
         _vm.Budget.DailyBillOutgoing = 0;
+        _vm.BillsPerPayPeriod = 0;
+        _vm.BudgetAllocated = _vm.Budget.BankBalance.GetValueOrDefault() - _vm.Budget.MoneyAvailableBalance.GetValueOrDefault();
         _vm.Bills.Clear();
-        
+
+        int DaysToPayDay = (int)Math.Ceiling((_vm.Budget.NextIncomePayday.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
+
         foreach (Bills bill in B)
         {
             _vm.TotalBills += bill.BillCurrentBalance;
+            _vm.BillsPerPayPeriod += bill.BillCurrentBalance;
+            _vm.BillsPerPayPeriod += bill.RegularBillValue.GetValueOrDefault() * DaysToPayDay;
             _vm.Budget.DailyBillOutgoing += bill.RegularBillValue.GetValueOrDefault();
             _vm.Bills.Add(bill);
         }
 
         double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         _vm.SignOutButtonWidth = ScreenWidth - 60;
-
-        _vm.BillsPerPayPeriod = _vm.Budget.DailyBillOutgoing * _vm.Budget.AproxDaysBetweenPay ?? 1;
-
-        listView.RefreshItem();
-        listView.RefreshView();
 
         if (App.CurrentPopUp != null)
         {
@@ -112,7 +113,6 @@ public partial class ViewBills : ContentPage
 
             await _ds.PatchBill(Bill.BillID, PatchDocs);
             _vm.Bills.Remove(Bill);
-            listView.RefreshItem();
         }
     }
 
@@ -166,7 +166,6 @@ public partial class ViewBills : ContentPage
 
             await _ds.PatchBill(Bill.BillID, PatchDocs);
 
-            listView.RefreshItem();
         }
     }
 
@@ -220,7 +219,6 @@ public partial class ViewBills : ContentPage
 
             await _ds.PatchBill(Bill.BillID, PatchDocs);
 
-            listView.RefreshItem();
         }    
     }    
 

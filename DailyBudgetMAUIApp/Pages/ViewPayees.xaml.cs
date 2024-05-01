@@ -1,9 +1,11 @@
+using CommunityToolkit.Maui.Core.Extensions;
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using Syncfusion.Maui.Carousel;
+using Syncfusion.Maui.DataSource.Extensions;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -123,19 +125,26 @@ public partial class ViewPayees : ContentPage
 
             foreach (Payees payee in _vm.Payees)
             {
+                payee.PayeeSpendPayPeriod = payee.PayeeSpendPeriods[Index].SpendTotalAmount;                
+            }
+
+            List<Payees> PayeeList = _vm.Payees.OrderByDescending(p => p.PayeeSpendAllTime).ToList();
+            _vm.Payees.Clear();
+            
+            foreach (Payees payee in PayeeList)
+            {
                 if (_vm.PayeesChart.Count() < 8)
                 {
                     ChartClass Value = new ChartClass
                     {
                         XAxesString = payee.Payee,
-                        YAxesDouble = (double)payee.PayeeSpendPayPeriod
+                        YAxesDouble = (double)payee.PayeeSpendAllTime
                     };
-
+                   
                     _vm.PayeesChart.Add(Value);
                 }
 
-                payee.PayeeSpendPayPeriod = payee.PayeeSpendPeriods[Index].SpendTotalAmount;
-                
+                _vm.Payees.Add(payee);
             }
         }
         else
@@ -143,6 +152,14 @@ public partial class ViewPayees : ContentPage
             _vm.PayeesChart.Clear();
 
             foreach (Payees payee in _vm.Payees)
+            {
+                payee.PayeeSpendPayPeriod = payee.PayeeSpendPeriods[Index - 1].SpendTotalAmount;
+            }
+
+            List<Payees> PayeeList = _vm.Payees.OrderByDescending(p => p.PayeeSpendPayPeriod).ToList();
+            _vm.Payees.Clear();
+
+            foreach (Payees payee in PayeeList)
             {
                 if (_vm.PayeesChart.Count() < 8)
                 {
@@ -154,9 +171,7 @@ public partial class ViewPayees : ContentPage
 
                     _vm.PayeesChart.Add(Value);
                 }
-
-                payee.PayeeSpendPayPeriod = payee.PayeeSpendPeriods[Index - 1].SpendTotalAmount;
-
+                _vm.Payees.Add(payee);
             }
         }
 

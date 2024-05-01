@@ -42,8 +42,6 @@ public partial class ViewIncomes : ContentPage
         double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         _vm.SignOutButtonWidth = ScreenWidth - 60;
 
-        listView.RefreshItem();
-        listView.RefreshView();
 
         if (App.CurrentPopUp != null)
         {
@@ -101,7 +99,7 @@ public partial class ViewIncomes : ContentPage
 
             await _ds.PatchIncome(Income.IncomeEventID, PatchDocs);
             _vm.Incomes.Remove(Income);
-            listView.RefreshItem();
+
         }
     }
 
@@ -130,7 +128,6 @@ public partial class ViewIncomes : ContentPage
 
             await _ds.PatchIncome(Income.IncomeEventID, PatchDocs);
 
-            listView.RefreshItem();
         }
     }
 
@@ -159,7 +156,6 @@ public partial class ViewIncomes : ContentPage
 
             await _ds.PatchIncome(Income.IncomeEventID, PatchDocs);
 
-            listView.RefreshItem();
         }    
     }    
 

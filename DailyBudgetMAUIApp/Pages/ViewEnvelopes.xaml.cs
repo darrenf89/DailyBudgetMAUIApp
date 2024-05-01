@@ -49,10 +49,6 @@ public partial class ViewEnvelopes : ContentPage
 
         _vm.DaysToPayDay = (int)Math.Ceiling((_vm.Budget.NextIncomePayday.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
 
-        listView.RefreshItem();
-        listView.RefreshView();
-
-
         if (App.CurrentPopUp != null)
         {
             await App.CurrentPopUp.CloseAsync();
@@ -141,8 +137,6 @@ public partial class ViewEnvelopes : ContentPage
             if (result)
             {
                 _vm.Savings.Remove(Saving);
-                listView.RefreshItem();
-                listView.RefreshView();
             }
 
         }
