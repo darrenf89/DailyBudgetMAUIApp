@@ -126,6 +126,7 @@ public partial class PopUpOTP : Popup
         _vm.PasswordResetFailure = false;
         _vm.EmailNotFound = false;
         _vm.OTPRequired = false;
+        _vm.OTPCopyContentValid = false;
     }
 
     private void ValidateOTP_Popup(object sender, EventArgs e)
@@ -153,7 +154,7 @@ public partial class PopUpOTP : Popup
             }
             else
             {
-                if(_vm.OTP.OTPCode.Length < 8)
+                if(_vm.OTP.OTPCode.Length < 6)
                 {
                     _vm.OTPRequired = true;
                 }
@@ -251,7 +252,7 @@ public partial class PopUpOTP : Popup
             }
             else
             {
-                if (_vm.OTP.OTPCode.Length < 8)
+                if (_vm.OTP.OTPCode.Length < 6)
                 {
                     _vm.OTPRequired = true;
                 }
@@ -276,7 +277,7 @@ public partial class PopUpOTP : Popup
         }
         else if (_vm.OTPType == "ShareBudget")
         {
-            if (_vm.OTP.OTPCode.Length < 8)
+            if (_vm.OTP.OTPCode.Length < 6)
             {
                 _vm.OTPRequired = true;
             }
@@ -325,12 +326,6 @@ public partial class PopUpOTP : Popup
         entOTPSix.IsEnabled = false;
         entOTPSix.IsEnabled = true;
 
-        entOTPSeven.IsEnabled = false;
-        entOTPSeven.IsEnabled = true;
-
-        entOTPEight.IsEnabled = false;
-        entOTPEight.IsEnabled = true;
-
         entEmail.IsEnabled = false;
         entEmail.IsEnabled = true;
 
@@ -356,9 +351,9 @@ public partial class PopUpOTP : Popup
 
     private void entOTP_TextChanged(object sender, TextChangedEventArgs e)
     {
-        _vm.OTP.OTPCode = entOTPOne.Text + entOTPTwo.Text + entOTPThree.Text + entOTPFour.Text + entOTPFive.Text + entOTPSix.Text + entOTPSeven.Text + entOTPEight.Text;
+        _vm.OTP.OTPCode = entOTPOne.Text + entOTPTwo.Text + entOTPThree.Text + entOTPFour.Text + entOTPFive.Text + entOTPSix.Text;
 
-        var entOTP = (BorderlessEntry)sender;
+        var entOTP = (FocusedEntry)sender;
 
         if (entOTP.Identifier == "entOTPOne")
         {
@@ -371,7 +366,7 @@ public partial class PopUpOTP : Popup
         {
             if (string.IsNullOrEmpty(e.NewTextValue))
             {
-                entOTPOne.Focus();
+                
             }
             else
             {
@@ -383,7 +378,7 @@ public partial class PopUpOTP : Popup
         {
             if (string.IsNullOrEmpty(e.NewTextValue))
             {
-                entOTPTwo.Focus();
+                
             }
             else
             {
@@ -394,7 +389,7 @@ public partial class PopUpOTP : Popup
         {
             if (string.IsNullOrEmpty(e.NewTextValue))
             {
-                entOTPThree.Focus();
+                
             }
             else
             {
@@ -405,7 +400,7 @@ public partial class PopUpOTP : Popup
         {
             if (string.IsNullOrEmpty(e.NewTextValue))
             {
-                entOTPFour.Focus();
+                
             }
             else
             {
@@ -416,29 +411,7 @@ public partial class PopUpOTP : Popup
         {
             if (string.IsNullOrEmpty(e.NewTextValue))
             {
-                entOTPFive.Focus();
-            }
-            else
-            {
-                entOTPSeven.Focus();
-            }
-        }
-        else if (entOTP.Identifier == "entOTPSeven")
-        {
-            if (string.IsNullOrEmpty(e.NewTextValue))
-            {
-                entOTPSix.Focus();
-            }
-            else
-            {
-                entOTPEight.Focus();
-            }
-        }
-        else if (entOTP.Identifier == "entOTPEight")
-        {
-            if (string.IsNullOrEmpty(e.NewTextValue))
-            {
-                entOTPSeven.Focus();
+                
             }
         }
     }
@@ -447,5 +420,6 @@ public partial class PopUpOTP : Popup
     {
         _vm.OTPNotFound = false;
         _vm.OTPRequired = false;
+        _vm.OTPCopyContentValid = false;
     }
 }

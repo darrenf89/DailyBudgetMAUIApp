@@ -38,7 +38,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         public Color fromBalanceColor;
         [ObservableProperty]
-        public Color toBalanceColor;
+        public Color toBalanceColor;        
+        [ObservableProperty]
+        public bool isCoverOverspend;
 
         [ObservableProperty]
         public Budgets budget;

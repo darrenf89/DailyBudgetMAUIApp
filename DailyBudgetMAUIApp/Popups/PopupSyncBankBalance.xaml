@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            x:Class="DailyBudgetMAUIApp.Handlers.PopupSyncBankBalance"
+            xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+            xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+            xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+            CanBeDismissedByTappingOutsideOfPopup="False"
+            Color="#80000000">
+    <AbsoluteLayout x:Name="AbsLayout">
+        <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0">
+            <Border BackgroundColor="{DynamicResource White}" Margin="15,160,15,0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16"  StrokeThickness="2">
+                <VerticalStackLayout>
+                    <VerticalStackLayout x:Name="vslSavingComplete">
+                        <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                            <Image Margin="0,20,0,0">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Update}" Size="24"  Color="{DynamicResource Primary}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Sync Bank Balance1"/>
+                        </HorizontalStackLayout>
+                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Margin="20,15,20,15" Text="Has your bank balance got out of sync. Update your app bank balance to match whats in your bank/s"/>
+                        <VerticalStackLayout Margin="40,0,20,0">
+                            <HorizontalStackLayout x:Name="hslPayDayAmount" Margin="0" IsVisible="False" HeightRequest="45">
+                                <Image Margin="0,0,15,0" VerticalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Monetization_on}" Size="24"  Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                                <handlers:BorderlessEntry Margin="0" VerticalOptions="Center" IsVisible="True" TextColor="{DynamicResource Success}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" CharacterSpacing="2" x:Name="entPayDayAmount" TextChanged="PayDayAmount_Changed" Keyboard="Numeric" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout IsVisible="false" Margin="0,2,0,0" x:Name="validatorPayDayAmount">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="You can't reduce the amount to Zero!" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                    <Grid Margin="20,25,20,20" RowDefinitions="*" ColumnDefinitions="80,*,10,*,10,*" x:Name="grdUpdateBtns" IsVisible="True">
+                        <Button FontSize="{Binding Source=Caption,Converter={StaticResource StringToSizeConverter}}" WidthRequest="{Binding ButtonTwoWidth}" Grid.Row="0" Grid.Column="1" Margin="0" x:Name="btnCancel" Text="Cancel" Clicked="CancelUpdate_Saving" HorizontalOptions="Center" BackgroundColor="{StaticResource Info}" TextColor="White" Padding="5,0" />
+                        <Button FontSize="{Binding Source=Caption,Converter={StaticResource StringToSizeConverter}}" WidthRequest="{Binding ButtonTwoWidth}" Grid.Row="0" Grid.Column="3" Margin="0" x:Name="btnReset" Text="Reset" Clicked="Reset_Saving" HorizontalOptions="Center" BackgroundColor="{StaticResource Tertiary}" TextColor="White" Padding="5,0"/>
+                        <Button FontSize="{Binding Source=Caption,Converter={StaticResource StringToSizeConverter}}" WidthRequest="{Binding ButtonTwoWidth}" Grid.Row="0" Grid.Column="5" Margin="0" x:Name="btnAccept" Text="Accept" Clicked="AcceptUpdate_Saving" HorizontalOptions="Center" BackgroundColor="{StaticResource Primary}" TextColor="White" Padding="5,0" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </AbsoluteLayout>
+</xct:Popup>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DailyBudgetMAUIApp.Handlers.FocusedEntry"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             x:Name="CustomFocusedEntry">
+    <Grid>
+        <Border BackgroundColor="White" Stroke="{StaticResource Gray900}" StrokeShape="RoundRectangle 5" VerticalOptions="Center" x:Name="FEBorder" StrokeThickness="1" Margin="0,0,0,15">
+            <Border.Padding>
+                <OnPlatform x:TypeArguments="Thickness">
+                    <On Platform="Android" Value="5,2,5,2"/>
+                    <On Platform="iOS" Value="5,4,5,4"/>
+                </OnPlatform>
+            </Border.Padding>
+            <handlers:BorderlessEntry x:Name="FEEntry" VerticalOptions="Center" HorizontalOptions="Center" Focused="FEEntry_Focused" Unfocused="FEEntry_Unfocused" Text="{Binding Source={x:Reference CustomFocusedEntry}, Path=Text}"/>
+        </Border>
+    </Grid>
+</ContentView>

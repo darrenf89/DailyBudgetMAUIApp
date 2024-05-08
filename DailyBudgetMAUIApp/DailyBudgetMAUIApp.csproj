@@ -17,8 +17,8 @@
 		<ApplicationIdGuid>a9e0258c-e381-49fa-aa43-d11c44cf7b75</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.27</ApplicationDisplayVersion>
-		<ApplicationVersion>27</ApplicationVersion>
+		<ApplicationDisplayVersion>1.28</ApplicationDisplayVersion>
+		<ApplicationVersion>28</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -112,6 +112,12 @@
 	  <Compile Update="Pages\ViewPayees.xaml.cs">
 	    <DependentUpon>ViewPayees.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Platforms\iOS\Mappers\BorderEntryMapper.cs">
+	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+	  </Compile>
+	  <Compile Update="Popups\PopupSyncBankBalance.xaml.cs">
+	    <DependentUpon>PopupSyncBankBalance.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Popups\PopupMoveBalance.xaml.cs">
 	    <DependentUpon>PopupMoveBalance.xaml</DependentUpon>
 	  </Compile>
@@ -196,6 +202,9 @@
 	  <MauiXaml Update="Handlers\ButtonControlActivityIndicator.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Handlers\FocusedEntry.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\BottomSheets\EditProfilePictureBottomSheet.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -215,6 +224,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewPayees.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Popups\PopupSyncBankBalance.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Popups\PopupMoveBalance.xaml">

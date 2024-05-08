@@ -17,7 +17,9 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         private decimal?  moneyAvailableBalance ;
         [ObservableProperty]
-        private decimal?  leftToSpendBalance ;
+        private decimal?  leftToSpendBalance ;        
+        [ObservableProperty]
+        private decimal? plusStashSpendBalance;
         [ObservableProperty]
         private DateTime?  nextIncomePayday ;
         [ObservableProperty]

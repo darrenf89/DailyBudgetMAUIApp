@@ -7,14 +7,18 @@ using System.Drawing;
 using Color = Microsoft.Maui.Graphics.Color;
 using Microsoft.Maui.Platform;
 
+
+
 #if IOS
 using UIKit;
 using Foundation;
+using DailyBudgetMAUIApp.Platforms.iOS.Mappers;
 #endif
 
 #if ANDROID
 using Microsoft.Maui.Controls.Compatibility.Platform.Android;
 using Android.Widget;
+using DailyBudgetMAUIApp.Platforms.Android.Mappers;
 #endif
 
 namespace DailyBudgetMAUIApp;
@@ -45,6 +49,20 @@ public partial class App : Application
         InitializeComponent();
         LoadChartBrush();
 
+        Microsoft.Maui.Handlers.ElementHandler.ElementMapper.AppendToMapping("Classic", (handler, view) =>
+        {
+            if (view is BorderEntry)
+            {
+#if __ANDROID__
+                BorderEntryMapper.Map(handler, view);
+
+#elif __IOS__
+                BorderEntryMapper.Map(handler, view);
+
+#endif
+            }
+        });
+
         Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping(nameof(Microsoft.Maui.Controls.Button), (handler, view) =>
         {
 #if ANDROID
@@ -55,7 +73,7 @@ public partial class App : Application
         Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping(nameof(BorderlessEntry), (handler, view) =>
         {
             if (view is BorderlessEntry)
-            {
+            {               
 #if __ANDROID__
                 handler.PlatformView.Background = null;
                 handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);

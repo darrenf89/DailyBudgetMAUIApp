@@ -21,6 +21,7 @@ namespace DailyBudgetMAUIApp.Converters
         }
 
     }
+
     public class IsSpendFromSavingText : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -34,6 +35,33 @@ namespace DailyBudgetMAUIApp.Converters
             else
             {
                 return "No";
+            }
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class IsFocusedConverter : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Application.Current.Resources.TryGetValue("StandardInputBorderEntry", out var StandardInputBorderEntry);
+            Application.Current.Resources.TryGetValue("FocusInputBorderEntry", out var FocusInputBorderEntry);
+
+            if (value == null) return (Style)StandardInputBorderEntry;
+
+            if ((bool)value)
+            {
+                return (Style)FocusInputBorderEntry;
+            }
+            else
+            {
+                return (Style)StandardInputBorderEntry;
             }
 
         }
@@ -1613,7 +1641,7 @@ namespace DailyBudgetMAUIApp.Converters
                     output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(10, 6, 8, 8, 10, 12);
                     break;                
                 case "XL":
-                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(40, 32, 36, 36, 40, 50);
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(50, 42, 46, 46, 50, 60);
                     break;
                 default:
                     output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(14, 10, 12, 12, 14, 16);

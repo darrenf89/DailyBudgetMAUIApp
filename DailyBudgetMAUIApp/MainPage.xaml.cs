@@ -72,8 +72,6 @@ public partial class MainPage : ContentPage
 
     protected async override void OnAppearing()
     {
-
-
         base.OnAppearing();
 
         ProcessSnackBar();
@@ -184,8 +182,7 @@ public partial class MainPage : ContentPage
             await App.CurrentPopUp.CloseAsync();
             App.CurrentPopUp = null;
         }
-
-    }
+    }  
 
     private async Task LoadMainDashboardContent()
     {
@@ -1140,7 +1137,7 @@ public partial class MainPage : ContentPage
 
     private void EnvelopeSavingsMoreOptions_Tapped(object sender, TappedEventArgs e)
     {
-        EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet();
+        EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
 
         page.Detents = new DetentsCollection()
         {
@@ -2240,7 +2237,7 @@ public partial class MainPage : ContentPage
 
     private void SavingsMoreOptions_Tapped(object sender, TappedEventArgs e)
     {
-        EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet();
+        EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
 
         page.Detents = new DetentsCollection()
         {
@@ -2433,9 +2430,15 @@ public partial class MainPage : ContentPage
 
     }
 
-    private void CoverOverspend_Tapped(object sender, TappedEventArgs e)
+    private async void CoverOverspend_Tapped(object sender, TappedEventArgs e)
     {
-
+        var popup = new PopupMoveBalance(App.DefaultBudget, "Budget", 0, true, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        await Task.Delay(100);
+        if (result.ToString() == "OK")
+        {
+            App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+        }
     }
 
     private void CategoryOptions_Tapped(object sender, TappedEventArgs e)

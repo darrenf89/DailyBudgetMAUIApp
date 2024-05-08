@@ -24,7 +24,7 @@
                                     </Image.Source>
                                 </Image>
                             </Border>
-                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="View all Envelopes" WidthRequest="100"/>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="View all envelopes" WidthRequest="100"/>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="ViewAllEnvelopes" Tapped="ViewAllEnvelopes_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>
@@ -37,13 +37,23 @@
                                     </Image.Source>
                                 </Image>
                             </Border>
-                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Create new Envelope" WidthRequest="100"/>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Create new envelope" WidthRequest="100"/>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="CreateNewEnvelope" Tapped="CreateNewEnvelope_Tapped" />
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>                        
                         <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
-
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Shopping_bag}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Spend from envelope" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="SpendMoney" Tapped="SpendMoney_Tapped" />
+                            </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
                     </FlexLayout>
                     <BoxView Color="{StaticResource Secondary}" Margin="20,0,20,0" HeightRequest="2"/>

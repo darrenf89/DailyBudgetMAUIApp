@@ -35,7 +35,9 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         private decimal?  periodSavingValue;
         [ObservableProperty]
-        private bool  isAutoComplete;
+        private bool  isAutoComplete;        
+        [ObservableProperty]
+        private bool  isTopUp;
         [ObservableProperty]
         private string  ddlSavingsPeriod;
 

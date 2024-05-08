@@ -479,11 +479,13 @@ namespace DailyBudgetMAUIApp.DataServices
                                 Income.IncomeActiveDate = DateTime.UtcNow;
                                 Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance + Income.IncomeAmount;
                                 Budget.LeftToSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
+                                Budget.PlusStashSpendBalance = Budget.PlusStashSpendBalance + Income.IncomeAmount;
                                 Budget.CurrentActiveIncome += Income.IncomeAmount;
                                 while (NextIncomeDate.Date < NextPayDay.Date)
                                 {
                                     Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance + Income.IncomeAmount;
-                                    Budget.LeftToSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
+                                    Budget.PlusStashSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
+                                    Budget.LeftToSpendBalance = Budget.PlusStashSpendBalance + Income.IncomeAmount;
                                     Budget.CurrentActiveIncome += Income.IncomeAmount;
                                     //TODO: Add a Transaction into transactions
                                     NextIncomeDate = CalculateNextDate(NextIncomeDate, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
@@ -516,6 +518,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             decimal DailySavingOutgoing = new();
             decimal PeriodTotalSavingOutgoing = new();
+            decimal PeriodEnvelopeBalance = new();
 
             int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
 
@@ -543,6 +546,10 @@ namespace DailyBudgetMAUIApp.DataServices
                         }
 
                     }
+                    else
+                    {
+                        PeriodEnvelopeBalance += Saving.CurrentBalance ?? 0;
+                    }
                 }
 
                 if (Saving.CurrentBalance >= 0)
@@ -553,6 +560,8 @@ namespace DailyBudgetMAUIApp.DataServices
 
             Budget.DailySavingOutgoing = DailySavingOutgoing;
             Budget.LeftToSpendBalance = Budget.LeftToSpendBalance - PeriodTotalSavingOutgoing;
+            Budget.PlusStashSpendBalance = Budget.PlusStashSpendBalance - PeriodTotalSavingOutgoing + PeriodEnvelopeBalance;
+
 
             return "OK";
         }
@@ -605,6 +614,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             Budget.DailyBillOutgoing = DailyBillOutgoing;
             Budget.LeftToSpendBalance = Budget.LeftToSpendBalance - PeriodTotalBillOutgoing;
+            Budget.PlusStashSpendBalance = Budget.PlusStashSpendBalance - PeriodTotalBillOutgoing;
             Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance - PeriodTotalBillOutgoing;
             return "OK";
         }
@@ -660,6 +670,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             Budget.DailyBillOutgoing = DailyBillOutgoing;
             Budget.LeftToSpendBalance = Budget.LeftToSpendBalance - PeriodTotalBillOutgoing;
+            Budget.PlusStashSpendBalance = Budget.PlusStashSpendBalance - PeriodTotalBillOutgoing;
             Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance - PeriodTotalBillOutgoing;
 
             return "OK";
@@ -893,6 +904,7 @@ namespace DailyBudgetMAUIApp.DataServices
             budget.BankBalance += budget.PaydayAmount;
             budget.MoneyAvailableBalance += budget.PaydayAmount;
             budget.LeftToSpendBalance += budget.PaydayAmount;
+            budget.PlusStashSpendBalance += budget.PaydayAmount;
         }
 
         private void CloseSaving(ref Savings Saving)
@@ -1055,6 +1067,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     }
 
                     budget.LeftToSpendBalance = budget.BankBalance;
+                    budget.PlusStashSpendBalance = budget.BankBalance;
                     budget.MoneyAvailableBalance = budget.BankBalance;
 
                     status = status == "OK" ? BudgetDailyCycleBudgetValuesUpdate(ref budget) : status;
@@ -1180,11 +1193,22 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         if (!Saving.IsRegularSaving)
                         {
-                            Stats.SavingsToDate += (Saving.PeriodSavingValue.GetValueOrDefault() - Saving.CurrentBalance.GetValueOrDefault());
+                            if(Saving.IsTopUp)
+                            {
+                                Stats.SavingsToDate += Saving.PeriodSavingValue.GetValueOrDefault();
+                                Saving.CurrentBalance += Saving.PeriodSavingValue;
+                                Saving.LastUpdatedValue = Saving.PeriodSavingValue;
+                                Saving.GoalDate = budget.NextIncomePayday;
+                            }
+                            else
+                            {
+                                Stats.SavingsToDate += (Saving.PeriodSavingValue.GetValueOrDefault() - Saving.CurrentBalance.GetValueOrDefault());
 
-                            Saving.CurrentBalance = Saving.PeriodSavingValue;
-                            Saving.LastUpdatedValue = Saving.PeriodSavingValue;
-                            Saving.GoalDate = budget.NextIncomePayday;
+                                Saving.CurrentBalance = Saving.PeriodSavingValue;
+                                Saving.LastUpdatedValue = Saving.PeriodSavingValue;
+                                Saving.GoalDate = budget.NextIncomePayday;
+                            }
+
 
                         }
 
@@ -1432,6 +1456,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 Budget.BankBalance += T.TransactionAmount;
                 Budget.MoneyAvailableBalance += T.TransactionAmount;
+                Budget.PlusStashSpendBalance += T.TransactionAmount;
                 Budget.LeftToSpendBalance += T.TransactionAmount;
                 int DaysToPayDay = (int)Math.Ceiling((Budget.NextIncomePayday.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
                 Budget.LeftToSpendDailyAmount += (T.TransactionAmount ?? 0) / DaysToPayDay;
@@ -1442,6 +1467,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 Budget.BankBalance -= T.TransactionAmount;
                 Budget.MoneyAvailableBalance -= T.TransactionAmount;
+                Budget.PlusStashSpendBalance -= T.TransactionAmount;
                 Budget.LeftToSpendBalance -= T.TransactionAmount;
                 Budget.LeftToSpendDailyAmount -= T.TransactionAmount ?? 0;
                 Budget.PayPeriodStats[0].SpendToDate += T.TransactionAmount ?? 0;
@@ -1528,6 +1554,10 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         Budget.BankBalance += T.TransactionAmount;
                         Budget.MoneyAvailableBalance += T.TransactionAmount;
+                        if(T.SavingsSpendType == "EnvelopeSaving")
+                        {
+                            Budget.PlusStashSpendBalance += T.TransactionAmount;
+                        }
                         Budget.LastUpdated = DateTime.UtcNow;
                         S.CurrentBalance += T.TransactionAmount;
                         S.LastUpdatedValue = T.TransactionAmount;
@@ -1539,6 +1569,10 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         Budget.BankBalance -= T.TransactionAmount;
                         Budget.MoneyAvailableBalance -= T.TransactionAmount;
+                        if (T.SavingsSpendType == "EnvelopeSaving")
+                        {
+                            Budget.PlusStashSpendBalance -= T.TransactionAmount;
+                        }
                         Budget.LastUpdated = DateTime.UtcNow;
                         S.CurrentBalance -= T.TransactionAmount;
                         S.LastUpdatedValue = T.TransactionAmount;

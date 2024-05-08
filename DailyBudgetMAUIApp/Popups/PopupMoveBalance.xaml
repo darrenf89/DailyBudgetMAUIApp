@@ -33,7 +33,7 @@
                                                 <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto" BackgroundColor="Transparent" Padding="10,0,10,0" VerticalOptions="Center">
                                                     <Image Grid.Row="0" Grid.Column="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,10,0">
                                                         <Image.Source>
-                                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding Type, Converter={StaticResource EventTypeToGlyph}}" Size="15"  Color="{DynamicResource PrimaryDark}" />
+                                                                <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{Binding Type, Converter={StaticResource EventTypeToGlyph}}" Size="15"  Color="{DynamicResource PrimaryDark}"/>
                                                         </Image.Source>
                                                     </Image>
                                                     <Label FontAttributes="Bold" Grid.Row="0" Grid.Column="1" Text="{Binding Name}" VerticalTextAlignment="Center" Padding="0" Margin="2" FontSize="{Binding Source=Small,Converter={StaticResource StringToSizeConverter}}"/>

@@ -144,7 +144,7 @@ public partial class ViewSavings : ContentPage
     private async void MoveBalance_Tapped(object sender, TappedEventArgs e)
     {
         var Saving = (Savings)e.Parameter;
-        var popup = new PopupMoveBalance(App.DefaultBudget, "Saving", Saving.SavingID, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+        var popup = new PopupMoveBalance(App.DefaultBudget, "Saving", Saving.SavingID, false, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
         await Task.Delay(100);
         var result = await Application.Current.MainPage.ShowPopupAsync(popup);
         if (result.ToString() == "OK")

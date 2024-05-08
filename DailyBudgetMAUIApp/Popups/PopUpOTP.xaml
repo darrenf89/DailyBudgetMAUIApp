@@ -94,42 +94,45 @@
                         <Label x:Name="lblTitleOTPCode" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Center" HorizontalTextAlignment="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,10,0,0" LineBreakMode="CharacterWrap"/>
                         <Label x:Name="lblDescriptionOTPCode" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray400}" Margin="10,15,10,5" LineBreakMode="CharacterWrap"/>
                         <HorizontalStackLayout Margin="0,5,0,0" WidthRequest="{Binding EntryWidth}" HorizontalOptions="Center">
-                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,0,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
-                                <handlers:BorderlessEntry Identifier="entOTPOne" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPOne" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
-                            </Border>
-                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,0,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
-                                <handlers:BorderlessEntry Identifier="entOTPTwo" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPTwo" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
-                            </Border>
-                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,0,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
-                                <handlers:BorderlessEntry Identifier="entOTPThree" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPThree" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
-                            </Border>
-                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,0,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
-                                <handlers:BorderlessEntry Identifier="entOTPFour" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPFour" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
-                            </Border>
-                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,0,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
-                                <handlers:BorderlessEntry Identifier="entOTPFive" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPFive" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
-                            </Border>
-                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,0,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
-                                <handlers:BorderlessEntry Identifier="entOTPSix" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPSix" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
-                            </Border>
-                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,0,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
-                                <handlers:BorderlessEntry Identifier="entOTPSeven" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPSeven" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
-                            </Border>
-                            <Border Padding="0" Style="{StaticResource StandardInputBorder}" Margin="0,0,10,0" BackgroundColor="White" WidthRequest="{Binding OTPWidth}">
-                                <handlers:BorderlessEntry Identifier="entOTPEight" Margin="0" TextColor="{StaticResource Gray600}" x:Name="entOTPEight" HorizontalOptions="Center" VerticalOptions="Center"  Keyboard="Numeric" MaxLength="1"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
-                            </Border>
+                            <handlers:FocusedEntry Text="{Binding OTPOne}" Width="{Binding OTPWidth}" Margin="0,0,10,10" Identifier="entOTPOne" x:Name="entOTPOne" Keyboard="Numeric" MaxLength="1" HorizontalOptions="Center" VerticalOptions="Center"  FEFontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            <handlers:FocusedEntry Text="{Binding OTPTwo}" Width="{Binding OTPWidth}" Margin="0,0,10,10" Identifier="entOTPTwo" x:Name="entOTPTwo" Keyboard="Numeric" MaxLength="1" HorizontalOptions="Center" VerticalOptions="Center"  FEFontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            <handlers:FocusedEntry Text="{Binding OTPThree}" Width="{Binding OTPWidth}" Margin="0,0,10,10" Identifier="entOTPThree" x:Name="entOTPThree" Keyboard="Numeric" MaxLength="1" HorizontalOptions="Center" VerticalOptions="Center"  FEFontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            <handlers:FocusedEntry Text="{Binding OTPFour}" Width="{Binding OTPWidth}" Margin="0,0,10,10" Identifier="entOTPFour" x:Name="entOTPFour" Keyboard="Numeric" MaxLength="1" HorizontalOptions="Center" VerticalOptions="Center"  FEFontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            <handlers:FocusedEntry Text="{Binding OTPFive}" Width="{Binding OTPWidth}" Margin="0,0,10,10" Identifier="entOTPFive" x:Name="entOTPFive" Keyboard="Numeric" MaxLength="1" HorizontalOptions="Center" VerticalOptions="Center"  FEFontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
+                            <handlers:FocusedEntry Text="{Binding OTPSix}" Width="{Binding OTPWidth}" Margin="0,0,10,10" Identifier="entOTPSix" x:Name="entOTPSix" Keyboard="Numeric" MaxLength="1" HorizontalOptions="Center" VerticalOptions="Center"  FEFontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextChanged="entOTP_TextChanged" Focused="entOTP_Focused" ReturnType="Next"/>
                         </HorizontalStackLayout>
                         <VerticalStackLayout Margin="0,10,0,10">
                             <Label HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding CountdownVisible}" TextColor="{DynamicResource Primary}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}">
-                                <MultiBinding StringFormat="Please wait {0} seconds before again!">
+                                <MultiBinding StringFormat="Please wait {0} seconds before trying again!">
                                     <Binding Path="CountdownNumber"/>
                                 </MultiBinding>
                             </Label>
-                            <Label HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding ResendVisible}" Text="Resend" TextColor="{DynamicResource Primary}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}">
+                            <Label HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding ResendVisible}" Text="Resend OTP" TextColor="{DynamicResource Primary}" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}">
                                 <Label.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding ResendCommand}"/>
                                 </Label.GestureRecognizers>
                             </Label>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Margin="0,0,0,10">
+                            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" >
+                                <Label HorizontalOptions="Center" VerticalOptions="Center" Text="Paste OTP" TextColor="{DynamicResource Tertiary}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
+                                <Image Margin="5,2,0,0" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Content_paste}" Size="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Color="{DynamicResource Tertiary}"/>
+                                    </Image.Source>
+                                </Image>
+                                <HorizontalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding PasteOTPCommand}"/>
+                                </HorizontalStackLayout.GestureRecognizers>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout IsVisible="{Binding OTPCopyContentValid}" Margin="10,0,0,0">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="{Binding OTPCopyErrorMessage}" Style="{StaticResource ErrorMessage}"/>
+                            </HorizontalStackLayout>
                         </VerticalStackLayout>
                         <HorizontalStackLayout IsVisible="{Binding OTPNotFound}" Margin="10,0,0,0">
                             <Image>
@@ -145,7 +148,7 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
                                 </Image.Source>
                             </Image>
-                            <Label Text="Please enter all 8 digits for the OTP code" Style="{StaticResource ErrorMessage}"/>
+                            <Label Text="Please enter all 6 digits for the OTP code" Style="{StaticResource ErrorMessage}"/>
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout IsVisible="false" x:Name="entPasswordReset" WidthRequest="{Binding EntryWidth}" HorizontalOptions="Center">

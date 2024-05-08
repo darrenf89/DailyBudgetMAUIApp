@@ -166,9 +166,14 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
     }
 
-    private void SyncBankBalance_Tapped(object sender, TappedEventArgs e)
+    private async void SyncBankBalance_Tapped(object sender, TappedEventArgs e)
     {
-
+        var popup = new PopupSyncBankBalance(App.DefaultBudget, new PopupSyncBankBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        if (result is Budgets)
+        {
+            App.DefaultBudget = (Budgets)result;
+        }
     }
 
     private async void UserSettings_Tapped(object sender, TappedEventArgs e)
@@ -346,7 +351,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
     private async void MoveBalance_Tapped(object sender, TappedEventArgs e)
     {
-        var popup = new PopupMoveBalance(App.DefaultBudget, "Budget",0, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+        var popup = new PopupMoveBalance(App.DefaultBudget, "Budget",0, false, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
         var result = await Application.Current.MainPage.ShowPopupAsync(popup);
         await Task.Delay(100);
         if (result.ToString() == "OK")

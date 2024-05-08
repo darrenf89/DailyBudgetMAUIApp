@@ -893,15 +893,19 @@ public partial class AddSaving : ContentPage
         }
         else
         {
-            if (_vm.Saving.PeriodSavingValue == 0 || _vm.Saving.RegularSavingValue == 0)
+            if(!_vm.Saving.IsTopUp)
             {
-                IsValid = false;
-                validatorSavingAmount.IsVisible = true;
+                if (_vm.Saving.PeriodSavingValue == 0 || _vm.Saving.RegularSavingValue == 0)
+                {
+                    IsValid = false;
+                    validatorSavingAmount.IsVisible = true;
+                }
+                else
+                {
+                    validatorSavingAmount.IsVisible = false;
+                }
             }
-            else
-            {
-                validatorSavingAmount.IsVisible = false;
-            }
+
         }
 
         _vm.IsPageValid = IsValid;
@@ -991,5 +995,20 @@ public partial class AddSaving : ContentPage
                 entSavingAmount.Text = DailyAmount.ToString("c", CultureInfo.CurrentCulture);
             }
         }
+    }
+
+    private void swhIsTopUp_Toggled(object sender, ToggledEventArgs e)
+    {
+        if (_vm.Saving.IsTopUp) 
+        {
+            _vm.IsTopUpParaText = "By topping up your saving we will add the saving amount to your balance every period. This way you can keep building up a stash for bigger less frequent spends. This also allows you to add to your stash as you go on and this amount will remain in your stash.";
+            _vm.IsTopUpLabelText = "Top up";
+        }
+        else
+        {
+            _vm.IsTopUpParaText = "By replenishing the stash, every pay period we will reset the balance to saving amount for every pay period. Any balance not spent by the end of the period will effectively be added back to your budget for you to spend!";
+            _vm.IsTopUpLabelText = "Replenish";
+        }
+
     }
 }

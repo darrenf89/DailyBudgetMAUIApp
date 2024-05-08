@@ -56,6 +56,23 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private ShareBudgetRequest  shareBudgetRequest;
 
+        [ObservableProperty]
+        private string oTPOne;
+        [ObservableProperty]
+        private string oTPTwo;
+        [ObservableProperty]
+        private string oTPThree;
+        [ObservableProperty]
+        private string oTPFour;
+        [ObservableProperty]
+        private string oTPFive;
+        [ObservableProperty]
+        private string oTPSix;        
+        [ObservableProperty]
+        private string oTPCopyErrorMessage;        
+        [ObservableProperty]
+        private bool oTPCopyContentValid = false;
+
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
         public double PopupWidth { get; }
@@ -70,14 +87,52 @@ namespace DailyBudgetMAUIApp.ViewModels
             ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             PopupWidth = ScreenWidth - 30;
             EntryWidth = PopupWidth * 0.8;
-            OTPWidth = (EntryWidth - 70) / 8;
+            OTPWidth = (EntryWidth - 50) / 6;
 
             _ds = ds;
         }
 
+        private async Task ClearClipboard() =>
+            await Clipboard.Default.SetTextAsync(null);
 
         [RelayCommand]
-        public async void Resend()
+        public async Task PasteOTP()
+        {
+
+            if (Clipboard.Default.HasText)
+            {
+                string CopiedText = await Clipboard.Default.GetTextAsync();
+                CopiedText = CopiedText.Trim();
+                if (CopiedText.Length == 6 && int.TryParse(CopiedText, out int n))
+                {
+                    OTPOne = char.ToString(CopiedText[0]);
+                    OTPTwo = char.ToString(CopiedText[1]);
+                    OTPThree = char.ToString(CopiedText[2]);
+                    OTPFour = char.ToString(CopiedText[3]);
+                    OTPFive = char.ToString(CopiedText[4]);
+                    OTPSix = char.ToString(CopiedText[5]);
+
+                    await ClearClipboard();
+                }
+                else
+                {
+                    OTPCopyErrorMessage = "Copied content is not the correct format";
+                    OTPCopyContentValid = true;
+                }
+
+               
+            }
+            else
+            {
+                OTPCopyErrorMessage = "Clipboard is empty";
+                OTPCopyContentValid = true;
+            }
+                
+        }
+
+
+        [RelayCommand]
+        public async Task Resend()
         {
             
             string status = await _ds.CreateNewOtpCode(UserID, OTPType);

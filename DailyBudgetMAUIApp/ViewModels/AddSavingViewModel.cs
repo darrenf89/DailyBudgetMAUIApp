@@ -35,7 +35,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private string  savingType;
         [ObservableProperty]
-        private string  navigatedFrom;        
+        private string  navigatedFrom;         
+        [ObservableProperty]
+        private string isTopUpLabelText = "Replenish";            
+        [ObservableProperty]
+        private string isTopUpParaText = "By replenishing the stash, every pay period we will reset the balance to saving amount for every pay period. Any balance not spent by the end of the period will effectively be added back to your budget for you to spend!";        
         [ObservableProperty]
         private bool showCalculator;
 
@@ -109,7 +113,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         }
                         else
                         {
-                            await Shell.Current.GoToAsync($"{nameof(MainPage)}?SnackBar=Saving Added&SnackID={SavingID}");
+                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=Saving Added&SnackID={SavingID}");
                         }
                     }
                 }

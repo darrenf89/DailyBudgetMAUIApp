@@ -64,7 +64,8 @@
     <converters:IsDPATextConverter x:Key="IsDPATextConverter"/>
     <converters:StringToSizeConverter x:Key="StringToSizeConverter"/>
     <converters:AmountToColor x:Key="AmountToColor"/>
-
+    <converters:IsFocusedConverter x:Key="IsFocusedConverter"/>    
+    
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>
         <Setter Property="FontSize" Value="Micro"/>
@@ -326,6 +327,14 @@
         </Setter>
     </Style>
 
+    <Style TargetType="handlers:BorderEntry">
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="BorderColor" Value="{DynamicResource Gray900}"/>
+        <Setter Property="BackgroundColor" Value="{DynamicResource White}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="MinimumHeightRequest" Value="44"/>        
+    </Style>
+
     <Style TargetType="Border" x:Key="StandardInputBorder">
         <Setter Property="StrokeShape" Value="RoundRectangle 5"/>
         <Setter Property="Stroke" Value="{DynamicResource Gray900Brush}"/>
@@ -350,6 +359,13 @@
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
+    </Style>
+
+    <Style TargetType="handlers:BorderEntry" x:Key="StandardInputBorderEntry">
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="BorderColor" Value="{DynamicResource Gray900}"/>
+        <Setter Property="BackgroundColor" Value="{DynamicResource White}"/>
+        <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
     <Style TargetType="Border" x:Key="PictureFrame150Circle">

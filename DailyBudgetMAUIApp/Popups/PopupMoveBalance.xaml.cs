@@ -12,7 +12,7 @@ public partial class PopupMoveBalance : Popup
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
 
-    public PopupMoveBalance(Budgets Budget, string Type, int id, PopupMoveBalanceViewModel viewModel, IProductTools pt, IRestDataService ds)
+    public PopupMoveBalance(Budgets Budget, string Type, int id, bool IsCoverOverSpend, PopupMoveBalanceViewModel viewModel, IProductTools pt, IRestDataService ds)
 	{
         InitializeComponent();
 
@@ -29,11 +29,13 @@ public partial class PopupMoveBalance : Popup
         Application.Current.Resources.TryGetValue("Danger", out var Danger);
         Application.Current.Resources.TryGetValue("pillSuccess", out var pillSuccess);
         Application.Current.Resources.TryGetValue("pillDanger", out var pillDanger);
+        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
         
         _vm.FromBalanceColor = (Color)Success;
         _vm.FromBalanceStyle = (Style)pillSuccess;
         _vm.ToBalanceColor = (Color)Success;
-        _vm.ToBalanceStyle = (Style)pillSuccess;        
+        _vm.ToBalanceStyle = (Style)pillSuccess;
+        _vm.IsCoverOverspend = IsCoverOverSpend;
 
         double Amount = 0;
         entAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
@@ -58,15 +60,18 @@ public partial class PopupMoveBalance : Popup
             });
         }
 
-        foreach(Bills bill in Budget.Bills.Where(b => !b.IsClosed))
+        if(!IsCoverOverSpend)
         {
-            _vm.MoveBalances.Add(new MoveBalanceClass
+            foreach (Bills bill in Budget.Bills.Where(b => !b.IsClosed))
             {
-                Name = bill.BillName,
-                Id = bill.BillID,
-                Type = "Bill",
-                Balance = bill.BillCurrentBalance
-            });
+                _vm.MoveBalances.Add(new MoveBalanceClass
+                {
+                    Name = bill.BillName,
+                    Id = bill.BillID,
+                    Type = "Bill",
+                    Balance = bill.BillCurrentBalance
+                });
+            }
         }
 
         _vm.FromEnabled = true;
@@ -115,6 +120,18 @@ public partial class PopupMoveBalance : Popup
         }
 
         _vm.ToEnabled = false;
+        if(IsCoverOverSpend)
+        {
+            brdFromTo.IsEnabled = false;
+            brdFromTo.Stroke = (Color)Gray400;            
+            if (_vm.Budget.LeftToSpendDailyAmount < 0)
+            {
+                decimal OverSpend = _vm.Budget.LeftToSpendDailyAmount * -1;
+                entAmount.Text = OverSpend.ToString("c", CultureInfo.CurrentCulture);
+            }    
+            entAmount.IsEnabled = false;
+            lblTitle.Text = "Cover todays overspend!";            
+        }
 
     }
 
@@ -122,7 +139,7 @@ public partial class PopupMoveBalance : Popup
     {
         decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
         entAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
-       int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
         if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entAmount.CursorPosition > position)
         {
             entAmount.CursorPosition = entAmount.Text.Length;
@@ -315,39 +332,41 @@ public partial class PopupMoveBalance : Popup
 
     private void SwapFromTo_Tapped(object sender, TappedEventArgs e)
     {
-        if(_vm.ToEnabled)
+        if (!_vm.IsCoverOverspend)
         {
-            var a1 = brdFromTo.RotateTo(0, 600, Easing.Linear);
-            Task.WhenAll(a1);
+            if (_vm.ToEnabled)
+            {
+                var a1 = brdFromTo.RotateTo(0, 600, Easing.Linear);
+                Task.WhenAll(a1);
 
-            _vm.ToEnabled = false;
-            _vm.FromEnabled = true;
+                _vm.ToEnabled = false;
+                _vm.FromEnabled = true;
 
-            MoveBalanceClass ToMove = _vm.ToSelectedMoveBalance;
-            MoveBalanceClass FromMove = _vm.FromSelectedMoveBalance;
+                MoveBalanceClass ToMove = _vm.ToSelectedMoveBalance;
+                MoveBalanceClass FromMove = _vm.FromSelectedMoveBalance;
 
-            _vm.FromSelectedMoveBalance = ToMove;
-            _vm.ToSelectedMoveBalance = FromMove;
+                _vm.FromSelectedMoveBalance = ToMove;
+                _vm.ToSelectedMoveBalance = FromMove;
 
-            _vm.RecalculatedBalances();
+                _vm.RecalculatedBalances();
 
+            }
+            else if (_vm.FromEnabled)
+            {
+                var a1 = brdFromTo.RotateTo(180, 600, Easing.Linear);
+                Task.WhenAll(a1);
+
+                _vm.ToEnabled = true;
+                _vm.FromEnabled = false;
+
+                MoveBalanceClass ToMove = _vm.ToSelectedMoveBalance;
+                MoveBalanceClass FromMove = _vm.FromSelectedMoveBalance;
+
+                _vm.FromSelectedMoveBalance = ToMove;
+                _vm.ToSelectedMoveBalance = FromMove;
+
+                _vm.RecalculatedBalances();
+            }
         }
-        else if(_vm.FromEnabled)
-        {
-            var a1 = brdFromTo.RotateTo(180, 600, Easing.Linear);
-            Task.WhenAll(a1);
-
-            _vm.ToEnabled = true;
-            _vm.FromEnabled = false;
-
-            MoveBalanceClass ToMove = _vm.ToSelectedMoveBalance;
-            MoveBalanceClass FromMove = _vm.FromSelectedMoveBalance;
-
-            _vm.FromSelectedMoveBalance = ToMove;
-            _vm.ToSelectedMoveBalance = FromMove;
-
-            _vm.RecalculatedBalances();
-        }
-
     }
 }
