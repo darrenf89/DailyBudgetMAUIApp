@@ -2939,6 +2939,67 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<string> CreateNewOtpCodeShareBudget(int UserID, int ShareBudgetID)
+        {
+            OTP UserOTP = new OTP();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/otp/createnewotpcodesharebudget/{UserID}/{ShareBudgetID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+                    if (response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        return "MaxLimit";
+                    }
+                    else if (response.IsSuccessStatusCode)
+                    {
+
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            UserOTP = serializer.Deserialize<OTP>(reader);
+                        }
+
+                        if (UserOTP.OTPID == 0)
+                        {
+                            return "Error";
+                        }
+                        else
+                        {
+                            return "OK";
+                        }
+
+                    }
+                    else
+                    {
+                        ErrorClass error = new ErrorClass();
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                            error = serializer.Deserialize<ErrorClass>(reader);
+                        }
+
+                        throw new Exception(error.ErrorMessage);
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                //Write Debug Line and then throw the exception to the next level of the stack to be handled
+                Debug.WriteLine($"Error Trying to create new OTP code in DataRestServices --> {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+        }
+
         public async Task<string> CreateNewOtpCode(int UserID, string OTPType)
         {
             OTP UserOTP = new OTP();

@@ -195,7 +195,7 @@ public partial class CreateNewBudget : ContentPage
         catch (Exception ex)
         {
             Debug.WriteLine($" --> {ex.Message}");
-            ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "OnNavigatedTo").Result;
+            ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "OnAppearing").Result;
             await Shell.Current.GoToAsync(nameof(ErrorPage),
                 new Dictionary<string, object>
                 {

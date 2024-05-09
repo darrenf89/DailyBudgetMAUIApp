@@ -105,7 +105,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine($" --> {ex.Message}");
-                ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "Constructor").Result;
+                ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "ChangeBudgetName").Result;
                 await Shell.Current.GoToAsync(nameof(ErrorPage),
                     new Dictionary<string, object>
                     {

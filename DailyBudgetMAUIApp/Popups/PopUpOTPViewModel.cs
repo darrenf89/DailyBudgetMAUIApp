@@ -134,8 +134,16 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         public async Task Resend()
         {
-            
-            string status = await _ds.CreateNewOtpCode(UserID, OTPType);
+            string status = "";
+
+            if (OTPType == "ShareBudget")
+            {
+                status = await _ds.CreateNewOtpCodeShareBudget(UserID, ShareBudgetRequest.SharedBudgetRequestID);
+            }
+            else
+            {
+                status = await _ds.CreateNewOtpCode(UserID, OTPType);
+            }            
 
             CountdownVisible = true;
             ResendVisible = false;

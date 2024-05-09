@@ -80,6 +80,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<List<Transactions>> GetRecentTransactionsOffset(int BudgetID, int NumberOf, int Offset, string page);
         public Task<Budgets> SaveBudgetDailyCycle(Budgets budget);
         public Task<string> CreateNewOtpCode(int UserID, string OTPType);
+        public Task<string> CreateNewOtpCodeShareBudget(int UserID, int ShareBudgetID);
         public Task<string> ValidateOTPCodeEmail(OTP UserOTP);
         public Task<int> GetUserIdFromEmail(string UserEmail);
         public Task<List<string>> GetPayeeList(int BudgetID);
