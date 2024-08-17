@@ -782,6 +782,15 @@ namespace DailyBudgetMAUIApp.ViewModels
                         };
 
                         UserUpdate.Add(DefaultBudgetID);
+
+                        PatchDoc PreviousDefaultBudgetID = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/PreviousDefaultBudgetID",
+                            value = 0
+                        };
+
+                        UserUpdate.Add(PreviousDefaultBudgetID);
                         await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
 
                         await Shell.Current.GoToAsync($"//{nameof(MainPage)}");

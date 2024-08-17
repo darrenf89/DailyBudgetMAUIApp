@@ -28,7 +28,8 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<BudgetSettingValues> GetBudgetSettingsValues(int BudgetID);
         public Task<BudgetSettings> GetBudgetSettings(int BudgetID);
         public Task<Budgets> CreateNewBudget(string UserEmail, string? BudgetType = "Basic");
-        public Task<string> DeleteBudget(int BudgetID, int UserID);
+        public Task<string> DeleteBudget(int BudgetID, int UserID);        
+        public Task<string> ReCalculateBudget(int BudgetID);
         public Task<string> DeleteUserAccount(int UserID);
         public Task<List<lut_CurrencySymbol>> GetCurrencySymbols(string SearchQuery);
         public Task<List<lut_CurrencyPlacement>> GetCurrencyPlacements(string SearchQuery);

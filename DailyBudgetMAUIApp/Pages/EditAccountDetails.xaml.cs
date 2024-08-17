@@ -9,7 +9,7 @@ using Syncfusion.Maui.Core;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class EditAccountSettings : ContentPage
+public partial class EditAccountDetails : ContentPage
 {
     public string _updatedAvatar = "";
     public string UpdatedAvatar
@@ -52,14 +52,13 @@ public partial class EditAccountSettings : ContentPage
             }
         }
     }
-
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
     public double ScreenHeight { get; set; }
 
-    private readonly EditAccountSettingsViewModel _vm;
+    private readonly EditAccountDetailsViewModel _vm;
 
-    public EditAccountSettings(EditAccountSettingsViewModel viewModel)
+    public EditAccountDetails(EditAccountDetailsViewModel viewModel)
 	{
 		InitializeComponent();      
 
@@ -82,11 +81,11 @@ public partial class EditAccountSettings : ContentPage
 
         await _vm.OnLoad();
 
-        if(_vm.User.ProfilePicture.Contains("Avatar"))
+        if (_vm.User.ProfilePicture.Contains("Avatar"))
         {
             ProfilePicture.ContentType = ContentType.AvatarCharacter;
             bool Success = Enum.TryParse(_vm.User.ProfilePicture, out AvatarCharacter Avatar);
-            if(Success)
+            if (Success)
             {
                 ProfilePicture.AvatarCharacter = Avatar;
                 int Number = Convert.ToInt32(_vm.User.ProfilePicture[_vm.User.ProfilePicture.Length - 1]);
@@ -95,16 +94,14 @@ public partial class EditAccountSettings : ContentPage
             }
             else
             {
-                 ProfilePicture.AvatarCharacter = AvatarCharacter.Avatar1;
-                 ProfilePicture.Background = App.ChartColor[1];
+                ProfilePicture.AvatarCharacter = AvatarCharacter.Avatar1;
+                ProfilePicture.Background = App.ChartColor[1];
             }
         }
         else
         {
             ProfilePicStream = await _vm.GetUserProfilePictureStream(App.UserDetails.UserID);
         }
-
-        vslPckrSwitchBudget.Content = _vm.SwitchBudgetPicker;
 
         if (App.CurrentPopUp != null)
         {
@@ -118,63 +115,53 @@ public partial class EditAccountSettings : ContentPage
         base.OnNavigatingFrom(args);
     }
 
-    private void NewPassword_Focused(object sender, FocusEventArgs e)
+    private void ViewSubDetails_Tapped(object sender, TappedEventArgs e)
     {
-        _vm.CurrentPasswordValid = true;
+        
+    }    
+    
+    private void TOS_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+
+    private void PrivacyPolicy_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }   
+    
+    private void Licences_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+
+    private void Rate_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+    
+    private void Share_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+    
+    private void Version_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+    
+    private void Logout_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+    
+    private void ContactUs_Tapped(object sender, TappedEventArgs e)
+    {
+        
+    }    
+    
+    private void Help_Tapped(object sender, TappedEventArgs e)
+    {
         
     }
-
-    private void PasswordConfirm_Focused(object sender, FocusEventArgs e)
-    {
-        _vm.NewPasswordMatch = true;
-    }
-
-    private void UpdatePassword_Clicked(object sender, EventArgs e)
-    {
-        PasswordConfirmValidator.ForceValidate();
-        PasswordRequiredValidator.ForceValidate();
-        NewPasswordRequiredValidator.ForceValidate();
-        if (_vm.NewPasswordRequired)
-        {
-            NewPasswordValidValidator.ForceValidate();
-        }
-        
-    }
-
-    private void UpdateEmail_Clicked(object sender, EventArgs e)
-    {
-        EmailRequiredValidator.ForceValidate();
-        if (_vm.EmailRequired)
-        {
-            EmailValidValidator.ForceValidate();
-        }
-    }
-
-    private void UpdateNickname_Clicked(object sender, EventArgs e)
-    {
-        NickNameRequiredValidator.ForceValidate();
-    }
-
-    static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
-    {
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
-        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
-
-        //Switch Color Animation
-        Color fromSwitchColor = e.IsToggled ? (Color)Primary : (Color)Gray400;
-        Color toSwitchColor = e.IsToggled ? (Color)Gray400 : (Color)Primary;
-
-        //BackGroundColor Animation
-        Color fromColor = e.IsToggled ? (Color)Tertiary : (Color)PrimaryLight;
-        Color toColor = e.IsToggled ? (Color)PrimaryLight : (Color)Tertiary;
-
-        double t = e.Percentage * 0.01;
-
-        customSwitch.KnobBackgroundColor = ColorAnimationUtil.ColorAnimation(fromSwitchColor, toSwitchColor, t);
-        customSwitch.BackgroundColor = ColorAnimationUtil.ColorAnimation(fromColor, toColor, t);
-    }
-
-  
 }

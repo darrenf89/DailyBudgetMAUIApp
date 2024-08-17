@@ -47,6 +47,17 @@ public partial class MainPage : ContentPage
             await App.CurrentPopUp.CloseAsync();
             App.CurrentPopUp = null;
         }
+
+        _vm.ReloadPage += async () =>
+        {
+            await LoadMainDashboardContent();
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
+        };
     }
 
     private async Task UpdateDefaultBudget()
@@ -67,6 +78,15 @@ public partial class MainPage : ContentPage
 
         UserUpdate.Add(DefaultBudgetID);
 
+        PatchDoc PreviousDefaultBudgetID = new PatchDoc
+        {
+            op = "replace",
+            path = "/PreviousDefaultBudgetID",
+            value = 0
+        };
+
+        UserUpdate.Add(PreviousDefaultBudgetID);
+
         await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
     }
 
@@ -83,8 +103,7 @@ public partial class MainPage : ContentPage
             if (_vm.DefaultBudgetID != 0)
             {
                 App.DefaultBudgetID = _vm.DefaultBudgetID;
-            }
-
+            }            
 
             if (App.DefaultBudget == null || App.DefaultBudget.BudgetID == 0)
             {
@@ -195,6 +214,8 @@ public partial class MainPage : ContentPage
             _vm.Title = $"Good morning {App.UserDetails.NickName}!";
         }
 
+        _vm.IsPreviousBudget = App.UserDetails.PreviousDefaultBudgetID != 0;
+
         if (_vm.DefaultBudget.IsCreated)
         {
             _vm.EnvelopeStats = new EnvelopeStats(_vm.DefaultBudget.Savings);
@@ -263,7 +284,7 @@ public partial class MainPage : ContentPage
             _vm.MaxBankBalance += _vm.DefaultBudget.CurrentActiveIncome;
 
             decimal Amount = 0;
-            entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
+            //entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
 
             int Days = (int)Math.Ceiling((_vm.DefaultBudget.NextIncomePayday.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
             if (Days == 1)
@@ -778,14 +799,14 @@ public partial class MainPage : ContentPage
 
     void TransactionAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entTransactionAmount.CursorPosition > position)
-        {
-            entTransactionAmount.CursorPosition = entTransactionAmount.Text.Length;
-        }
-        _vm.TransactionAmount = Amount;
+        //decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+        //entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
+        //int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        //if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entTransactionAmount.CursorPosition > position)
+        //{
+        //    entTransactionAmount.CursorPosition = entTransactionAmount.Text.Length;
+        //}
+        //_vm.TransactionAmount = Amount;
     }
 
     private async void ProcessSnackBar()
@@ -2364,40 +2385,40 @@ public partial class MainPage : ContentPage
 
     private async void QuickTransaction_Tapped(object sender, TappedEventArgs e)
     {
-        if (!brdTransactionAmount.IsVisible)
-        {
-            var a1 = brdTransaction.RotateTo(90, 250, Easing.CubicOut);
-            var a2 = brdTransactionAmount.FadeTo(1, 250, Easing.CubicOut);
-            var a3 = btnTransactionAmount.FadeTo(1, 250, Easing.CubicOut);
+        //if (!brdTransactionAmount.IsVisible)
+        //{
+        //    var a1 = brdTransaction.RotateTo(90, 250, Easing.CubicOut);
+        //    var a2 = brdTransactionAmount.FadeTo(1, 250, Easing.CubicOut);
+        //    var a3 = btnTransactionAmount.FadeTo(1, 250, Easing.CubicOut);
 
-            await Task.WhenAll(a1, a2, a3);
+        //    await Task.WhenAll(a1, a2, a3);
 
-            Shadow shadow = new Shadow
-            {
-                Opacity = (float)0.95,
-                Radius = 15
-            };
+        //    Shadow shadow = new Shadow
+        //    {
+        //        Opacity = (float)0.95,
+        //        Radius = 15
+        //    };
 
-            brdTransactionAmount.Shadow = shadow;
-            brdTransactionAmount.IsVisible = true;
-            brdTransactionAmount.IsVisible = false;
-            brdTransactionAmount.IsVisible = true;
-        }
-        else
-        {
+        //    brdTransactionAmount.Shadow = shadow;
+        //    brdTransactionAmount.IsVisible = true;
+        //    brdTransactionAmount.IsVisible = false;
+        //    brdTransactionAmount.IsVisible = true;
+        //}
+        //else
+        //{
             
-            entTransactionAmount.IsEnabled = false;
-            entTransactionAmount.IsEnabled = true;
+        //    entTransactionAmount.IsEnabled = false;
+        //    entTransactionAmount.IsEnabled = true;
 
-            var a1 = brdTransaction.RotateTo(0, 250, Easing.CubicOut);
-            var a2 = brdTransactionAmount.FadeTo(0, 250, Easing.CubicOut);
-            var a3 = btnTransactionAmount.FadeTo(0, 250, Easing.CubicOut);
+        //    var a1 = brdTransaction.RotateTo(0, 250, Easing.CubicOut);
+        //    var a2 = brdTransactionAmount.FadeTo(0, 250, Easing.CubicOut);
+        //    var a3 = btnTransactionAmount.FadeTo(0, 250, Easing.CubicOut);
 
-            await Task.WhenAll(a1, a2, a3);
-            brdTransactionAmount.IsVisible = false;
-            brdTransactionAmount.IsVisible = true;
-            brdTransactionAmount.IsVisible = false;
-        }      
+        //    await Task.WhenAll(a1, a2, a3);
+        //    brdTransactionAmount.IsVisible = false;
+        //    brdTransactionAmount.IsVisible = true;
+        //    brdTransactionAmount.IsVisible = false;
+        //}      
     }
 
     private async void btnTransactionAmount_Clicked(object sender, EventArgs e)

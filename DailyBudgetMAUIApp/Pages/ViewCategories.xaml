@@ -66,7 +66,7 @@
                             </carousel:SfCarousel>
                         </HorizontalStackLayout>
                         <Border Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="0,0,0,20" Padding="0">
-                            <chart:SfCircularChart Margin="5,0,5,20" BackgroundColor="Transparent">
+                            <chart:SfCircularChart Margin="5,20,5,20" BackgroundColor="Transparent">
                                 <chart:SfCircularChart.GestureRecognizers>
                                     <SwipeGestureRecognizer Direction="Left" Swiped="SwipeGestureRecognizer_Swiped"/>
                                     <SwipeGestureRecognizer Direction="Right" Swiped="SwipeGestureRecognizer_Swiped"/>

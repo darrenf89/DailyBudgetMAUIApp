@@ -29,6 +29,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool  isBudgetCreated;
         [ObservableProperty]
+        private bool isPreviousBudget;
+        [ObservableProperty]
         private bool  isRefreshing;
         [ObservableProperty]
         private string  snackBar;
@@ -79,6 +81,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private ObservableCollection<SchedulerAppointment>  eventList = new ObservableCollection<SchedulerAppointment>();
 
+        public delegate void ReloadPageAction();
+        public event ReloadPageAction ReloadPage;
+
         public MainPageViewModel(IRestDataService ds, IProductTools pt)
         {
             _ds = ds;
@@ -94,7 +99,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void GoToAccountSettings(object obj)
+        async Task GoToAccountSettings(object obj)
         {
             if (App.CurrentPopUp == null)
             {
@@ -111,7 +116,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void GoToBudgetSettings(object obj)
+        async Task GoToBudgetSettings(object obj)
         {
             if (App.CurrentPopUp == null)
             {
@@ -128,7 +133,69 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void NavigateCreateNewBudget()
+        async Task GoToAccountDetails(object obj)
+        {
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(500);
+
+            EditAccountDetails page = new EditAccountDetails(new EditAccountDetailsViewModel(new ProductTools(new RestDataService()), new RestDataService()));
+
+            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+        }
+
+        [RelayCommand]
+        async Task CreateNewBudget(object obj)
+        {
+            var result = await Shell.Current.DisplayPromptAsync("Create a new budget?", "Before you start creating a new budget give it a name and then let's get going!", "Ok", "Cancel");
+            if (result != null)
+            {
+
+                Budgets NewBudget = new Budgets();
+
+                if (!string.IsNullOrEmpty(result))
+                {
+                    NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email, "PremiumPlus");
+
+                    List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+                    PatchDoc BudgetName = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/BudgetName",
+                        value = result
+                    };
+
+                    BudgetUpdate.Add(BudgetName);
+
+                    await _ds.PatchBudget(NewBudget.BudgetID, BudgetUpdate);
+                    NewBudget.BudgetName = result;
+
+                }
+                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, NewBudget.BudgetID, false);
+                App.DefaultBudgetID = NewBudget.BudgetID;
+                App.DefaultBudget = NewBudget;
+                App.HasVisitedCreatePage = true;
+
+                if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                {
+                    Preferences.Remove(nameof(App.DefaultBudgetID));
+                }
+                Preferences.Set(nameof(App.DefaultBudgetID), NewBudget.BudgetID);
+
+
+                await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
+
+            }
+        }
+
+        [RelayCommand]
+        async Task NavigateCreateNewBudget()
         {
             var page = new LoadingPage();
             await Application.Current.MainPage.Navigation.PushModalAsync(page);
@@ -139,7 +206,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
 
         [RelayCommand]
-        async void SignOut()
+        async Task SignOut()
         {
             var page = new LoadingPage();
             await Application.Current.MainPage.Navigation.PushModalAsync(page);
@@ -164,7 +231,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void RefreshPage()
+        async Task RefreshPage()
         {
             DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Full").Result;
 
@@ -172,13 +239,37 @@ namespace DailyBudgetMAUIApp.ViewModels
             IsBudgetCreated = App.DefaultBudget.IsCreated;
             App.SessionLastUpdate = DateTime.UtcNow;
 
-            BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+            BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(App.DefaultBudgetID);
             App.CurrentSettings = Settings;
 
             EnvelopeStats = new EnvelopeStats(DefaultBudget.Savings);
-
             IsRefreshing = false;
 
+        }
+
+        [RelayCommand]
+        async Task SwapBudget()
+        {
+            int PreviousBudgetID = _ds.GetUserDetailsAsync(App.UserDetails.Email).Result.PreviousDefaultBudgetID;
+            await _pt.ChangeDefaultBudget(App.UserDetails.UserID, PreviousBudgetID, true);
+        }
+
+        [RelayCommand]
+        async Task RecalculateBudget()
+        {
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(500);
+
+            await _ds.ReCalculateBudget(App.DefaultBudgetID);
+            App.DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Full").Result;
+            DefaultBudget = App.DefaultBudget;
+            ReloadPage?.Invoke();
         }
 
     }

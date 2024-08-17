@@ -204,7 +204,7 @@
                             <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
                                 <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
                                     <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Add}" Size="22" Color="{DynamicResource Primary}"/>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.New_label}" Size="22" Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>
                             </Border>
@@ -243,7 +243,7 @@
                             <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
                                 <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
                                     <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Change_circle}" Size="22" Color="{DynamicResource Primary}"/>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Currency_exchange}" Size="22" Color="{DynamicResource Primary}"/>
                                     </Image.Source>
                                 </Image>
                             </Border>

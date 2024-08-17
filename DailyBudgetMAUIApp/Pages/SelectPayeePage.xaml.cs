@@ -279,144 +279,154 @@ public partial class SelectPayeePage : ContentPage
         Application.Current.Resources.TryGetValue("White", out var White);
 
         List<string> FilteredList = new List<string>();
-
-        if (!(_vm.PayeeList.Count == 0 && _vm.PayeeList == null))
-        {
-            vslPayeeList.Children.Clear();
-
-            FilteredList = _vm.PayeeList.Where(x => x.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
-            string StartLetter = "*";
-            VerticalStackLayout LetterVSL = null;
-
-            foreach (string Payee in FilteredList)
+        if(!string.IsNullOrWhiteSpace(SearchQuery))
+        {        
+            if (!(_vm.PayeeList.Count == 0 && _vm.PayeeList == null))
             {
-                if (!Payee.StartsWith(StartLetter))
+                vslPayeeList.Children.Clear();
+
+                FilteredList = _vm.PayeeList.Where(x => x.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+                string StartLetter = "*";
+                VerticalStackLayout LetterVSL = null;
+
+                foreach (string Payee in FilteredList)
                 {
-                    if (LetterVSL != null)
+                    if (!Payee.StartsWith(StartLetter))
                     {
-                        vslPayeeList.Children.Add(LetterVSL);
+                        if (LetterVSL != null)
+                        {
+                            vslPayeeList.Children.Add(LetterVSL);
+                        }
+
+                        StartLetter = Payee[0].ToString();
+
+                        LetterVSL = new VerticalStackLayout
+                        {
+                            HorizontalOptions = LayoutOptions.End,
+                            WidthRequest = _vm.PayeeBorderWidth,
+                            Margin = new Thickness(0, 0, 0, 10)
+                        };
+
+                        Label LetterLabel = new Label
+                        {
+                            Text = StartLetter.ToUpper(),
+                            FontFamily = "ManoloMono",
+                            HorizontalOptions = LayoutOptions.End,
+                            FontSize = 40,
+                            TextColor = (Color)Primary
+                        };
+
+                        BoxView LetterBoxView = new BoxView
+                        {
+                            WidthRequest = 60,
+                            HeightRequest = 4,
+                            Color = (Color)Info,
+                            HorizontalOptions = LayoutOptions.End,
+                            Margin = new Thickness(0, 0, 0, 10)
+
+                        };
+                        LetterVSL.Children.Add(LetterLabel);
+                        LetterVSL.Children.Add(LetterBoxView);
                     }
 
-                    StartLetter = Payee[0].ToString();
-
-                    LetterVSL = new VerticalStackLayout
+                    Border PayeeBorder = new Border
                     {
-                        HorizontalOptions = LayoutOptions.End,
-                        WidthRequest = _vm.PayeeBorderWidth,
-                        Margin = new Thickness(0, 0, 0, 10)
+                        Style = (Style)brdPrimary,
+                        Margin = new Thickness(5,0,5,4)                   
                     };
 
-                    Label LetterLabel = new Label
+                    if (_vm.PageType != "ViewList")
                     {
-                        Text = StartLetter.ToUpper(),
-                        FontFamily = "ManoloMono",
-                        HorizontalOptions = LayoutOptions.End,
-                        FontSize = 40,
-                        TextColor = (Color)Primary
-                    };
+                        TapGestureRecognizer PayeeTapGesture = new TapGestureRecognizer
+                        {
+                            CommandParameter = Payee
+                        };
 
-                    BoxView LetterBoxView = new BoxView
-                    {
-                        WidthRequest = 60,
-                        HeightRequest = 4,
-                        Color = (Color)Info,
-                        HorizontalOptions = LayoutOptions.End,
-                        Margin = new Thickness(0, 0, 0, 10)
-
-                    };
-                    LetterVSL.Children.Add(LetterLabel);
-                    LetterVSL.Children.Add(LetterBoxView);
-                }
-
-                Border PayeeBorder = new Border
-                {
-                    Style = (Style)brdPrimary,
-                    Margin = new Thickness(5,0,5,4)                   
-                };
-
-                if (_vm.PageType != "ViewList")
-                {
-                    TapGestureRecognizer PayeeTapGesture = new TapGestureRecognizer
-                    {
-                        CommandParameter = Payee
-                    };
-
-                    PayeeTapGesture.Tapped += (s, e) => SelectExistingPayee_Tapped(s, e);
-                    PayeeBorder.GestureRecognizers.Add(PayeeTapGesture);
-                }
-
-
-                Label PayeeLabel = new Label
-                {
-                    Text = Payee,
-                    TextColor = (Color)Gray900,
-                    FontSize = 14,
-                    Padding = new Thickness(2,2,2,2),
-                    Margin = new Thickness(10,0,0,0)
-                };
-
-                string PayeeImageGlyph = "";
-
-                if (_vm.SelectedPayee == Payee)
-                {
-                    PayeeImageGlyph = "\ue837";
-                }
-                else
-                {
-                    PayeeImageGlyph = "\ue836";
-                }
-
-                Image PayeeImage = new Image
-                {
-                    VerticalOptions = LayoutOptions.Center,
-                    BackgroundColor = (Color)White,
-                    Source = new FontImageSource
-                    {
-                        FontFamily = "MaterialDesignIcons",
-                        Glyph = PayeeImageGlyph,
-                        Size = 12,
-                        Color = (Color)Info
+                        PayeeTapGesture.Tapped += (s, e) => SelectExistingPayee_Tapped(s, e);
+                        PayeeBorder.GestureRecognizers.Add(PayeeTapGesture);
                     }
-                };
 
-                Border ImageBorder = new Border
-                {
-                    StrokeThickness = 0,
-                    HeightRequest = 12,
-                    WidthRequest = 12,
-                    StrokeShape = new RoundRectangle
+
+                    Label PayeeLabel = new Label
                     {
-                        CornerRadius = 6
-                    },
-                    BackgroundColor = (Color)White
-                };
+                        Text = Payee,
+                        TextColor = (Color)Gray900,
+                        FontSize = 14,
+                        Padding = new Thickness(2,2,2,2),
+                        Margin = new Thickness(10,0,0,0)
+                    };
 
-                ImageBorder.Content = PayeeImage;
+                    string PayeeImageGlyph = "";
 
-                HorizontalStackLayout PayeeHSL = new HorizontalStackLayout();
+                    if (_vm.SelectedPayee == Payee)
+                    {
+                        PayeeImageGlyph = "\ue837";
+                    }
+                    else
+                    {
+                        PayeeImageGlyph = "\ue836";
+                    }
 
-                PayeeHSL.Children.Add(ImageBorder);
-                PayeeHSL.Children.Add(PayeeLabel);
+                    Image PayeeImage = new Image
+                    {
+                        VerticalOptions = LayoutOptions.Center,
+                        BackgroundColor = (Color)White,
+                        Source = new FontImageSource
+                        {
+                            FontFamily = "MaterialDesignIcons",
+                            Glyph = PayeeImageGlyph,
+                            Size = 12,
+                            Color = (Color)Info
+                        }
+                    };
 
-                PayeeBorder.Content = PayeeHSL;
-                LetterVSL.Children.Add(PayeeBorder);
+                    Border ImageBorder = new Border
+                    {
+                        StrokeThickness = 0,
+                        HeightRequest = 12,
+                        WidthRequest = 12,
+                        StrokeShape = new RoundRectangle
+                        {
+                            CornerRadius = 6
+                        },
+                        BackgroundColor = (Color)White
+                    };
+
+                    ImageBorder.Content = PayeeImage;
+
+                    HorizontalStackLayout PayeeHSL = new HorizontalStackLayout();
+
+                    PayeeHSL.Children.Add(ImageBorder);
+                    PayeeHSL.Children.Add(PayeeLabel);
+
+                    PayeeBorder.Content = PayeeHSL;
+                    LetterVSL.Children.Add(PayeeBorder);
+                }
+
+                vslPayeeList.Children.Add(LetterVSL);
             }
 
-            vslPayeeList.Children.Add(LetterVSL);
-        }
-
-        if(FilteredList.Count == 0)
-        {
-            brdPayeeNotSetUp.IsVisible = true;
-            PayeeList.IsVisible = false;
-            _vm.FilteredListEmptyText = "No Payee matches that name, to create one go ahead and hit the create button!";
+            if(FilteredList.Count == 0)
+            {
+                brdPayeeNotSetUp.IsVisible = true;
+                PayeeList.IsVisible = false;
+                _vm.FilteredListEmptyText = "No Payee matches that name, to create one go ahead and hit the create button!";
+            }
+            else
+            {
+                brdPayeeNotSetUp.IsVisible = false;
+                PayeeList.IsVisible = true;
+            }
         }
         else
         {
-            brdPayeeNotSetUp.IsVisible = false;
-            PayeeList.IsVisible = true;
+            vslPayeeList.Children.Clear();
+
+            brdPayeeNotSetUp.IsVisible = true;
+            PayeeList.IsVisible = false;
+            _vm.FilteredListEmptyText = "Start searching for a payee, enter your payee name .. if it doesn't exist you can create a new payee!";
         }
- 
+
     }
 
     private async void SelectExistingPayee_Tapped(object sender, TappedEventArgs e)

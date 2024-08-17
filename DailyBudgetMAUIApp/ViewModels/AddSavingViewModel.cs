@@ -39,7 +39,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private string isTopUpLabelText = "Replenish";            
         [ObservableProperty]
-        private string isTopUpParaText = "By replenishing the stash, every pay period we will reset the balance to saving amount for every pay period. Any balance not spent by the end of the period will effectively be added back to your budget for you to spend!";        
+        private string isTopUpParaText = "By replenishing the stash, every pay period we will reset the envelopes balance to the saving amount. Any balance not spent by the end of the period will effectively be added back to your budget for you to spend!";        
         [ObservableProperty]
         private bool showCalculator;
 

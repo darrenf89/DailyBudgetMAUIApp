@@ -1721,6 +1721,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task ChangeDefaultBudget(int UserID, int BudgetID, bool navigate)
         {
+            int PreviousDefaultBudgetIDint = App.DefaultBudgetID;
 
             List<PatchDoc> UpdateUserDetails = new List<PatchDoc>();
 
@@ -1732,6 +1733,15 @@ namespace DailyBudgetMAUIApp.DataServices
             };
 
             UpdateUserDetails.Add(DefaultBudgetID);
+
+            PatchDoc PreviousDefaultBudgetID = new PatchDoc
+            {
+                op = "replace",
+                path = "/PreviousDefaultBudgetID",
+                value = PreviousDefaultBudgetIDint
+            };
+
+            UpdateUserDetails.Add(PreviousDefaultBudgetID);
             await _ds.PatchUserAccount(App.UserDetails.UserID, UpdateUserDetails);
 
             App.DefaultBudget = null;

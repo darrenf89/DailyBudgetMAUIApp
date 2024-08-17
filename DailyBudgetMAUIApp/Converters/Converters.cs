@@ -1622,6 +1622,9 @@ namespace DailyBudgetMAUIApp.Converters
                 case "Title":
                     output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(24, 20, 22, 22, 24, 30);
                     break;
+                case "MainTitle":
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(28, 24, 24, 26, 28, 34);
+                    break;
                 case "Header":
                     output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(13, 9, 11, 11, 13, 15);
                     break;

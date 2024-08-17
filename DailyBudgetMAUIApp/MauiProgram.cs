@@ -83,6 +83,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewCalendar>();
         builder.Services.AddTransient<EditBudgetSettings>();
         builder.Services.AddTransient<EditAccountSettings>();
+        builder.Services.AddTransient<EditAccountDetails>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();
@@ -112,6 +113,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewCalendarViewModel>();
         builder.Services.AddTransient<EditBudgetSettingsViewModel>();
         builder.Services.AddTransient<EditAccountSettingsViewModel>();
+        builder.Services.AddTransient<EditAccountDetailsViewModel>();
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();

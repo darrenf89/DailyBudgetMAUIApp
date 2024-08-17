@@ -20,6 +20,8 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public int defaultBudgetID;
         [ObservableProperty]
+        public int previousDefaultBudgetID;
+        [ObservableProperty]
         public string? defaultBudgetType;
         public ErrorClass? Error { get; set; } = null;
         [ObservableProperty]

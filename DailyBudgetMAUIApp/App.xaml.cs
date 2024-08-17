@@ -44,7 +44,7 @@ public partial class App : Application
 
     public App()
 	{
-        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzE2MzM0NkAzMjM1MmUzMDJlMzBoekdJNGg3VHVJc2VjZjVOMEx3dk1rTTllb2hrL1pRRzRWSUhUeC9LME5BPQ==");
+        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWXdfdnVWQmRYVEdxXks=");
 		
         InitializeComponent();
         LoadChartBrush();
