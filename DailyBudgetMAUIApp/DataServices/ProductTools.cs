@@ -1721,68 +1721,79 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task ChangeDefaultBudget(int UserID, int BudgetID, bool navigate)
         {
-            int PreviousDefaultBudgetIDint = App.DefaultBudgetID;
-
-            List<PatchDoc> UpdateUserDetails = new List<PatchDoc>();
-
-            PatchDoc DefaultBudgetID = new PatchDoc
+            if(BudgetID != App.DefaultBudgetID)
             {
-                op = "replace",
-                path = "/DefaultBudgetID",
-                value = BudgetID
-            };
+                int PreviousDefaultBudgetIDint = App.DefaultBudgetID;
 
-            UpdateUserDetails.Add(DefaultBudgetID);
+                List<PatchDoc> UpdateUserDetails = new List<PatchDoc>();
 
-            PatchDoc PreviousDefaultBudgetID = new PatchDoc
+                PatchDoc DefaultBudgetID = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/DefaultBudgetID",
+                    value = BudgetID
+                };
+
+                UpdateUserDetails.Add(DefaultBudgetID);
+
+                PatchDoc PreviousDefaultBudgetID = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/PreviousDefaultBudgetID",
+                    value = PreviousDefaultBudgetIDint
+                };
+
+                UpdateUserDetails.Add(PreviousDefaultBudgetID);
+                await _ds.PatchUserAccount(App.UserDetails.UserID, UpdateUserDetails);
+
+                App.DefaultBudget = null;
+                App.CurrentSettings = null;
+
+                string userDetailsStr = Preferences.Get(nameof(App.UserDetails), "");
+                UserDetailsModel userDetails = JsonConvert.DeserializeObject<UserDetailsModel>(userDetailsStr);
+                userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
+                userDetails.DefaultBudgetID = BudgetID;
+
+                userDetailsStr = JsonConvert.SerializeObject(userDetails);
+
+                if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                {
+                    Preferences.Remove(nameof(App.DefaultBudgetID));
+                }
+
+                if (Preferences.ContainsKey(nameof(App.UserDetails)))
+                {
+                    Preferences.Remove(nameof(App.UserDetails));
+                }
+
+                Preferences.Set(nameof(App.UserDetails), userDetailsStr);
+                Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
+
+                App.UserDetails = userDetails;
+                App.DefaultBudgetID = BudgetID;
+
+                if (App.CurrentBottomSheet != null)
+                {
+                    await App.CurrentBottomSheet.DismissAsync();
+                    App.CurrentBottomSheet = null;
+                }
+
+                if (navigate && App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+
+                    await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
+                }
+            }   
+            else
             {
-                op = "replace",
-                path = "/PreviousDefaultBudgetID",
-                value = PreviousDefaultBudgetIDint
-            };
-
-            UpdateUserDetails.Add(PreviousDefaultBudgetID);
-            await _ds.PatchUserAccount(App.UserDetails.UserID, UpdateUserDetails);
-
-            App.DefaultBudget = null;
-            App.CurrentSettings = null;
-
-            string userDetailsStr = Preferences.Get(nameof(App.UserDetails), "");
-            UserDetailsModel userDetails = JsonConvert.DeserializeObject<UserDetailsModel>(userDetailsStr);
-            userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
-            userDetails.DefaultBudgetID = BudgetID;
-
-            userDetailsStr = JsonConvert.SerializeObject(userDetails);            
-
-            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
-            {
-                Preferences.Remove(nameof(App.DefaultBudgetID));
-            }
-
-            if (Preferences.ContainsKey(nameof(App.UserDetails)))
-            {
-                Preferences.Remove(nameof(App.UserDetails));
-            }
-
-            Preferences.Set(nameof(App.UserDetails), userDetailsStr);
-            Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
-
-            App.UserDetails = userDetails;
-            App.DefaultBudgetID = BudgetID;
-
-            if (App.CurrentBottomSheet != null)
-            {
-                await App.CurrentBottomSheet.DismissAsync();
-                App.CurrentBottomSheet = null;
-            }        
-            
-            if(navigate && App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
-
-                await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
+                if (App.CurrentBottomSheet != null)
+                {
+                    await App.CurrentBottomSheet.DismissAsync();
+                    App.CurrentBottomSheet = null;
+                }
             }
             
         }
@@ -2148,7 +2159,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             if (App.UserDetails != null)
             {
-                if (App.UserDetails.SubscriptionType == "PermiumPlus")
+                if (App.UserDetails.SubscriptionType == "PremiumPlus")
                 {
                     App.IsPremiumAccount = true;
                     if (App.UserDetails.SubscriptionExpiry.AddDays(5) < DateTime.UtcNow)
