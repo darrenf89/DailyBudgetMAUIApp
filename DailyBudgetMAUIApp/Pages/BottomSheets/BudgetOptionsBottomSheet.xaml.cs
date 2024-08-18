@@ -36,7 +36,14 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         _pt = pt;
         _ds = ds;
 
-        if (Budget.IsSharedValidated && Budget.SharedUserID != 0)
+        if (!App.IsPremiumAccount)
+        {
+            ViewShareBudget.IsVisible = false;
+            NewShareBudget.IsVisible = false;
+            CalendarEvent.IsVisible = false;
+            CalendarEventReplace.IsVisible = true;
+        }
+        else if (Budget.IsSharedValidated && Budget.SharedUserID != 0)
         {
             ViewShareBudget.IsVisible = true;
             NewShareBudget.IsVisible = false;
@@ -57,6 +64,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             VSLUpgradeSubscription.IsVisible = false;
             VSLViewSubscription.IsVisible = true;
         }
+
 
     }
 

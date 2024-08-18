@@ -206,6 +206,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                             App.UserDetails = userDetails;
                                             App.DefaultBudgetID = userDetails.DefaultBudgetID;
                                             App.HasVisitedCreatePage = false;
+                                            await _pt.SetSubDetails();
 
                                             if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
                                             {

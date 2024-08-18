@@ -207,6 +207,123 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        public async Task<UserAddDetails> GetUserAddDetails(int UserID)
+        {
+            UserAddDetails User = new UserAddDetails();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getuseradddetails/{UserID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        User = serializer.Deserialize<UserAddDetails>(reader);
+                    }
+
+                    return User;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                        HandleError(new Exception(error.ErrorMessage), "GetUserAddDetails", "GetUserAddDetails");
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "GetUserAddDetails", "GetUserAddDetails");
+                return null;
+            }
+        }
+
+        public async Task<string> DowngradeUserAccount(int UserID)
+        {
+            UserAddDetails User = new UserAddDetails();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+
+                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/downgrageuseraccount/{UserID}").Result;
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                        HandleError(new Exception(error.ErrorMessage), "DowngradeUserAccount", "DowngradeUserAccount");
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "DowngradeUserAccount", "DowngradeUserAccount");
+                return null;
+            }
+        }
+        public async Task<string> PostUserAddDetails(UserAddDetails User)
+        {
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            try
+            {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<UserAddDetails>(User, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/userAccounts/postuseradddetails", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    HandleError(new Exception(error.ErrorMessage), "PostUserAddDetails", "PostUserAddDetails");
+                    return "";
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex, "PostUserAddDetails", "PostUserAddDetails");
+                return "";
+            }
+        }
+
         public async Task<string> UploadUserProfilePicture(int UserID, FileResult File)
         {
 

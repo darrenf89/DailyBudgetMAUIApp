@@ -49,6 +49,7 @@ public partial class LandingPage : ContentPage
 
                     App.UserDetails = userDetails;
                     App.DefaultBudgetID = userDetails.DefaultBudgetID;
+                    await _pt.SetSubDetails();
 
                     if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
                     {

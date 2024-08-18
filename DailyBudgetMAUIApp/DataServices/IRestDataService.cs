@@ -17,6 +17,9 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> GetUserSaltAsync(string UserEmail);
         public string LogoutUserAsync(RegisterModel User);
         public Task<UserDetailsModel> GetUserDetailsAsync(string UserEmail);
+        public Task<UserAddDetails> GetUserAddDetails(int UserID);
+        public Task<string> DowngradeUserAccount(int UserID);
+        public Task<string> PostUserAddDetails(UserAddDetails User);
         public Task<string> UploadUserProfilePicture(int UserID, FileResult File);
         public Task<Stream> DownloadUserProfilePicture(int UserID);
         public Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog);

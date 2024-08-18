@@ -8,6 +8,7 @@ using IeuanWalker.Maui.Switch.Helpers;
 using Microsoft.Maui.Handlers;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
+using Plugin.MauiMTAdmob;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -47,7 +48,16 @@ public partial class AddTransaction : ContentPage
     {
         base.OnAppearing();
 
-        if(string.IsNullOrEmpty(_vm.NavigatedFrom))
+        CrossMauiMTAdmob.Current.OnInterstitialClosed += async (sender, args) => {
+            UserAddDetails User = await _ds.GetUserAddDetails(App.UserDetails.UserID);
+            User.LastViewed = DateTime.Now;
+            User.NumberOfViews++;
+            await _ds.PostUserAddDetails(User);
+        };
+
+        CrossMauiMTAdmob.Current.LoadInterstitial("ca-app-pub-3940256099942544/1033173712");
+
+        if (string.IsNullOrEmpty(_vm.NavigatedFrom))
         {
             _vm.Transaction = null;
             _vm.TransactionID = 0;
@@ -236,7 +246,8 @@ public partial class AddTransaction : ContentPage
 
             bool result = await DisplayAlert("Add New Transaction", $"You are adding {TransactionType} for {TransactionAmount}, are you sure you want to continue?", "Yes, continue", "Cancel");
             if (result)
-            {
+            {               
+
                 if (App.CurrentPopUp == null)
                 {
                     var PopUp = new PopUpPage();
@@ -247,6 +258,22 @@ public partial class AddTransaction : ContentPage
                 _vm.Transaction = _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID).Result;
                 if (_vm.Transaction.TransactionID != 0)
                 {
+                    if(!_vm.IsPremiumAccount)
+                    {
+                        if (CrossMauiMTAdmob.Current.IsInterstitialLoaded())
+                        {
+                            UserAddDetails User = await _ds.GetUserAddDetails(App.UserDetails.UserID);
+                            if (User.NumberOfViews <= 3)
+                            {
+                                CrossMauiMTAdmob.Current.ShowInterstitial();
+                            }
+                        }
+                        else
+                        {
+                            CrossMauiMTAdmob.Current.LoadInterstitial("ca-app-pub-3940256099942544/1033173712");
+                        }
+                    }
+
                     if (_vm.RedirectTo == "ViewSavings")
                     {
                         await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
@@ -259,7 +286,7 @@ public partial class AddTransaction : ContentPage
                     {
                         await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
                     }
-                }                
+                }
             }
         }
 

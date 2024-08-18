@@ -7,6 +7,7 @@
              xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
+             xmlns:adMob="clr-namespace:Plugin.MauiMTAdmob.Controls;assembly=Plugin.MauiMTAdmob"
              Loaded="Content_Loaded">
     <ContentPage.Resources>
         <ResourceDictionary>            
@@ -37,6 +38,7 @@
     </Shell.TitleView>
     <ScrollView>
         <VerticalStackLayout VerticalOptions="Start">
+            <adMob:MTAdView AdsId="ca-app-pub-3940256099942544/6300978111" AdSize="Banner" Margin="0,20,0,0" HorizontalOptions="Center" IsVisible="{Binding IsPremiumAccount, Converter={StaticResource BoolConverter}}"/>
             <Grid ColumnDefinitions="*,150,20,150,*" Margin="0,25,0,25">
                 <Button Style="{DynamicResource PrimaryButton}" Text="Expense" Grid.Column="1" x:Name="btnExpenseClicked" Clicked="btnExpenseClicked_Clicked" WidthRequest="150" BackgroundColor="{StaticResource Gray100}" TextColor="{StaticResource PrimaryLight}"/>
                 <Button Style="{DynamicResource PrimaryButton}" Text="Income" Grid.Column="3" x:Name="btnIncomeClicked" Clicked="btnIncomeClicked_Clicked" WidthRequest="150"/>
@@ -70,7 +72,7 @@
                             <handlers:BorderlessDatePicker VerticalOptions="Center" HorizontalOptions="End" CharacterSpacing="1" x:Name="entTransactionDate" Date="{Binding Transaction.TransactionDate}" IsVisible="{Binding IsFutureDatedTransaction}"  Format="dd MMMM" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold"/>
                         </HorizontalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout Margin="0,0,0,0" >
+                    <HorizontalStackLayout Margin="0,0,0,0" IsVisible="{Binding IsPremiumAccount}">
                         <Image>
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Storefront}" Size="25" Color="{DynamicResource Primary}"/>
@@ -78,7 +80,7 @@
                         </Image>
                         <Label Text="Payee" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
-                    <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40">
+                    <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40" IsVisible="{Binding IsPremiumAccount}">
                         <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsPayee}"  SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhPayee_Toggled"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label IsVisible="{Binding IsPayee, Converter={StaticResource BoolConverter}}" HorizontalOptions="End" Text="{Binding IsPayee, Converter={StaticResource IsPayeeText}}" TextColor="{StaticResource Gray400}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0"/>
@@ -89,7 +91,7 @@
                             </Label>
                         </HorizontalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout Margin="0,0,0,0" x:Name="CatHeader">
+                    <HorizontalStackLayout Margin="0,0,0,0" x:Name="CatHeader" IsVisible="{Binding IsPremiumAccount}">
                         <Image>
                             <Image.Source>
                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Category}" Size="25" Color="{DynamicResource Primary}"/>
@@ -97,7 +99,7 @@
                         </Image>
                         <Label Text="Category" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
-                    <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40" x:Name="CatSwitch">
+                    <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40" x:Name="CatSwitch" IsVisible="{Binding IsPremiumAccount}">
                         <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding IsSpendCategory}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhSpendCategory_Toggled" x:Name="swhSpendCategory"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label HorizontalOptions="End" Text="{Binding IsSpendCategory, Converter={StaticResource IsSpendCategoryText}}" TextColor="{StaticResource Gray400}"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0"/>

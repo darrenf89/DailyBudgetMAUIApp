@@ -12,6 +12,7 @@ using The49.Maui.BottomSheet;
 using DotNet.Meteor.HotReload.Plugin;
 using DailyBudgetMAUIApp.Popups;
 using Maui.FreakyEffects;
+using Plugin.MauiMTAdmob;
 
 
 namespace DailyBudgetMAUIApp;
@@ -30,6 +31,7 @@ public static class MauiProgram
             .ConfigureSyncfusionCore()
             .ConfigureMauiWorkarounds()
             .UseBottomSheet()
+            .UseMauiMTAdmob()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

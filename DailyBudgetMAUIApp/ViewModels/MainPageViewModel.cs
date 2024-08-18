@@ -9,6 +9,8 @@ using System.Collections.ObjectModel;
 using Syncfusion.Maui.Scheduler;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
+using Plugin.MauiMTAdmob.Extra;
+using Plugin.MauiMTAdmob;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -135,6 +137,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         async Task GoToAccountDetails(object obj)
         {
+            CrossMauiMTAdmob.Current.InitialiseAndShowConsentForm();
+
             if (App.CurrentPopUp == null)
             {
                 var PopUp = new PopUpPage();
@@ -147,6 +151,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             EditAccountDetails page = new EditAccountDetails(new EditAccountDetailsViewModel(new ProductTools(new RestDataService()), new RestDataService()));
 
             await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+
         }
 
         [RelayCommand]

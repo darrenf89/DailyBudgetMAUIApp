@@ -2143,5 +2143,42 @@ namespace DailyBudgetMAUIApp.DataServices
 
             return Icon;
         }
+
+        public async Task SetSubDetails()
+        {
+            if (App.UserDetails != null)
+            {
+                if (App.UserDetails.SubscriptionType == "PermiumPlus")
+                {
+                    App.IsPremiumAccount = true;
+                    if (App.UserDetails.SubscriptionExpiry.AddDays(5) < DateTime.UtcNow)
+                    {
+                        await _ds.DowngradeUserAccount(App.UserDetails.UserID);
+                        App.IsPremiumAccount = false;
+                    }
+                    else if(App.UserDetails.SubscriptionExpiry < DateTime.UtcNow)
+                    {
+                        List<string> SubTitle = new List<string>{
+                            "Opps, looks like you have let your subscription expire...",
+                            "",
+                            ""
+                        };
+
+                        List<string> Info = new List<string>{
+                            $"Your subscription to our premium service expired on {App.UserDetails.SubscriptionExpiry.ToString("dd MMM yyyy")}. If you do not upgrade your account before {App.UserDetails.SubscriptionExpiry.AddDays(5).ToString("dd MMM yyyy")} you will lose your premium benefits. To keep budgeting with an ad free expiernce and access to all our amazing features please subscribe.",
+                            "If not don't worry you can continue to use dBudget with the same budgets as before.",
+                            "If you have already subscribed don't worry it may take our records a moment to update. If you are having difficulties please contact us, we are here to and love to help."
+                        };
+
+                        var popup = new PopupInfo("Subscription expired!", SubTitle, Info);
+                        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                    }
+                }
+                else
+                {
+                    App.IsPremiumAccount = false;
+                }
+            }
+        }
     }
 }

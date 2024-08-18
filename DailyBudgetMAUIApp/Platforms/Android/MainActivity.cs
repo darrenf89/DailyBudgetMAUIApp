@@ -2,8 +2,12 @@
 using Android.Content.PM;
 using Android.OS;
 using Android.Content;
-using Firebase.Messaging;
 using DailyBudgetMAUIApp.DataServices;
+using Plugin.MauiMTAdmob;
+using static Android.Provider.Settings;
+using AndroidApp = Android.App.Application;
+using Setting = Android.Provider.Settings;
+using Plugin.MauiMTAdmob.Extra;
 
 namespace DailyBudgetMAUIApp;
 
@@ -14,6 +18,40 @@ public class MainActivity : MauiAppCompatActivity
 {
     internal static readonly string Channel_ID = "ShareBudget";
     internal static readonly int NotificationID = 101;
+
+    protected override void OnCreate(Bundle savedInstanceState)
+    {
+        base.OnCreate(savedInstanceState);
+
+        string appId = "ca-app-pub-4910594160495086~4251634683";
+
+        string license = "ZIrXQSue1fdSLeYTwKjtCd2RPUg/6+cflQTVqDHKyxQN3KYugmFcLLk6FnFUdD6h+9OScoRNWRxQ+LggwGODL+tDDeCeDvXMvF0zBw9Xmw==";
+        string deviceId = Setting.Secure.GetString(AndroidApp.Context.ContentResolver, Secure.AndroidId); 
+        
+        //CrossMauiMTAdmob.Current.Init(this, appId, license,"","",true,false, deviceId, true, DebugGeography.DEBUG_GEOGRAPHY_EEA,false);
+        CrossMauiMTAdmob.Current.Init(this, appId);
+
+        CrossMauiMTAdmob.Current.OnConsentFormDismissed += (sender, args) => {
+            
+        };
+
+        CrossMauiMTAdmob.Current.OnConsentFormLoadFailure += (sender, args) => {
+            
+        };
+
+        CrossMauiMTAdmob.Current.OnConsentInfoUpdateSuccess += (sender, args) => {
+            
+        };
+
+        CrossMauiMTAdmob.Current.OnConsentInfoUpdateFailure += (sender, args) => {
+            
+        };
+
+        CrossMauiMTAdmob.Current.OnConsentFormLoadSuccess += (sender, args) => {
+            
+        };
+
+    }
 
     protected async override void OnResume()
     {
@@ -50,6 +88,7 @@ public class MainActivity : MauiAppCompatActivity
         }
 
         CreateNotificationChannel();
+        CrossMauiMTAdmob.Current.OnResume();
     }
 
     private void CreateNotificationChannel()

@@ -217,15 +217,15 @@
                     <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
                         <Label x:Name="lblRegularBillValue" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"  VerticalOptions="Center"/>
                     </Border>
-                    <Label Text="Payee" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
-                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
+                    <Label Text="Payee" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5" IsVisible="{Binding IsPremiumAccount}"/>
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White" IsVisible="{Binding IsPremiumAccount}">
                         <Label x:Name="lblPayee" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"  VerticalOptions="Center" Text="{Binding BillPayee, Converter={StaticResource PayeeText}}"/>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer x:Name="SelectPayee" Tapped="SelectPayee_Tapped"/>
                         </Border.GestureRecognizers>
                     </Border>
-                    <Label Text="Category" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5"/>
-                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White">
+                    <Label Text="Category" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5" IsVisible="{Binding IsPremiumAccount}"/>
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White" IsVisible="{Binding IsPremiumAccount}">
                         <Label x:Name="lblCategory" TextColor="{DynamicResource Gray600}" Margin="20,0,0,0"  VerticalOptions="Center" Text="{Binding BillCategory, Converter={StaticResource CategoryText}}"/>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer x:Name="SelectCategory" Tapped="SelectCategory_Tapped"/>

@@ -148,6 +148,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     App.UserDetails = ReturnUser;
                                     App.DefaultBudgetID = ReturnUser.DefaultBudgetID;
                                     App.HasVisitedCreatePage = false;
+                                    await _pt.SetSubDetails();
 
                                     await Application.Current.MainPage.Navigation.PopModalAsync();
                                     await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");

@@ -67,7 +67,7 @@
                                 <Label Text="Update Email" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,4"/>
                                 <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="0">
                                     <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
-                                        <handlers:BorderlessEntry HeightRequest="44" Text="{Binding NewEmail}" TextColor="{DynamicResource Gray900}" CharacterSpacing="0" Margin="20,0,0,0" Keyboard="Email" Placeholder="{Binding User.Email}">
+                                        <handlers:BorderlessEntry HeightRequest="44" Text="{Binding NewEmail}" TextColor="{DynamicResource Gray900}" CharacterSpacing="0" Margin="20,0,0,0" Keyboard="Email" Placeholder="{Binding User.Email}" PlaceholderColor="{StaticResource Gray400}">
                                             <Entry.Behaviors>
                                                 <xct:EmailValidationBehavior x:Name="EmailValidValidator" Flags="ValidateOnUnfocusing,ValidateOnValueChanged" IsValid="{Binding EmailValid}" />
                                                 <xct:TextValidationBehavior x:Name="EmailRequiredValidator" Flags="ValidateOnUnfocusing, ValidateOnValueChanged" MinimumLength="1"  IsValid="{Binding EmailRequired}" />
@@ -101,7 +101,7 @@
                                 <Label Text="Update Nickname" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,15,0,4"/>
                                 <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="0">
                                     <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
-                                        <handlers:BorderlessEntry HeightRequest="44" Text="{Binding NewNickName}" TextColor="{DynamicResource Gray900}" CharacterSpacing="0" Margin="20,0,0,0" Keyboard="Email" Placeholder="{Binding User.NickName}">
+                                        <handlers:BorderlessEntry HeightRequest="44" Text="{Binding NewNickName}" TextColor="{DynamicResource Gray900}" CharacterSpacing="0" Margin="20,0,0,0" Keyboard="Email" Placeholder="{Binding User.NickName}" PlaceholderColor="{StaticResource Gray400}">
                                             <Entry.Behaviors>
                                                 <xct:TextValidationBehavior Flags="ValidateOnUnfocusing, ValidateOnValueChanged" x:Name="NickNameRequiredValidator" MinimumLength="1" IsValid="{Binding NickNameRequired}" />
                                             </Entry.Behaviors>
@@ -135,7 +135,7 @@
                                 <VerticalStackLayout Margin="0,0,0,0">
                                     <Label Text="Current Password" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,10,0,4"/>
                                     <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
-                                        <handlers:BorderlessEntry HeightRequest="44" Text="{Binding CurrentPassword}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" Placeholder="********">
+                                        <handlers:BorderlessEntry HeightRequest="44" Text="{Binding CurrentPassword}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" Placeholder="********" PlaceholderColor="{StaticResource Gray400}">
                                             <Entry.Behaviors>
                                                 <xct:TextValidationBehavior x:Name="PasswordRequiredValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding PasswordRequired}" />
                                             </Entry.Behaviors>
@@ -161,7 +161,7 @@
                                 <VerticalStackLayout>
                                     <Label Text="New Password" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,15,0,4"/>
                                     <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
-                                        <handlers:BorderlessEntry Focused="NewPassword_Focused" HeightRequest="44" Text="{Binding NewPassword}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" Placeholder="********">
+                                        <handlers:BorderlessEntry Focused="NewPassword_Focused" HeightRequest="44" Text="{Binding NewPassword}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" Placeholder="********" PlaceholderColor="{StaticResource Gray400}">
                                             <Entry.Behaviors>
                                                 <xct:TextValidationBehavior x:Name="NewPasswordRequiredValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding NewPasswordRequired}" />
                                                 <xct:TextValidationBehavior x:Name="NewPasswordValidValidator" RegexPattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding NewPasswordValid}"/>
@@ -188,7 +188,7 @@
                                 <VerticalStackLayout>
                                     <Label Text="Confirm Password" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,15,0,4"/>
                                     <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
-                                        <handlers:BorderlessEntry Focused="PasswordConfirm_Focused" HeightRequest="44" Text="{Binding NewPasswordConfirm}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" Placeholder="********">
+                                        <handlers:BorderlessEntry Focused="PasswordConfirm_Focused" HeightRequest="44" Text="{Binding NewPasswordConfirm}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" Placeholder="********" PlaceholderColor="{StaticResource Gray400}">
                                             <Entry.Behaviors>
                                                 <xct:TextValidationBehavior x:Name="PasswordConfirmValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding PasswordConfirmRequired}" />
                                             </Entry.Behaviors>

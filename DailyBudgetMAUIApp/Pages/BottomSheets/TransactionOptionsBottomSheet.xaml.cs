@@ -22,8 +22,15 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
         var ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
         ButtonWidth = ScreenWidth - 40;
         btnDismiss.WidthRequest = ButtonWidth;
+        if(!App.IsPremiumAccount)
+        {
+            Category.IsVisible = false;
+            Payee.IsVisible = false;
+            IsPremiumAccount.IsVisible = false;
+        }
+
         //MainScrollView.MaximumHeightRequest = ScreenHeight - 280;
-  
+
     }
 
     private void btnDismiss_Clicked(object sender, EventArgs e)

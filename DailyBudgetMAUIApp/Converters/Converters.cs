@@ -230,7 +230,15 @@ namespace DailyBudgetMAUIApp.Converters
             }
             else
             {
-                return true;
+                if(App.IsPremiumAccount)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+                
             }
 
         }

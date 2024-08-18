@@ -14,24 +14,16 @@
                     <Label 
                         x:Name="lblTitle"
                         FontAttributes="Bold"
-                        FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"
+                        FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}"
                         VerticalOptions="Center" 
                         HorizontalOptions="Center"
                         FontFamily="OpenSansSemibold"
                         TextColor="{DynamicResource Primary}"
                         Margin="0,5,0,20"/>
                 </VerticalStackLayout>
-                <BoxView HeightRequest="2" Margin="0" Color="{DynamicResource Gray200}" />
-                <Button 
-                    Margin="0"
-                    WidthRequest="{Binding PopupWidth}"
-                    Text="OK"
-                    Clicked="Close_Popup"
-                    HorizontalOptions="Center"
-                    BackgroundColor="Transparent"
-                    FontSize="{Binding Source=Header, Converter={StaticResource StringToSizeConverter}}"
-                    TextColor="{DynamicResource Gray600}">
-                </Button>
+                <Grid Margin="20,5,20,20" RowDefinitions="*" ColumnDefinitions="*,20,*" >
+                    <Button WidthRequest="{Binding ButtonOneWidth}" HeightRequest="30" Grid.Row="0" Grid.Column="2" Margin="0" x:Name="btnFinsih" Text="Ok" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Clicked="Close_Popup" HorizontalOptions="Center" BackgroundColor="{StaticResource Primary}" TextColor="White" Padding="15,0"/>
+                </Grid>
             </VerticalStackLayout>           
         </Border>
     </VerticalStackLayout>

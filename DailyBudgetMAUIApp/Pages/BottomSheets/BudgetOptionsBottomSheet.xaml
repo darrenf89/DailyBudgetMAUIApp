@@ -168,7 +168,7 @@
                                 <TapGestureRecognizer x:Name="ViewIncomes" Tapped="ViewIncomes_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="CalendarEvent">
                             <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
                                 <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
                                     <Image.Source>
@@ -180,6 +180,9 @@
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="ViewCalendar" Tapped="ViewCalendar_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="CalendarEventReplace">
+
                         </VerticalStackLayout>
                     </FlexLayout>
                     <BoxView Color="{StaticResource Secondary}" Margin="20,0,20,0" HeightRequest="2"/>

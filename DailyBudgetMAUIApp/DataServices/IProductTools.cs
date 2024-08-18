@@ -48,5 +48,6 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task LoadTabBars(string UserSub, DateTime SubExpiry, string BudgetType);
         public Task<Dictionary<string, string>> GetIcons();
         public Task<string> GetIcon(string Name);
+        public Task SetSubDetails();
     }
 }

@@ -6,13 +6,18 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         [ObservableProperty]
         private bool  isPageBusy = false;
-
         [ObservableProperty]
         private bool  isButtonBusy;
-
         [ObservableProperty]
         private string  title;
+        [ObservableProperty]
+        private bool isPremiumAccount = App.IsPremiumAccount;
 
+
+        public BaseViewModel()
+        {
+
+        }
 
     }
 }
