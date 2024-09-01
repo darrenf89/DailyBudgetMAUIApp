@@ -26,49 +26,39 @@ public partial class ViewIncomes : ContentPage
 
     protected async override void OnAppearing()
     {
+        try
+        {
+            _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
+            List<IncomeEvents> I = _ds.GetBudgetIncomes(App.DefaultBudgetID, "ViewIncomes").Result;
 
-        _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-        List<IncomeEvents> I = _ds.GetBudgetIncomes(App.DefaultBudgetID, "ViewIncomes").Result;
+            _vm.BalanceExtraPeriodIncome = _vm.Budget.BankBalance.GetValueOrDefault() + _vm.Budget.CurrentActiveIncome;
 
-        _vm.BalanceExtraPeriodIncome = _vm.Budget.BankBalance.GetValueOrDefault() + _vm.Budget.CurrentActiveIncome;
-
-        _vm.Incomes.Clear();
+            _vm.Incomes.Clear();
         
-        foreach (IncomeEvents income in I)
-        {
-            _vm.Incomes.Add(income);
+            foreach (IncomeEvents income in I)
+            {
+                _vm.Incomes.Add(income);
+            }
+
+            double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
+            _vm.SignOutButtonWidth = ScreenWidth - 60;
+
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
         }
-
-        double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
-        _vm.SignOutButtonWidth = ScreenWidth - 60;
-
-
-        if (App.CurrentPopUp != null)
+        catch (Exception ex)
         {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            await _pt.HandleException(ex, "ViewIncomes", "OnAppearing");
         }
     }
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
     {
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
-
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
-    }
-
-    private async void EditIncome_Tapped(object sender, TappedEventArgs e)
-    {
-        var Income = (IncomeEvents)e.Parameter;
-
-        bool result = await Shell.Current.DisplayAlert($"Edit {Income.IncomeName}?", $"Are you sure you want to edit {Income.IncomeName}?", "Yes", "Cancel");
-
-        if(result)
+        try
         {
             if (App.CurrentPopUp == null)
             {
@@ -77,102 +67,160 @@ public partial class ViewIncomes : ContentPage
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}/{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=ViewIncomes");
-        }   
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewIncomes", "HomeButton_Clicked");
+        }
+    }
+
+    private async void EditIncome_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            var Income = (IncomeEvents)e.Parameter;
+
+            bool result = await Shell.Current.DisplayAlert($"Edit {Income.IncomeName}?", $"Are you sure you want to edit {Income.IncomeName}?", "Yes", "Cancel");
+
+            if(result)
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}/{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=ViewIncomes");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewIncomes", "EditIncome_Tapped");
+        }
     }
     private async void CloseIncome_Tapped(object sender, TappedEventArgs e)
     {
-        var Income = (IncomeEvents)e.Parameter;
-        bool result = await Shell.Current.DisplayAlert($"Close income {Income.IncomeName}?", $"Are you sure you want to close {Income.IncomeName}?", "Yes", "Cancel");
-
-        if (result)
+        try
         {
-            List<PatchDoc> PatchDocs = new List<PatchDoc>();
-            PatchDoc IsClosed = new PatchDoc
+            var Income = (IncomeEvents)e.Parameter;
+            bool result = await Shell.Current.DisplayAlert($"Close income {Income.IncomeName}?", $"Are you sure you want to close {Income.IncomeName}?", "Yes", "Cancel");
+
+            if (result)
             {
-                op = "replace",
-                path = "/IsClosed",
-                value = true
-            };
+                List<PatchDoc> PatchDocs = new List<PatchDoc>();
+                PatchDoc IsClosed = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/IsClosed",
+                    value = true
+                };
 
-            PatchDocs.Add(IsClosed);
+                PatchDocs.Add(IsClosed);
 
-            await _ds.PatchIncome(Income.IncomeEventID, PatchDocs);
-            _vm.Incomes.Remove(Income);
+                await _ds.PatchIncome(Income.IncomeEventID, PatchDocs);
+                _vm.Incomes.Remove(Income);
 
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewIncomes", "CloseIncome_Tapped");
         }
     }
 
     private async void UpdateDate_Tapped(object sender, TappedEventArgs e)
     {
-        var Income = (IncomeEvents)e.Parameter;
-
-        string Description = "Update extra income due date!";
-        string DescriptionSub = "extra income not due when you expected? You can update the due date to any date in the future!";
-        var popup = new PopUpPageVariableInput("Income due date", Description, DescriptionSub, "", Income.DateOfIncomeEvent, "DateTime", new PopUpPageVariableInputViewModel());
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
-
-        if(!string.IsNullOrEmpty(result.ToString()))
+        try
         {
-            Income.DateOfIncomeEvent = (DateTime)result;
+            var Income = (IncomeEvents)e.Parameter;
 
-            List<PatchDoc> PatchDocs = new List<PatchDoc>();
-            PatchDoc DateOfIncomeEvent = new PatchDoc
+            string Description = "Update extra income due date!";
+            string DescriptionSub = "extra income not due when you expected? You can update the due date to any date in the future!";
+            var popup = new PopUpPageVariableInput("Income due date", Description, DescriptionSub, "", Income.DateOfIncomeEvent, "DateTime", new PopUpPageVariableInputViewModel());
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+            if(!string.IsNullOrEmpty(result.ToString()))
             {
-                op = "replace",
-                path = "/DateOfIncomeEvent",
-                value = Income.DateOfIncomeEvent
-            };
+                Income.DateOfIncomeEvent = (DateTime)result;
 
-            PatchDocs.Add(DateOfIncomeEvent);
+                List<PatchDoc> PatchDocs = new List<PatchDoc>();
+                PatchDoc DateOfIncomeEvent = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/DateOfIncomeEvent",
+                    value = Income.DateOfIncomeEvent
+                };
 
-            await _ds.PatchIncome(Income.IncomeEventID, PatchDocs);
+                PatchDocs.Add(DateOfIncomeEvent);
 
+                await _ds.PatchIncome(Income.IncomeEventID, PatchDocs);
+
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewIncomes", "UpdateDate_Tapped");
         }
     }
 
     private async void UpdateAmount_Tapped(object sender, TappedEventArgs e)
     {
-        var Income = (IncomeEvents)e.Parameter;
-
-        string Description = "Update income amount!";
-        string DescriptionSub = "Income not as much as you expected, you can update the income amount and we will do the rest!";
-        var popup = new PopUpPageVariableInput("Outgoing amount", Description, DescriptionSub, "", Income.IncomeAmount, "Currency", new PopUpPageVariableInputViewModel());
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
-
-        if (!string.IsNullOrEmpty(result.ToString()))
+        try
         {
-            Income.IncomeAmount = (decimal)result;
+            var Income = (IncomeEvents)e.Parameter;
 
-            List<PatchDoc> PatchDocs = new List<PatchDoc>();
-            PatchDoc IncomeAmount = new PatchDoc
+            string Description = "Update income amount!";
+            string DescriptionSub = "Income not as much as you expected, you can update the income amount and we will do the rest!";
+            var popup = new PopUpPageVariableInput("Outgoing amount", Description, DescriptionSub, "", Income.IncomeAmount, "Currency", new PopUpPageVariableInputViewModel());
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+            if (!string.IsNullOrEmpty(result.ToString()))
             {
-                op = "replace",
-                path = "/IncomeAmount",
-                value = Income.IncomeAmount
-            };
+                Income.IncomeAmount = (decimal)result;
 
-            PatchDocs.Add(IncomeAmount);
+                List<PatchDoc> PatchDocs = new List<PatchDoc>();
+                PatchDoc IncomeAmount = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/IncomeAmount",
+                    value = Income.IncomeAmount
+                };
 
-            await _ds.PatchIncome(Income.IncomeEventID, PatchDocs);
+                PatchDocs.Add(IncomeAmount);
 
-        }    
+                await _ds.PatchIncome(Income.IncomeEventID, PatchDocs);
+
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewIncomes", "UpdateAmount_Tapped");
+        }
     }    
 
     private async void AddNewIncome_Clicked(object sender, EventArgs e)
     {
-        bool result = await Shell.Current.DisplayAlert($"Add a new income?", $"Are you sure you want to add a new extra income?", "Yes", "Cancel");
-
-        if (result)
+        try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
-            }
+            bool result = await Shell.Current.DisplayAlert($"Add a new income?", $"Are you sure you want to add a new extra income?", "Yes", "Cancel");
 
-            await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}//{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewIncomes");
+            if (result)
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}//{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewIncomes");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewIncomes", "AddNewIncome_Clicked");
         }
     }
 }

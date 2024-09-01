@@ -23,106 +23,92 @@ public partial class LandingPage : ContentPage
 
     private async Task CheckUserLoginDetails()
     {
-        try
+
+        string userDetailsStr = Preferences.Get(nameof(App.UserDetails), "");
+
+        if (!string.IsNullOrEmpty(userDetailsStr))
         {
-            string userDetailsStr = Preferences.Get(nameof(App.UserDetails), "");
+            UserDetailsModel userDetails = JsonConvert.DeserializeObject<UserDetailsModel>(userDetailsStr);
+            Preferences.Remove(nameof(App.UserDetails));
 
-            if (!string.IsNullOrEmpty(userDetailsStr))
+            if (userDetails.SessionExpiry > DateTime.UtcNow)
             {
-                UserDetailsModel userDetails = JsonConvert.DeserializeObject<UserDetailsModel>(userDetailsStr);
-                Preferences.Remove(nameof(App.UserDetails));
+                userDetails = _ds.GetUserDetailsAsync(userDetails.Email).Result;
 
-                if (userDetails.SessionExpiry > DateTime.UtcNow)
+                userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
+                userDetailsStr = JsonConvert.SerializeObject(userDetails);
+                Preferences.Set(nameof(App.UserDetails), userDetailsStr);
+
+                if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
                 {
-                    userDetails = _ds.GetUserDetailsAsync(userDetails.Email).Result;
+                    Preferences.Remove(nameof(App.DefaultBudgetID));
+                }
 
-                    userDetails.SessionExpiry = DateTime.UtcNow.AddDays(App.SessionPeriod);
-                    userDetailsStr = JsonConvert.SerializeObject(userDetails);
-                    Preferences.Set(nameof(App.UserDetails), userDetailsStr);
+                Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
 
-                    if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                App.UserDetails = userDetails;
+                App.DefaultBudgetID = userDetails.DefaultBudgetID;
+                await _pt.SetSubDetails();
+
+                if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
+                {
+                    int FirebaseID = Convert.ToInt32(await SecureStorage.Default.GetAsync("FirebaseID"));
+
+                    FirebaseDevices UserDevice = new FirebaseDevices
                     {
-                        Preferences.Remove(nameof(App.DefaultBudgetID));
+                        FirebaseDeviceID = FirebaseID,
+                        UserAccountID = userDetails.UserID,
+                        LoginExpiryDate = userDetails.SessionExpiry
+                    };
+
+                    try
+                    {
+                        await _ds.UpdateDeviceUserDetails(UserDevice);
                     }
-
-                    Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
-
-                    App.UserDetails = userDetails;
-                    App.DefaultBudgetID = userDetails.DefaultBudgetID;
-                    await _pt.SetSubDetails();
-
-                    if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
+                    catch (Exception ex)
                     {
-                        int FirebaseID = Convert.ToInt32(await SecureStorage.Default.GetAsync("FirebaseID"));
-
-                        FirebaseDevices UserDevice = new FirebaseDevices
-                        {
-                            FirebaseDeviceID = FirebaseID,
-                            UserAccountID = userDetails.UserID,
-                            LoginExpiryDate = userDetails.SessionExpiry
-                        };
-
-                        try
-                        {
-                            await _ds.UpdateDeviceUserDetails(UserDevice);
-                        }
-                        catch (Exception ex)
-                        {
-                            //Log as non fatal error
-                        }
+                        //Log as non fatal error
+                    }
                         
-                    }
-
-                    //await _pt.LoadTabBars(App.UserDetails.SubscriptionType, App.UserDetails.SubscriptionExpiry, App.UserDetails.DefaultBudgetType);
-
-                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
-                    return;
                 }
-                else
-                {
-                    if (Preferences.ContainsKey(nameof(App.UserDetails)))
-                    {
-                        Preferences.Remove(nameof(App.UserDetails));
-                    }
 
-                    if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
-                    {
-                        Preferences.Remove(nameof(App.DefaultBudgetID));
-                    }
+                //await _pt.LoadTabBars(App.UserDetails.SubscriptionType, App.UserDetails.SubscriptionExpiry, App.UserDetails.DefaultBudgetType);
 
-                    await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
-                }
+                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                return;
             }
             else
             {
+                if (Preferences.ContainsKey(nameof(App.UserDetails)))
+                {
+                    Preferences.Remove(nameof(App.UserDetails));
+                }
+
+                if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                {
+                    Preferences.Remove(nameof(App.DefaultBudgetID));
+                }
+
                 await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
             }
-
         }
-        catch (Exception ex)
+        else
         {
-            Debug.WriteLine($" --> {ex.Message}");
-            ErrorLog Error = await _pt.HandleCatchedException(ex, "LoadupPage", "CheckUserLoginDetails");
-            await Shell.Current.GoToAsync(nameof(ErrorPage),
-                new Dictionary<string, object>
-                {
-                    ["Error"] = Error
-                });
+            await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
         }
-
     }
 
     protected async override void OnAppearing()
     {    
-        base.OnAppearing();
-
-        //MainThread.BeginInvokeOnMainThread(async () =>
-        //{
-        //    await OpenAnimate();
-        //});
-
-        await CheckUserLoginDetails();
-
+        try
+        {
+            base.OnAppearing();
+            await CheckUserLoginDetails();
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "LandingPage", "CheckUserLoginDetails");
+        }     
     }
 
     private async Task OpenAnimate()

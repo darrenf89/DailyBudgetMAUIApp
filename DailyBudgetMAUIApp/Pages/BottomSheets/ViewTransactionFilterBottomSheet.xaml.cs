@@ -54,9 +54,12 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
     private Dictionary<int, Button> SavingFilterButtons = new Dictionary<int, Button>();
     private Dictionary<string, Button> EventTypeFilterButtons = new Dictionary<string, Button>();
 
-    public ViewTransactionFilterBottomSheet(FilterModel filter)
+    private readonly IProductTools _pt;
+
+    public ViewTransactionFilterBottomSheet(FilterModel filter, IProductTools pt)
     {
         InitializeComponent();
+        _pt = pt;
 
         BindingContext = this;
 
@@ -73,49 +76,64 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
         MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
 
         lblTitle.Text = $"Filters";
+        try
+        {
+            Filter = filter;
 
-        Filter = filter;
+            FillSelectedFilterLists();
 
-        FillSelectedFilterLists();
+            LoadFilters();
 
-        LoadFilters();
+            this.PropertyChanged += ViewTransactionFilterBottomSheet_PropertyChanged;
 
-        this.PropertyChanged += ViewTransactionFilterBottomSheet_PropertyChanged;
+            pckFromDate.Date = DateTime.UtcNow.AddYears(-1);
+            pckToDate.Date = DateTime.Now;
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "ViewTransactionFilterBottomSheet");
+        }
 
-        pckFromDate.Date = DateTime.UtcNow.AddYears(-1);
-        pckToDate.Date = DateTime.Now;
     }
 
     private void ViewTransactionFilterBottomSheet_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        string PropertyChange = (string)e.PropertyName;
-        if(PropertyChange == "SelectedDetent")
+        try
         {
-            double Height = this.Height;
-
-            BottomSheet Sender = (BottomSheet)sender;
-
-            if (Sender.SelectedDetent is FullscreenDetent)
+            string PropertyChange = (string)e.PropertyName;
+            if(PropertyChange == "SelectedDetent")
             {
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, Height - 60, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
-            else if(Sender.SelectedDetent is MediumDetent)
-            {
-                MediumDetent detent = (MediumDetent)Sender.SelectedDetent;
+                double Height = this.Height;
 
-                double NewHeight = (Height * detent.Ratio) - 60;
+                BottomSheet Sender = (BottomSheet)sender;
 
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, NewHeight, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
-            else if(Sender.SelectedDetent is FixedContentDetent)
-            {
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
+                if (Sender.SelectedDetent is FullscreenDetent)
+                {
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, Height - 60, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+                else if(Sender.SelectedDetent is MediumDetent)
+                {
+                    MediumDetent detent = (MediumDetent)Sender.SelectedDetent;
 
+                    double NewHeight = (Height * detent.Ratio) - 60;
+
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, NewHeight, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+                else if(Sender.SelectedDetent is FixedContentDetent)
+                {
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+
+            }
         }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "ViewTransactionFilterBottomSheet_PropertyChanged");
+        }
+
     }
 
     private void LoadFilters()
@@ -249,7 +267,16 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
                 };
             }
 
-            FilterButton.Clicked += (s, e) => ToggleEventTypesFilterButtons(EventType);
+            FilterButton.Clicked += (s, e) => {
+                try
+                {
+                    ToggleEventTypesFilterButtons(EventType);
+                }
+                catch (Exception ex)
+                {
+                    _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "FilterButton.Clicked");
+                }
+            }; 
 
             EventTypesFlex.Children.Add(FilterButton);
 
@@ -341,7 +368,16 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
                 };
             }
 
-            FilterButton.Clicked += (s, e) => ToggleSavingsFilterButtons(Saving.SavingID);
+            FilterButton.Clicked += (s, e) => {
+                try
+                {
+                    ToggleSavingsFilterButtons(Saving.SavingID);
+                }
+                catch (Exception ex)
+                {
+                    _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "ToggleSavingsFilterButtons");
+                }
+            }; 
 
             SavingFlex.Children.Add(FilterButton);
 
@@ -506,7 +542,18 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
                     };
                 }
 
-                FilterButton.Clicked += (s, e) => TogglCategoryFilterButtons(SubCat.CategoryID);
+                FilterButton.Clicked += (s, e) =>
+                {
+                    try
+                    {
+                        TogglCategoryFilterButtons(SubCat.CategoryID);
+                    }
+                    catch (Exception ex)
+                    {
+                        _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "TogglCategoryFilterButtons");
+                    }
+
+                };
 
                 Flex.Children.Add(FilterButton);
 
@@ -519,34 +566,42 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
     private void CategoryGroupHeader_Tapped(int GroupCatId)
     {
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        foreach (KeyValuePair<int, Button> x in CatFilterButtons)
+        try
         {
-            Button CatButton = x.Value;
-            int CategoryID = x.Key;
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-            Categories? Cat = Categories.Where(c => c.CategoryID == CategoryID).FirstOrDefault();
-
-            if(Cat.CategoryGroupID == GroupCatId)
+            foreach (KeyValuePair<int, Button> x in CatFilterButtons)
             {
-                CatButton.ImageSource = new FontImageSource
-                {
-                    FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue876",
-                    Size = 15,
-                    Color = (Color)White
-                };
-                CatButton.Style = (Style)buttonClicked;
+                Button CatButton = x.Value;
+                int CategoryID = x.Key;
 
-                if (!SelectedCategories.Contains(CategoryID))
+                Categories? Cat = Categories.Where(c => c.CategoryID == CategoryID).FirstOrDefault();
+
+                if(Cat.CategoryGroupID == GroupCatId)
                 {
-                    SelectedCategories.Add(CategoryID);
-                    SelectedFilters += 1;
+                    CatButton.ImageSource = new FontImageSource
+                    {
+                        FontFamily = "MaterialDesignIcons",
+                        Glyph = "\ue876",
+                        Size = 15,
+                        Color = (Color)White
+                    };
+                    CatButton.Style = (Style)buttonClicked;
+
+                    if (!SelectedCategories.Contains(CategoryID))
+                    {
+                        SelectedCategories.Add(CategoryID);
+                        SelectedFilters += 1;
+                    }
                 }
             }
         }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "CategoryGroupHeader_Tapped");
+        }
+
     }
 
     private void TogglCategoryFilterButtons(int CatID)
@@ -633,7 +688,17 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
                 };
             }
 
-            FilterButton.Clicked += (s, e) => TogglePayeeFilterButtons(Payee);
+            FilterButton.Clicked += (s, e) =>
+            {
+                try
+                {
+                    TogglePayeeFilterButtons(Payee);
+                }
+                catch (Exception ex)
+                {
+                    _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "FilterButton.Clicked");
+                }
+            }; 
 
             PayeeFlex.Children.Add(FilterButton);
 
@@ -687,72 +752,72 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
     private async void ApplyFilter_Clicked(object sender, EventArgs e)
     {
-        ViewTransactions CurrentPage = (ViewTransactions)Shell.Current.CurrentPage;
-
-        FilterModel NewFilter = new FilterModel();
-
-        if(chbDateRange.IsChecked.GetValueOrDefault())
-        {
-            NewFilter.DateFilter = new DateFilter
-            {
-                DateFrom = pckFromDate.Date,
-                DateTo = pckToDate.Date
-            };
-        }
-        else
-        {
-            NewFilter.DateFilter = null;
-        }
-
-        if (chbPayee.IsChecked.GetValueOrDefault() && SelectedPayees.Count() != 0)
-        {
-            NewFilter.PayeeFilter = SelectedPayees;
-        }
-        else
-        {
-            NewFilter.PayeeFilter = null;
-        }
-
-        if (chbCategories.IsChecked.GetValueOrDefault() && SelectedCategories.Count() != 0)
-        {
-            NewFilter.CategoryFilter = SelectedCategories;
-        }
-        else
-        {
-            NewFilter.CategoryFilter = null;
-        }
-
-        if (chbSavings.IsChecked.GetValueOrDefault() && SelectedSavings.Count() != 0)
-        {
-            NewFilter.SavingFilter = SelectedSavings;
-        }
-        else
-        {
-            NewFilter.SavingFilter = null;
-        }
-
-        if (chbEventTypes.IsChecked.GetValueOrDefault() && SelectedEventTypes.Count() != 0)
-        {
-            NewFilter.TransactionEventTypeFilter = SelectedEventTypes;
-        }
-        else
-        {
-            NewFilter.TransactionEventTypeFilter = null;
-        }
-
-        CurrentPage.Filters = NewFilter;
-
         try
         {
+            ViewTransactions CurrentPage = (ViewTransactions)Shell.Current.CurrentPage;
+
+            FilterModel NewFilter = new FilterModel();
+
+            if(chbDateRange.IsChecked.GetValueOrDefault())
+            {
+                NewFilter.DateFilter = new DateFilter
+                {
+                    DateFrom = pckFromDate.Date,
+                    DateTo = pckToDate.Date
+                };
+            }
+            else
+            {
+                NewFilter.DateFilter = null;
+            }
+
+            if (chbPayee.IsChecked.GetValueOrDefault() && SelectedPayees.Count() != 0)
+            {
+                NewFilter.PayeeFilter = SelectedPayees;
+            }
+            else
+            {
+                NewFilter.PayeeFilter = null;
+            }
+
+            if (chbCategories.IsChecked.GetValueOrDefault() && SelectedCategories.Count() != 0)
+            {
+                NewFilter.CategoryFilter = SelectedCategories;
+            }
+            else
+            {
+                NewFilter.CategoryFilter = null;
+            }
+
+            if (chbSavings.IsChecked.GetValueOrDefault() && SelectedSavings.Count() != 0)
+            {
+                NewFilter.SavingFilter = SelectedSavings;
+            }
+            else
+            {
+                NewFilter.SavingFilter = null;
+            }
+
+            if (chbEventTypes.IsChecked.GetValueOrDefault() && SelectedEventTypes.Count() != 0)
+            {
+                NewFilter.TransactionEventTypeFilter = SelectedEventTypes;
+            }
+            else
+            {
+                NewFilter.TransactionEventTypeFilter = null;
+            }
+
+            CurrentPage.Filters = NewFilter;
+
             if (App.CurrentBottomSheet != null)
             {
                 await this.DismissAsync();
                 App.CurrentBottomSheet = null;
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-
+            await _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "ApplyFilter_Clicked");
         }
     }
 
@@ -779,18 +844,27 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
     private void chbDateRange_StateChanged(object sender, Syncfusion.Maui.Buttons.StateChangedEventArgs e)
     {
-        if (chbDateRange.IsChecked.GetValueOrDefault())
+        try
         {
-            DateRangeDetails.IsVisible = true;
-            DateRangeFilter.Glyph = "\ue5cf";
-            SelectedFilters += 2;
+
+            if (chbDateRange.IsChecked.GetValueOrDefault())
+            {
+                DateRangeDetails.IsVisible = true;
+                DateRangeFilter.Glyph = "\ue5cf";
+                SelectedFilters += 2;
+            }
+            else
+            {
+                DateRangeDetails.IsVisible = false;
+                DateRangeFilter.Glyph = "\ue5ce";
+                SelectedFilters -= 2;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            DateRangeDetails.IsVisible = false;
-            DateRangeFilter.Glyph = "\ue5ce";
-            SelectedFilters -= 2;
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "chbDateRange_StateChanged");
         }
+
     }
 
     private void acrPayee_Tapped(object sender, TappedEventArgs e)
@@ -807,73 +881,97 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
     private void chbPayee_StateChanged(object sender, Syncfusion.Maui.Buttons.StateChangedEventArgs e)
     {
-        if (chbPayee.IsChecked.GetValueOrDefault())
+        try
         {
-            PayeeDetails.IsVisible = true;
-            PayeeFilter.Glyph = "\ue5cf";
-        }
-        else
-        {
-            PayeeDetails.IsVisible = false;
-            PayeeFilter.Glyph = "\ue5ce";
+            if (chbPayee.IsChecked.GetValueOrDefault())
+            {
+                PayeeDetails.IsVisible = true;
+                PayeeFilter.Glyph = "\ue5cf";
+            }
+            else
+            {
+                PayeeDetails.IsVisible = false;
+                PayeeFilter.Glyph = "\ue5ce";
 
-            PayeeDeselectAll_Tapped(null, null);
+                PayeeDeselectAll_Tapped(null, null);
+            }
         }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "chbPayee_StateChanged");
+        }
+
     }
 
     private void PayeeDeselectAll_Tapped(object sender, TappedEventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-
-
-        foreach (KeyValuePair<string, Button> x in PayeeFilterButtons)
+        try
         {
-            Button PayeeButton = x.Value;
-            string Payee = x.Key;
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
 
-            PayeeButton.Style = (Style)buttonUnclicked;
-            PayeeButton.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
 
-            if (SelectedPayees.Contains(Payee))
+            foreach (KeyValuePair<string, Button> x in PayeeFilterButtons)
             {
-                SelectedPayees.Remove(Payee);
-                SelectedFilters -= 1;
-            }            
+                Button PayeeButton = x.Value;
+                string Payee = x.Key;
+
+                PayeeButton.Style = (Style)buttonUnclicked;
+                PayeeButton.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+
+                if (SelectedPayees.Contains(Payee))
+                {
+                    SelectedPayees.Remove(Payee);
+                    SelectedFilters -= 1;
+                }
+            }
         }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "PayeeDeselectAll_Tapped");
+        }
+
     }
 
     private void PayeeSelectAll_Tapped(object sender, TappedEventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        foreach (KeyValuePair<string, Button> x in PayeeFilterButtons)
+        try
         {
-            Button PayeeButton = x.Value;
-            string Payee = x.Key;
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-            PayeeButton.ImageSource = new FontImageSource
+            foreach (KeyValuePair<string, Button> x in PayeeFilterButtons)
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue876",
-                Size = 15,
-                Color = (Color)White
-            };
-            PayeeButton.Style = (Style)buttonClicked;
+                Button PayeeButton = x.Value;
+                string Payee = x.Key;
 
-            if (!SelectedPayees.Contains(Payee))
-            {
-                SelectedPayees.Add(Payee);
-                SelectedFilters += 1;
+                PayeeButton.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue876",
+                    Size = 15,
+                    Color = (Color)White
+                };
+                PayeeButton.Style = (Style)buttonClicked;
+
+                if (!SelectedPayees.Contains(Payee))
+                {
+                    SelectedPayees.Add(Payee);
+                    SelectedFilters += 1;
+                }
             }
         }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "PayeeSelectAll_Tapped");
+        }
+
     }
 
     private void chbCategories_StateChanged(object sender, Syncfusion.Maui.Buttons.StateChangedEventArgs e)
@@ -906,72 +1004,95 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
     private void CategoryDeselectAll_Tapped(object sender, TappedEventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-
-
-        foreach (KeyValuePair<int, Button> x in CatFilterButtons)
+        try
         {
-            Button CatButton = x.Value;
-            int Category = x.Key;
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
 
-            CatButton.Style = (Style)buttonUnclicked;
-            CatButton.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
 
-            if (SelectedCategories.Contains(Category))
+            foreach (KeyValuePair<int, Button> x in CatFilterButtons)
             {
-                SelectedCategories.Remove(Category);
-                SelectedFilters -= 1;
+                Button CatButton = x.Value;
+                int Category = x.Key;
+
+                CatButton.Style = (Style)buttonUnclicked;
+                CatButton.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+
+                if (SelectedCategories.Contains(Category))
+                {
+                    SelectedCategories.Remove(Category);
+                    SelectedFilters -= 1;
+                }
             }
         }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "CategoryDeselectAll_Tapped");
+        }
+
     }
 
     private void CategorySelectAll_Tapped(object sender, TappedEventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        foreach (KeyValuePair<int, Button> x in CatFilterButtons)
+        try
         {
-            Button CatButton = x.Value;
-            int Category = x.Key;
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-            CatButton.ImageSource = new FontImageSource
+            foreach (KeyValuePair<int, Button> x in CatFilterButtons)
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue876",
-                Size = 15,
-                Color = (Color)White
-            };
-            CatButton.Style = (Style)buttonClicked;
+                Button CatButton = x.Value;
+                int Category = x.Key;
 
-            if (!SelectedCategories.Contains(Category))
-            {
-                SelectedCategories.Add(Category);
-                SelectedFilters += 1;
+                CatButton.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue876",
+                    Size = 15,
+                    Color = (Color)White
+                };
+                CatButton.Style = (Style)buttonClicked;
+
+                if (!SelectedCategories.Contains(Category))
+                {
+                    SelectedCategories.Add(Category);
+                    SelectedFilters += 1;
+                }
             }
         }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "CategorySelectAll_Tapped");
+        }
+
     }
 
     private void chbSavings_StateChanged(object sender, Syncfusion.Maui.Buttons.StateChangedEventArgs e)
     {
-        if (chbSavings.IsChecked.GetValueOrDefault())
+        try
         {
-            SavingDetails.IsVisible = true;
-            SavingFilter.Glyph = "\ue5cf";
-        }
-        else
-        {
-            SavingDetails.IsVisible = false;
-            SavingFilter.Glyph = "\ue5ce";
+            if (chbSavings.IsChecked.GetValueOrDefault())
+            {
+                SavingDetails.IsVisible = true;
+                SavingFilter.Glyph = "\ue5cf";
+            }
+            else
+            {
+                SavingDetails.IsVisible = false;
+                SavingFilter.Glyph = "\ue5ce";
 
-            SavingDeselectAll_Tapped(null, null);
+                SavingDeselectAll_Tapped(null, null);
+                }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "chbSavings_StateChanged");
         }
     }
 
@@ -989,72 +1110,94 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
     private void SavingDeselectAll_Tapped(object sender, TappedEventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-
-
-        foreach (KeyValuePair<int, Button> x in SavingFilterButtons)
+        try
         {
-            Button SavingButton = x.Value;
-            int SavingID = x.Key;
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
 
-            SavingButton.Style = (Style)buttonUnclicked;
-            SavingButton.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
 
-            if (SelectedSavings.Contains(SavingID))
+            foreach (KeyValuePair<int, Button> x in SavingFilterButtons)
             {
-                SelectedSavings.Remove(SavingID);
-                SelectedFilters -= 1;
+                Button SavingButton = x.Value;
+                int SavingID = x.Key;
+
+                SavingButton.Style = (Style)buttonUnclicked;
+                SavingButton.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+
+                if (SelectedSavings.Contains(SavingID))
+                {
+                    SelectedSavings.Remove(SavingID);
+                    SelectedFilters -= 1;
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "SavingDeselectAll_Tapped");
         }
     }
 
     private void SavingSelectAll_Tapped(object sender, TappedEventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        foreach (KeyValuePair<int, Button> x in SavingFilterButtons)
+        try
         {
-            Button SavingButton = x.Value;
-            int SavingID = x.Key;
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-            SavingButton.ImageSource = new FontImageSource
+            foreach (KeyValuePair<int, Button> x in SavingFilterButtons)
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue876",
-                Size = 15,
-                Color = (Color)White
-            };
-            SavingButton.Style = (Style)buttonClicked;
+                Button SavingButton = x.Value;
+                int SavingID = x.Key;
 
-            if (!SelectedSavings.Contains(SavingID))
-            {
-                SelectedSavings.Add(SavingID);
-                SelectedFilters += 1;
+                SavingButton.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue876",
+                    Size = 15,
+                    Color = (Color)White
+                };
+                SavingButton.Style = (Style)buttonClicked;
+
+                if (!SelectedSavings.Contains(SavingID))
+                {
+                    SelectedSavings.Add(SavingID);
+                    SelectedFilters += 1;
+                }
             }
         }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "SavingSelectAll_Tapped");
+        }
+
     }
 
     private void chbEventTypes_StateChanged(object sender, Syncfusion.Maui.Buttons.StateChangedEventArgs e)
     {
-        if (chbEventTypes.IsChecked.GetValueOrDefault())
+        try
         {
-            EventTypesDetails.IsVisible = true;
-            EventTypesFilter.Glyph = "\ue5cf";
-        }
-        else
-        {
-            EventTypesDetails.IsVisible = false;
-            EventTypesFilter.Glyph = "\ue5ce";
+            if (chbEventTypes.IsChecked.GetValueOrDefault())
+            {
+                EventTypesDetails.IsVisible = true;
+                EventTypesFilter.Glyph = "\ue5cf";
+            }
+            else
+            {
+                EventTypesDetails.IsVisible = false;
+                EventTypesFilter.Glyph = "\ue5ce";
 
-            EventTypesDeselectAll_Tapped(null, null);
+                EventTypesDeselectAll_Tapped(null, null);
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "chbEventTypes_StateChanged");
         }
     }
 
@@ -1072,56 +1215,71 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
     private void EventTypesDeselectAll_Tapped(object sender, TappedEventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-
-
-        foreach (KeyValuePair<string, Button> x in EventTypeFilterButtons)
+        try
         {
-            Button EventTypesButton = x.Value;
-            string EventType = x.Key;
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
 
-            EventTypesButton.Style = (Style)buttonUnclicked;
-            EventTypesButton.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
 
-            if (SelectedEventTypes.Contains(EventType))
+            foreach (KeyValuePair<string, Button> x in EventTypeFilterButtons)
             {
-                SelectedEventTypes.Remove(EventType);
-                SelectedFilters -= 1;
+                Button EventTypesButton = x.Value;
+                string EventType = x.Key;
+
+                EventTypesButton.Style = (Style)buttonUnclicked;
+                EventTypesButton.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+
+                if (SelectedEventTypes.Contains(EventType))
+                {
+                    SelectedEventTypes.Remove(EventType);
+                    SelectedFilters -= 1;
+                }
             }
         }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "EventTypesDeselectAll_Tapped");
+        }
+
     }
 
     private void EventTypesSelectAll_Tapped(object sender, TappedEventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        foreach (KeyValuePair<string, Button> x in EventTypeFilterButtons)
+        try
         {
-            Button EventTypesButton = x.Value;
-            string EventType = x.Key;
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-            EventTypesButton.ImageSource = new FontImageSource
+            foreach (KeyValuePair<string, Button> x in EventTypeFilterButtons)
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue876",
-                Size = 15,
-                Color = (Color)White
-            };
-            EventTypesButton.Style = (Style)buttonClicked;
+                Button EventTypesButton = x.Value;
+                string EventType = x.Key;
 
-            if (!SelectedEventTypes.Contains(EventType))
-            {
-                SelectedEventTypes.Add(EventType);
-                SelectedFilters += 1;
+                EventTypesButton.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue876",
+                    Size = 15,
+                    Color = (Color)White
+                };
+                EventTypesButton.Style = (Style)buttonClicked;
+
+                if (!SelectedEventTypes.Contains(EventType))
+                {
+                    SelectedEventTypes.Add(EventType);
+                    SelectedFilters += 1;
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "EventTypesSelectAll_Tapped");
         }
     }
 }

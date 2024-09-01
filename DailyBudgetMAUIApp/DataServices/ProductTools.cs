@@ -1,5 +1,4 @@
 ﻿using DailyBudgetMAUIApp.Models;
-using System.Diagnostics;
 using System.Security.Cryptography;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
@@ -73,32 +72,29 @@ namespace DailyBudgetMAUIApp.DataServices
 
         }
 
-        public async Task<ErrorLog> HandleCatchedException(Exception ex, string Page, string Method)
+        public async Task<ErrorLog> HandleException(Exception ex, string Page, string Method)
         {
-            try
-            {
-                ErrorLog NewLog = new ErrorLog(ex, Page, Method);
+            ErrorLog Error = new ErrorLog(ex, Page, Method);
 
-
-                ErrorLog Response = await _ds.CreateNewErrorLog(NewLog);
-
-                return Response;
+            Page TopPage = Shell.Current.Navigation.NavigationStack[Shell.Current.Navigation.NavigationStack.Count - 1];
+            if (TopPage.GetType() != typeof(NoNetworkAccess) && TopPage.GetType() != typeof(ErrorPage))
+            {                
+                if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+                {
+                    Error = await _ds.CreateNewErrorLog(Error);
+                }
+                await Shell.Current.GoToAsync(nameof(ErrorPage),
+                    new Dictionary<string, object>
+                    {
+                        ["Error"] = Error
+                    });                
             }
-            catch (Exception EndExcption)
-            {
-                Debug.WriteLine($"Error Trying to Log the Error --> {EndExcption.Message}");
-                //TODO: Write the error to a physical file
-
-                throw new Exception("Fatal Error Trying to Log an Error");
-            }
-
-
-
+            return Error;
         }
 
-        public DateTime GetBudgetLastUpdated(int BudgetID)
+        public DateTime? GetBudgetLastUpdated(int BudgetID)
         {
-            DateTime LastUpdated = _ds.GetBudgetLastUpdatedAsync(BudgetID).Result;
+            DateTime? LastUpdated = _ds.GetBudgetLastUpdatedAsync(BudgetID).Result;
 
             return LastUpdated;
         }
@@ -1659,7 +1655,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     Preferences.Remove("NavigationType");
                     Preferences.Remove("NavigationID");
 
-                    var popup = new PopUpOTP(ShareBudgetRequestID, new PopUpOTPViewModel(new RestDataService()), "ShareBudget", new ProductTools(new RestDataService()), new RestDataService());
+                    var popup = new PopUpOTP(ShareBudgetRequestID, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ShareBudget", new ProductTools(new RestDataService()), new RestDataService());
                     var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
                     if ((string)result.ToString() != "User Closed")

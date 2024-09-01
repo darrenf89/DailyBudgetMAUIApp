@@ -62,137 +62,117 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($" --> {ex.Message}");
-                ErrorLog Error = _pt.HandleCatchedException(ex, "AddIncome", "ChangeIncomeName").Result;
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
-                    {
-                        ["Error"] = Error
-                    });
+                await _pt.HandleException(ex, "AddIncome", "ChangeIncomeName");
             }
         }
 
         [RelayCommand]
         public async void BackButton()
         {
-            if (NavigatedFrom == "CreateNewBudget")
+            try
             {
-                if (App.CurrentPopUp == null)
+                if (NavigatedFrom == "CreateNewBudget")
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
-            }
-            else if (NavigatedFrom == "ViewIncomes")
-            {
-                if (App.CurrentPopUp == null)
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                }
+                else if (NavigatedFrom == "ViewIncomes")
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
+                    await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
+                await _pt.HandleException(ex, "AddIncome", "BackButton");
             }
         }
 
         public async void AddIncome()
         {
-            try
+
+            string SuccessCheck = _ds.SaveNewIncome(Income, BudgetID).Result;
+            if (SuccessCheck == "OK")
             {
-                string SuccessCheck = _ds.SaveNewIncome(Income, BudgetID).Result;
-                if (SuccessCheck == "OK")
+                if (NavigatedFrom == "CreateNewBudget")
                 {
-                    if (NavigatedFrom == "CreateNewBudget")
+                    if (App.CurrentPopUp == null)
                     {
-                        if (App.CurrentPopUp == null)
-                        {
-                            var PopUp = new PopUpPage();
-                            App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
-                        }
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
-                    }
-                    else if (NavigatedFrom == "ViewIncomes")
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                }
+                else if (NavigatedFrom == "ViewIncomes")
+                {
+                    if (App.CurrentPopUp == null)
                     {
-                        if (App.CurrentPopUp == null)
-                        {
-                            var PopUp = new PopUpPage();
-                            App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
-                        }
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                        await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
-                    }
-                    else
-                    {
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
-                    }
+                    await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
                 }
             }
-            catch (Exception ex)
-            {
-                ErrorLog Error = _pt.HandleCatchedException(ex, "AddBill", "AddBill").Result;
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
-                    {
-                        ["Error"] = Error
-                    });
-            }
+
         }
 
         public async void UpdateIncome()
         {
-            try
+
+            string SuccessCheck = _ds.UpdateIncome(Income).Result;
+            if (SuccessCheck == "OK")
             {
-                string SuccessCheck = _ds.UpdateIncome(Income).Result;
-                if (SuccessCheck == "OK")
+                if (NavigatedFrom == "CreateNewBudget")
                 {
-                    if (NavigatedFrom == "CreateNewBudget")
+                    if (App.CurrentPopUp == null)
                     {
-                        if (App.CurrentPopUp == null)
-                        {
-                            var PopUp = new PopUpPage();
-                            App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
-                        }
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
-                    }
-                    else if (NavigatedFrom == "ViewIncomes")
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                }
+                else if (NavigatedFrom == "ViewIncomes")
+                {
+                    if (App.CurrentPopUp == null)
                     {
-                        if (App.CurrentPopUp == null)
-                        {
-                            var PopUp = new PopUpPage();
-                            App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
-                        }
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                        await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
-                    }
-                    else
-                    {
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
-                    }
-                }                
-            }
-            catch (Exception ex)
-            {
-                ErrorLog Error = _pt.HandleCatchedException(ex, "AddBill", "UpdateBill").Result;
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
-                    {
-                        ["Error"] = Error
-                    });
-            }
+                    await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
+                }
+            }                
         }
 
     }

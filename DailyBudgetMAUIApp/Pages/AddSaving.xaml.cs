@@ -22,135 +22,141 @@ public partial class AddSaving : ContentPage
         this.BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
-        _ds = ds;
-
-        dtpckGoalDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(1);
+        _ds = ds;        
        
 	}
 
     async protected override void OnAppearing()
     {
-
-        base.OnAppearing();
-
-        if (_vm.BudgetID == 0)
+        try
         {
-            _vm.BudgetID = App.DefaultBudgetID;
-        }
+            base.OnAppearing();
 
-        _vm.BudgetNextPayDate = _ds.GetBudgetNextIncomePayDayAsync(_vm.BudgetID).Result;
-        _vm.BudgetDaysToNextPay = (int)Math.Ceiling((_vm.BudgetNextPayDate.Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
-        _vm.BudgetDaysBetweenPay = _ds.GetBudgetDaysBetweenPayDay(_vm.BudgetID).Result;
+            dtpckGoalDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(1);
 
-        if (_vm.SavingID == 0)
-        {
-            _vm.Saving = new Savings();
-            _vm.Title = "Add a New Saving";
-            btnAddSaving.IsVisible = true;
-
-            if (_vm.NavigatedFrom == "ViewSavings")
+            if (_vm.BudgetID == 0)
             {
-                _vm.SavingType = "Regular";
-            }
-            else if (_vm.NavigatedFrom == "ViewEnvelopes")
-            {
-                _vm.SavingType = "Envelope";
+                _vm.BudgetID = App.DefaultBudgetID;
             }
 
-            if (_vm.SavingType == "Envelope")
-            {
-                _vm.SavingRecurringText = "Envelope";
-                _vm.Saving.IsRegularSaving = false;
+            _vm.BudgetNextPayDate = _ds.GetBudgetNextIncomePayDayAsync(_vm.BudgetID).Result;
+            _vm.BudgetDaysToNextPay = (int)Math.Ceiling((_vm.BudgetNextPayDate.Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
+            _vm.BudgetDaysBetweenPay = _ds.GetBudgetDaysBetweenPayDay(_vm.BudgetID).Result;
 
-                UpdateDisplaySelection("Envelope");
-            }
-            else if (_vm.SavingType == "Regular")
+            if (_vm.SavingID == 0)
             {
-                _vm.SavingRecurringText = "Ongoing";
-                _vm.Saving.IsRegularSaving = true;
-                btnOngoingSaving_Clicked(new Object(), new EventArgs());
-            }
-        }
-        else
-        {
-            if (_vm.SavingID != -1)
-            {
-                _vm.Saving = _ds.GetSavingFromID(_vm.SavingID).Result;
-                _vm.Title = $"Update Saving {_vm.Saving.SavingsName}";
-                btnUpdateSaving.IsVisible = true;
-            }
-            else
-            {
+                _vm.Saving = new Savings();
                 _vm.Title = "Add a New Saving";
                 btnAddSaving.IsVisible = true;
-            }            
 
-            if (_vm.Saving.IsRegularSaving)
-            {
-                _vm.SavingRecurringText = "Ongoing";
-
-                btnOngoingSaving_Clicked(new Object(), new EventArgs());
-
-                if (_vm.Saving.SavingsType == "TargetDate")
+                if (_vm.NavigatedFrom == "ViewSavings")
                 {
-                    UpdateSelectedOption("TargetDate");
+                    _vm.SavingType = "Regular";
                 }
-                else if (_vm.Saving.SavingsType == "SavingsBuilder")
+                else if (_vm.NavigatedFrom == "ViewEnvelopes")
                 {
-                    UpdateSelectedOption("SavingsBuilder");
-
-
+                    _vm.SavingType = "Envelope";
                 }
-                else if (_vm.Saving.SavingsType == "TargetAmount")
+
+                if (_vm.SavingType == "Envelope")
                 {
-                    UpdateSelectedOption("TargetAmount");
+                    _vm.SavingRecurringText = "Envelope";
+                    _vm.Saving.IsRegularSaving = false;
+
+                    UpdateDisplaySelection("Envelope");
+                }
+                else if (_vm.SavingType == "Regular")
+                {
+                    _vm.SavingRecurringText = "Ongoing";
+                    _vm.Saving.IsRegularSaving = true;
+                    btnOngoingSaving_Clicked(new Object(), new EventArgs());
                 }
             }
             else
             {
-                _vm.SavingRecurringText = "Envelope";
-                _vm.Saving.IsRegularSaving = false;
+                if (_vm.SavingID != -1)
+                {
+                    _vm.Saving = _ds.GetSavingFromID(_vm.SavingID).Result;
+                    _vm.Title = $"Update Saving {_vm.Saving.SavingsName}";
+                    btnUpdateSaving.IsVisible = true;
+                }
+                else
+                {
+                    _vm.Title = "Add a New Saving";
+                    btnAddSaving.IsVisible = true;
+                }            
 
-                UpdateDisplaySelection("Envelope");
+                if (_vm.Saving.IsRegularSaving)
+                {
+                    _vm.SavingRecurringText = "Ongoing";
+
+                    btnOngoingSaving_Clicked(new Object(), new EventArgs());
+
+                    if (_vm.Saving.SavingsType == "TargetDate")
+                    {
+                        UpdateSelectedOption("TargetDate");
+                    }
+                    else if (_vm.Saving.SavingsType == "SavingsBuilder")
+                    {
+                        UpdateSelectedOption("SavingsBuilder");
+
+
+                    }
+                    else if (_vm.Saving.SavingsType == "TargetAmount")
+                    {
+                        UpdateSelectedOption("TargetAmount");
+                    }
+                }
+                else
+                {
+                    _vm.SavingRecurringText = "Envelope";
+                    _vm.Saving.IsRegularSaving = false;
+
+                    UpdateDisplaySelection("Envelope");
+                }
+            }
+
+            double CalcAmount = 0;
+            entCalculateAmount.Text = CalcAmount.ToString("c", CultureInfo.CurrentCulture);
+
+            double SavingTarget = (double?)_vm.Saving.SavingsGoal ?? 0;
+            entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
+
+            double CurrentBalance = (double?)_vm.Saving.CurrentBalance ?? 0;
+            entCurrentBalance.Text = CurrentBalance.ToString("c", CultureInfo.CurrentCulture);
+
+            double RegularValue = 0;
+
+            if (_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
+            {
+                RegularValue = (double?)_vm.Saving.PeriodSavingValue ?? 0;
+
+            }
+            else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
+            {
+                RegularValue = (double?)_vm.Saving.RegularSavingValue ?? 0;
+            }
+        
+            entSavingAmount.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);
+
+            if(_vm.NavigatedFrom=="ViewSavings" && _vm.SavingID != 0)
+            {
+                vslOption1Select.IsEnabled = false;
+                vslOption2Select.IsEnabled = false;
+                vslOption3Select.IsEnabled = false;
+
+                UpdateSelectedOptionDisabled(_vm.Saving.SavingsType);          
+            }
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
             }
         }
-
-        double CalcAmount = 0;
-        entCalculateAmount.Text = CalcAmount.ToString("c", CultureInfo.CurrentCulture);
-
-        double SavingTarget = (double?)_vm.Saving.SavingsGoal ?? 0;
-        entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
-
-        double CurrentBalance = (double?)_vm.Saving.CurrentBalance ?? 0;
-        entCurrentBalance.Text = CurrentBalance.ToString("c", CultureInfo.CurrentCulture);
-
-        double RegularValue = 0;
-
-        if (_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
+        catch (Exception ex)
         {
-            RegularValue = (double?)_vm.Saving.PeriodSavingValue ?? 0;
-
-        }
-        else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
-        {
-            RegularValue = (double?)_vm.Saving.RegularSavingValue ?? 0;
-        }
-        
-        entSavingAmount.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);
-
-        if(_vm.NavigatedFrom=="ViewSavings" && _vm.SavingID != 0)
-        {
-            vslOption1Select.IsEnabled = false;
-            vslOption2Select.IsEnabled = false;
-            vslOption3Select.IsEnabled = false;
-
-            UpdateSelectedOptionDisabled(_vm.Saving.SavingsType);          
-        }
-
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            await _pt.HandleException(ex, "AddSaving", "OnAppearing");
         }
     }
 
@@ -171,78 +177,126 @@ public partial class AddSaving : ContentPage
 
     private async void SaveSaving_Clicked(object sender, EventArgs e)
     {
-        if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
+        try
         {
-            string status = await ChangeSavingsName();
-        }
+            if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
+            {
+                string status = await ChangeSavingsName();
+            }
 
-        if (ValidateSavingDetails())
+            if (ValidateSavingDetails())
+            {
+                if(_vm.SavingID == 0)
+                {
+                    _vm.AddSaving();
+                }
+                else
+                {
+                    _vm.UpdateSaving();
+                }
+            }
+        }
+        catch (Exception ex)
         {
-            if(_vm.SavingID == 0)
-            {
-                _vm.AddSaving();
-            }
-            else
-            {
-                _vm.UpdateSaving();
-            }
+            await _pt.HandleException(ex, "AddSaving", "SaveSaving_Clicked");
         }
     }
 
     private async void ResetSaving_Clicked(object sender, EventArgs e)
     {
-        bool result = await DisplayAlert("Savings Reset", "Are you sure you want to Reset " + _vm.Saving.SavingsName, "Yes, continue", "Cancel");
-        if (result)
+        try
         {
-            UpdateDisplaySelection("");
-            UpdateSelectedOption("");
+            bool result = await DisplayAlert("Savings Reset", "Are you sure you want to Reset " + _vm.Saving.SavingsName, "Yes, continue", "Cancel");
+            if (result)
+            {
+                UpdateDisplaySelection("");
+                UpdateSelectedOption("");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddSaving", "ResetSaving_Clicked");
         }
     }
 
     private void btnOngoingSaving_Clicked(object sender, EventArgs e)
     {
-        ClearAllValidators();
+        try
+        {
+            ClearAllValidators();
 
-        _vm.SavingRecurringText = "Ongoing";
-        _vm.Saving.IsRegularSaving = true;
+            _vm.SavingRecurringText = "Ongoing";
+            _vm.Saving.IsRegularSaving = true;
 
-        lblSelectedSavingTitle.Text = "Select a type of saving";
-        lblSelectedSavingParaOne.Text = "There are 3 types of regular savings depending on what you need";
-        lblSelectedSavingParaTwo.Text = "Click on the option and play about to see what you want to add!";
+            lblSelectedSavingTitle.Text = "Select a type of saving";
+            lblSelectedSavingParaOne.Text = "There are 3 types of regular savings depending on what you need";
+            lblSelectedSavingParaTwo.Text = "Click on the option and play about to see what you want to add!";
 
-        SelectSavingType.IsVisible = false;
-        SavingTypeSelected.IsVisible = true;
-        vslSavingRecurringTypeSelected.IsVisible = true;
+            SelectSavingType.IsVisible = false;
+            SavingTypeSelected.IsVisible = true;
+            vslSavingRecurringTypeSelected.IsVisible = true;
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSaving", "btnOngoingSaving_Clicked");
+        }
     }
     private void btnEnvelopeSaving_Clicked(object sender, EventArgs e)
     {
-        ClearAllValidators();
+        try
+        {
+            ClearAllValidators();
 
-        pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
+            pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
 
-        _vm.SavingRecurringText = "Envelope";
-        _vm.Saving.IsRegularSaving = false;        
+            _vm.SavingRecurringText = "Envelope";
+            _vm.Saving.IsRegularSaving = false;        
 
-        UpdateDisplaySelection("Envelope");
-
+            UpdateDisplaySelection("Envelope");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSaving", "btnEnvelopeSaving_Clicked");
+        }
 
     }
 
     private void Option1Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("TargetDate");
-        pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
+        try
+        {
+            UpdateSelectedOption("TargetDate");
+            pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSaving", "Option1Select_Tapped");
+        }
     }
 
     private void Option2Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("SavingsBuilder");
-        pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
+        try
+        {
+            UpdateSelectedOption("SavingsBuilder");
+            pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSaving", "Option2Select_Tapped");
+        }
     }
 
     private void Option3Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("TargetAmount");
+        try
+        {
+            UpdateSelectedOption("TargetAmount");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSaving", "Option3Select_Tapped");
+        }
     }
 
     private void UpdateSelectedOptionDisabled(string option)
@@ -562,6 +616,7 @@ public partial class AddSaving : ContentPage
 
     static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
     {
+
         Application.Current.Resources.TryGetValue("Primary", out var Primary);
         Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
         Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
@@ -579,163 +634,221 @@ public partial class AddSaving : ContentPage
 
         customSwitch.KnobBackgroundColor = ColorAnimationUtil.ColorAnimation(fromSwitchColor, toSwitchColor, t);
         customSwitch.BackgroundColor = ColorAnimationUtil.ColorAnimation(fromColor, toColor, t);
+
     }
 
     void SavingTarget_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal SavingTarget = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingTarget.CursorPosition > position)
+        try
         {
-            entSavingTarget.CursorPosition = entSavingTarget.Text.Length;
-        }
-        _vm.Saving.SavingsGoal = SavingTarget;
+            decimal SavingTarget = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingTarget.CursorPosition > position)
+            {
+                entSavingTarget.CursorPosition = entSavingTarget.Text.Length;
+            }
+            _vm.Saving.SavingsGoal = SavingTarget;
 
-        RecalculateValues("entSavingTarget");
+            RecalculateValues("entSavingTarget");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSaving", "SavingTarget_Changed");
+        }
     }
     void CurrentBalance_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal CurrentBalance = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entCurrentBalance.Text = CurrentBalance.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrentBalance.CursorPosition > position)
+        try
         {
-            entCurrentBalance.CursorPosition = entCurrentBalance.Text.Length;
-        }
-        _vm.Saving.CurrentBalance = CurrentBalance;
+            decimal CurrentBalance = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entCurrentBalance.Text = CurrentBalance.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrentBalance.CursorPosition > position)
+            {
+                entCurrentBalance.CursorPosition = entCurrentBalance.Text.Length;
+            }
+            _vm.Saving.CurrentBalance = CurrentBalance;
 
-        RecalculateValues("entCurrentBalance");
+            RecalculateValues("entCurrentBalance");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSaving", "CurrentBalance_Changed");
+        }
     }
 
     private void dtpckGoalDate_DateSelected(object sender, DateChangedEventArgs e)
     {
-        RecalculateValues("dtpckGoalDate");
+        try
+        {
+            RecalculateValues("dtpckGoalDate");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSaving", "dtpckGoalDate_DateSelected");
+        }
     }
 
     void SavingAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entSavingAmount.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingAmount.CursorPosition > position)
+        try
         {
-            entSavingAmount.CursorPosition = entSavingAmount.Text.Length;
-        }
-
-        if (!_vm.Saving.IsRegularSaving)
-        {
-            if(!(_vm.NavigatedFrom == "ViewSavings" || _vm.NavigatedFrom == "ViewEnvelopes"))
+            decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entSavingAmount.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingAmount.CursorPosition > position)
             {
-                entCurrentBalance.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
-                _vm.Saving.CurrentBalance = SavingValue;
+                entSavingAmount.CursorPosition = entSavingAmount.Text.Length;
             }
-        }
 
-        if(_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
-        {
-            _vm.Saving.PeriodSavingValue = SavingValue;
-            _vm.Saving.RegularSavingValue = SavingValue / _vm.BudgetDaysBetweenPay;
-        }
-        else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
-        {
-            _vm.Saving.PeriodSavingValue = SavingValue * _vm.BudgetDaysBetweenPay;
-            _vm.Saving.RegularSavingValue = SavingValue;
-        }
+            if (!_vm.Saving.IsRegularSaving)
+            {
+                if(!(_vm.NavigatedFrom == "ViewSavings" || _vm.NavigatedFrom == "ViewEnvelopes"))
+                {
+                    entCurrentBalance.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
+                    _vm.Saving.CurrentBalance = SavingValue;
+                }
+            }
 
-        RecalculateValues("entSavingAmount");
+            if(_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
+            {
+                _vm.Saving.PeriodSavingValue = SavingValue;
+                _vm.Saving.RegularSavingValue = SavingValue / _vm.BudgetDaysBetweenPay;
+            }
+            else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
+            {
+                _vm.Saving.PeriodSavingValue = SavingValue * _vm.BudgetDaysBetweenPay;
+                _vm.Saving.RegularSavingValue = SavingValue;
+            }
+
+            RecalculateValues("entSavingAmount");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSaving", "SavingAmount_Changed");
+        }
     }
     void CalculateAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal CalculateAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entCalculateAmount.Text = CalculateAmount.ToString("c", CultureInfo.CurrentCulture);
-        if(_vm.ShowCalculator)
+        try
         {
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCalculateAmount.CursorPosition > position)
+            decimal CalculateAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entCalculateAmount.Text = CalculateAmount.ToString("c", CultureInfo.CurrentCulture);
+            if(_vm.ShowCalculator)
             {
-                entCalculateAmount.CursorPosition = entCalculateAmount.Text.Length;
+                int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+                if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCalculateAmount.CursorPosition > position)
+                {
+                    entCalculateAmount.CursorPosition = entCalculateAmount.Text.Length;
+                }
+            }
+        
+
+            string SelectedDuration = (string)pckrEverynthDuration.SelectedItem ?? "Week";
+            decimal DailyAmount = 0;
+
+            if (SelectedDuration == "Week")
+            {
+                DailyAmount = CalculateAmount / 7;
+            }
+            else if(SelectedDuration == "Fortnight")
+            {
+                DailyAmount = CalculateAmount / 14;
+            }        
+            else if(SelectedDuration == "Pay")
+            {
+                DailyAmount = CalculateAmount / _vm.BudgetDaysBetweenPay;
+            }
+            else if(SelectedDuration == "Month")
+            {
+                DailyAmount = CalculateAmount / 30;
+            }
+            else if(SelectedDuration == "Year")
+            {
+                DailyAmount = CalculateAmount / 365;
+            }
+
+            if(_vm.ShowCalculator)
+            {
+                entSavingAmount.Text = DailyAmount.ToString("c", CultureInfo.CurrentCulture);
             }
         }
-        
-
-        string SelectedDuration = (string)pckrEverynthDuration.SelectedItem ?? "Week";
-        decimal DailyAmount = 0;
-
-        if (SelectedDuration == "Week")
+        catch (Exception ex)
         {
-            DailyAmount = CalculateAmount / 7;
-        }
-        else if(SelectedDuration == "Fortnight")
-        {
-            DailyAmount = CalculateAmount / 14;
-        }        
-        else if(SelectedDuration == "Pay")
-        {
-            DailyAmount = CalculateAmount / _vm.BudgetDaysBetweenPay;
-        }
-        else if(SelectedDuration == "Month")
-        {
-            DailyAmount = CalculateAmount / 30;
-        }
-        else if(SelectedDuration == "Year")
-        {
-            DailyAmount = CalculateAmount / 365;
+            _pt.HandleException(ex, "AddSaving", "CalculateAmount_Changed");
         }
 
-        if(_vm.ShowCalculator)
-        {
-            entSavingAmount.Text = DailyAmount.ToString("c", CultureInfo.CurrentCulture);
-        }
-        
     }
 
     private void pckrSavingPeriod_SelectedIndexChanged(object sender, EventArgs e)
     {
-        PickerClass SavingPeriodClass = (PickerClass)pckrSavingPeriod.SelectedItem;
-        _vm.Saving.DdlSavingsPeriod = SavingPeriodClass.Key;
-
-        decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(entSavingAmount.Text);
-
-        if (_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
+        try
         {
-            _vm.Saving.PeriodSavingValue = SavingValue;
-            _vm.Saving.RegularSavingValue = SavingValue / _vm.BudgetDaysBetweenPay;
-            _vm.Saving.IsDailySaving = false;
+            PickerClass SavingPeriodClass = (PickerClass)pckrSavingPeriod.SelectedItem;
+            _vm.Saving.DdlSavingsPeriod = SavingPeriodClass.Key;
+
+            decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(entSavingAmount.Text);
+
+            if (_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
+            {
+                _vm.Saving.PeriodSavingValue = SavingValue;
+                _vm.Saving.RegularSavingValue = SavingValue / _vm.BudgetDaysBetweenPay;
+                _vm.Saving.IsDailySaving = false;
+            }
+            else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
+            {
+                _vm.Saving.PeriodSavingValue = SavingValue * _vm.BudgetDaysBetweenPay;
+                _vm.Saving.RegularSavingValue = SavingValue;
+                _vm.Saving.IsDailySaving = true;
+            }
+
+            RecalculateValues("pckrSavingPeriod");
         }
-        else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
+        catch (Exception ex)
         {
-            _vm.Saving.PeriodSavingValue = SavingValue * _vm.BudgetDaysBetweenPay;
-            _vm.Saving.RegularSavingValue = SavingValue;
-            _vm.Saving.IsDailySaving = true;
+            _pt.HandleException(ex, "AddSaving", "pckrSavingPeriod_SelectedIndexChanged");
         }
 
-        RecalculateValues("pckrSavingPeriod");
     }
 
     private async void btnUpdateSaving_Clicked(object sender, EventArgs e)
     {
-        if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
+        try
         {
-            string status = await ChangeSavingsName();
-        }
+            if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
+            {
+                string status = await ChangeSavingsName();
+            }
 
-        if(ValidateSavingDetails())
+            if(ValidateSavingDetails())
+            {
+                _vm.UpdateSaving();
+            }
+        }
+        catch (Exception ex)
         {
-            _vm.UpdateSaving();
+            await _pt.HandleException(ex, "AddSaving", "btnUpdateSaving_Clicked");
         }
     }
 
     private async void btnAddSaving_Clicked(object sender, EventArgs e)
     {
-        if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
+        try
         {
-            string status = await ChangeSavingsName();
-        }
+            if (_vm.Saving.SavingsName == "" || _vm.Saving.SavingsName == null)
+            {
+                string status = await ChangeSavingsName();
+            }
 
-        if (ValidateSavingDetails())
+            if (ValidateSavingDetails())
+            {
+                _vm.AddSaving();
+            }
+        }
+        catch (Exception ex)
         {
-            _vm.AddSaving();
+            await _pt.HandleException(ex, "AddSaving", "btnAddSaving_Clicked");
         }
     }
     private void RecalculateValues(string sender)
@@ -925,89 +1038,110 @@ public partial class AddSaving : ContentPage
 
     private void pckrSavingPeriod_Loaded(object sender, EventArgs e)
     {
-        if (_vm.SavingID == 0)
+        try
         {
-            if (_vm.SavingType == "Envelope")
+            if (_vm.SavingID == 0)
             {
-                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
+                if (_vm.SavingType == "Envelope")
+                {
+                    pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
+                }
+                else
+                {
+                    pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
+                }            
             }
             else
             {
-                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
-            }            
-        }
-        else
-        {
-            if (_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
-            {
-                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
-            }
-            else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
-            {
-                pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
-            }
-            else
-            {
-                if (_vm.Saving.IsRegularSaving)
+                if (_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
+                {
+                    pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
+                }
+                else if (_vm.Saving.DdlSavingsPeriod == "PerDay")
                 {
                     pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
                 }
                 else
                 {
-                    pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
+                    if (_vm.Saving.IsRegularSaving)
+                    {
+                        pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[1];
+                    }
+                    else
+                    {
+                        pckrSavingPeriod.SelectedItem = _vm.DropDownSavingPeriod[0];
+                    }
                 }
             }
-        }        
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSaving", "pckrSavingPeriod_Loaded");
+        }
     }
 
     private void pckrEverynthDuration_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if(!string.IsNullOrEmpty(entCalculateAmount.Text))
+        try
         {
-            decimal CalculateAmount = (decimal)_pt.FormatCurrencyNumber(entCalculateAmount.Text);
-
-            if (CalculateAmount > 0)
+            if (!string.IsNullOrEmpty(entCalculateAmount.Text))
             {
-                string SelectedDuration = (string)pckrEverynthDuration.SelectedItem ?? "Week";
-                decimal DailyAmount = 0;
+                decimal CalculateAmount = (decimal)_pt.FormatCurrencyNumber(entCalculateAmount.Text);
 
-                if (SelectedDuration == "Week")
+                if (CalculateAmount > 0)
                 {
-                    DailyAmount = CalculateAmount / 7;
-                }
-                else if (SelectedDuration == "Fortnight")
-                {
-                    DailyAmount = CalculateAmount / 14;
-                }
-                else if (SelectedDuration == "Pay")
-                {
-                    DailyAmount = CalculateAmount / _vm.BudgetDaysBetweenPay;
-                }
-                else if (SelectedDuration == "Month")
-                {
-                    DailyAmount = CalculateAmount / 30;
-                }
-                else if (SelectedDuration == "Year")
-                {
-                    DailyAmount = CalculateAmount / 365;
-                }
+                    string SelectedDuration = (string)pckrEverynthDuration.SelectedItem ?? "Week";
+                    decimal DailyAmount = 0;
 
-                entSavingAmount.Text = DailyAmount.ToString("c", CultureInfo.CurrentCulture);
+                    if (SelectedDuration == "Week")
+                    {
+                        DailyAmount = CalculateAmount / 7;
+                    }
+                    else if (SelectedDuration == "Fortnight")
+                    {
+                        DailyAmount = CalculateAmount / 14;
+                    }
+                    else if (SelectedDuration == "Pay")
+                    {
+                        DailyAmount = CalculateAmount / _vm.BudgetDaysBetweenPay;
+                    }
+                    else if (SelectedDuration == "Month")
+                    {
+                        DailyAmount = CalculateAmount / 30;
+                    }
+                    else if (SelectedDuration == "Year")
+                    {
+                        DailyAmount = CalculateAmount / 365;
+                    }
+
+                    entSavingAmount.Text = DailyAmount.ToString("c", CultureInfo.CurrentCulture);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSaving", "pckrEverynthDuration_SelectedIndexChanged");
         }
     }
 
     private void swhIsTopUp_Toggled(object sender, ToggledEventArgs e)
     {
-        if (_vm.Saving.IsTopUp) 
+        try
         {
-            _vm.IsTopUpParaText = "By topping up your saving we will add the saving amount to your balance every period. This way you can keep building up a stash for bigger less frequent spends. This also allows you to add to your stash as you go on and this amount will remain in your stash.";
-            _vm.IsTopUpLabelText = "Top up";
+            if (_vm.Saving.IsTopUp) 
+            {
+                _vm.IsTopUpParaText = "By topping up your saving we will add the saving amount to your balance every period. This way you can keep building up a stash for bigger less frequent spends. This also allows you to add to your stash as you go on and this amount will remain in your stash.";
+                _vm.IsTopUpLabelText = "Top up";
+            }
+            else
+            {
+                _vm.IsTopUpParaText = "By replenishing the stash, every pay period we will reset the envelopes balance to the saving amount. Any balance not spent by the end of the period will effectively be added back to your budget for you to spend!";
+                _vm.IsTopUpLabelText = "Replenish";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            _vm.IsTopUpParaText = "By replenishing the stash, every pay period we will reset the envelopes balance to the saving amount. Any balance not spent by the end of the period will effectively be added back to your budget for you to spend!";
-            _vm.IsTopUpLabelText = "Replenish";
+            _pt.HandleException(ex, "AddSaving", "swhIsTopUp_Toggled");
         }
 
     }

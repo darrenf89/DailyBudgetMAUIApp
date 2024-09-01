@@ -8,6 +8,8 @@ using DailySpendWebApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using System.Transactions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.Handlers;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -20,6 +22,8 @@ namespace DailyBudgetMAUIApp.DataServices
         private readonly string _baseAddress;
         private readonly string _url;
         private readonly JsonSerializerOptions _jsonSerialiserOptions;
+        private NetworkAccess PreviousNetworkAccess = NetworkAccess.Internet;
+        private bool CheckNetworkChanged = true;
 
         public RestDataService()
         {
@@ -32,17 +36,41 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
+
+            Connectivity.ConnectivityChanged +=  ConnectivityChangedHandler;
+        }
+
+        private async void ConnectivityChangedHandler(object sender, ConnectivityChangedEventArgs e)
+        {
+            PreviousNetworkAccess = e.NetworkAccess;
+            if(CheckNetworkChanged)
+            {
+                if (e.NetworkAccess == NetworkAccess.Internet)
+                {
+                    //TODO: SHOW POPUP SAYING INTERNET RETURNED WOULD THEY LIKE TO RETURN TO THEIR BUDGETTING
+                }
+                else if (PreviousNetworkAccess == NetworkAccess.Internet)
+                {
+                    //TODO: TAKE THEM TO THE NO INTERNET PAGE
+                    await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
+                }
+            }
         }
 
         private async void HandleError(Exception ex, string Page, string Method)
         {
             if (ex.Message == "Connectivity")
             {
-
+                //TODO: TAKE THEM TO THE NO INTERNET PAGE
+                await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
             }
             else
             {
                 ErrorLog Error = new ErrorLog(ex, Page, Method);
+                if(Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+                {
+                    Error = await CreateNewErrorLog(Error);
+                }                
                 await Shell.Current.GoToAsync(nameof(ErrorPage),
                     new Dictionary<string, object>
                     {
@@ -51,15 +79,103 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public async Task<string> PatchUserAccount(int UserID, List<PatchDoc> PatchDoc)
+        private async Task<bool> CheckNetworkConnection()
         {
+            CheckNetworkChanged = false;
+
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
-                throw new HttpRequestException("Connectivity");
+                
+                //TODO: SHOW POPUP
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpNoNetwork();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(1000);
+
+                int i = 0;
+                while(Connectivity.Current.NetworkAccess != NetworkAccess.Internet && i < 30)
+                {
+                    await Task.Delay(1000);
+                    i++;
+                }
+
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+
+            }
+
+            CheckNetworkChanged = true;
+
+            return Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
+        }
+        public async Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog)
+        {
+            ErrorLog ErrorLog = new();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                ErrorLog.ErrorMessage = "You have no Internet Connection, unfortunately you need that. Please try again when you are back in civilized society";
+                return ErrorLog;
             }
 
             try
             {
+                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<ErrorLog>(NewLog, _jsonSerialiserOptions);
+                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/error/adderrorlogentry", request).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    ErrorLog = System.Text.Json.JsonSerializer.Deserialize<ErrorLog>(content, _jsonSerialiserOptions);
+                    if (ErrorLog.ErrorLogID != 0)
+                    {
+                        return ErrorLog;
+                    }
+                    else
+                    {
+                        ErrorLog.ErrorMessage = "Opps something went wrong. It was probably one of our graduate developers fault ... Sorry about that!";
+                        return ErrorLog;
+                    }
+
+                }
+                else
+                {
+                    ErrorLog.ErrorMessage = "Opps something went wrong. It was probably one of our graduate developers fault ... Sorry about that!";
+                    return ErrorLog;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorLog.ErrorMessage = "Opps something went wrong. It was probably one of our graduate developers fault ... Sorry about that!";
+                return ErrorLog;
+            }
+        }
+
+        public async Task<string> PatchUserAccount(int UserID, List<PatchDoc> PatchDoc)
+        {
+
+            try
+            {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -79,8 +195,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get patch User Account in DataRestServices --> {ex.Message}");
+                HandleError(ex, "PatchUserAccount", "PatchUserAccount");
                 throw new Exception(ex.Message);
             }
 
@@ -89,13 +204,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             RegisterModel User = new RegisterModel();
 
-            if(Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getsalt/{System.Web.HttpUtility.UrlEncode(UserEmail)}").Result;
                 string content = response.Content.ReadAsStringAsync().Result;
@@ -110,14 +225,13 @@ namespace DailyBudgetMAUIApp.DataServices
                 else
                 {
                     ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    return error.ErrorMessage;
+                    throw new Exception(error.ErrorMessage);
                 }
                 
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get User salt in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetUserSaltAsync", "GetUserSaltAsync");
                 throw new Exception(ex.Message);
             }
         }
@@ -131,13 +245,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             UserDetailsModel UserModel = new();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<RegisterModel>(User, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -154,15 +268,12 @@ namespace DailyBudgetMAUIApp.DataServices
                 else
                 {
                     ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    error.StatusCode = response.StatusCode;
-                    UserModel.Error = error;
-                    return UserModel;
+                    throw new Exception(error.ErrorMessage);
                 }       
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to register user in DataRestServices --> {ex.Message}");
+                HandleError(ex, "RegisterNewUserAsync", "RegisterNewUserAsync");
                 throw new Exception(ex.Message);
             }
         }
@@ -171,13 +282,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             UserDetailsModel User = new();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getLogonDetails/{System.Web.HttpUtility.UrlEncode(UserEmail)}").Result;
                 string content = "";
@@ -193,16 +304,13 @@ namespace DailyBudgetMAUIApp.DataServices
                 else
                 {
                     ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    error.StatusCode = response.StatusCode;
-                    User.Error = error;
-                    return User;
+                    throw new Exception(error.ErrorMessage);
                 }
 
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetUserDetailsAsync", "GetUserDetailsAsync");
                 throw new Exception(ex.Message);
             }
         }
@@ -211,13 +319,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             UserAddDetails User = new UserAddDetails();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getuseradddetails/{UserID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -249,7 +357,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 HandleError(ex, "GetUserAddDetails", "GetUserAddDetails");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -257,13 +365,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             UserAddDetails User = new UserAddDetails();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/downgrageuseraccount/{UserID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -288,18 +396,20 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 HandleError(ex, "DowngradeUserAccount", "DowngradeUserAccount");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<string> PostUserAddDetails(UserAddDetails User)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<UserAddDetails>(User, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -313,27 +423,26 @@ namespace DailyBudgetMAUIApp.DataServices
                 else
                 {
                     ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    HandleError(new Exception(error.ErrorMessage), "PostUserAddDetails", "PostUserAddDetails");
-                    return "";
+                    throw new Exception(error.ErrorMessage);
                 }
             }
             catch (Exception ex)
             {
                 HandleError(ex, "PostUserAddDetails", "PostUserAddDetails");
-                return "";
+                throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> UploadUserProfilePicture(int UserID, FileResult File)
         {
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 var content = new MultipartFormDataContent
                 {
@@ -358,28 +467,28 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "UploadProfilePicture", "UploadUserProfilePicture");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
                 HandleError(ex, "UploadProfilePicture", "UploadUserProfilePicture");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
         public async Task<Stream> DownloadUserProfilePicture(int UserID)
         {
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/downloaduserprofilepicture/{UserID}").Result;
 
                 if (response.IsSuccessStatusCode)
@@ -397,59 +506,13 @@ namespace DailyBudgetMAUIApp.DataServices
                         error = serializer.Deserialize<ErrorClass>(reader);
                     }
 
-                    HandleError(new Exception(error.ErrorMessage), "DownloadProfilePicture", "DownloadProfilePicture");
-                    return null;
+                    throw new Exception(error.ErrorMessage);
                 }
 
             }
             catch (Exception ex)
             {
                 HandleError(ex, "DownloadProfilePicture", "DownloadProfilePicture");
-                return null;
-            }
-        }
-
-        public async Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog)
-        {
-            ErrorLog ErrorLog = new();
-
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                ErrorLog.ErrorMessage = "You have no Internet Connection, unfortunately you need that. Please try again when you are back in civilised society";
-                return ErrorLog;
-            }
-
-            try
-            {
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<ErrorLog>(NewLog, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response =  _httpClient.PostAsync($"{_url}/error/adderrorlogentry", request).Result;
-                string content =  response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    ErrorLog = System.Text.Json.JsonSerializer.Deserialize<ErrorLog>(content, _jsonSerialiserOptions);
-                    if(ErrorLog.ErrorLogID != 0)
-                    {
-                        return ErrorLog;
-                    }
-                    else
-                    {
-                        ErrorLog.ErrorMessage = "Opps something went wrong. It was probably one of our graduate developers fault ... Sorry about that!";
-                        return ErrorLog;
-                    }
-
-                }
-                else
-                {
-                    ErrorLog.ErrorMessage = "Opps something went wrong. It was probably one of our graduate developers fault ... Sorry about that!";
-                    return ErrorLog;
-                }       
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error Trying to Log the Error --> {ex.Message}");
                 throw new Exception(ex.Message);
             }
         }
@@ -458,13 +521,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Budgets Budget = new Budgets();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string ApiMethod = "";
                 if (Mode == "Full")
                 {
@@ -501,29 +565,28 @@ namespace DailyBudgetMAUIApp.DataServices
                         error = serializer.Deserialize<ErrorClass>(reader);
                     }
 
-                    Budget.Error = error;
-                    return Budget;
+                    throw new Exception(error.ErrorMessage);
                 }
 
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Budget Details in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetBudgetDetailsAsync", "GetBudgetDetailsAsync");
                 throw new Exception(ex.Message);
             }
         }
+
         public async Task<DateTime> GetBudgetNextIncomePayDayAsync(int BudgetID)
         {
             Budgets Budget = new Budgets();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/nextincomepayday/{BudgetID}").Result;
                 string content = response.Content.ReadAsStringAsync().Result;
@@ -538,14 +601,13 @@ namespace DailyBudgetMAUIApp.DataServices
                 else
                 {
                     ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
+                    throw new Exception(error.ErrorMessage);
                 }
 
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Budget next income pay day in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetBudgetNextIncomePayDayAsync", "GetBudgetNextIncomePayDayAsync");
                 throw new Exception(ex.Message);
             }
         }
@@ -554,13 +616,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Budgets Budget = new Budgets();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/daystopaydaynext/{BudgetID}").Result;
                 string content = response.Content.ReadAsStringAsync().Result;
@@ -575,29 +637,28 @@ namespace DailyBudgetMAUIApp.DataServices
                 else
                 {
                     ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
+                    throw new Exception(error.ErrorMessage);
                 }
 
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Budget day between pay in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetBudgetDaysBetweenPayDay", "GetBudgetDaysBetweenPayDay");
                 throw new Exception(ex.Message);
             }
         }
 
-        public async Task<DateTime> GetBudgetLastUpdatedAsync(int BudgetID)
+        public async Task<DateTime?> GetBudgetLastUpdatedAsync(int BudgetID)
         {
             Budgets Budget = new Budgets();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getlastupdated/{BudgetID}").Result;
                 string content = response.Content.ReadAsStringAsync().Result;
@@ -612,14 +673,13 @@ namespace DailyBudgetMAUIApp.DataServices
                 else
                 {
                     ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
+                    throw new Exception(error.ErrorMessage);
                 }
 
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Budget last updated date in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetBudgetLastUpdatedAsync", "GetBudgetLastUpdatedAsync");
                 throw new Exception(ex.Message);
             }
         }
@@ -628,13 +688,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Budgets Budget = new Budgets();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getbudgetvalueslastupdated/{BudgetID}").Result;
                 string content = response.Content.ReadAsStringAsync().Result;
@@ -650,18 +710,15 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
                     ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
                     HandleError(new Exception(error.ErrorMessage), Page, "GetBudgetValuesLastUpdatedAsync");
-                    
-                    
-                    return new DateTime();
+
+                    throw new Exception(error.ErrorMessage);
                 }
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
                 HandleError(ex, Page, "GetBudgetValuesLastUpdatedAsync");
-
-                return new DateTime();
+                throw new Exception(ex.Message);
             }
         }
 
@@ -669,13 +726,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             BudgetSettings BudgetSettings = new BudgetSettings();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getbudgetsettings/{BudgetID}").Result;
                 string content = response.Content.ReadAsStringAsync().Result;
@@ -696,8 +753,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Budget Settings in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetBudgetSettings", "GetBudgetSettings");
                 throw new Exception(ex.Message);
             }
         }
@@ -706,13 +762,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             BudgetSettingValues BudgetSettings = new BudgetSettingValues();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getbudgetsettingsvalues/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -747,8 +803,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Budget Settings values in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetBudgetSettingsValues", "GetBudgetSettingsValues");
                 throw new Exception(ex.Message);
             }
         }
@@ -757,13 +812,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Budgets Budget = new Budgets();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/createnewbudget/{UserEmail}/{BudgetType}").Result;
                 string content = response.Content.ReadAsStringAsync().Result;
@@ -784,21 +839,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to  Create new Budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, "CreateNewBudget", "CreateNewBudget");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> DeleteBudget(int BudgetID, int UserID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/deletebudget/{BudgetID}/{UserID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -825,26 +880,25 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "DeleteBudget", "DeleteBudget");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
                 HandleError(ex, "DeleteBudget", "DeleteBudget");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<string> ReCalculateBudget(int BudgetID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/recalculateBudget/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -868,27 +922,27 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "ReCalculateBudget", "ReCalculateBudget");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
                 HandleError(ex, "DeleteBudget", "DeleteBudget");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
         
         public async Task<string> DeleteUserAccount(int UserID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
+ 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/deleteaccount/{UserID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -915,15 +969,14 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "DeleteUserAccount", "DeleteUserAccount");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
                 HandleError(ex, "DeleteUserAccount", "DeleteUserAccount");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -931,13 +984,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<lut_CurrencySymbol> Currencies = new List<lut_CurrencySymbol>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencysymbols/{SearchQuery}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -971,8 +1024,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get currency symbols in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetCurrencySymbols", "GetCurrencySymbols");
                 throw new Exception(ex.Message);
             }
         }
@@ -981,13 +1033,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<lut_CurrencyPlacement> Placements = new List<lut_CurrencyPlacement>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencyplcements/{Query}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -1021,8 +1073,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get curreny placements in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetCurrencyPlacements", "GetCurrencyPlacements");
                 throw new Exception(ex.Message);
             }
 
@@ -1032,13 +1083,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<lut_BudgetTimeZone> TimeZones = new List<lut_BudgetTimeZone>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getbudgettimezones/{Query}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -1072,8 +1123,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get TimeZones in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetBudgetTimeZones", "GetBudgetTimeZones");
                 throw new Exception(ex.Message);
             }
 
@@ -1083,13 +1133,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<lut_DateFormat> DateFormats = new List<lut_DateFormat>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getdateformatsbystring/{SearchQuery}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -1124,8 +1174,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get date format by string in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetDateFormatsByString", "GetDateFormatsByString");
                 throw new Exception(ex.Message);
             }
         }
@@ -1134,13 +1183,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             lut_DateFormat DateFormat = new lut_DateFormat();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getdateformatsbyid/{ShortDatePattern}/{Seperator}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -1173,8 +1223,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get date format by id in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetDateFormatsByString", "GetDateFormatsByString");
                 throw new Exception(ex.Message);
             }
         }
@@ -1182,13 +1231,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             lut_BudgetTimeZone TimeZone = new lut_BudgetTimeZone();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/gettimezonebyid/{TimeZoneID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -1222,8 +1271,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Time zone by id in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetTimeZoneById", "GetTimeZoneById");
                 throw new Exception(ex.Message);
             }
         }
@@ -1232,13 +1280,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             lut_NumberFormat NumberFormat = new lut_NumberFormat();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getnumberformatsbyid/{CurrencyDecimalDigits}/{CurrencyDecimalSeparator}/{CurrencyGroupSeparator}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -1272,8 +1320,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get get number format by id in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetNumberFormatsById", "GetNumberFormatsById");
                 throw new Exception(ex.Message);
             }
         }
@@ -1282,13 +1329,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             lut_ShortDatePattern ShaortDatePattern = new lut_ShortDatePattern();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getshortdatepatternbyid/{ShortDatePatternID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -1313,16 +1361,14 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "GetShortDatePatternById", "GetShortDatePatternById");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
                 HandleError(ex, "GetShortDatePatternById", "GetShortDatePatternById");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -1330,13 +1376,15 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             lut_DateSeperator DateSeperator = new lut_DateSeperator();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getdateseperatorbyid/{DateSeperatorID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -1361,16 +1409,14 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "GetDateSeperatorById", "GetDateSeperatorById");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
                 HandleError(ex, "GetDateSeperatorById", "GetDateSeperatorById");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -1378,13 +1424,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             lut_CurrencyGroupSeparator GroupSeparator = new lut_CurrencyGroupSeparator();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencygroupseparatorbyid/{CurrencyGroupSeparatorId}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -1409,29 +1456,28 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "GetCurrencyGroupSeparatorById", "GetCurrencyGroupSeparatorById");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
                 HandleError(ex, "GetCurrencyGroupSeparatorById", "GetCurrencyGroupSeparatorById");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<lut_CurrencyDecimalSeparator> GetCurrencyDecimalSeparatorById(int CurrencyDecimalSeparatorId)
         {
             lut_CurrencyDecimalSeparator DecimalSeparator = new lut_CurrencyDecimalSeparator();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencydecimalseparatorbyid/{CurrencyDecimalSeparatorId}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -1456,29 +1502,28 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "GetCurrencyDecimalSeparatorById", "GetCurrencyDecimalSeparatorById");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
                 HandleError(ex, "GetCurrencyDecimalSeparatorById", "GetCurrencyDecimalSeparatorById");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<lut_CurrencyDecimalDigits> GetCurrencyDecimalDigitsById(int CurrencyDecimalDigitsId)
         {
             lut_CurrencyDecimalDigits DecimalDigits = new lut_CurrencyDecimalDigits();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencydecimaldigitsbyid/{CurrencyDecimalDigitsId}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -1503,16 +1548,14 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "GetCurrencyDecimalDigitsById", "GetCurrencyDecimalDigitsById");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
                 HandleError(ex, "GetCurrencyDecimalDigitsById", "GetCurrencyDecimalDigitsById");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -1520,13 +1563,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<lut_NumberFormat> NumberFormat = new List<lut_NumberFormat>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getnumberformats").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -1560,20 +1603,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get get number format in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetNumberFormats", "GetNumberFormats");
                 throw new Exception(ex.Message);
             }
         }
         public async Task<string> UpdatePayPeriodStats(PayPeriodStats Stats)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<PayPeriodStats>(Stats, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -1592,8 +1636,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to update payperiodstats in DataRestServices --> {ex.Message}");
+                HandleError(ex, "UpdatePayPeriodStats", "UpdatePayPeriodStats");
                 throw new Exception(ex.Message);
             }
         }
@@ -1602,13 +1645,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             PayPeriodStats stats = new PayPeriodStats();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/createnewpayperiodstats/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -1642,21 +1685,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get bill by id in DataRestServices --> {ex.Message}");
+                HandleError(ex, "CreateNewPayPeriodStats", "CreateNewPayPeriodStats");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> PatchBudget(int BudgetID, List<PatchDoc> PatchDoc)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -1676,8 +1719,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get patch budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, "PatchBudget", "PatchBudget");
                 throw new Exception(ex.Message);
             }
 
@@ -1685,13 +1727,13 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<string> PatchBudgetSettings(int BudgetID, List<PatchDoc> PatchDoc)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -1711,8 +1753,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get patch budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, "PatchBudgetSettings", "PatchBudgetSettings");
                 throw new Exception(ex.Message);
             }
 
@@ -1720,13 +1761,15 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<string> UpdateBudgetSettings(int BudgetID, BudgetSettings BS)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<BudgetSettings>(BS, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -1746,7 +1789,7 @@ namespace DailyBudgetMAUIApp.DataServices
             catch (Exception ex)
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to update budget settings in DataRestServices --> {ex.Message}");
+                HandleError(ex, "UpdateBudgetSettings", "UpdateBudgetSettings");
                 throw new Exception(ex.Message);
             }
         }
@@ -1755,13 +1798,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Bills Bill = new Bills();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/bills/getbillfromid/{BillID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -1795,8 +1838,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get bill by id in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetBillFromID", "GetBillFromID");
                 throw new Exception(ex.Message);
             }
         }
@@ -1804,13 +1846,14 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string>SaveNewBill(Bills Bill, int BudgetID)
         {
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Bills>(Bill, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -1829,8 +1872,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to save new bill in DataRestServices --> {ex.Message}");
+                HandleError(ex, "SaveNewBill", "SaveNewBill");
                 throw new Exception(ex.Message);
             }
         }
@@ -1838,13 +1880,13 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string>UpdateBill(Bills Bill)
         {
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                if (!CheckNetworkConnection().Result)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Bills>(Bill, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -1863,21 +1905,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to update bill in DataRestServices --> {ex.Message}");
+                HandleError(ex, "UpdateBill", "UpdateBill");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> PatchBill(int BillID, List<PatchDoc> PatchDoc)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -1897,8 +1939,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to patch bill in DataRestServices --> {ex.Message}");
+                HandleError(ex, "PatchBill", "PatchBill");
                 throw new Exception(ex.Message);
             }
 
@@ -1906,13 +1947,13 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<string> DeleteBill(int BillID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/bills/deletebill/{BillID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -1943,8 +1984,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to delete bill in DataRestServices --> {ex.Message}");
+                HandleError(ex, "DeleteBill", "DeleteBill");
                 throw new Exception(ex.Message);
             }
         }
@@ -1953,13 +1993,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Bills> Bills = new List<Bills>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/bills/getbudgetbills/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -1986,16 +2026,15 @@ namespace DailyBudgetMAUIApp.DataServices
 
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
-                        
-                        HandleError(new Exception(error.ErrorMessage), page, "GetAllBudgetSavings");
-                        return null;
+
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
                 HandleError(ex, page, "GetAllBudgetSavings");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -2003,13 +2042,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Savings Saving = new Savings();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/getsavingfromid/{SavingID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2043,21 +2082,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Saving by id in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetSavingFromID", "GetSavingFromID");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<int> SaveNewSaving(Savings Saving, int BudgetID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Savings>(Saving, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -2077,21 +2116,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to save a saving in DataRestServices --> {ex.Message}");
+                HandleError(ex, "SaveNewSaving", "SaveNewSaving");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> UpdateSaving(Savings Saving)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Savings>(Saving, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -2110,21 +2149,20 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to update a Saving in DataRestServices --> {ex.Message}");
+                HandleError(ex, "SaveNewSaving", "SaveNewSaving");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> PatchSaving(int SavingID, List<PatchDoc> PatchDoc)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -2144,21 +2182,20 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to Patch Saving in DataRestServices --> {ex.Message}");
+                HandleError(ex, "PatchSaving", "PatchSaving");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> DeleteSaving(int SavingID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/deletesaving/{SavingID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2189,8 +2226,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Delete Saving in DataRestServices --> {ex.Message}");
+                HandleError(ex, "DeleteSaving", "DeleteSaving");
                 throw new Exception(ex.Message);
             }
         }
@@ -2199,13 +2235,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Savings> Savings = new List<Savings>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/getallbudgetsavings/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2232,15 +2268,14 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "GetAllBudgetSavings", "GetAllBudgetSavings");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
                 HandleError(ex, "GetAllBudgetSavings", "GetAllBudgetSavings");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -2248,13 +2283,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             IncomeEvents Income = new IncomeEvents();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/incomes/getincomefromid/{IncomeID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2288,22 +2323,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Income Event by ID in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetIncomeFromID", "GetIncomeFromID");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string>SaveNewIncome(IncomeEvents Income, int BudgetID)
         {
-
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<IncomeEvents>(Income, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -2322,8 +2356,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to save new income in DataRestServices --> {ex.Message}");
+                HandleError(ex, "SaveNewIncome", "SaveNewIncome");
                 throw new Exception(ex.Message);
             }
         }
@@ -2331,13 +2364,14 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string>UpdateIncome(IncomeEvents Income)
         {
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<IncomeEvents>(Income, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -2356,21 +2390,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying update income in DataRestServices --> {ex.Message}");
+                HandleError(ex, "UpdateIncome", "UpdateIncome");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> PatchIncome(int IncomeID, List<PatchDoc> PatchDoc)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -2390,8 +2424,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying patch income in DataRestServices --> {ex.Message}");
+                HandleError(ex, "UpdateIncome", "UpdateIncome");
                 throw new Exception(ex.Message);
             }
 
@@ -2400,13 +2433,13 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> DeleteIncome(int IncomeID)
         {
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/incomes/deleteincome/{IncomeID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2437,8 +2470,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get delete income in DataRestServices --> {ex.Message}");
+                HandleError(ex, "DeleteIncome", "DeleteIncome");
                 throw new Exception(ex.Message);
             }
         }
@@ -2447,13 +2479,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<IncomeEvents> IncomeEvents = new List<IncomeEvents>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/incomes/getbudgetincomeevents/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2481,26 +2513,26 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), page, "GetBudgetIncomes");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
                 HandleError(ex, page, "GetBudgetIncomes");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<string> UpdateBudgetValues(int budgetID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/updatebudgetvalues/{budgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2531,21 +2563,22 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get delete income in DataRestServices --> {ex.Message}");
+                HandleError(ex, "UpdateBudgetValues", "UpdateBudgetValues");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<Transactions> SaveNewTransaction(Transactions Transaction, int BudgetID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Transactions>(Transaction, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -2565,8 +2598,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying update income in DataRestServices --> {ex.Message}");
+                HandleError(ex, "SaveNewTransaction", "SaveNewTransaction");
                 throw new Exception(ex.Message);
             }
         }
@@ -2574,13 +2606,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Transactions Transaction = new Transactions();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/transacttransaction/{TransactionID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2613,20 +2645,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Transaction by ID in DataRestServices --> {ex.Message}");
+                HandleError(ex, "TransactTransaction", "TransactTransaction");
                 throw new Exception(ex.Message);
             }
         }
         public async Task<string> UpdateTransaction(Transactions Transaction)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Transactions>(Transaction, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -2645,21 +2678,20 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying update transaction in DataRestServices --> {ex.Message}");
+                HandleError(ex, "UpdateTransaction", "UpdateTransaction");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> DeleteTransaction(int TransactionID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/deletetransaction/{TransactionID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2690,23 +2722,22 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Delete Transaction in DataRestServices --> {ex.Message}");
+                HandleError(ex, "DeleteTransaction", "DeleteTransaction");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<List<string>> GetBudgetEventTypes(int BudgetID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             List<string> EventTypes = new List<string>();
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getbudgeteventtypes/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2732,8 +2763,7 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "GetBudgetEventTypes", "GetBudgetEventTypes");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
@@ -2741,7 +2771,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
 
                 HandleError(ex, "GetBudgetEventTypes", "GetBudgetEventTypes");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -2749,13 +2779,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Transactions Transaction = new Transactions();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/gettransactionfromid/{TransactionID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2788,8 +2818,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get Transaction by ID in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetTransactionFromID", "GetTransactionFromID");
                 throw new Exception(ex.Message);
             }
         }
@@ -2798,13 +2827,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Budgets Budget = new Budgets();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getallbudgettransactions/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -2838,8 +2867,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get All Transactions by ID in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetAllBudgetTransactions", "GetAllBudgetTransactions");
                 throw new Exception(ex.Message);
             }
         }
@@ -2848,13 +2876,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Transactions> transactions = new List<Transactions>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getrecenttransactions/{BudgetID}/{NumberOf}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -2882,16 +2911,14 @@ namespace DailyBudgetMAUIApp.DataServices
                         }
 
 
-                        HandleError(new Exception(error.ErrorMessage), page, "GetRecentTransactions");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
                 HandleError(ex, page, "GetRecentTransactions");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -2899,13 +2926,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Transactions> transactions = new List<Transactions>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getcurrentpayperiodtransactions/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -2931,18 +2959,14 @@ namespace DailyBudgetMAUIApp.DataServices
 
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
-
-
-                        HandleError(new Exception(error.ErrorMessage), page, "GetCurrentPayPeriodTransactions");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying get transactions in DataRestServices --> {ex.Message}");
                 HandleError(ex, page, "GetCurrentPayPeriodTransactions");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -2950,13 +2974,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Transactions> transactions = new List<Transactions>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FilterModel>(Filters, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -2986,17 +3011,14 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-
-                        HandleError(new Exception(error.ErrorMessage), page, "GetCurrentPayPeriodTransactions");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying get transactions in DataRestServices --> {ex.Message}");
                 HandleError(ex, page, "GetCurrentPayPeriodTransactions");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -3004,13 +3026,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Transactions> transactions = new List<Transactions>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getrecenttransactionsoffset/{BudgetID}/{NumberOf}/{Offset}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -3036,29 +3059,28 @@ namespace DailyBudgetMAUIApp.DataServices
 
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
-
-                        HandleError(new Exception(error.ErrorMessage), page, "GetRecentTransactions");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying Get Recent Transactions in DataRestServices --> {ex.Message}");
                 HandleError(ex, page, "GetRecentTransactionsOffset");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
         public async Task<Budgets> SaveBudgetDailyCycle(Budgets budget)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
+  
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Budgets>(budget, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -3093,8 +3115,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying update budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, "SaveBudgetDailyCycle", "SaveBudgetDailyCycle");
                 throw new Exception(ex.Message);
             }
         }
@@ -3103,13 +3124,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             OTP UserOTP = new OTP();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/otp/createnewotpcodesharebudget/{UserID}/{ShareBudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -3154,8 +3175,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to create new OTP code in DataRestServices --> {ex.Message}");
+                HandleError(ex, "CreateNewOtpCodeShareBudget", "CreateNewOtpCodeShareBudget");
                 throw new Exception(ex.Message);
             }
         }
@@ -3164,13 +3184,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             OTP UserOTP = new OTP();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/otp/createnewotpcode/{UserID}/{OTPType}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -3215,20 +3235,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to create new OTP code in DataRestServices --> {ex.Message}");
+                HandleError(ex, "CreateNewOtpCode", "CreateNewOtpCode");
                 throw new Exception(ex.Message);
             }
         }
         public async Task<string> ValidateOTPCodeEmail(OTP UserOTP)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<OTP>(UserOTP, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -3260,8 +3281,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying validate otp code in DataRestServices --> {ex.Message}");
+                HandleError(ex, "ValidateOTPCodeEmail", "ValidateOTPCodeEmail");
                 throw new Exception(ex.Message);
             }
         }
@@ -3270,13 +3290,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             UserDetailsModel User = new UserDetailsModel();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/otp/getuseridfromemail/{UserEmail}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -3313,8 +3333,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to create new OTP code in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetUserIdFromEmail", "GetUserIdFromEmail");
                 throw new Exception(ex.Message);
             }
         }
@@ -3323,13 +3342,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<string>? Payee = new List<string>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/getpayeelist/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -3359,8 +3379,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get payee list in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetPayeeList", "GetPayeeList");
                 throw new Exception(ex.Message);
             }
         }
@@ -3369,13 +3388,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Payees>? Payee = new List<Payees>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/getpayeelistfull/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -3399,8 +3419,7 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "GetPayeeListFull", "GetPayeeListFull");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
@@ -3408,7 +3427,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 HandleError(ex, "GetPayeeListFull", "GetPayeeListFull");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -3416,13 +3435,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Categories Category = new Categories();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/getpayeelastcategory/{BudgetID}/{PayeeName}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -3452,21 +3472,22 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get latest payee category in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetPayeeLastCategory", "GetPayeeLastCategory");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> DeletePayee(int BudgetID, string OldPayeeName, string NewPayeeName)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/deletepayee/{BudgetID}/{OldPayeeName}/{NewPayeeName}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -3483,9 +3504,7 @@ namespace DailyBudgetMAUIApp.DataServices
                             Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
-
-                        HandleError(new Exception(error.ErrorMessage), "DeletePayee", "DeletePayee");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
@@ -3493,19 +3512,21 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 HandleError(ex, "DeletePayee", "DeletePayee");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> UpdatePayee(int BudgetID, string OldPayeeName, string NewPayeeName)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/updatepayee/{BudgetID}/{OldPayeeName}/{NewPayeeName}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -3522,9 +3543,7 @@ namespace DailyBudgetMAUIApp.DataServices
                             Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
-
-                        HandleError(new Exception(error.ErrorMessage), "UpdatePayee", "UpdatePayee");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
@@ -3532,7 +3551,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 //Write Debug Line and then throw the exception to the next level of the stack to be handled
                 HandleError(ex, "UpdatePayee", "UpdatePayee");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -3540,13 +3559,15 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Categories>? categories = new List<Categories>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getcategories/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -3576,8 +3597,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get categories in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetCategories", "GetCategories");
                 throw new Exception(ex.Message);
             }
         }
@@ -3586,13 +3606,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Categories? Category = new Categories();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getcategoryfromid/{CategoryID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -3622,21 +3643,22 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get categories in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetCategoryFromID", "GetCategoryFromID");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<int> AddNewCategory(int BudgetID, DefaultCategories Category)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 int CategoryID;
 
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<DefaultCategories>(Category, _jsonSerialiserOptions);
@@ -3667,26 +3689,27 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "AddNewCategory", "AddNewCategory");
-                        return 0;
+                        throw new Exception(error.ErrorMessage);
                     }
             }
             catch (Exception ex)
             {
                 HandleError(ex, "AddNewCategory", "AddNewCategory");
-                return 0;
+                throw new Exception(ex.Message);
             }
         }
 
         public async Task<Categories> AddNewSubCategory(int BudgetID, Categories Category)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Categories>(Category, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -3720,21 +3743,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying validate otp code in DataRestServices --> {ex.Message}");
+                HandleError(ex, "AddNewSubCategory", "AddNewSubCategory");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> PatchCategory(int CategoryID, List<PatchDoc> PatchDoc)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -3756,26 +3779,26 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         error = serializer.Deserialize<ErrorClass>(reader);
                     }
-                    HandleError(new Exception(error.ErrorMessage), "PatchCategory", "PatchCategory");
-                    return "";
+                        throw new Exception(error.ErrorMessage);
                 }
             }
             catch (Exception ex)
             {
                 HandleError(ex, "PatchCategory", "PatchCategory");
-                return "";
+                throw new Exception(ex.Message);
             }
 
         }
         public async Task<string> UpdateAllTransactionsCategoryName(int CategoryID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/Updatealltransactionscategoryname/{CategoryID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -3794,14 +3817,13 @@ namespace DailyBudgetMAUIApp.DataServices
 
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
-                        HandleError(new Exception(error.ErrorMessage), "UpdateAllTransactionsCategoryName", "UpdateAllTransactionsCategoryName");
-                        return "";
+                        throw new Exception(error.ErrorMessage);
                     }
             }
             catch (Exception ex)
             {
                 HandleError(ex, "UpdateAllTransactionsCategoryName", "UpdateAllTransactionsCategoryName");
-                return "";
+                throw new Exception(ex.Message);
             }
         }
 
@@ -3809,13 +3831,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Categories>? categories = new List<Categories>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getallheadercategorydetailsfull/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -3839,28 +3862,28 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "ViewCategories", "GetAllHeaderCategoryDetailsFull");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
                 HandleError(ex, "ViewCategories", "GetAllHeaderCategoryDetailsFull");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<List<Categories>> GetHeaderCategoryDetailsFull(int CategoryID, int BudgetID)
         {
             List<Categories>? categories = new List<Categories>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getheadercategorydetailsfull/{CategoryID}/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -3884,27 +3907,26 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), "ViewCategories", "GetHeaderCategoryDetailsFull");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
                 HandleError(ex, "ViewCategories", "GetHeaderCategoryDetailsFull");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> DeleteCategory(int CategoryID, bool IsReassign, int ReAssignID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/deletecategory/{CategoryID}/{IsReassign}/{ReAssignID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -3923,14 +3945,13 @@ namespace DailyBudgetMAUIApp.DataServices
 
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
-                        HandleError(new Exception(error.ErrorMessage), "DeleteCategory", "DeleteCategory");
-                        return "";
+                        throw new Exception(error.ErrorMessage);
                     }
             }
             catch (Exception ex)
             {
                 HandleError(ex, "DeleteCategory", "DeleteCategory");
-                return "";
+                throw new Exception(ex.Message);
             }
         }
 
@@ -3938,13 +3959,13 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Dictionary<string, int> Categories = new Dictionary<string, int>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
 
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getallcategorynames/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
@@ -3969,14 +3990,13 @@ namespace DailyBudgetMAUIApp.DataServices
 
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
-                        HandleError(new Exception(error.ErrorMessage), "GetAllCategoryNames", "GetAllCategoryNames");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
             }
             catch (Exception ex)
             {
                 HandleError(ex, "GetAllCategoryNames", "GetAllCategoryNames");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -3984,13 +4004,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Savings>? Savings = new List<Savings>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/getbudgetenvelopesaving/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -4020,8 +4041,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get envelope savings in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetBudgetEnvelopeSaving", "GetBudgetEnvelopeSaving");
                 throw new Exception(ex.Message);
             }
         }
@@ -4030,13 +4050,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Savings>? Savings = new List<Savings>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/getbudgetregularsaving/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -4066,20 +4087,21 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get envelope savings in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetBudgetRegularSaving", "GetBudgetRegularSaving");
                 throw new Exception(ex.Message);
             }
         }
         public async Task<string> ShareBudgetRequest(ShareBudgetRequest BudgetShare)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<ShareBudgetRequest>(BudgetShare, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -4135,21 +4157,22 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying share budget in DataRestServices --> {ex.Message}");
+                HandleError(ex, "ShareBudgetRequest", "ShareBudgetRequest");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<FirebaseDevices> RegisterNewFirebaseDevice(FirebaseDevices NewDevice)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FirebaseDevices>(NewDevice, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -4184,21 +4207,22 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying registering firebase token in DataRestServices --> {ex.Message}");
+                HandleError(ex, "RegisterNewFirebaseDevice", "RegisterNewFirebaseDevice");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<FirebaseDevices> UpdateDeviceUserDetails(FirebaseDevices NewDevice)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FirebaseDevices>(NewDevice, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -4233,21 +4257,22 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying registering firebase token in DataRestServices --> {ex.Message}");
+                HandleError(ex, "UpdateDeviceUserDetails", "UpdateDeviceUserDetails");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> ValidateOTPCodeShareBudget(OTP UserOTP, int SharedBudgetRequestID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<OTP>(UserOTP, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -4270,16 +4295,14 @@ namespace DailyBudgetMAUIApp.DataServices
                         error = serializer.Deserialize<ErrorClass>(reader);
                     }
 
-                    HandleError(new Exception(error.ErrorMessage), "PopUpOTP", "ValidateOTPCodeShareBudget");
-                    return "Error";
+                        throw new Exception(error.ErrorMessage);
                 }
             }
             catch (Exception ex)
             {
 
-                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
                 HandleError(ex, "PopUpOTP", "ValidateOTPCodeShareBudget");
-                return "Error";
+                throw new Exception(ex.Message);
             }
 
         }
@@ -4288,13 +4311,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             ShareBudgetRequest ShareRequest = new ShareBudgetRequest();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getsharebudgetrequestbyid/{SharedBudgetRequestID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -4325,21 +4349,22 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to get sharebudgetrequest in DataRestServices --> {ex.Message}");
+                HandleError(ex, "GetShareBudgetRequestByID", "GetShareBudgetRequestByID");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> CancelCurrentShareBudgetRequest(int BudgetID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/cancelcurrentsharebudgetrequest/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -4363,21 +4388,22 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to cancel current sharebudgetrequest in DataRestServices --> {ex.Message}");
+                HandleError(ex, "CancelCurrentShareBudgetRequest", "CancelCurrentShareBudgetRequest");
                 throw new Exception(ex.Message);
             }
         }
 
         public async Task<string> StopSharingBudget(int BudgetID)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
 
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/stopsharingbudget/{BudgetID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -4401,8 +4427,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             catch (Exception ex)
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                Debug.WriteLine($"Error Trying to cancel current sharebudgetrequest in DataRestServices --> {ex.Message}");
+                HandleError(ex, "StopSharingBudget", "StopSharingBudget");
                 throw new Exception(ex.Message);
             }
         }
@@ -4411,13 +4436,14 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Budgets> budgets = new List<Budgets>();
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                throw new HttpRequestException("Connectivity");
-            }
-
             try
             {
+                bool IsNetworkConnection = await CheckNetworkConnection();
+                if (!IsNetworkConnection)
+                {
+                    throw new HttpRequestException("Connectivity");
+                }
+
                 HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getuseraccountbudgets/{UserID}").Result;
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
@@ -4441,16 +4467,14 @@ namespace DailyBudgetMAUIApp.DataServices
                             error = serializer.Deserialize<ErrorClass>(reader);
                         }
 
-                        HandleError(new Exception(error.ErrorMessage), page, "ValidateOTPCodeShareBudget");
-                        return null;
+                        throw new Exception(error.ErrorMessage);
                     }
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error Trying validate share budget in DataRestServices --> {ex.Message}");
                 HandleError(ex, page, "ValidateOTPCodeShareBudget");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 

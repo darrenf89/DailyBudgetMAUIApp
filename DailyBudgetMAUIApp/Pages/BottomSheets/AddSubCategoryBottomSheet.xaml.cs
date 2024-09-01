@@ -46,88 +46,101 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
 
     private void ViewTransactionFilterBottomSheet_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        string PropertyChange = (string)e.PropertyName;
-        if (PropertyChange == "SelectedDetent")
+        try
         {
-            double Height = this.Height;
-
-            BottomSheet Sender = (BottomSheet)sender;
-
-            if (Sender.SelectedDetent is FullscreenDetent)
+            string PropertyChange = (string)e.PropertyName;
+            if (PropertyChange == "SelectedDetent")
             {
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, Height - 60, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
-            else if (Sender.SelectedDetent is MediumDetent)
-            {
-                MediumDetent detent = (MediumDetent)Sender.SelectedDetent;
+                double Height = this.Height;
 
-                double NewHeight = (Height * detent.Ratio) - 60;
+                BottomSheet Sender = (BottomSheet)sender;
 
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, NewHeight, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
-            else if (Sender.SelectedDetent is FixedContentDetent)
-            {
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
+                if (Sender.SelectedDetent is FullscreenDetent)
+                {
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, Height - 60, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+                else if (Sender.SelectedDetent is MediumDetent)
+                {
+                    MediumDetent detent = (MediumDetent)Sender.SelectedDetent;
 
+                    double NewHeight = (Height * detent.Ratio) - 60;
+
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, NewHeight, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+                else if (Sender.SelectedDetent is FixedContentDetent)
+                {
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddSubCategoryBottomSheet", "ViewTransactionFilterBottomSheet_PropertyChanged");
         }
     }
 
     private async void AddCategory_Clicked(object sender, EventArgs e)
     {
-
-        validator.IsVisible = false;
-        lblValidator.Text = "";
-
-        if (string.IsNullOrEmpty(entCategoryName.Text))
-        {
-            validator.IsVisible = true;
-            lblValidator.Text = "You have to give the category a name";
-            return;
-        }
-
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
-
-        await Task.Delay(500);
-
-        Categories NewCat = new Categories
-        {
-            CategoryGroupID = Category.CategoryGroupID,
-            IsSubCategory = true,
-            CategoryName = entCategoryName.Text
-        };
-
-        NewCat = _ds.AddNewSubCategory(App.DefaultBudgetID, NewCat).Result;
-
-        entCategoryName.IsEnabled = false;
-        entCategoryName.IsEnabled = true;
-
         try
         {
-            ViewCategory CurrentPage = (ViewCategory)Shell.Current.CurrentPage;
-            CurrentPage.AddCategory = NewCat;
-        } 
-        catch (Exception) 
-        {
-            if (App.CurrentPopUp != null)
+            validator.IsVisible = false;
+            lblValidator.Text = "";
+
+            if (string.IsNullOrEmpty(entCategoryName.Text))
             {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
+                validator.IsVisible = true;
+                lblValidator.Text = "You have to give the category a name";
+                return;
+            }
+
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(500);
+
+            Categories NewCat = new Categories
+            {
+                CategoryGroupID = Category.CategoryGroupID,
+                IsSubCategory = true,
+                CategoryName = entCategoryName.Text
+            };
+
+            NewCat = _ds.AddNewSubCategory(App.DefaultBudgetID, NewCat).Result;
+
+            entCategoryName.IsEnabled = false;
+            entCategoryName.IsEnabled = true;
+
+            try
+            {
+                ViewCategory CurrentPage = (ViewCategory)Shell.Current.CurrentPage;
+                CurrentPage.AddCategory = NewCat;
+            } 
+            catch (Exception) 
+            {
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+            }
+
+            if (App.CurrentBottomSheet != null)
+            {
+                await this.DismissAsync();
+                App.CurrentBottomSheet = null;
             }
         }
-
-        if (App.CurrentBottomSheet != null)
+        catch (Exception ex)
         {
-            await this.DismissAsync();
-            App.CurrentBottomSheet = null;
+            await _pt.HandleException(ex, "AddSubCategoryBottomSheet", "AddCategory_Clicked");
         }
 
     }

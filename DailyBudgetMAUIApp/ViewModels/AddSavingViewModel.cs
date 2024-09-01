@@ -69,167 +69,154 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public async void AddSaving()
         {
-            try
+
+            bool result = await Shell.Current.DisplayAlert($"Add a new saving {Saving.SavingsName}?", $"Are you sure you want to add a new saving {Saving.SavingsName}?", "Yes", "Cancel");
+            if (result)
             {
-                bool result = await Shell.Current.DisplayAlert($"Add a new saving {Saving.SavingsName}?", $"Are you sure you want to add a new saving {Saving.SavingsName}?", "Yes", "Cancel");
-                if (result)
+                Saving.LastUpdatedValue = Saving.CurrentBalance;
+                int SavingID = _ds.SaveNewSaving(Saving, BudgetID).Result;
+                if (SavingID != 0)
                 {
-                    Saving.LastUpdatedValue = Saving.CurrentBalance;
-                    int SavingID = _ds.SaveNewSaving(Saving, BudgetID).Result;
-                    if (SavingID != 0)
+                    if (NavigatedFrom == "CreateNewBudget")
                     {
-                        if (NavigatedFrom == "CreateNewBudget")
+                        if (App.CurrentPopUp == null)
                         {
-                            if (App.CurrentPopUp == null)
-                            {
-                                var PopUp = new PopUpPage();
-                                App.CurrentPopUp = PopUp;
-                                Application.Current.MainPage.ShowPopup(PopUp);
-                            }
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.MainPage.ShowPopup(PopUp);
+                        }
 
-                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
-                        }
-                        else if (NavigatedFrom == "ViewSavings")
+                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                    }
+                    else if (NavigatedFrom == "ViewSavings")
+                    {
+                        if (App.CurrentPopUp == null)
                         {
-                            if (App.CurrentPopUp == null)
-                            {
-                                var PopUp = new PopUpPage();
-                                App.CurrentPopUp = PopUp;
-                                Application.Current.MainPage.ShowPopup(PopUp);
-                            }
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.MainPage.ShowPopup(PopUp);
+                        }
 
-                            await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
-                        }
-                        else if (NavigatedFrom == "ViewEnvelopes")
+                        await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
+                    }
+                    else if (NavigatedFrom == "ViewEnvelopes")
+                    {
+                        if (App.CurrentPopUp == null)
                         {
-                            if (App.CurrentPopUp == null)
-                            {
-                                var PopUp = new PopUpPage();
-                                App.CurrentPopUp = PopUp;
-                                Application.Current.MainPage.ShowPopup(PopUp);
-                            }
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.MainPage.ShowPopup(PopUp);
+                        }
 
-                            await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
-                        }
-                        else
-                        {
-                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=Saving Added&SnackID={SavingID}");
-                        }
+                        await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
+                    }
+                    else
+                    {
+                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=Saving Added&SnackID={SavingID}");
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                ErrorLog Error = _pt.HandleCatchedException(ex, "AddSaving", "AddSaving").Result;
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
-                    {
-                        ["Error"] = Error
-                    });
-            }
+
         }
 
         [RelayCommand]
         public async void BackButton()
         {
-            if (NavigatedFrom == "CreateNewBudget")
+            try
             {
-                if (App.CurrentPopUp == null)
+                if (NavigatedFrom == "CreateNewBudget")
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
-            }
-            else if (NavigatedFrom == "ViewSavings")
-            {
-                if (App.CurrentPopUp == null)
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                }
+                else if (NavigatedFrom == "ViewSavings")
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
-            }
-            else if (NavigatedFrom == "ViewEnvelopes")
-            {
-                if (App.CurrentPopUp == null)
+                    await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
+                }
+                else if (NavigatedFrom == "ViewEnvelopes")
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
+                    await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                await _pt.HandleException(ex, "AddSaving", "BackButton");
             }
         }
 
         public async void UpdateSaving()
         {
-            try
+ 
+            bool result = await Shell.Current.DisplayAlert($"Update {Saving.SavingsName}?", $"Are you sure you want to update {Saving.SavingsName}?", "Yes", "Cancel");
+            if (result)
             {
-                bool result = await Shell.Current.DisplayAlert($"Update {Saving.SavingsName}?", $"Are you sure you want to update {Saving.SavingsName}?", "Yes", "Cancel");
-                if (result)
+                string SuccessCheck = _ds.UpdateSaving(Saving).Result;
+                if (SuccessCheck == "OK")
                 {
-                    string SuccessCheck = _ds.UpdateSaving(Saving).Result;
-                    if (SuccessCheck == "OK")
+                    if (NavigatedFrom == "CreateNewBudget")
                     {
-                        if (NavigatedFrom == "CreateNewBudget")
+                        if (App.CurrentPopUp == null)
                         {
-                            if (App.CurrentPopUp == null)
-                            {
-                                var PopUp = new PopUpPage();
-                                App.CurrentPopUp = PopUp;
-                                Application.Current.MainPage.ShowPopup(PopUp);
-                            }
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.MainPage.ShowPopup(PopUp);
+                        }
 
-                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
-                        }
-                        else if (NavigatedFrom == "ViewSavings")
+                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                    }
+                    else if (NavigatedFrom == "ViewSavings")
+                    {
+                        if (App.CurrentPopUp == null)
                         {
-                            if (App.CurrentPopUp == null)
-                            {
-                                var PopUp = new PopUpPage();
-                                App.CurrentPopUp = PopUp;
-                                Application.Current.MainPage.ShowPopup(PopUp);
-                            }
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.MainPage.ShowPopup(PopUp);
+                        }
 
-                            await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
-                        }
-                        else if (NavigatedFrom == "ViewEnvelopes")
+                        await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
+                    }
+                    else if (NavigatedFrom == "ViewEnvelopes")
+                    {
+                        if (App.CurrentPopUp == null)
                         {
-                            if (App.CurrentPopUp == null)
-                            {
-                                var PopUp = new PopUpPage();
-                                App.CurrentPopUp = PopUp;
-                                Application.Current.MainPage.ShowPopup(PopUp);
-                            }
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.MainPage.ShowPopup(PopUp);
+                        }
 
-                            await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
-                        }
-                        else
-                        {
-                            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
-                        }
+                        await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
+                    }
+                    else
+                    {
+                        await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                ErrorLog Error = _pt.HandleCatchedException(ex, "AddSaving", "UpdateSaving").Result;
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
-                    {
-                        ["Error"] = Error
-                    });
-            }
+
         }
 
         [RelayCommand]
@@ -250,13 +237,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($" --> {ex.Message}");
-                ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "Constructor").Result;
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
-                    {
-                        ["Error"] = Error
-                    });
+                await _pt.HandleException(ex, "AddSaving", "ChangeSavingsName");
             }
         }
 

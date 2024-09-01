@@ -52,40 +52,53 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
         this.PropertyChanged += ViewTransactionFilterBottomSheet_PropertyChanged;
 
         MaterialDesignIconsFonts obj = new MaterialDesignIconsFonts();
-
-        Icons = _pt.GetIcons().Result;
-        FillIconFlexLayout("");
+        try
+        {
+            Icons = _pt.GetIcons().Result;
+            FillIconFlexLayout("");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddNewCategoryBottomSheet", "AddNewCategoryBottomSheet");
+        }
     }
 
     private void ViewTransactionFilterBottomSheet_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        string PropertyChange = (string)e.PropertyName;
-        if (PropertyChange == "SelectedDetent")
+        try
         {
-            double Height = this.Height;
-
-            BottomSheet Sender = (BottomSheet)sender;
-
-            if (Sender.SelectedDetent is FullscreenDetent)
+            string PropertyChange = (string)e.PropertyName;
+            if (PropertyChange == "SelectedDetent")
             {
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, Height - 60, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
-            else if (Sender.SelectedDetent is MediumDetent)
-            {
-                MediumDetent detent = (MediumDetent)Sender.SelectedDetent;
+                double Height = this.Height;
 
-                double NewHeight = (Height * detent.Ratio) - 60;
+                BottomSheet Sender = (BottomSheet)sender;
 
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, NewHeight, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
-            else if (Sender.SelectedDetent is FixedContentDetent)
-            {
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
+                if (Sender.SelectedDetent is FullscreenDetent)
+                {
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, Height - 60, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+                else if (Sender.SelectedDetent is MediumDetent)
+                {
+                    MediumDetent detent = (MediumDetent)Sender.SelectedDetent;
 
+                    double NewHeight = (Height * detent.Ratio) - 60;
+
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, NewHeight, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+                else if (Sender.SelectedDetent is FixedContentDetent)
+                {
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddNewCategoryBottomSheet", "ViewTransactionFilterBottomSheet_PropertyChanged");
         }
     }
 
@@ -200,7 +213,14 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
 
     private void entIconSearch_TextChanged(object sender, TextChangedEventArgs e)
     {
-        FillIconFlexLayout(e.NewTextValue);
+        try
+        {
+            FillIconFlexLayout(e.NewTextValue);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddNewCategoryBottomSheet", "entIconSearch_TextChanged");
+        }
     }
 
     private void FillIconFlexLayout(string search)
@@ -332,68 +352,75 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
 
     private async void AddSubCat_Clicked(object sender, EventArgs e)
     {
-        validator.IsVisible = false;
-        lblValidator.Text = "";
-
-        if (string.IsNullOrEmpty(entSubCategory.Text))
+        try
         {
-            validator.IsVisible = true;
-            lblValidator.Text = "You have to give the sub category a name";
-            return;
-        }
+            validator.IsVisible = false;
+            lblValidator.Text = "";
 
-        bool IsAddSub = await Application.Current.MainPage.DisplayAlert($"Add new sub category?", $"Are you sure you want to add {entSubCategory.Text} as a sub category?", "Yes", "No");
-        if (IsAddSub)
-        {
-            Application.Current.Resources.TryGetValue("StandardInputBorderOptionSelect", out var StandardInputBorderOptionSelect);
-            Application.Current.Resources.TryGetValue("Primary", out var Primary);
-            Application.Current.Resources.TryGetValue("White", out var White);
-            Application.Current.Resources.TryGetValue("Info", out var Info);
-
-            Border border = new Border
+            if (string.IsNullOrEmpty(entSubCategory.Text))
             {
-                Style = (Style)StandardInputBorderOptionSelect,
-                Stroke = (Color)Info,
-                Margin = new Thickness(5,0,15,5)
-            };
+                validator.IsVisible = true;
+                lblValidator.Text = "You have to give the sub category a name";
+                return;
+            }
 
-            HorizontalStackLayout hsl = new HorizontalStackLayout();
-
-            Image image = new Image
+            bool IsAddSub = await Application.Current.MainPage.DisplayAlert($"Add new sub category?", $"Are you sure you want to add {entSubCategory.Text} as a sub category?", "Yes", "No");
+            if (IsAddSub)
             {
-                BackgroundColor = (Color)White,
-                VerticalOptions = LayoutOptions.Center,
-                Margin = new Thickness(0),
-                Source = new FontImageSource
+                Application.Current.Resources.TryGetValue("StandardInputBorderOptionSelect", out var StandardInputBorderOptionSelect);
+                Application.Current.Resources.TryGetValue("Primary", out var Primary);
+                Application.Current.Resources.TryGetValue("White", out var White);
+                Application.Current.Resources.TryGetValue("Info", out var Info);
+
+                Border border = new Border
                 {
-                    FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue39e",
-                    Size = 20,
-                    Color = (Color)Primary,
-                }
-            };
+                    Style = (Style)StandardInputBorderOptionSelect,
+                    Stroke = (Color)Info,
+                    Margin = new Thickness(5,0,15,5)
+                };
 
-            hsl.Children.Add(image);
+                HorizontalStackLayout hsl = new HorizontalStackLayout();
 
-            Label label = new Label
-            {
-                Text = entSubCategory.Text,
-                TextColor = (Color)Primary,
-                FontSize = 18,
-                VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.Start,
-                Margin = new Thickness(20, 0, 0, 0)
-            };
+                Image image = new Image
+                {
+                    BackgroundColor = (Color)White,
+                    VerticalOptions = LayoutOptions.Center,
+                    Margin = new Thickness(0),
+                    Source = new FontImageSource
+                    {
+                        FontFamily = "MaterialDesignIcons",
+                        Glyph = "\ue39e",
+                        Size = 20,
+                        Color = (Color)Primary,
+                    }
+                };
 
-            hsl.Children.Add(label);
+                hsl.Children.Add(image);
 
-            SubCategories.Add(entSubCategory.Text);
-            entSubCategory.Text = "";
-            entSubCategory.IsEnabled = false;
-            entSubCategory.IsEnabled = true;
+                Label label = new Label
+                {
+                    Text = entSubCategory.Text,
+                    TextColor = (Color)Primary,
+                    FontSize = 18,
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.Start,
+                    Margin = new Thickness(20, 0, 0, 0)
+                };
 
-            border.Content = hsl;
-            vslSubCats.Children.Add(border);
+                hsl.Children.Add(label);
+
+                SubCategories.Add(entSubCategory.Text);
+                entSubCategory.Text = "";
+                entSubCategory.IsEnabled = false;
+                entSubCategory.IsEnabled = true;
+
+                border.Content = hsl;
+                vslSubCats.Children.Add(border);
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddNewCategoryBottomSheet", "AddSubCat_Clicked");
         }
 
     }

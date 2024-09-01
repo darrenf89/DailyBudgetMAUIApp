@@ -5,11 +5,12 @@ using System.Globalization;
 using IeuanWalker.Maui.Switch;
 using IeuanWalker.Maui.Switch.Events;
 using IeuanWalker.Maui.Switch.Helpers;
-using Microsoft.Maui.Handlers;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
 using Plugin.MauiMTAdmob;
-
+#if ANDROID
+    using Microsoft.Maui.Handlers;
+#endif
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -46,125 +47,132 @@ public partial class AddTransaction : ContentPage
 
     async protected override void OnAppearing()
     {
-        base.OnAppearing();
-
-        CrossMauiMTAdmob.Current.OnInterstitialClosed += async (sender, args) => {
-            UserAddDetails User = await _ds.GetUserAddDetails(App.UserDetails.UserID);
-            User.LastViewed = DateTime.Now;
-            User.NumberOfViews++;
-            await _ds.PostUserAddDetails(User);
-        };
-
-        CrossMauiMTAdmob.Current.LoadInterstitial("ca-app-pub-3940256099942544/1033173712");
-
-        if (string.IsNullOrEmpty(_vm.NavigatedFrom))
+        try
         {
-            _vm.Transaction = null;
-            _vm.TransactionID = 0;
-            _vm.BudgetID = App.DefaultBudgetID;
-            _vm.IsFutureDatedTransaction = false;
-            _vm.IsPayee = false;
-            _vm.IsSpendCategory = false;
-            _vm.IsNote = false;
-            _vm.RedirectTo = "";
-        }
-        else if(string.Equals(_vm.NavigatedFrom, "ViewMainPage", StringComparison.OrdinalIgnoreCase) ||string.Equals(_vm.NavigatedFrom, "ViewTransactions", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewSavings", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase))
-        {
-            _vm.RedirectTo = _vm.NavigatedFrom;
-        }
+            base.OnAppearing();
 
-        if (_vm.TransactionID == 0)
-        {
-            if(_vm.Transaction == null)
+            CrossMauiMTAdmob.Current.OnInterstitialClosed += async (sender, args) => {
+                UserAddDetails User = await _ds.GetUserAddDetails(App.UserDetails.UserID);
+                User.LastViewed = DateTime.Now;
+                User.NumberOfViews++;
+                await _ds.PostUserAddDetails(User);
+            };
+
+            CrossMauiMTAdmob.Current.LoadInterstitial("ca-app-pub-3940256099942544/1033173712");
+
+            if (string.IsNullOrEmpty(_vm.NavigatedFrom))
             {
-                _vm.Transaction = new Transactions();
-                _vm.Transaction.Payee = "";
-                _vm.Transaction.IsIncome = false;
-                _vm.Transaction.EventType = "Transaction";
-                _vm.Title = "Add a New Transaction";
-                btnAddTransaction.IsVisible = true;
-                _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
+                _vm.Transaction = null;
+                _vm.TransactionID = 0;
+                _vm.BudgetID = App.DefaultBudgetID;
+                _vm.IsFutureDatedTransaction = false;
+                _vm.IsPayee = false;
+                _vm.IsSpendCategory = false;
+                _vm.IsNote = false;
+                _vm.RedirectTo = "";
+            }
+            else if(string.Equals(_vm.NavigatedFrom, "ViewMainPage", StringComparison.OrdinalIgnoreCase) ||string.Equals(_vm.NavigatedFrom, "ViewTransactions", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewSavings", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase))
+            {
+                _vm.RedirectTo = _vm.NavigatedFrom;
+            }
 
+            if (_vm.TransactionID == 0)
+            {
+                if(_vm.Transaction == null)
+                {
+                    _vm.Transaction = new Transactions();
+                    _vm.Transaction.Payee = "";
+                    _vm.Transaction.IsIncome = false;
+                    _vm.Transaction.EventType = "Transaction";
+                    _vm.Title = "Add a New Transaction";
+                    btnAddTransaction.IsVisible = true;
+                    _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
+
+                }
+                else
+                {
+                    _vm.Title = "Add a New Transaction";
+                    btnAddTransaction.IsVisible = true;
+
+                    _vm.IsFutureDatedTransaction = !(_vm.Transaction.TransactionDate.GetValueOrDefault().Date <= _pt.GetBudgetLocalTime(DateTime.UtcNow).Date);
+                    _vm.IsPayee = !string.IsNullOrEmpty(_vm.Transaction.Payee);
+                    _vm.IsSpendCategory = !string.IsNullOrEmpty(_vm.Transaction.Category);
+                    _vm.IsNote = !string.IsNullOrEmpty(_vm.Transaction.Notes);
+                    _vm.Transaction.IsSpendFromSavings = !string.IsNullOrEmpty(_vm.Transaction.SavingName);
+
+                    if(_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
+                    {
+                        SavingSavingHeader.IsVisible = true;
+                        EnvelopeSavingHeader.IsVisible = false;
+                        swhSavingSpend.IsEnabled = false;
+                        lblSavingsName.IsEnabled = false;
+                    }
+                }
             }
             else
             {
-                _vm.Title = "Add a New Transaction";
-                btnAddTransaction.IsVisible = true;
+                if(_vm.Transaction == null)
+                {
+                    _vm.Transaction = _ds.GetTransactionFromID(_vm.TransactionID).Result;
+                }            
+                _vm.Title = $"Update your transaction!";
 
-                _vm.IsFutureDatedTransaction = !(_vm.Transaction.TransactionDate.GetValueOrDefault().Date <= _pt.GetBudgetLocalTime(DateTime.UtcNow).Date);
+                btnUpdateTransaction.IsVisible = true;
+                btnExpenseClicked.IsEnabled = false;
+                btnIncomeClicked.IsEnabled = false;
+                btnResetTransaction.IsVisible = false;
+
+                if(_vm.Transaction.TransactionDate.GetValueOrDefault().Date == _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
+                {
+                    _vm.IsFutureDatedTransaction = false;
+                }
+                else
+                {
+                    _vm.IsFutureDatedTransaction = true;
+                    swhTransactionDate.IsEnabled = false;
+                    entTransactionDate.MinimumDate = default(DateTime);
+                }
+
                 _vm.IsPayee = !string.IsNullOrEmpty(_vm.Transaction.Payee);
                 _vm.IsSpendCategory = !string.IsNullOrEmpty(_vm.Transaction.Category);
                 _vm.IsNote = !string.IsNullOrEmpty(_vm.Transaction.Notes);
                 _vm.Transaction.IsSpendFromSavings = !string.IsNullOrEmpty(_vm.Transaction.SavingName);
-
-                if(_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
-                {
-                    SavingSavingHeader.IsVisible = true;
-                    EnvelopeSavingHeader.IsVisible = false;
-                    swhSavingSpend.IsEnabled = false;
-                    lblSavingsName.IsEnabled = false;
-                }
-            }
-        }
-        else
-        {
-            if(_vm.Transaction == null)
-            {
-                _vm.Transaction = _ds.GetTransactionFromID(_vm.TransactionID).Result;
-            }            
-            _vm.Title = $"Update your transaction!";
-
-            btnUpdateTransaction.IsVisible = true;
-            btnExpenseClicked.IsEnabled = false;
-            btnIncomeClicked.IsEnabled = false;
-            btnResetTransaction.IsVisible = false;
-
-            if(_vm.Transaction.TransactionDate.GetValueOrDefault().Date == _pt.GetBudgetLocalTime(DateTime.UtcNow).Date)
-            {
-                _vm.IsFutureDatedTransaction = false;
-            }
-            else
-            {
-                _vm.IsFutureDatedTransaction = true;
-                swhTransactionDate.IsEnabled = false;
-                entTransactionDate.MinimumDate = default(DateTime);
             }
 
-            _vm.IsPayee = !string.IsNullOrEmpty(_vm.Transaction.Payee);
-            _vm.IsSpendCategory = !string.IsNullOrEmpty(_vm.Transaction.Category);
-            _vm.IsNote = !string.IsNullOrEmpty(_vm.Transaction.Notes);
-            _vm.Transaction.IsSpendFromSavings = !string.IsNullOrEmpty(_vm.Transaction.SavingName);
+            double TransactionAmount = (double?)_vm.Transaction.TransactionAmount ?? 0;
+            entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
+
+            if(_vm.IsNote)
+            {
+                int StringLength = edtNotes.Text.Length;
+                lblNoteCharacterLeft.Text = $"{250 - StringLength} characters remaining";
+            }
+
+            if (_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
+            {
+                SavingSavingHeader.IsVisible = true;
+                EnvelopeSavingHeader.IsVisible = false;
+                swhSavingSpend.IsEnabled = false;
+                lblSavingsName.IsEnabled = false;
+            }
+
+            if(_vm.Transaction.EventType == "IncomeEvent")
+            {
+                swhSavingSpend.IsEnabled = false;
+                SavingSwitch.IsVisible = false;
+                SavingHeader.IsVisible = false;
+            }
+
+            UpdateExpenseIncomeSelected();
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
         }
-
-        double TransactionAmount = (double?)_vm.Transaction.TransactionAmount ?? 0;
-        entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
-
-        if(_vm.IsNote)
+        catch (Exception ex)
         {
-            int StringLength = edtNotes.Text.Length;
-            lblNoteCharacterLeft.Text = $"{250 - StringLength} characters remaining";
-        }
-
-        if (_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
-        {
-            SavingSavingHeader.IsVisible = true;
-            EnvelopeSavingHeader.IsVisible = false;
-            swhSavingSpend.IsEnabled = false;
-            lblSavingsName.IsEnabled = false;
-        }
-
-        if(_vm.Transaction.EventType == "IncomeEvent")
-        {
-            swhSavingSpend.IsEnabled = false;
-            SavingSwitch.IsVisible = false;
-            SavingHeader.IsVisible = false;
-        }
-
-        UpdateExpenseIncomeSelected();
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            await _pt.HandleException(ex, "AddTransaction", "OnAppearing");
         }
     }
 
@@ -201,14 +209,28 @@ public partial class AddTransaction : ContentPage
     }
     private void btnExpenseClicked_Clicked(object sender, EventArgs e)
     {
-        _vm.Transaction.IsIncome = false;
-        UpdateExpenseIncomeSelected();
+        try
+        {
+            _vm.Transaction.IsIncome = false;
+            UpdateExpenseIncomeSelected();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddTransaction", "btnExpenseClicked_Clicked");
+        }
     }
 
     private void btnIncomeClicked_Clicked(object sender, EventArgs e)
     {
-        _vm.Transaction.IsIncome = true;
-        UpdateExpenseIncomeSelected();
+        try
+        {
+            _vm.Transaction.IsIncome = true;
+            UpdateExpenseIncomeSelected();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddTransaction", "btnIncomeClicked_Clicked");
+        }
     }
 
     private bool ValidateBillDetails()
@@ -231,113 +253,128 @@ public partial class AddTransaction : ContentPage
 
     private async void btnAddTransaction_Clicked(object sender, EventArgs e)
     {
-        if(ValidateBillDetails())
+        try
         {
-            string TransactionAmount = _vm.Transaction.TransactionAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
-            string TransactionType = "";
-            if (_vm.Transaction.IsIncome)
+            if (ValidateBillDetails())
             {
-                TransactionType = "an Income";
-            }
-            else
-            {
-                TransactionType = "an Expenditure";
-            }
-
-            bool result = await DisplayAlert("Add New Transaction", $"You are adding {TransactionType} for {TransactionAmount}, are you sure you want to continue?", "Yes, continue", "Cancel");
-            if (result)
-            {               
-
-                if (App.CurrentPopUp == null)
+                string TransactionAmount = _vm.Transaction.TransactionAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+                string TransactionType = "";
+                if (_vm.Transaction.IsIncome)
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    TransactionType = "an Income";
+                }
+                else
+                {
+                    TransactionType = "an Expenditure";
                 }
 
-                _vm.Transaction = _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID).Result;
-                if (_vm.Transaction.TransactionID != 0)
-                {
-                    if(!_vm.IsPremiumAccount)
+                bool result = await DisplayAlert("Add New Transaction", $"You are adding {TransactionType} for {TransactionAmount}, are you sure you want to continue?", "Yes, continue", "Cancel");
+                if (result)
+                {               
+
+                    if (App.CurrentPopUp == null)
                     {
-                        if (CrossMauiMTAdmob.Current.IsInterstitialLoaded())
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
+
+                    _vm.Transaction = _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID).Result;
+                    if (_vm.Transaction.TransactionID != 0)
+                    {
+                        if(!_vm.IsPremiumAccount)
                         {
-                            UserAddDetails User = await _ds.GetUserAddDetails(App.UserDetails.UserID);
-                            if (User.NumberOfViews <= 3)
+                            if (CrossMauiMTAdmob.Current.IsInterstitialLoaded())
                             {
-                                CrossMauiMTAdmob.Current.ShowInterstitial();
+                                UserAddDetails User = await _ds.GetUserAddDetails(App.UserDetails.UserID);
+                                if (User.NumberOfViews <= 3)
+                                {
+                                    CrossMauiMTAdmob.Current.ShowInterstitial();
+                                }
                             }
+                            else
+                            {
+                                CrossMauiMTAdmob.Current.LoadInterstitial("ca-app-pub-3940256099942544/1033173712");
+                            }
+                        }
+
+                        if (_vm.RedirectTo == "ViewSavings")
+                        {
+                            await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
+                        }
+                        else if (_vm.RedirectTo == "ViewEnvelopes")
+                        {
+                            await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
                         }
                         else
                         {
-                            CrossMauiMTAdmob.Current.LoadInterstitial("ca-app-pub-3940256099942544/1033173712");
+                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
                         }
                     }
-
-                    if (_vm.RedirectTo == "ViewSavings")
-                    {
-                        await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
-                    }
-                    else if (_vm.RedirectTo == "ViewEnvelopes")
-                    {
-                        await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
-                    }
-                    else
-                    {
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
-                    }
                 }
+
             }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddTransaction", "btnAddTransaction_Clicked");
         }
 
     }
 
     private async void btnUpdateTransaction_Clicked(object sender, EventArgs e)
     {
-        if (ValidateBillDetails())
+        try
         {
-            string TransactionAmount = _vm.Transaction.TransactionAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
-            string TransactionType = "";
-            if (_vm.Transaction.IsIncome)
+            if (ValidateBillDetails())
             {
-                TransactionType = "an Income";
-            }
-            else
-            {
-                TransactionType = "an Expenditure";
-            }
-
-            bool result = await DisplayAlert("Update A Transaction", $"You are updating {TransactionType} to {TransactionAmount}, are you sure you want to?", "Yes, continue", "Cancel");
-            if (result)
-            {
-                if (App.CurrentPopUp == null)
+                string TransactionAmount = _vm.Transaction.TransactionAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+                string TransactionType = "";
+                if (_vm.Transaction.IsIncome)
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    TransactionType = "an Income";
+                }
+                else
+                {
+                    TransactionType = "an Expenditure";
                 }
 
-                string status = _ds.UpdateTransaction(_vm.Transaction).Result;
-                if (status == "OK")
+                bool result = await DisplayAlert("Update A Transaction", $"You are updating {TransactionType} to {TransactionAmount}, are you sure you want to?", "Yes, continue", "Cancel");
+                if (result)
                 {
-                    if (_vm.RedirectTo == "ViewTransactions")
+                    if (App.CurrentPopUp == null)
                     {
-                        await Shell.Current.GoToAsync($"///{nameof(ViewTransactions)}");
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
                     }
-                    else if (_vm.RedirectTo == "ViewSavings")
+
+                    string status = _ds.UpdateTransaction(_vm.Transaction).Result;
+                    if (status == "OK")
                     {
-                        await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
+                        if (_vm.RedirectTo == "ViewTransactions")
+                        {
+                            await Shell.Current.GoToAsync($"///{nameof(ViewTransactions)}");
+                        }
+                        else if (_vm.RedirectTo == "ViewSavings")
+                        {
+                            await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
+                        }
+                        else if (_vm.RedirectTo == "ViewEnvelopes")
+                        {
+                            await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
+                        }
+                        else
+                        {
+                            await Shell.Current.GoToAsync($"///{nameof(MainPage)}?ID=1&SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
+                        }
                     }
-                    else if (_vm.RedirectTo == "ViewEnvelopes")
-                    {
-                        await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
-                    }
-                    else
-                    {
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}?ID=1&SnackBar=Transaction Updated&SnackID={_vm.TransactionID}");
-                    }
-                }
-            }            
+                }            
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddTransaction", "btnUpdateTransaction_Clicked");
         }
     }
 
@@ -348,133 +385,171 @@ public partial class AddTransaction : ContentPage
 
     void TransactionAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        ClearAllValidators();
-
-        decimal TransactionAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entTransactionAmount.CursorPosition > position)
+        try
         {
-            entTransactionAmount.CursorPosition = entTransactionAmount.Text.Length;
+            ClearAllValidators();
+
+            decimal TransactionAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entTransactionAmount.CursorPosition > position)
+            {
+                entTransactionAmount.CursorPosition = entTransactionAmount.Text.Length;
+            }
+            _vm.Transaction.TransactionAmount = TransactionAmount;
         }
-        _vm.Transaction.TransactionAmount = TransactionAmount;
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddTransaction", "TransactionAmount_Changed");
+        }
     }
 
     private void swhTransactionDate_Toggled(object sender, ToggledEventArgs e)
     {
-        if(!_vm.IsFutureDatedTransaction)
+        try
         {
-            entTransactionDate.MinimumDate = new DateTime();
-            _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
-        }
-        else
-        {
-            if(swhTransactionDate.IsEnabled)
+            if (!_vm.IsFutureDatedTransaction)
             {
-                entTransactionDate.MinimumDate = default(DateTime);
+                entTransactionDate.MinimumDate = new DateTime();
+                _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
             }
-#if ANDROID
-            var handler = entTransactionDate.Handler as IDatePickerHandler;
-            handler.PlatformView.PerformClick();
-#endif
+            else
+            {
+                if(swhTransactionDate.IsEnabled)
+                {
+                    entTransactionDate.MinimumDate = default(DateTime);
+                }
+    #if ANDROID
+                var handler = entTransactionDate.Handler as IDatePickerHandler;
+                handler.PlatformView.PerformClick();
+    #endif
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddTransaction", "swhTransactionDate_Toggled");
         }
     }
 
     private async void swhPayee_Toggled(object sender, ToggledEventArgs e)
     {
-        entTransactionAmount.IsEnabled = false;
-        entTransactionAmount.IsEnabled = true;
-        edtNotes.IsEnabled = false;
-        edtNotes.IsEnabled = true;
-
-        if (!_vm.IsPayee)
-        {        
-            if(_vm.Transaction is not null)
-            {
-                _vm.Transaction.Payee = "";
-            }            
-        }
-        else
+        try
         {
-            if (_vm.Transaction.Payee is null)
-            {
-                _vm.Transaction.Payee = "";
-            }
-            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
-                new Dictionary<string, object>
+            entTransactionAmount.IsEnabled = false;
+            entTransactionAmount.IsEnabled = true;
+            edtNotes.IsEnabled = false;
+            edtNotes.IsEnabled = true;
+
+            if (!_vm.IsPayee)
+            {        
+                if(_vm.Transaction is not null)
                 {
-                    ["Transaction"] = _vm.Transaction
-                });
+                    _vm.Transaction.Payee = "";
+                }            
+            }
+            else
+            {
+                if (_vm.Transaction.Payee is null)
+                {
+                    _vm.Transaction.Payee = "";
+                }
+                await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = _vm.Transaction
+                    });
+            }
+
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddTransaction", "swhPayee_Toggled");
         }
     }
 
     private async void swhSpendCategory_Toggled(object sender, ToggledEventArgs e)
     {
-        entTransactionAmount.IsEnabled = false;
-        entTransactionAmount.IsEnabled = true;
-        edtNotes.IsEnabled = false;
-        edtNotes.IsEnabled = true;
-
-        if (!_vm.IsSpendCategory)
+        try
         {
-            if (_vm.Transaction is not null)
+            entTransactionAmount.IsEnabled = false;
+            entTransactionAmount.IsEnabled = true;
+            edtNotes.IsEnabled = false;
+            edtNotes.IsEnabled = true;
+
+            if (!_vm.IsSpendCategory)
             {
-                _vm.Transaction.Category = "";
-                _vm.Transaction.CategoryID = 0;
+                if (_vm.Transaction is not null)
+                {
+                    _vm.Transaction.Category = "";
+                    _vm.Transaction.CategoryID = 0;
+                }
+            }
+            else
+            {
+                if (_vm.Transaction.Category == null)
+                {
+                    _vm.Transaction.Category = "";
+                    _vm.Transaction.CategoryID = 0;
+                }
+
+                await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = _vm.Transaction
+                    });
             }
         }
-        else
+        catch (Exception ex)
         {
-            if (_vm.Transaction.Category == null)
-            {
-                _vm.Transaction.Category = "";
-                _vm.Transaction.CategoryID = 0;
-            }
-
-            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
-                new Dictionary<string, object>
-                {
-                    ["Transaction"] = _vm.Transaction
-                });
+            await _pt.HandleException(ex, "AddTransaction", "swhSpendCategory_Toggled");
         }
     }
 
     async void SavingSpend_Toggled(object sender, ToggledEventArgs e)
     {
-        entTransactionAmount.IsEnabled = false;
-        entTransactionAmount.IsEnabled = true;
-        edtNotes.IsEnabled = false;
-        edtNotes.IsEnabled = true;
+        try
+        {
 
-        if (_vm.Transaction is null)
-        {
-            _vm.Transaction.SavingName = "";
-            _vm.Transaction.SavingID = 0;
-            _vm.Transaction.SavingsSpendType = "";
-            _vm.Transaction.EventType = "Transaction";
-        }
-        else
-        {
-            if (!_vm.Transaction.IsSpendFromSavings)
+            entTransactionAmount.IsEnabled = false;
+            entTransactionAmount.IsEnabled = true;
+            edtNotes.IsEnabled = false;
+            edtNotes.IsEnabled = true;
+
+            if (_vm.Transaction is null)
             {
-                if (_vm.Transaction is not null)
-                {
-                    _vm.Transaction.SavingName = "";
-                    _vm.Transaction.SavingID = 0;
-                    _vm.Transaction.SavingsSpendType = "";
-                    _vm.Transaction.EventType = "Transaction";
-                }
-
+                _vm.Transaction.SavingName = "";
+                _vm.Transaction.SavingID = 0;
+                _vm.Transaction.SavingsSpendType = "";
+                _vm.Transaction.EventType = "Transaction";
             }
             else
             {
-                await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectSavingCategoryPage)}?BudgetID={_vm.BudgetID}",
-                    new Dictionary<string, object>
+                if (!_vm.Transaction.IsSpendFromSavings)
+                {
+                    if (_vm.Transaction is not null)
                     {
-                        ["Transaction"] = _vm.Transaction
-                    });
+                        _vm.Transaction.SavingName = "";
+                        _vm.Transaction.SavingID = 0;
+                        _vm.Transaction.SavingsSpendType = "";
+                        _vm.Transaction.EventType = "Transaction";
+                    }
 
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectSavingCategoryPage)}?BudgetID={_vm.BudgetID}",
+                        new Dictionary<string, object>
+                        {
+                            ["Transaction"] = _vm.Transaction
+                        });
+
+                }
             }
+        }
+        catch (Exception ex)
+        {
+
+            await _pt.HandleException(ex, "AddTransaction", "SavingSpend_Toggled");
         }
 
     }
@@ -482,31 +557,46 @@ public partial class AddTransaction : ContentPage
 
     private async void swhNotes_Toggled(object sender, ToggledEventArgs e)
     {
-        if(entTransactionAmount != null)
+        try
         {
-            entTransactionAmount.IsEnabled = false;
-            entTransactionAmount.IsEnabled = true;
-        }    
-        
-        if(edtNotes != null)
-        {
-            edtNotes.IsEnabled = false;
-            edtNotes.IsEnabled = true;
-        }
-
-        if (!_vm.IsNote)
-        {
-            if(_vm.Transaction!= null)
+            if (entTransactionAmount != null)
             {
-                _vm.Transaction.Notes = "";
-            }            
+                entTransactionAmount.IsEnabled = false;
+                entTransactionAmount.IsEnabled = true;
+            }    
+        
+            if(edtNotes != null)
+            {
+                edtNotes.IsEnabled = false;
+                edtNotes.IsEnabled = true;
+            }
+
+            if (!_vm.IsNote)
+            {
+                if(_vm.Transaction!= null)
+                {
+                    _vm.Transaction.Notes = "";
+                }            
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddTransaction", "swhNotes_Toggled");
+
         }
     }
 
     private void edtNotes_TextChanged(object sender, TextChangedEventArgs e)
     {
-        int StringLength = edtNotes.Text.Length;
-        lblNoteCharacterLeft.Text = $"{250 - StringLength} characters remaining";
+        try
+        {
+            int StringLength = edtNotes.Text.Length;
+            lblNoteCharacterLeft.Text = $"{250 - StringLength} characters remaining";
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddTransaction", "edtNotes_TextChanged");
+        }
     }
 
     static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
@@ -532,103 +622,139 @@ public partial class AddTransaction : ContentPage
 
     private async void SaveTransaction_Clicked(object sender, EventArgs e)
     {
-        if(btnAddTransaction.IsVisible)
+        try
         {
-            btnAddTransaction_Clicked(sender, e);
-        } 
-        else if(btnUpdateTransaction.IsVisible)
-        {
-            btnUpdateTransaction_Clicked(sender, e);
+            if (btnAddTransaction.IsVisible)
+            {
+                btnAddTransaction_Clicked(sender, e);
+            } 
+            else if(btnUpdateTransaction.IsVisible)
+            {
+                btnUpdateTransaction_Clicked(sender, e);
+            }
         }
-            
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddTransaction", "SaveTransaction_Clicked");
+        }
+
     }
 
     private async void ResetTransaction_Clicked(object sender, EventArgs e)
     {
-        entTransactionAmount.IsEnabled = false;
-        entTransactionAmount.IsEnabled = true;
-        edtNotes.IsEnabled = false;
-        edtNotes.IsEnabled = true;
-
-        bool result = await DisplayAlert("Transaction Reset", "Are you sure you want to Reset the details of this transaction", "Yes, continue", "Cancel");
-        if (result)
+        try
         {
+            entTransactionAmount.IsEnabled = false;
+            entTransactionAmount.IsEnabled = true;
+            edtNotes.IsEnabled = false;
+            edtNotes.IsEnabled = true;
 
-            if (_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
+            bool result = await DisplayAlert("Transaction Reset", "Are you sure you want to Reset the details of this transaction", "Yes, continue", "Cancel");
+            if (result)
             {
-                swhSavingSpend.IsEnabled = false;
-                _vm.IsFutureDatedTransaction = false;
-                _vm.IsPayee = false;
-                _vm.IsSpendCategory = false;
-                _vm.IsNote = false;
-            }
-            else
-            {            
-                _vm.IsFutureDatedTransaction = false;
-                _vm.IsPayee = false;
-                _vm.IsSpendCategory = false;
-                _vm.IsNote = false;
-                _vm.Transaction.IsSpendFromSavings = false;
-            }
 
-            double TransactionAmount = (double)0;
-            entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
+                if (_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
+                {
+                    swhSavingSpend.IsEnabled = false;
+                    _vm.IsFutureDatedTransaction = false;
+                    _vm.IsPayee = false;
+                    _vm.IsSpendCategory = false;
+                    _vm.IsNote = false;
+                }
+                else
+                {            
+                    _vm.IsFutureDatedTransaction = false;
+                    _vm.IsPayee = false;
+                    _vm.IsSpendCategory = false;
+                    _vm.IsNote = false;
+                    _vm.Transaction.IsSpendFromSavings = false;
+                }
 
-            _vm.Transaction.IsIncome = false;
-            UpdateExpenseIncomeSelected();
+                double TransactionAmount = (double)0;
+                entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
+
+                _vm.Transaction.IsIncome = false;
+                UpdateExpenseIncomeSelected();
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddTransaction", "ResetTransaction_Clicked");
         }
     }
 
     private async void ChangeSelectedPayee_Tapped(object sender, TappedEventArgs e)
     {
-        entTransactionAmount.IsEnabled = false;
-        entTransactionAmount.IsEnabled = true;
-        edtNotes.IsEnabled = false;
-        edtNotes.IsEnabled = true;
-
-        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
-            new Dictionary<string, object>
-            {
-                ["Transaction"] = _vm.Transaction
-            });
-    }
-
-    private async void ChangeSelectedCategory_Tapped(object sender, TappedEventArgs e)
-    {
-        entTransactionAmount.IsEnabled = false;
-        entTransactionAmount.IsEnabled = true;
-        edtNotes.IsEnabled = false;
-        edtNotes.IsEnabled = true;
-
-        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
-            new Dictionary<string, object>
-            {
-                ["Transaction"] = _vm.Transaction
-            });        
-    }
-
-    private async void ChangeSelectedSaving_Tapped(object sender, TappedEventArgs e)
-    {
-        entTransactionAmount.IsEnabled = false;
-        entTransactionAmount.IsEnabled = true;
-        edtNotes.IsEnabled = false;
-        edtNotes.IsEnabled = true;
-
-        if (_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
+        try
         {
-            bool result = await Shell.Current.DisplayAlert("Sorry can't do that", "To change the savings that you want to spend you need to go back and start again!", "Ok", "Cancel");
-            if (result)
-            {
-                await Shell.Current.GoToAsync($"///{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
-            }
-        }
-        else
-        {
-            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectSavingCategoryPage)}?BudgetID={_vm.BudgetID}",
+            entTransactionAmount.IsEnabled = false;
+            entTransactionAmount.IsEnabled = true;
+            edtNotes.IsEnabled = false;
+            edtNotes.IsEnabled = true;
+
+            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
                 new Dictionary<string, object>
                 {
                     ["Transaction"] = _vm.Transaction
                 });
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddTransaction", "ChangeSelectedPayee_Tapped");
+        }
+    }
+
+    private async void ChangeSelectedCategory_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            entTransactionAmount.IsEnabled = false;
+            entTransactionAmount.IsEnabled = true;
+            edtNotes.IsEnabled = false;
+            edtNotes.IsEnabled = true;
+
+            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = _vm.Transaction
+                });
+        }
+        catch (Exception ex)
+        {
+
+            await _pt.HandleException(ex, "AddTransaction", "ChangeSelectedCategory_Tapped");
+        }
+    }
+
+    private async void ChangeSelectedSaving_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            entTransactionAmount.IsEnabled = false;
+            entTransactionAmount.IsEnabled = true;
+            edtNotes.IsEnabled = false;
+            edtNotes.IsEnabled = true;
+
+            if (_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
+            {
+                bool result = await Shell.Current.DisplayAlert("Sorry can't do that", "To change the savings that you want to spend you need to go back and start again!", "Ok", "Cancel");
+                if (result)
+                {
+                    await Shell.Current.GoToAsync($"///{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
+                }
+            }
+            else
+            {
+                await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectSavingCategoryPage)}?BudgetID={_vm.BudgetID}",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = _vm.Transaction
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddTransaction", "ChangeSelectedSaving_Tapped");
         }
     }
 }

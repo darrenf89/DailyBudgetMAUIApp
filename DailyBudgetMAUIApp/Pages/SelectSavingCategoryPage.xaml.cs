@@ -61,51 +61,58 @@ public partial class SelectSavingCategoryPage : ContentPage
 
     async protected override void OnAppearing()
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(10);
+
+            TopBV.WidthRequest = ScreenWidth;
+            MainAbs.WidthRequest = ScreenWidth;
+            MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
+            MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
+
+            base.OnAppearing();
+
+            _vm.EnvelopeSavingList = _ds.GetBudgetEnvelopeSaving(_vm.BudgetID).Result;
+
+            decimal Total = 0;
+            decimal Balance = 0;
+
+            foreach (Savings Saving in _vm.EnvelopeSavingList)
+            {
+                Total += Saving.PeriodSavingValue.GetValueOrDefault();
+                Balance += Saving.CurrentBalance.GetValueOrDefault();
+            }
+
+            if (_vm.EnvelopeSavingList.Count == 0)
+            {
+                brdNoSavings.IsVisible = true;
+                SavingList.IsVisible = false;
+            }
+            else
+            {
+                brdNoSavings.IsVisible = false;
+                SavingList.IsVisible = true;
+            }
+
+            _vm.EnvelopeFilteredSavingList = _vm.EnvelopeSavingList;
+            LoadSavingList();
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
         }
-
-        await Task.Delay(10);
-
-        TopBV.WidthRequest = ScreenWidth;
-        MainAbs.WidthRequest = ScreenWidth;
-        MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
-        MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
-
-        base.OnAppearing();
-
-        _vm.EnvelopeSavingList = _ds.GetBudgetEnvelopeSaving(_vm.BudgetID).Result;
-
-        decimal Total = 0;
-        decimal Balance = 0;
-
-        foreach (Savings Saving in _vm.EnvelopeSavingList)
+        catch (Exception ex)
         {
-            Total += Saving.PeriodSavingValue.GetValueOrDefault();
-            Balance += Saving.CurrentBalance.GetValueOrDefault();
-        }
-
-        if (_vm.EnvelopeSavingList.Count == 0)
-        {
-            brdNoSavings.IsVisible = true;
-            SavingList.IsVisible = false;
-        }
-        else
-        {
-            brdNoSavings.IsVisible = false;
-            SavingList.IsVisible = true;
-        }
-
-        _vm.EnvelopeFilteredSavingList = _vm.EnvelopeSavingList;
-        LoadSavingList();
-
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            await _pt.HandleException(ex, "SelectSavingCategory", "OnAppearing");
         }
     }
 
@@ -275,16 +282,39 @@ public partial class SelectSavingCategoryPage : ContentPage
 
     private async void SelectSaving_Tapped(object sender, TappedEventArgs e)
     {
-
-        Savings Saving = (Savings)e.Parameter;
-
-        bool result = await DisplayAlert($"Select {Saving.SavingsName}", $"Are you sure you want to spend from your {Saving.SavingsName} envelope?", "Yes, continue", "No, go back!");
-        if (result)
+        try
         {
-            _vm.Transaction.SavingName = Saving.SavingsName;
-            _vm.Transaction.SavingID = Saving.SavingID;
-            _vm.Transaction.SavingsSpendType = "EnvelopeSaving";
-            _vm.Transaction.EventType = "Envelope";
+            Savings Saving = (Savings)e.Parameter;
+
+            bool result = await DisplayAlert($"Select {Saving.SavingsName}", $"Are you sure you want to spend from your {Saving.SavingsName} envelope?", "Yes, continue", "No, go back!");
+            if (result)
+            {
+                _vm.Transaction.SavingName = Saving.SavingsName;
+                _vm.Transaction.SavingID = Saving.SavingID;
+                _vm.Transaction.SavingsSpendType = "EnvelopeSaving";
+                _vm.Transaction.EventType = "Envelope";
+
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectSavingCategoryPage&TransactionID={_vm.Transaction.TransactionID}",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = _vm.Transaction
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "SelectSavingCategory", "SelectSaving_Tapped");
+        }
+    }
+
+    private async void BackButton_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            _vm.Transaction.SavingName = "";
+            _vm.Transaction.SavingID = 0;
+            _vm.Transaction.SavingsSpendType = "";
+            _vm.Transaction.EventType = "Transaction";
 
             await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectSavingCategoryPage&TransactionID={_vm.Transaction.TransactionID}",
             new Dictionary<string, object>
@@ -292,136 +322,140 @@ public partial class SelectSavingCategoryPage : ContentPage
                 ["Transaction"] = _vm.Transaction
             });
         }
-    }
-
-    private async void BackButton_Clicked(object sender, EventArgs e)
-    {
-        _vm.Transaction.SavingName = "";
-        _vm.Transaction.SavingID = 0;
-        _vm.Transaction.SavingsSpendType = "";
-        _vm.Transaction.EventType = "Transaction";
-
-        await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectSavingCategoryPage&TransactionID={_vm.Transaction.TransactionID}",
-        new Dictionary<string, object>
+        catch (Exception ex)
         {
-            ["Transaction"] = _vm.Transaction
-        });
+            await _pt.HandleException(ex, "SelectSavingCategory", "BackButton_Clicked");
+        }
     }
 
     private void AscSort_Clicked(object sender, EventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        if (AscSort.Style == (Style)buttonUnclicked)
+        try
         {
-            AscSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue876",
-                Size = 15,
-                Color = (Color)White
-            };
-            AscSort.Style = (Style)buttonClicked;
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-            DesSort.Style = (Style)buttonUnclicked;
-            DesSort.ImageSource = new FontImageSource
+            if (AscSort.Style == (Style)buttonUnclicked)
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                AscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue876",
+                    Size = 15,
+                    Color = (Color)White
+                };
+                AscSort.Style = (Style)buttonClicked;
 
-            BalanceAscSort.Style = (Style)buttonUnclicked;
-            BalanceAscSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                DesSort.Style = (Style)buttonUnclicked;
+                DesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
 
-            BalanceDesSort.Style = (Style)buttonUnclicked;
-            BalanceDesSort.ImageSource = new FontImageSource
+                BalanceAscSort.Style = (Style)buttonUnclicked;
+                BalanceAscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+
+                BalanceDesSort.Style = (Style)buttonUnclicked;
+                BalanceDesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
+            else
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                AscSort.Style = (Style)buttonUnclicked;
+                AscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
         }
-        else
+        catch (Exception ex)
         {
-            AscSort.Style = (Style)buttonUnclicked;
-            AscSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+            _pt.HandleException(ex, "SelectSavingCategory", "AscSort_Clicked");
         }
     }
 
     private void DesSort_Clicked(object sender, EventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        if (DesSort.Style == (Style)buttonUnclicked)
+        try
         {
-            DesSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue876",
-                Size = 15,
-                Color = (Color)White
-            };
-            DesSort.Style = (Style)buttonClicked;
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-            AscSort.Style = (Style)buttonUnclicked;
-            AscSort.ImageSource = new FontImageSource
+            if (DesSort.Style == (Style)buttonUnclicked)
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                DesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue876",
+                    Size = 15,
+                    Color = (Color)White
+                };
+                DesSort.Style = (Style)buttonClicked;
 
-            BalanceAscSort.Style = (Style)buttonUnclicked;
-            BalanceAscSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                AscSort.Style = (Style)buttonUnclicked;
+                AscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
 
-            BalanceDesSort.Style = (Style)buttonUnclicked;
-            BalanceDesSort.ImageSource = new FontImageSource
+                BalanceAscSort.Style = (Style)buttonUnclicked;
+                BalanceAscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+
+                BalanceDesSort.Style = (Style)buttonUnclicked;
+                BalanceDesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
+            else
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                DesSort.Style = (Style)buttonUnclicked;
+                DesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
         }
-        else
+        catch (Exception ex)
         {
-            DesSort.Style = (Style)buttonUnclicked;
-            DesSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
-        }                
+            _pt.HandleException(ex, "SelectSavingCategory", "DesSort_Clicked");
+        }
     }
     async protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
@@ -458,200 +492,236 @@ public partial class SelectSavingCategoryPage : ContentPage
 
     private async void SortFilterApply_Clicked(object sender, EventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(10);
+
+            entEnvelopeSearch.IsEnabled = false;
+            entEnvelopeSearch.IsEnabled = true;
+
+            _vm.EnvelopeFilteredSavingList = _vm.EnvelopeSavingList;
+
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+
+            string SearchText = "";
+            if(!string.IsNullOrEmpty(entEnvelopeSearch.Text))
+            {
+                SearchText = entEnvelopeSearch.Text;
+            }
+
+            _vm.EnvelopeFilteredSavingList = _vm.EnvelopeFilteredSavingList.Where(x => x.SavingsName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (AscSort.Style == (Style)buttonClicked)
+            {
+                SortCategories("NameAsc");
+            }
+            else if (DesSort.Style == (Style)buttonClicked)
+            {
+                SortCategories("NameDes");
+            }
+            else if (BalanceAscSort.Style == (Style)buttonClicked)
+            {
+                SortCategories("BalanceAsc");
+            }
+            else if (BalanceDesSort.Style == (Style)buttonClicked)
+            {
+                SortCategories("BalanceDes");
+            }
+
+            LoadSavingList();
+
+            acrFilterOption_Tapped(null, null);
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
         }
-
-        await Task.Delay(10);
-
-        entEnvelopeSearch.IsEnabled = false;
-        entEnvelopeSearch.IsEnabled = true;
-
-        _vm.EnvelopeFilteredSavingList = _vm.EnvelopeSavingList;
-
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-
-        string SearchText = "";
-        if(!string.IsNullOrEmpty(entEnvelopeSearch.Text))
+        catch (Exception ex)
         {
-            SearchText = entEnvelopeSearch.Text;
-        }
-
-        _vm.EnvelopeFilteredSavingList = _vm.EnvelopeFilteredSavingList.Where(x => x.SavingsName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
-
-        if (AscSort.Style == (Style)buttonClicked)
-        {
-            SortCategories("NameAsc");
-        }
-        else if (DesSort.Style == (Style)buttonClicked)
-        {
-            SortCategories("NameDes");
-        }
-        else if (BalanceAscSort.Style == (Style)buttonClicked)
-        {
-            SortCategories("BalanceAsc");
-        }
-        else if (BalanceDesSort.Style == (Style)buttonClicked)
-        {
-            SortCategories("BalanceDes");
-        }
-
-        LoadSavingList();
-
-        acrFilterOption_Tapped(null, null);
-
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            await _pt.HandleException(ex, "SelectSavingCategory", "SortFilterApply_Clicked");
         }
     }
 
     private void BalanceDesSort_Clicked(object sender, EventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        if (BalanceDesSort.Style == (Style)buttonUnclicked)
+        try
         {
-            BalanceDesSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue876",
-                Size = 15,
-                Color = (Color)White
-            };
-            BalanceDesSort.Style = (Style)buttonClicked;
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-            AscSort.Style = (Style)buttonUnclicked;
-            AscSort.ImageSource = new FontImageSource
+            if (BalanceDesSort.Style == (Style)buttonUnclicked)
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                BalanceDesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue876",
+                    Size = 15,
+                    Color = (Color)White
+                };
+                BalanceDesSort.Style = (Style)buttonClicked;
 
-            DesSort.Style = (Style)buttonUnclicked;
-            DesSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                AscSort.Style = (Style)buttonUnclicked;
+                AscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
 
-            BalanceAscSort.Style = (Style)buttonUnclicked;
-            BalanceAscSort.ImageSource = new FontImageSource
+                DesSort.Style = (Style)buttonUnclicked;
+                DesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+
+                BalanceAscSort.Style = (Style)buttonUnclicked;
+                BalanceAscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
+            else
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                BalanceDesSort.Style = (Style)buttonUnclicked;
+                BalanceDesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
         }
-        else
+        catch (Exception ex)
         {
-            BalanceDesSort.Style = (Style)buttonUnclicked;
-            BalanceDesSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+            _pt.HandleException(ex, "SelectSavingCategory", "BalanceDesSort_Clicked");
         }
     }
 
     private void BalanceAscSort_Clicked(object sender, EventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        if (BalanceAscSort.Style == (Style)buttonUnclicked)
+        try
         {
-            BalanceAscSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue876",
-                Size = 15,
-                Color = (Color)White
-            };
-            BalanceAscSort.Style = (Style)buttonClicked;
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-            AscSort.Style = (Style)buttonUnclicked;
-            AscSort.ImageSource = new FontImageSource
+            if (BalanceAscSort.Style == (Style)buttonUnclicked)
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                BalanceAscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue876",
+                    Size = 15,
+                    Color = (Color)White
+                };
+                BalanceAscSort.Style = (Style)buttonClicked;
 
-            DesSort.Style = (Style)buttonUnclicked;
-            DesSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                AscSort.Style = (Style)buttonUnclicked;
+                AscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
 
-            BalanceDesSort.Style = (Style)buttonUnclicked;
-            BalanceDesSort.ImageSource = new FontImageSource
+                DesSort.Style = (Style)buttonUnclicked;
+                DesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+
+                BalanceDesSort.Style = (Style)buttonUnclicked;
+                BalanceDesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
+            else
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                BalanceAscSort.Style = (Style)buttonUnclicked;
+                BalanceAscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
         }
-        else
+        catch (Exception ex)
         {
-            BalanceAscSort.Style = (Style)buttonUnclicked;
-            BalanceAscSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+            _pt.HandleException(ex, "SelectSavingCategory", "BalanceAscSort_Clicked");
         }
     }
 
     private void acrSavingCategories_Tapped(object sender, TappedEventArgs e)
     {
-        if (!SavingCategories.IsVisible)
+        try
         {
-            SavingCategories.IsVisible = true;
-            SavingCategoriesIcon.Glyph = "\ue5cf";
+            if (!SavingCategories.IsVisible)
+            {
+                SavingCategories.IsVisible = true;
+                SavingCategoriesIcon.Glyph = "\ue5cf";
+            }
+            else
+            {
+                SavingCategories.IsVisible = false;
+                SavingCategoriesIcon.Glyph = "\ue5ce";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            SavingCategories.IsVisible = false;
-            SavingCategoriesIcon.Glyph = "\ue5ce";
+            _pt.HandleException(ex, "SelectSavingCategory", "ChangeSelectedProfilePic");
         }
     }
 
     private void acrFilterOption_Tapped(object sender, TappedEventArgs e)
     {
-        if (!FilterOption.IsVisible)
+
+        try
         {
-            FilterOption.IsVisible = true;
-            FilterOptionIcon.Glyph = "\ue5cf";
+            if (!FilterOption.IsVisible)
+            {
+                FilterOption.IsVisible = true;
+                FilterOptionIcon.Glyph = "\ue5cf";
+            }
+            else
+            {
+                FilterOption.IsVisible = false;
+                FilterOptionIcon.Glyph = "\ue5ce";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            FilterOption.IsVisible = false;
-            FilterOptionIcon.Glyph = "\ue5ce";
+            _pt.HandleException(ex, "SelectSavingCategory", "ChangeSelectedProfilePic");
         }
     }
 }

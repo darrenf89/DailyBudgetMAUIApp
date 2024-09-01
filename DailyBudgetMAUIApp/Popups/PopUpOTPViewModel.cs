@@ -80,8 +80,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         public double OTPWidth { get; }
 
         private readonly IRestDataService _ds;
+        private readonly IProductTools _pt;
 
-        public PopUpOTPViewModel(IRestDataService ds)
+        public PopUpOTPViewModel(IRestDataService ds, IProductTools pt)
         {
             ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
             ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
@@ -90,6 +91,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             OTPWidth = (EntryWidth - 50) / 6;
 
             _ds = ds;
+            _pt = pt;
         }
 
         private async Task ClearClipboard() =>
@@ -98,77 +100,90 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         public async Task PasteOTP()
         {
-
-            if (Clipboard.Default.HasText)
+            try
             {
-                string CopiedText = await Clipboard.Default.GetTextAsync();
-                CopiedText = CopiedText.Trim();
-                if (CopiedText.Length == 6 && int.TryParse(CopiedText, out int n))
+                if (Clipboard.Default.HasText)
                 {
-                    OTPOne = char.ToString(CopiedText[0]);
-                    OTPTwo = char.ToString(CopiedText[1]);
-                    OTPThree = char.ToString(CopiedText[2]);
-                    OTPFour = char.ToString(CopiedText[3]);
-                    OTPFive = char.ToString(CopiedText[4]);
-                    OTPSix = char.ToString(CopiedText[5]);
+                    string CopiedText = await Clipboard.Default.GetTextAsync();
+                    CopiedText = CopiedText.Trim();
+                    if (CopiedText.Length == 6 && int.TryParse(CopiedText, out int n))
+                    {
+                        OTPOne = char.ToString(CopiedText[0]);
+                        OTPTwo = char.ToString(CopiedText[1]);
+                        OTPThree = char.ToString(CopiedText[2]);
+                        OTPFour = char.ToString(CopiedText[3]);
+                        OTPFive = char.ToString(CopiedText[4]);
+                        OTPSix = char.ToString(CopiedText[5]);
 
-                    await ClearClipboard();
+                        await ClearClipboard();
+                    }
+                    else
+                    {
+                        OTPCopyErrorMessage = "Copied content is not the correct format";
+                        OTPCopyContentValid = true;
+                    }
+
+               
                 }
                 else
                 {
-                    OTPCopyErrorMessage = "Copied content is not the correct format";
+                    OTPCopyErrorMessage = "Clipboard is empty";
                     OTPCopyContentValid = true;
                 }
-
-               
             }
-            else
+            catch (Exception ex)
             {
-                OTPCopyErrorMessage = "Clipboard is empty";
-                OTPCopyContentValid = true;
+                await _pt.HandleException(ex, "PopUpOTP", "PasteOTP");
             }
-                
+
         }
 
 
         [RelayCommand]
         public async Task Resend()
         {
-            string status = "";
-
-            if (OTPType == "ShareBudget")
+            try
             {
-                status = await _ds.CreateNewOtpCodeShareBudget(UserID, ShareBudgetRequest.SharedBudgetRequestID);
+                string status = "";
+
+                if (OTPType == "ShareBudget")
+                {
+                    status = await _ds.CreateNewOtpCodeShareBudget(UserID, ShareBudgetRequest.SharedBudgetRequestID);
+                }
+                else
+                {
+                    status = await _ds.CreateNewOtpCode(UserID, OTPType);
+                }            
+
+                CountdownVisible = true;
+                ResendVisible = false;
+
+                if (status == "OK")
+                {
+                    ResendSuccess = true;
+
+                }
+                else if(status == "MaxLimit")
+                {
+                    MaxLimitFailure = true;
+                }
+                else
+                {
+                    ResendFailure = true;
+                }
+
+                await UpdateCountdownNumber();
+
+                CountdownVisible = false;
+                ResendVisible = true;
+                ResendSuccess = false;
+                MaxLimitFailure = false;
+                ResendFailure = false;
             }
-            else
+            catch (Exception ex)
             {
-                status = await _ds.CreateNewOtpCode(UserID, OTPType);
-            }            
-
-            CountdownVisible = true;
-            ResendVisible = false;
-
-            if (status == "OK")
-            {
-                ResendSuccess = true;
-
+                await _pt.HandleException(ex, "PopUpOTP", "ChangeSelectedProfilePic");
             }
-            else if(status == "MaxLimit")
-            {
-                MaxLimitFailure = true;
-            }
-            else
-            {
-                ResendFailure = true;
-            }
-
-            await UpdateCountdownNumber();
-
-            CountdownVisible = false;
-            ResendVisible = true;
-            ResendSuccess = false;
-            MaxLimitFailure = false;
-            ResendFailure = false;
         }
 
         private async Task UpdateCountdownNumber()

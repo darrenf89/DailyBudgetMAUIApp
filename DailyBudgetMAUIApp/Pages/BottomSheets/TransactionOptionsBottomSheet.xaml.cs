@@ -40,8 +40,43 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
 
     private async void CreateNewTransaction_Tapped(object sender, TappedEventArgs e)
     {
-        bool result = await Shell.Current.DisplayAlert("Create new Transaction?", "Are you sure you want to create a new Transaction?", "Yes", "No");
-        if (result)
+        try
+        {
+            bool result = await Shell.Current.DisplayAlert("Create new Transaction?", "Are you sure you want to create a new Transaction?", "Yes", "No");
+            if (result)
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+
+                if (App.CurrentBottomSheet != null)
+                {
+                    await this.DismissAsync();
+                    App.CurrentBottomSheet = null;
+                }
+
+
+                Transactions transaction = new Transactions();
+                await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={transaction.TransactionID}&NavigatedFrom=ViewMainPage",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = transaction
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "TransactionOptionsBottomSheet", "CreateNewTransaction_Tapped");
+        }
+    }
+
+    private async void ViewAllTransactions_Tapped(object sender, TappedEventArgs e)
+    {
+        try
         {
             if (App.CurrentPopUp == null)
             {
@@ -50,76 +85,64 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            try
+            if (App.CurrentBottomSheet != null)
             {
-                if (App.CurrentBottomSheet != null)
-                {
-                    await this.DismissAsync();
-                    App.CurrentBottomSheet = null;
-                }
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
             }
-            catch (Exception)
-            {
-
-            }
-
-            Transactions transaction = new Transactions();
-            await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={transaction.TransactionID}&NavigatedFrom=ViewMainPage",
-                new Dictionary<string, object>
-                {
-                    ["Transaction"] = transaction
-                });
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewTransactions)}");
         }
-    }
-
-    private async void ViewAllTransactions_Tapped(object sender, TappedEventArgs e)
-    {
-        if (App.CurrentPopUp == null)
+        catch (Exception ex)
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            await _pt.HandleException(ex, "TransactionOptionsBottomSheet", "ViewAllTransactions_Tapped");
         }
-
-        if (App.CurrentBottomSheet != null)
-        {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
-        }
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewTransactions)}");
     }
 
     private async void ViewCategories_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        if (App.CurrentBottomSheet != null)
-        {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewCategories)}");
         }
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewCategories)}");
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "TransactionOptionsBottomSheet", "ViewCategories_Tapped");
+        }
     }
 
     private async void ViewPayees_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        if (App.CurrentBottomSheet != null)
-        {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewPayees)}");
         }
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewPayees)}");
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "TransactionOptionsBottomSheet", "ViewPayees_Tapped");
+        }
     }
 }

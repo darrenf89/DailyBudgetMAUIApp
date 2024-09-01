@@ -85,41 +85,28 @@ public partial class CreateNewBudget : ContentPage
             if (_vm.Budget.BudgetName == "" || _vm.Budget.BudgetName == null)
             {
 
-                try
+                string Description = "Every budget needs a name, let us know how you'd like your budget to be known so we can use this to identify it for you in the future.";
+                string DescriptionSub = "Call it something useful or call it something silly up to you really!";
+                var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", _vm.Budget.BudgetName, new PopUpPageSingleInputViewModel());
+                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+                if (result != null || (string)result != "")
                 {
-                    string Description = "Every budget needs a name, let us know how you'd like your budget to be known so we can use this to identify it for you in the future.";
-                    string DescriptionSub = "Call it something useful or call it something silly up to you really!";
-                    var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", _vm.Budget.BudgetName, new PopUpPageSingleInputViewModel());
-                    var result = await Application.Current.MainPage.ShowPopupAsync(popup);
-
-                    if (result != null || (string)result != "")
-                    {
-                        _vm.Budget.BudgetName = (string)result;
-                    }
-
-                    List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
-
-                    PatchDoc BudgetName = new PatchDoc
-                    {
-                        op = "replace",
-                        path = "/BudgetName",
-                        value = _vm.Budget.BudgetName
-                    };
-
-                    BudgetUpdate.Add(BudgetName);
-
-                    string ReturnString = _ds.PatchBudget(_vm.BudgetID, BudgetUpdate).Result;
-
+                    _vm.Budget.BudgetName = (string)result;
                 }
-                catch (Exception ex)
+
+                List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+                PatchDoc BudgetName = new PatchDoc
                 {
-                    ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "LoadingPopupBudgetName").Result;
-                    await Shell.Current.GoToAsync(nameof(ErrorPage),
-                        new Dictionary<string, object>
-                        {
-                            ["Error"] = Error
-                        });
-                }
+                    op = "replace",
+                    path = "/BudgetName",
+                    value = _vm.Budget.BudgetName
+                };
+
+                BudgetUpdate.Add(BudgetName);
+
+                string ReturnString = _ds.PatchBudget(_vm.BudgetID, BudgetUpdate).Result;
 
             }
 
@@ -191,23 +178,18 @@ public partial class CreateNewBudget : ContentPage
                 App.CurrentPopUp = null;
             }
 
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($" --> {ex.Message}");
-            ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "OnAppearing").Result;
-            await Shell.Current.GoToAsync(nameof(ErrorPage),
-                new Dictionary<string, object>
-                {
-                    ["Error"] = Error
-                });
+            await _pt.HandleException(ex, "CreateNewBudget", "OnAppearing");
         }
 
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
-        }
+
     }
 
     private async void UpdateStageDisplay()
@@ -355,129 +337,200 @@ public partial class CreateNewBudget : ContentPage
 
     private async void GoToStageFinalBudget_Tapped(object sender, TappedEventArgs e)
     {
-        _vm.Stage = "Finalise Budget";
-        await _vm.SaveStage("Finalise Budget");
-        UpdateStageDisplay();
+        try
+        {
+            _vm.Stage = "Finalise Budget";
+            await _vm.SaveStage("Finalise Budget");
+            UpdateStageDisplay();
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "GoToStageFinalBudget_Tapped");
+        }
     }
     private void GoToStageSettings_Tapped(object sender, TappedEventArgs e)
     {
-        _vm.Stage = "Budget Settings";
-        UpdateStageDisplay();
-        //await MainScrollView.ScrollToAsync(0, 95, true);
+        try
+        {
+            _vm.Stage = "Budget Settings";
+            UpdateStageDisplay();
+            //await MainScrollView.ScrollToAsync(0, 95, true);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "GoToStageSettings_Tapped");
+        }
     }
 
     private void GoToStageBudget_Tapped(object sender, TappedEventArgs e)
     {
-        double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
-        entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
+        try
+        {
+            double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
+            entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
 
-        double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
+            double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
+            entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
 
-        _vm.Stage = "Budget Details";
-        UpdateStageDisplay();
-        //await MainScrollView.ScrollToAsync(0, 155, true);
+            _vm.Stage = "Budget Details";
+            UpdateStageDisplay();
+            //await MainScrollView.ScrollToAsync(0, 155, true);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "GoToStageBudget_Tapped");
+        }
     }
 
     private void GoToStageBills_Tapped(object sender, TappedEventArgs e)
     {
-        _vm.Stage = "Budget Outgoings";
-        UpdateStageDisplay();
-        //await MainScrollView.ScrollToAsync(0, 215, true);
+        try
+        {
+            _vm.Stage = "Budget Outgoings";
+            UpdateStageDisplay();
+            //await MainScrollView.ScrollToAsync(0, 215, true);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "GoToStageBills_Tapped");
+        }
     }
 
     private void GoToStageSavings_Tapped(object sender, TappedEventArgs e)
     {
-        _vm.Stage = "Budget Savings";
-        UpdateStageDisplay();
-        //await MainScrollView.ScrollToAsync(0, 275, true);
+        try
+        {
+            _vm.Stage = "Budget Savings";
+            UpdateStageDisplay();
+            //await MainScrollView.ScrollToAsync(0, 275, true);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "GoToStageSavings_Tapped");
+        }
 
     }
 
     private void GoToStageIncomes_Tapped(object sender, TappedEventArgs e)
     {
-        _vm.Stage = "Budget Extra Income";
-        UpdateStageDisplay();
-        //await MainScrollView.ScrollToAsync(0, 335, true);
+        try
+        {
+            _vm.Stage = "Budget Extra Income";
+            UpdateStageDisplay();
+            //await MainScrollView.ScrollToAsync(0, 335, true);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "GoToStageIncomes_Tapped");
+        }
 
     }
 
     private void ChangeSelectedCurrency_Tapped(object sender, TappedEventArgs e)
     {
-        _vm.SearchVisible = true;
-        _vm.CurrencySearchResults = _ds.GetCurrencySymbols("").Result;
-        CurrencySearch.Text = "";
+        try
+        {
+            _vm.SearchVisible = true;
+            _vm.CurrencySearchResults = _ds.GetCurrencySymbols("").Result;
+            CurrencySearch.Text = "";
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "ChangeSelectedCurrency_Tapped");
+        }
     }
 
     private async void ContinueSettingsButton_Clicked(object sender, EventArgs e)
     {
-        double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
-        entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
+        try
+        {
+            double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
+            entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
         
-        double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
+            double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
+            entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
 
-        dtpckPayDay.Date = _vm.Budget.NextIncomePayday ?? default;
+            dtpckPayDay.Date = _vm.Budget.NextIncomePayday ?? default;
 
-        _vm.Stage = "Budget Details";
-        UpdateStageDisplay();
+            _vm.Stage = "Budget Details";
+            UpdateStageDisplay();
 
-        await _vm.SaveStage("Budget Settings");
+            await _vm.SaveStage("Budget Settings");
 
-        //await MainScrollView.ScrollToAsync(0, 155, true);
+            //await MainScrollView.ScrollToAsync(0, 155, true);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "ContinueSettingsButton_Clicked");
+        }
     }
 
     private void BackBudgetDetailsButton_Clicked(object sender, EventArgs e)
     {
-        _vm.Stage = "Budget Settings";
-        UpdateStageDisplay();
+        try
+        {
+            _vm.Stage = "Budget Settings";
+            UpdateStageDisplay();
 
-        //await MainScrollView.ScrollToAsync(0, 95, true);
+            //await MainScrollView.ScrollToAsync(0, 95, true);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "BackBudgetDetailsButton_Clicked");
+        }
+
     }
 
     private async void ContinueBudgetDetailsButton_Clicked(object sender, EventArgs e)
     {
-        if (ValidateBudgetDetails())
+        try
         {
-            _vm.Stage = "Budget Outgoings";
-
-            _vm.PayAmountText = entPayAmount.Text ?? "";
-            _vm.BankBalanceText = entBankBalance.Text ?? "";
-            _vm.PayDayDateValue = dtpckPayDay.Date;
-            if (_vm.PayDayTypeText == "Everynth")
+            if (ValidateBudgetDetails())
             {
-                _vm.EveryNthValue = entEverynthValue.Text ?? "0";
-                _vm.EveryNthDuration = pckrEverynthDuration.SelectedItem.ToString() ?? "Weeks";
-            }
-            else if (_vm.PayDayTypeText == "WorkingDays")
-            {
-                _vm.WorkingDaysValue = entWorkingDaysValue.Text ?? "0";
-            }
-            else if (_vm.PayDayTypeText == "OfEveryMonth")
-            {
-                _vm.OfEveryMonthValue = entOfEveryMonthValue.Text ?? "0";
-            }
-            else if (_vm.PayDayTypeText == "LastOfTheMonth")
-            {
-                _vm.LastOfTheMonthDuration = pckrLastOfTheMonthDuration.SelectedItem.ToString() ?? "Monday";
-            }
+                _vm.Stage = "Budget Outgoings";
 
-            UpdateStageDisplay();
+                _vm.PayAmountText = entPayAmount.Text ?? "";
+                _vm.BankBalanceText = entBankBalance.Text ?? "";
+                _vm.PayDayDateValue = dtpckPayDay.Date;
+                if (_vm.PayDayTypeText == "Everynth")
+                {
+                    _vm.EveryNthValue = entEverynthValue.Text ?? "0";
+                    _vm.EveryNthDuration = pckrEverynthDuration.SelectedItem.ToString() ?? "Weeks";
+                }
+                else if (_vm.PayDayTypeText == "WorkingDays")
+                {
+                    _vm.WorkingDaysValue = entWorkingDaysValue.Text ?? "0";
+                }
+                else if (_vm.PayDayTypeText == "OfEveryMonth")
+                {
+                    _vm.OfEveryMonthValue = entOfEveryMonthValue.Text ?? "0";
+                }
+                else if (_vm.PayDayTypeText == "LastOfTheMonth")
+                {
+                    _vm.LastOfTheMonthDuration = pckrLastOfTheMonthDuration.SelectedItem.ToString() ?? "Monday";
+                }
 
-            await _vm.SaveStage("Budget Details");
+                UpdateStageDisplay();
 
-            entBankBalance.IsEnabled = false;
-            entBankBalance.IsEnabled = true;
-            entPayAmount.IsEnabled = false;
-            entPayAmount.IsEnabled = true;
-            entEverynthValue.IsEnabled = false;
-            entEverynthValue.IsEnabled = true;
-            entOfEveryMonthValue.IsEnabled = false;
-            entOfEveryMonthValue.IsEnabled = true;
-            entWorkingDaysValue.IsEnabled = false;
-            entWorkingDaysValue.IsEnabled = true;
+                await _vm.SaveStage("Budget Details");
 
-            //await MainScrollView.ScrollToAsync(0, 215, true);
+                entBankBalance.IsEnabled = false;
+                entBankBalance.IsEnabled = true;
+                entPayAmount.IsEnabled = false;
+                entPayAmount.IsEnabled = true;
+                entEverynthValue.IsEnabled = false;
+                entEverynthValue.IsEnabled = true;
+                entOfEveryMonthValue.IsEnabled = false;
+                entOfEveryMonthValue.IsEnabled = true;
+                entWorkingDaysValue.IsEnabled = false;
+                entWorkingDaysValue.IsEnabled = true;
+
+                //await MainScrollView.ScrollToAsync(0, 215, true);
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "ContinueBudgetDetailsButton_Clicked");
         }
 
     }
@@ -542,113 +595,171 @@ public partial class CreateNewBudget : ContentPage
 
     private void BackBudgetBillsButton_Clicked(object sender, EventArgs e)
     {
-        _vm.Stage = "Budget Details";
-        UpdateStageDisplay();
+        try
+        {
+            _vm.Stage = "Budget Details";
+            UpdateStageDisplay();
 
-        //await MainScrollView.ScrollToAsync(0, 155, true);
+            //await MainScrollView.ScrollToAsync(0, 155, true);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "BackBudgetBillsButton_Clicked");
+        }
     }
 
     private async void ContinueBudgetBillsButton_Clicked(object sender, EventArgs e)
     {
-        if(ValidateBudgetOutgoings())
+        try
         {
-            _vm.Stage = "Budget Savings";
-            UpdateStageDisplay();
+            if (ValidateBudgetOutgoings())
+            {
+                _vm.Stage = "Budget Savings";
+                UpdateStageDisplay();
 
-            await _vm.SaveStage("Budget Outgoings");
+                await _vm.SaveStage("Budget Outgoings");
 
-            //await MainScrollView.ScrollToAsync(0, 275, true);
+                //await MainScrollView.ScrollToAsync(0, 275, true);
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "ContinueBudgetBillsButton_Clicked");
         }
 
     }
 
     private void BackBudgetSavingsButton_Clicked(object sender, EventArgs e)
     {
-        _vm.Stage = "Budget Outgoings";
-        UpdateStageDisplay();
+        try
+        {
 
-        //await MainScrollView.ScrollToAsync(0, 155, true);
+            _vm.Stage = "Budget Outgoings";
+            UpdateStageDisplay();
+
+            //await MainScrollView.ScrollToAsync(0, 155, true);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "BackBudgetSavingsButton_Clicked");
+        }
     }
 
     private async void ContinueBudgetSavingsButton_Clicked(object sender, EventArgs e)
     {
-        if (ValidateBudgetSavings())
+        try
         {
-            _vm.Stage = "Budget Extra Income";
-            UpdateStageDisplay();
+            if (ValidateBudgetSavings())
+            {
+                _vm.Stage = "Budget Extra Income";
+                UpdateStageDisplay();
 
-            await _vm.SaveStage("Budget Outgoings");
+                await _vm.SaveStage("Budget Outgoings");
 
-            //await MainScrollView.ScrollToAsync(0, 275, true);
+                //await MainScrollView.ScrollToAsync(0, 275, true);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "ContinueBudgetSavingsButton_Clicked");
         }
 
     }
 
     private async void ContinueBudgetIncomeButton_Clicked(object sender, EventArgs e)
     {
-        if (ValidateBudgetIncome())
+        try
         {
-            _vm.Stage = "Finalise Budget";
-            UpdateStageDisplay();
+            if (ValidateBudgetIncome())
+            {
+                _vm.Stage = "Finalise Budget";
+                UpdateStageDisplay();
 
-            await _vm.SaveStage("Budget Extra Income");
-            await _vm.SaveStage("Finalise Budget");
+                await _vm.SaveStage("Budget Extra Income");
+                await _vm.SaveStage("Finalise Budget");
 
-            //await MainScrollView.ScrollToAsync(0, 275, true);
+                //await MainScrollView.ScrollToAsync(0, 275, true);
+            }
         }
-
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "ContinueBudgetIncomeButton_Clicked");
+        }
     }
 
     private void BackBudgetIncomeButton_Clicked(object sender, EventArgs e)
     {
-        _vm.Stage = "Budget Savings";
-        UpdateStageDisplay();
+        try
+        {
+            _vm.Stage = "Budget Savings";
+            UpdateStageDisplay();
 
-        //await MainScrollView.ScrollToAsync(0, 155, true);
+            //await MainScrollView.ScrollToAsync(0, 155, true);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "BackBudgetIncomeButton_Clicked");
+        }
     }
 
     private async void FinaliseBudgetButton_Clicked(object sender, EventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
-
-        if (ValidateFinaliseBudget())
-        {
-            var page = new LoadingPage();
-            await Application.Current.MainPage.Navigation.PushModalAsync(page);
-
-            await _vm.SaveStage("Finalise Budget");
-            await _vm.SaveStage("Create Budget");
-
-            ;
-
-            if (App.DefaultBudgetID != _vm.BudgetID)
+            if (App.CurrentPopUp == null)
             {
-                bool result = await Shell.Current.DisplayAlert("Change Default Budget?", "Do you want to make the newly created budget your default budget?", "Yes", "No");
-                if (result)
-                {
-                    
-                    await _pt.ChangeDefaultBudget(App.UserDetails.UserID, _vm.BudgetID, false);
-                }
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            App.SessionLastUpdate = default(DateTime);
-;
-            await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=Budget Created&SnackID={_vm.BudgetID}");
+            if (ValidateFinaliseBudget())
+            {
+                var page = new LoadingPage();
+                await Application.Current.MainPage.Navigation.PushModalAsync(page);
 
+                await _vm.SaveStage("Finalise Budget");
+                await _vm.SaveStage("Create Budget");
+
+                ;
+
+                if (App.DefaultBudgetID != _vm.BudgetID)
+                {
+                    bool result = await Shell.Current.DisplayAlert("Change Default Budget?", "Do you want to make the newly created budget your default budget?", "Yes", "No");
+                    if (result)
+                    {
+                    
+                        await _pt.ChangeDefaultBudget(App.UserDetails.UserID, _vm.BudgetID, false);
+                    }
+                }
+
+                App.SessionLastUpdate = default(DateTime);
+    ;
+                await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=Budget Created&SnackID={_vm.BudgetID}");
+
+            }
+
+            //popup.Close();
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "FinaliseBudgetButton_Clicked");
         }
 
-        //popup.Close();
     }
 
     private void BackFinalBudgetButton_Clicked(object sender, EventArgs e)
     {
-        _vm.Stage = "Budget Extra Income";
-        UpdateStageDisplay();
+        try
+        {
+            _vm.Stage = "Budget Extra Income";
+            UpdateStageDisplay();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "BackFinalBudgetButton_Clicked");
+        }
     }
 
     private bool ValidateBudgetIncome()
@@ -785,114 +896,169 @@ public partial class CreateNewBudget : ContentPage
 
     private async void AddBillsNewBudget_Clicked(object sender, EventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}&NavigatedFrom=CreateNewBudget");
+            await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}&NavigatedFrom=CreateNewBudget");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "AddBillsNewBudget_Clicked");
+        }
     }
 
     private async void AddSavingsNewBudget_Clicked(object sender, EventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}&NavigatedFrom=CreateNewBudget");
+            await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}&NavigatedFrom=CreateNewBudget");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "AddSavingsNewBudget_Clicked");
+        }
     }
 
     private async void AddIncomeNewBudget_Clicked(object sender, EventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={0}&NavigatedFrom=CreateNewBudget");
+            await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={0}&NavigatedFrom=CreateNewBudget");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "AddIncomeNewBudget_Clicked");
+        }
     }
 
     private async void BankBalanceInfo(object sender, EventArgs e)
     {
-        List<string> SubTitle = new List<string>{
-            "",
-            "",
-            ""
-        };
+        try
+        {
+            List<string> SubTitle = new List<string>{
+                "",
+                "",
+                ""
+            };
 
-        List<string> Info = new List<string>{
-            "The amount of money you currently have available is known in the app as your BankBalance. If all your money was in one place, it would be the amount of money you would see when you open your banking app. Fortunately though we don't care where all your money is, you can have it in multiple places in real life we use just one number to make it easier to manage.",
-            "When you are creating your budget it is advisable to figure out exactly how much money you have to your name and use this figure, however you don't have to .. if you know better use a different figure. Whatever you input will be used to work out how much you have to spend daily until your next pay day.",
-            "It is also worth knowing that your BankBalance is not always what you have to spend, you have to take into account savings, bills and any other income!, We will use other terms along with Bank Balance to describe your budgets state - MaB (Money available Balance) & LtSB (Left to Spend Balance)"
-        };
+            List<string> Info = new List<string>{
+                "The amount of money you currently have available is known in the app as your BankBalance. If all your money was in one place, it would be the amount of money you would see when you open your banking app. Fortunately though we don't care where all your money is, you can have it in multiple places in real life we use just one number to make it easier to manage.",
+                "When you are creating your budget it is advisable to figure out exactly how much money you have to your name and use this figure, however you don't have to .. if you know better use a different figure. Whatever you input will be used to work out how much you have to spend daily until your next pay day.",
+                "It is also worth knowing that your BankBalance is not always what you have to spend, you have to take into account savings, bills and any other income!, We will use other terms along with Bank Balance to describe your budgets state - MaB (Money available Balance) & LtSB (Left to Spend Balance)"
+            };
 
-        var popup = new PopupInfo("Bank Balance", SubTitle, Info);
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var popup = new PopupInfo("Bank Balance", SubTitle, Info);
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "BankBalanceInfo");
+        }
     }
 
     void BankBalance_Changed(object sender, TextChangedEventArgs e)
     {
-
-        double BankBalance = _pt.FormatCurrencyNumber(e.NewTextValue);
-        entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entBankBalance.CursorPosition > position)
+        try
         {
-            entBankBalance.CursorPosition = entBankBalance.Text.Length;
+            double BankBalance = _pt.FormatCurrencyNumber(e.NewTextValue);
+            entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entBankBalance.CursorPosition > position)
+            {
+                entBankBalance.CursorPosition = entBankBalance.Text.Length;
+            }
+        }
+        catch (Exception ex)
+        {
+             _pt.HandleException(ex, "CreateNewBudget", "BankBalance_Changed");
         }
 
     }
     void PayAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        double PayAmount = _pt.FormatCurrencyNumber(e.NewTextValue);
-        entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entPayAmount.CursorPosition > position)
+        try
         {
-            entPayAmount.CursorPosition = entPayAmount.Text.Length;
+            double PayAmount = _pt.FormatCurrencyNumber(e.NewTextValue);
+            entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entPayAmount.CursorPosition > position)
+            {
+                entPayAmount.CursorPosition = entPayAmount.Text.Length;
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "PayAmount_Changed");
         }
     }
     private async void PayDayInfo(object sender, EventArgs e)
     {
-        List<string> SubTitle = new List<string>{
-            "",
-            "",
-            ""
-        };
+        try
+        {
+            List<string> SubTitle = new List<string>{
+                "",
+                "",
+                ""
+            };
 
-        List<string> Info = new List<string>{
-            "",
-            "",
-            ""
-        };
+            List<string> Info = new List<string>{
+                "",
+                "",
+                ""
+            };
 
-        var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "PayDayInfo");
+        }
     }
 
     private async void PayDetailsInfo(object sender, EventArgs e)
     {
-        List<string> SubTitle = new List<string>{
-            "",
-            "",
-            ""
-        };
+        try
+        {
+            List<string> SubTitle = new List<string>{
+                "",
+                "",
+                ""
+            };
 
-        List<string> Info = new List<string>{
-            "",
-            "",
-            ""
-        };
+            List<string> Info = new List<string>{
+                "",
+                "",
+                ""
+            };
 
-        var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "PayDetailsInfo");
+        }
     }
 
     private void UpdateSelectedOption(string option) 
@@ -1039,102 +1205,196 @@ public partial class CreateNewBudget : ContentPage
 
     private void Option1Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("Everynth");
+        try
+        {
+            UpdateSelectedOption("Everynth");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "Option1Select_Tapped");
+        }
     }
 
     private void Option2Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("WorkingDays");
+        try
+        {
+            UpdateSelectedOption("WorkingDays");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "Option2Select_Tapped");
+        }
     }
 
     private void Option3Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("OfEveryMonth");
+        try
+        {
+            UpdateSelectedOption("OfEveryMonth");
+
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "Option3Select_Tapped");
+        }
     }
 
     private void Option4Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("LastOfTheMonth");
+        try
+        {
+            UpdateSelectedOption("LastOfTheMonth");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "Option4Select_Tapped");
+        }
     }
 
     void EveryNthValue_Changed(object sender, TextChangedEventArgs e)
     {
-        Regex regex = new Regex(@"^\d+$");
-
-        if (e.NewTextValue != null && e.NewTextValue != "")
+        try
         {
-            if (!regex.IsMatch(e.NewTextValue))
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
             {
-                entEverynthValue.Text = e.OldTextValue;
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entEverynthValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entEverynthValue.Text = e.NewTextValue;
+                }
             }
-            else
-            {
-                entEverynthValue.Text = e.NewTextValue;
-            }
+
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "EveryNthValue_Changed");
         }
     }
 
     void WorkingDaysValue_Changed(object sender, TextChangedEventArgs e)
     {
-        Regex regex = new Regex(@"^\d+$");
-
-        if (e.NewTextValue != null && e.NewTextValue != "")
+        try
         {
-            if (!regex.IsMatch(e.NewTextValue))
+
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
             {
-                entWorkingDaysValue.Text = e.OldTextValue;
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entWorkingDaysValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entWorkingDaysValue.Text = e.NewTextValue;
+                }
             }
-            else
-            {
-                entWorkingDaysValue.Text = e.NewTextValue;
-            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "WorkingDaysValue_Changed");
         }
     }
     void OfEveryMonthValue_Changed(object sender, TextChangedEventArgs e)
     {
-        Regex regex = new Regex(@"^\d+$");
-
-        if (e.NewTextValue != null && e.NewTextValue != "")
+        try
         {
-            if (!regex.IsMatch(e.NewTextValue))
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
             {
-                entOfEveryMonthValue.Text = e.OldTextValue;
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entOfEveryMonthValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entOfEveryMonthValue.Text = e.NewTextValue;
+                }
             }
-            else
-            {
-                entOfEveryMonthValue.Text = e.NewTextValue;
-            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "OnAppearing");
         }
     }
 
     private void BillsYesSelect_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateBillsYesNo("Yes");
+        try
+        {
+            UpdateBillsYesNo("Yes");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "BillsYesSelect_Tapped");
+        }
     }
 
     private void BillsNoSelect_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateBillsYesNo("No");
+        try
+        {
+            UpdateBillsYesNo("No");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "BillsNoSelect_Tapped");
+        }        
     }
 
     private void SavingsYesSelect_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSavingsYesNo("Yes");
+        try
+        {
+            UpdateSavingsYesNo("Yes");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "SavingsYesSelect_Tapped");
+        }        
     }
 
     private void SavingsNoSelect_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSavingsYesNo("No");
+        try
+        {
+            UpdateSavingsYesNo("No");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "SavingsNoSelect_Tapped");
+        }
     }
 
     private void IncomeYesSelect_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateIncomeYesNo("Yes");
+        try
+        {
+            UpdateIncomeYesNo("Yes");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "SavingsNoSelect_Tapped");
+        }
     }
 
     private void IncomeNoSelect_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateIncomeYesNo("No");
+        try
+        {
+            UpdateIncomeYesNo("No");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "IncomeNoSelect_Tapped");
+        }
     }
 
     private void UpdateBillsYesNo(string option) 
@@ -1310,250 +1570,319 @@ public partial class CreateNewBudget : ContentPage
 
     private async void DeleteBudgetOutgoings_Tapped(object sender, TappedEventArgs e)
     {
-
-        var Bill = (Bills)e.Parameter;
-
-        bool result = await DisplayAlert("Bill", "Are you sure you want to delete your Outgoing " + Bill.BillName.ToString(), "Yes, continue", "Cancel");
-        if (result)
+        try
         {
-            string Result = _ds.DeleteBill(Bill.BillID).Result;
-            if(Result == "OK")
-            {
-                _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+            var Bill = (Bills)e.Parameter;
 
-                if (_vm.Budget.Bills.Count == 0)
+            bool result = await DisplayAlert("Bill", "Are you sure you want to delete your Outgoing " + Bill.BillName.ToString(), "Yes, continue", "Cancel");
+            if (result)
+            {
+                string Result = _ds.DeleteBill(Bill.BillID).Result;
+                if(Result == "OK")
                 {
-                    vslOutgoingList.IsVisible = false;
-                }
-            }            
+                    _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+
+                    if (_vm.Budget.Bills.Count == 0)
+                    {
+                        vslOutgoingList.IsVisible = false;
+                    }
+                }            
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "DeleteBudgetOutgoings_Tapped");
         }
     }
 
     private async void EditBudgetOutgoings_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            var Bill = (Bills)e.Parameter;
+
+            await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=CreateNewBudget");
         }
-
-        var Bill = (Bills)e.Parameter;
-
-        await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=CreateNewBudget");
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "EditBudgetOutgoings_Tapped");
+        }
     }
 
     private void OutgoingViewCell_Appearing(object sender, EventArgs e)
     {
-        var vcBill = (ViewCell)sender;
-        var Bill = (Bills)vcBill.BindingContext;        
-        Label Header = (Label)vcBill.FindByName("lblOutgoingheader");
-        Label Values = (Label)vcBill.FindByName("lblBillValues");
-        Label lblBillRegValues = (Label)vcBill.FindByName("lblBillRegValues");
-        Label lblBillCurrent = (Label)vcBill.FindByName("lblBillCurrent");
+        try
+        {
+            var vcBill = (ViewCell)sender;
+            var Bill = (Bills)vcBill.BindingContext;        
+            Label Header = (Label)vcBill.FindByName("lblOutgoingheader");
+            Label Values = (Label)vcBill.FindByName("lblBillValues");
+            Label lblBillRegValues = (Label)vcBill.FindByName("lblBillRegValues");
+            Label lblBillCurrent = (Label)vcBill.FindByName("lblBillCurrent");
 
-        lblBillRegValues.Text = String.Format("   {0:c} per day", Bill.RegularBillValue);
-        Values.Text = String.Format("/{0:c} ", Bill.BillAmount, Bill.RegularBillValue);
-        lblBillCurrent.Text = String.Format("{0:c}", Bill.BillCurrentBalance);
+            lblBillRegValues.Text = String.Format("   {0:c} per day", Bill.RegularBillValue);
+            Values.Text = String.Format("/{0:c} ", Bill.BillAmount, Bill.RegularBillValue);
+            lblBillCurrent.Text = String.Format("{0:c}", Bill.BillCurrentBalance);
 
-        if (Bill.BillType == "OfEveryMonth")
-        {
-            Header.Text = "Monthly Outgoing Added";
+            if (Bill.BillType == "OfEveryMonth")
+            {
+                Header.Text = "Monthly Outgoing Added";
+            }
+            else if(Bill.BillType == "Everynth")
+            {
+                Header.Text = "Every x " + Bill.BillDuration + " Outgoing Added";
+            }
+            else
+            {
+                Header.Text = "One-off Outgoing Added";
+            }
         }
-        else if(Bill.BillType == "Everynth")
+        catch (Exception ex)
         {
-            Header.Text = "Every x " + Bill.BillDuration + " Outgoing Added";
-        }
-        else
-        {
-            Header.Text = "One-off Outgoing Added";
+            _pt.HandleException(ex, "CreateNewBudget", "OutgoingViewCell_Appearing");
         }
     }
 
     private async void EditBudgetSavings_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            var Saving = (Savings)e.Parameter;
+
+            await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=CreateNewBudget");
         }
-
-        var Saving = (Savings)e.Parameter;
-
-        await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=CreateNewBudget");
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "EditBudgetSavings_Tapped");
+        }
     }
 
     private async void DeleteBudgetSavings_Tapped(object sender, TappedEventArgs e)
     {
-
-        var Saving = (Savings)e.Parameter;
-
-        bool result = await DisplayAlert("Savings", "Are you sure you want to delete your Saving " + Saving.SavingsName.ToString(), "Yes, continue", "Cancel");
-        if (result)
+        try
         {
-            string Result = _ds.DeleteSaving(Saving.SavingID).Result;
-            if (Result == "OK")
-            {
-                _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+            var Saving = (Savings)e.Parameter;
 
-                if (_vm.Budget.Savings.Count == 0)
+            bool result = await DisplayAlert("Savings", "Are you sure you want to delete your Saving " + Saving.SavingsName.ToString(), "Yes, continue", "Cancel");
+            if (result)
+            {
+                string Result = _ds.DeleteSaving(Saving.SavingID).Result;
+                if (Result == "OK")
                 {
-                    vslSavingList.IsVisible = false;
+                    _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+
+                    if (_vm.Budget.Savings.Count == 0)
+                    {
+                        vslSavingList.IsVisible = false;
+                    }
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "DeleteBudgetSavings_Tapped");
         }
     }
 
     private void SavingsViewCell_Appearing(object sender, EventArgs e)
     {
-        var vcSaving = (ViewCell)sender;
-        var Saving = (Savings)vcSaving.BindingContext;
-
-        Label lblSavingsheader = (Label)vcSaving.FindByName("lblSavingsheader");
-        Label lblSavingCurrent = (Label)vcSaving.FindByName("lblSavingCurrent");
-        Label lblSavingTarget = (Label)vcSaving.FindByName("lblSavingTarget");
-        Label lblSavingRegValues = (Label)vcSaving.FindByName("lblSavingRegValues");
-
-        if(Saving.SavingsType == "TargetDate")
+        try
         {
-            Image imgTargetDate = (Image)vcSaving.FindByName("imgTargetDate");
-            imgTargetDate.IsVisible = true;
+            var vcSaving = (ViewCell)sender;
+            var Saving = (Savings)vcSaving.BindingContext;
 
-            lblSavingsheader.Text = Saving.GoalDate.GetValueOrDefault().ToString("dd MMM yy") + " Savings Goal Added";
-            lblSavingCurrent.Text = String.Format("{0:c} / ", Saving.CurrentBalance);
-            lblSavingTarget.Text = String.Format("{0:c}    ", Saving.SavingsGoal);
-            lblSavingRegValues.Text = String.Format("{0:c}", Saving.RegularSavingValue);
+            Label lblSavingsheader = (Label)vcSaving.FindByName("lblSavingsheader");
+            Label lblSavingCurrent = (Label)vcSaving.FindByName("lblSavingCurrent");
+            Label lblSavingTarget = (Label)vcSaving.FindByName("lblSavingTarget");
+            Label lblSavingRegValues = (Label)vcSaving.FindByName("lblSavingRegValues");
 
-            lblSavingCurrent.IsVisible = true;
-            lblSavingTarget.IsVisible = true;
-            lblSavingRegValues.IsVisible = true;
-
-        }
-        else if (Saving.SavingsType == "TargetAmount")
-        {
-            Image imgTargetAmount = (Image)vcSaving.FindByName("imgTargetAmount");
-            imgTargetAmount.IsVisible = true;
-
-            lblSavingsheader.Text = String.Format("{0:c}", Saving.SavingsGoal) + " Savings Goal Added";
-            lblSavingCurrent.Text = String.Format("{0:c} / ", Saving.CurrentBalance);
-            lblSavingTarget.Text = String.Format("{0:c}    ", Saving.SavingsGoal);
-            if(Saving.IsDailySaving)
+            if(Saving.SavingsType == "TargetDate")
             {
+                Image imgTargetDate = (Image)vcSaving.FindByName("imgTargetDate");
+                imgTargetDate.IsVisible = true;
+
+                lblSavingsheader.Text = Saving.GoalDate.GetValueOrDefault().ToString("dd MMM yy") + " Savings Goal Added";
+                lblSavingCurrent.Text = String.Format("{0:c} / ", Saving.CurrentBalance);
+                lblSavingTarget.Text = String.Format("{0:c}    ", Saving.SavingsGoal);
                 lblSavingRegValues.Text = String.Format("{0:c}", Saving.RegularSavingValue);
+
+                lblSavingCurrent.IsVisible = true;
+                lblSavingTarget.IsVisible = true;
+                lblSavingRegValues.IsVisible = true;
+
+            }
+            else if (Saving.SavingsType == "TargetAmount")
+            {
+                Image imgTargetAmount = (Image)vcSaving.FindByName("imgTargetAmount");
+                imgTargetAmount.IsVisible = true;
+
+                lblSavingsheader.Text = String.Format("{0:c}", Saving.SavingsGoal) + " Savings Goal Added";
+                lblSavingCurrent.Text = String.Format("{0:c} / ", Saving.CurrentBalance);
+                lblSavingTarget.Text = String.Format("{0:c}    ", Saving.SavingsGoal);
+                if(Saving.IsDailySaving)
+                {
+                    lblSavingRegValues.Text = String.Format("{0:c}", Saving.RegularSavingValue);
+                }
+                else
+                {
+                    lblSavingRegValues.Text = String.Format("{0:c}", Saving.PeriodSavingValue);
+                }
+
+                lblSavingCurrent.IsVisible = true;
+                lblSavingTarget.IsVisible = true;
+                lblSavingRegValues.IsVisible = true;
+
+            }
+            else if (Saving.SavingsType == "SavingsBuilder")
+            {
+                Image imgSavingsBuilder = (Image)vcSaving.FindByName("imgSavingsBuilder");
+                imgSavingsBuilder.IsVisible = true;
+
+                lblSavingsheader.Text = "Builder Savings Goal Added";
+                lblSavingCurrent.Text = String.Format("{0:c}    ", Saving.CurrentBalance);
+                lblSavingRegValues.Text = String.Format("{0:c}", Saving.RegularSavingValue);
+
+                lblSavingCurrent.IsVisible = true;
+                lblSavingRegValues.IsVisible = true;
             }
             else
             {
+                Image imgEnvelope = (Image)vcSaving.FindByName("imgEnvelope");
+                imgEnvelope.IsVisible = true;
+                lblSavingsheader.Text = String.Format("{0:c}", Saving.PeriodSavingValue) + " Pay Period Saving Added";
+                lblSavingCurrent.Text = String.Format("{0:c}    ", Saving.CurrentBalance);
                 lblSavingRegValues.Text = String.Format("{0:c}", Saving.PeriodSavingValue);
+
+                lblSavingCurrent.IsVisible = true;
+                lblSavingRegValues.IsVisible = true;
             }
-
-            lblSavingCurrent.IsVisible = true;
-            lblSavingTarget.IsVisible = true;
-            lblSavingRegValues.IsVisible = true;
-
         }
-        else if (Saving.SavingsType == "SavingsBuilder")
+        catch (Exception ex)
         {
-            Image imgSavingsBuilder = (Image)vcSaving.FindByName("imgSavingsBuilder");
-            imgSavingsBuilder.IsVisible = true;
-
-            lblSavingsheader.Text = "Builder Savings Goal Added";
-            lblSavingCurrent.Text = String.Format("{0:c}    ", Saving.CurrentBalance);
-            lblSavingRegValues.Text = String.Format("{0:c}", Saving.RegularSavingValue);
-
-            lblSavingCurrent.IsVisible = true;
-            lblSavingRegValues.IsVisible = true;
-        }
-        else
-        {
-            Image imgEnvelope = (Image)vcSaving.FindByName("imgEnvelope");
-            imgEnvelope.IsVisible = true;
-            lblSavingsheader.Text = String.Format("{0:c}", Saving.PeriodSavingValue) + " Pay Period Saving Added";
-            lblSavingCurrent.Text = String.Format("{0:c}    ", Saving.CurrentBalance);
-            lblSavingRegValues.Text = String.Format("{0:c}", Saving.PeriodSavingValue);
-
-            lblSavingCurrent.IsVisible = true;
-            lblSavingRegValues.IsVisible = true;
+            _pt.HandleException(ex, "CreateNewBudget", "SavingsViewCell_Appearing");
         }
     }
 
     private void IncomesViewCell_Appearing(object sender, EventArgs e)
     {
-        var vcIncome = (ViewCell)sender;
-        var Income = (IncomeEvents)vcIncome.BindingContext;
-
-        Label lblIncomeheader = (Label)vcIncome.FindByName("lblIncomeheader");
-        Label lblIncomeAmount = (Label)vcIncome.FindByName("lblIncomeAmount");
-        Label lblIncomeDate = (Label)vcIncome.FindByName("lblIncomeDate");
-
-        if (Income.RecurringIncomeType == "OfEveryMonth")
+        try
         {
-            lblIncomeheader.Text = "Monthly Outgoing Added";
-        }
-        else if(Income.RecurringIncomeType == "Everynth")
-        {
-            lblIncomeheader.Text = "Every x " + Income.RecurringIncomeDuration + " Outgoing Added";
-        }
-        else
-        {
-            lblIncomeheader.Text = "One-off Income Added";
-        }
+            var vcIncome = (ViewCell)sender;
+            var Income = (IncomeEvents)vcIncome.BindingContext;
 
-        lblIncomeAmount.Text = string.Format("{0:c}     ",Income.IncomeAmount);
-        lblIncomeDate.Text = Income.DateOfIncomeEvent.ToString("dd MMM yy");
+            Label lblIncomeheader = (Label)vcIncome.FindByName("lblIncomeheader");
+            Label lblIncomeAmount = (Label)vcIncome.FindByName("lblIncomeAmount");
+            Label lblIncomeDate = (Label)vcIncome.FindByName("lblIncomeDate");
+
+            if (Income.RecurringIncomeType == "OfEveryMonth")
+            {
+                lblIncomeheader.Text = "Monthly Outgoing Added";
+            }
+            else if(Income.RecurringIncomeType == "Everynth")
+            {
+                lblIncomeheader.Text = "Every x " + Income.RecurringIncomeDuration + " Outgoing Added";
+            }
+            else
+            {
+                lblIncomeheader.Text = "One-off Income Added";
+            }
+
+            lblIncomeAmount.Text = string.Format("{0:c}     ",Income.IncomeAmount);
+            lblIncomeDate.Text = Income.DateOfIncomeEvent.ToString("dd MMM yy");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "IncomesViewCell_Appearing");
+        }
     }
 
     private async void EditBudgetIncome_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            var Income = (IncomeEvents)e.Parameter;
+
+            await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=CreateNewBudget");
         }
-
-        var Income = (IncomeEvents)e.Parameter;
-
-        await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=CreateNewBudget");
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "EditBudgetIncome_Tapped");
+        }
     }
 
     private async void DeleteBudgetIncome_Tapped(object sender, TappedEventArgs e)
     {
-        var Income = (IncomeEvents)e.Parameter;
-
-        bool result = await DisplayAlert("Income", "Are you sure you want to delete your Income " + Income.IncomeName.ToString(), "Yes, continue", "Cancel");
-        if (result)
+        try
         {
-            string Result = _ds.DeleteIncome(Income.IncomeEventID).Result;
-            if (Result == "OK")
-            {
-                _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+            var Income = (IncomeEvents)e.Parameter;
 
-                if (_vm.Budget.IncomeEvents.Count == 0)
+            bool result = await DisplayAlert("Income", "Are you sure you want to delete your Income " + Income.IncomeName.ToString(), "Yes, continue", "Cancel");
+            if (result)
+            {
+                string Result = _ds.DeleteIncome(Income.IncomeEventID).Result;
+                if (Result == "OK")
                 {
-                    vslIncomeList.IsVisible = false;
+                    _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+
+                    if (_vm.Budget.IncomeEvents.Count == 0)
+                    {
+                        vslIncomeList.IsVisible = false;
+                    }
                 }
             }
         }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "CreateNewBudget", "DeleteBudgetIncome_Tapped");
+        }
+
     }
 
     private void IsAcceptTerms_CheckChanged(object sender, CheckedChangedEventArgs e)
     {
-        Application.Current.Resources.TryGetValue("Success", out var Success);
-        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
-        Application.Current.Resources.TryGetValue("White", out var White);
+        try
+        {
+            Application.Current.Resources.TryGetValue("Success", out var Success);
+            Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-        if(chbxIsAcceptTerms.IsChecked)
-        {
-            brdIsAcceptTerms.BackgroundColor = (Color)Success;
-            hslIsAcceptTerms.BackgroundColor = (Color)Success;
-            lblIsAcceptTerms.TextColor = (Color)White;
+            if(chbxIsAcceptTerms.IsChecked)
+            {
+                brdIsAcceptTerms.BackgroundColor = (Color)Success;
+                hslIsAcceptTerms.BackgroundColor = (Color)Success;
+                lblIsAcceptTerms.TextColor = (Color)White;
+            }
+            else
+            {
+                brdIsAcceptTerms.BackgroundColor = (Color)White;
+                hslIsAcceptTerms.BackgroundColor = (Color)White;
+                lblIsAcceptTerms.TextColor = (Color)Gray900;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            brdIsAcceptTerms.BackgroundColor = (Color)White;
-            hslIsAcceptTerms.BackgroundColor = (Color)White;
-            lblIsAcceptTerms.TextColor = (Color)Gray900;
+            _pt.HandleException(ex, "CreateNewBudget", "IsAcceptTerms_CheckChanged");
         }
     }
 

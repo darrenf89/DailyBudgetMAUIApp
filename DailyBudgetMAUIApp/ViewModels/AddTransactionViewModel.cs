@@ -51,54 +51,62 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         public async void BackButton()
         {
-            if (string.Equals(RedirectTo, "ViewTransactions",StringComparison.OrdinalIgnoreCase))
+            try
             {
-                if (App.CurrentPopUp == null)
+                if (string.Equals(RedirectTo, "ViewTransactions",StringComparison.OrdinalIgnoreCase))
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                await Shell.Current.GoToAsync($"///{nameof(ViewTransactions)}");
-            }
-            else if (string.Equals(RedirectTo, "ViewSavings", StringComparison.OrdinalIgnoreCase))
-            {
-                if (App.CurrentPopUp == null)
+                    await Shell.Current.GoToAsync($"///{nameof(ViewTransactions)}");
+                }
+                else if (string.Equals(RedirectTo, "ViewSavings", StringComparison.OrdinalIgnoreCase))
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
-            }
-            else if (string.Equals(RedirectTo, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase))
-            {
-                if (App.CurrentPopUp == null)
+                    await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
+                }
+                else if (string.Equals(RedirectTo, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase))
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
-            }
-            else if (string.Equals(RedirectTo, "ViewMainPage", StringComparison.OrdinalIgnoreCase))
-            {
-                if (App.CurrentPopUp == null)
+                    await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
+                }
+                else if (string.Equals(RedirectTo, "ViewMainPage", StringComparison.OrdinalIgnoreCase))
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
+                await _pt.HandleException(ex, "AddTransaction", "BackButton");
             }
         }
+
     }
 }

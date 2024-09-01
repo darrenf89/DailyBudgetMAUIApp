@@ -35,75 +35,98 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
 
     private async void DeletePayee_Tapped(object sender, TappedEventArgs e)
     {
-        List<string> Payees = await _ds.GetPayeeList(App.DefaultBudgetID);
-        string[] PayeeList = Payees.ToArray();
-
-        var DeletePayee = await Application.Current.MainPage.DisplayActionSheet($"What Payee do you want to delete?", "Cancel", null, PayeeList);
-        if (DeletePayee == "Cancel")
+        try
         {
+            List<string> Payees = await _ds.GetPayeeList(App.DefaultBudgetID);
+            string[] PayeeList = Payees.ToArray();
 
-        }
-        else
-        {
-            Payees.Remove(DeletePayee);
-            PayeeList = Payees.ToArray();
-            var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
-            if (reassign == "Cancel")
+            var DeletePayee = await Application.Current.MainPage.DisplayActionSheet($"What Payee do you want to delete?", "Cancel", null, PayeeList);
+            if (DeletePayee == "Cancel")
             {
 
-            }
-            else if (reassign == "No")
-            {
-                await _ds.DeletePayee(App.DefaultBudgetID, DeletePayee, "");
-
-                if (App.CurrentBottomSheet != null)
-                {
-                    await App.CurrentBottomSheet.DismissAsync();
-                    App.CurrentBottomSheet = null;
-                }
-
-                await Application.Current.MainPage.DisplayAlert($"Payee Deleted", $"Congrats you have deleted {DeletePayee}, hopefully you meant to!", "Ok");
             }
             else
             {
-                await _ds.DeletePayee(App.DefaultBudgetID, DeletePayee, reassign);
-
-                if (App.CurrentBottomSheet != null)
+                Payees.Remove(DeletePayee);
+                PayeeList = Payees.ToArray();
+                var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
+                if (reassign == "Cancel")
                 {
-                    await App.CurrentBottomSheet.DismissAsync();
-                    App.CurrentBottomSheet = null;
-                }
 
-                await Application.Current.MainPage.DisplayAlert($"Category Deleted", $"Congrats you have deleted {DeletePayee} and reassigned its transactions to {reassign}, hopefully you meant to!", "Ok");
+                }
+                else if (reassign == "No")
+                {
+                    await _ds.DeletePayee(App.DefaultBudgetID, DeletePayee, "");
+
+                    if (App.CurrentBottomSheet != null)
+                    {
+                        await App.CurrentBottomSheet.DismissAsync();
+                        App.CurrentBottomSheet = null;
+                    }
+
+                    await Application.Current.MainPage.DisplayAlert($"Payee Deleted", $"Congrats you have deleted {DeletePayee}, hopefully you meant to!", "Ok");
+                }
+                else
+                {
+                    await _ds.DeletePayee(App.DefaultBudgetID, DeletePayee, reassign);
+
+                    if (App.CurrentBottomSheet != null)
+                    {
+                        await App.CurrentBottomSheet.DismissAsync();
+                        App.CurrentBottomSheet = null;
+                    }
+
+                    await Application.Current.MainPage.DisplayAlert($"Category Deleted", $"Congrats you have deleted {DeletePayee} and reassigned its transactions to {reassign}, hopefully you meant to!", "Ok");
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "EnvelopeOptionsBottomSheet", "DeletePayee_Tapped");
         }
     }
 
     private async void ViewPayeeList_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentBottomSheet != null)
+        try
         {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
+                if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+
+            await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={App.DefaultBudgetID}&PageType=ViewList");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "EnvelopeOptionsBottomSheet", "ViewPayeeList_Tapped");
         }
 
-        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={App.DefaultBudgetID}&PageType=ViewList");
     }
 
     private async void ViewPayees_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewPayees)}");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "EnvelopeOptionsBottomSheet", "ViewPayees_Tapped");
         }
 
-        if (App.CurrentBottomSheet != null)
-        {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
-        }
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewPayees)}");
     }
 }

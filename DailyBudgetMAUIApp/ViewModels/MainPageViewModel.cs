@@ -103,178 +103,240 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         async Task GoToAccountSettings(object obj)
         {
-            if (App.CurrentPopUp == null)
+            try
             {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(500);
+
+                EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()));
+
+                await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
             }
-
-            await Task.Delay(500);
-
-            EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-
-            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "GoToAccountSettings");
+            }
         }
 
         [RelayCommand]
         async Task GoToBudgetSettings(object obj)
         {
-            if (App.CurrentPopUp == null)
+            try
             {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(500);
+
+                EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()));
+
+                await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
             }
-
-            await Task.Delay(500);
-
-            EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-
-            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "GoToBudgetSettings");
+            }
         }
 
         [RelayCommand]
         async Task GoToAccountDetails(object obj)
         {
-            CrossMauiMTAdmob.Current.InitialiseAndShowConsentForm();
-
-            if (App.CurrentPopUp == null)
+            try
             {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                CrossMauiMTAdmob.Current.InitialiseAndShowConsentForm();
+
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(500);
+
+                EditAccountDetails page = new EditAccountDetails(new EditAccountDetailsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()));
+
+                await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
             }
-
-            await Task.Delay(500);
-
-            EditAccountDetails page = new EditAccountDetails(new EditAccountDetailsViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-
-            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "GoToAccountDetails");
+            }
 
         }
 
         [RelayCommand]
         async Task CreateNewBudget(object obj)
         {
-            var result = await Shell.Current.DisplayPromptAsync("Create a new budget?", "Before you start creating a new budget give it a name and then let's get going!", "Ok", "Cancel");
-            if (result != null)
+            try
             {
-
-                Budgets NewBudget = new Budgets();
-
-                if (!string.IsNullOrEmpty(result))
+                var result = await Shell.Current.DisplayPromptAsync("Create a new budget?", "Before you start creating a new budget give it a name and then let's get going!", "Ok", "Cancel");
+                if (result != null)
                 {
-                    NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email, "PremiumPlus");
 
-                    List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+                    Budgets NewBudget = new Budgets();
 
-                    PatchDoc BudgetName = new PatchDoc
+                    if (!string.IsNullOrEmpty(result))
                     {
-                        op = "replace",
-                        path = "/BudgetName",
-                        value = result
-                    };
+                        NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email, "PremiumPlus");
 
-                    BudgetUpdate.Add(BudgetName);
+                        List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
 
-                    await _ds.PatchBudget(NewBudget.BudgetID, BudgetUpdate);
-                    NewBudget.BudgetName = result;
+                        PatchDoc BudgetName = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/BudgetName",
+                            value = result
+                        };
+
+                        BudgetUpdate.Add(BudgetName);
+
+                        await _ds.PatchBudget(NewBudget.BudgetID, BudgetUpdate);
+                        NewBudget.BudgetName = result;
+
+                    }
+                    await _pt.ChangeDefaultBudget(App.UserDetails.UserID, NewBudget.BudgetID, false);
+                    App.DefaultBudgetID = NewBudget.BudgetID;
+                    App.DefaultBudget = NewBudget;
+                    App.HasVisitedCreatePage = true;
+
+                    if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                    {
+                        Preferences.Remove(nameof(App.DefaultBudgetID));
+                    }
+                    Preferences.Set(nameof(App.DefaultBudgetID), NewBudget.BudgetID);
+
+
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
 
                 }
-                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, NewBudget.BudgetID, false);
-                App.DefaultBudgetID = NewBudget.BudgetID;
-                App.DefaultBudget = NewBudget;
-                App.HasVisitedCreatePage = true;
-
-                if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
-                {
-                    Preferences.Remove(nameof(App.DefaultBudgetID));
-                }
-                Preferences.Set(nameof(App.DefaultBudgetID), NewBudget.BudgetID);
-
-
-                await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
-
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "CreateNewBudget");
             }
         }
 
         [RelayCommand]
         async Task NavigateCreateNewBudget()
         {
-            var page = new LoadingPage();
-            await Application.Current.MainPage.Navigation.PushModalAsync(page);
+            try
+            {
+                var page = new LoadingPage();
+                await Application.Current.MainPage.Navigation.PushModalAsync(page);
 
-            await Application.Current.MainPage.Navigation.PopModalAsync();
-            await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
+                await Application.Current.MainPage.Navigation.PopModalAsync();
+                await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "NavigateCreateNewBudget");
+            }
         }
 
 
         [RelayCommand]
         async Task SignOut()
         {
-            var page = new LoadingPage();
-            await Application.Current.MainPage.Navigation.PushModalAsync(page);
-
-            if (Preferences.ContainsKey(nameof(App.UserDetails)))
+            try
             {
-                Preferences.Remove(nameof(App.UserDetails));
-            }
+                var page = new LoadingPage();
+                await Application.Current.MainPage.Navigation.PushModalAsync(page);
 
-            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                if (Preferences.ContainsKey(nameof(App.UserDetails)))
+                {
+                    Preferences.Remove(nameof(App.UserDetails));
+                }
+
+                if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                {
+                    Preferences.Remove(nameof(App.DefaultBudgetID));
+                }
+
+                App.DefaultBudgetID = 0;
+                App.DefaultBudget = null;
+
+                Application.Current!.MainPage = new AppShell();
+
+                await Application.Current.MainPage.Navigation.PopModalAsync();
+                await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
+            }
+            catch (Exception ex)
             {
-                Preferences.Remove(nameof(App.DefaultBudgetID));
+                await _pt.HandleException(ex, "MainPage", "SignOut");
             }
-
-            App.DefaultBudgetID = 0;
-            App.DefaultBudget = null;
-
-            Application.Current!.MainPage = new AppShell();
-
-            await Application.Current.MainPage.Navigation.PopModalAsync();
-            await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
         }
 
         [RelayCommand]
         async Task RefreshPage()
         {
-            DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Full").Result;
+            try
+            {
+                DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Full").Result;
 
-            App.DefaultBudget = DefaultBudget;
-            IsBudgetCreated = App.DefaultBudget.IsCreated;
-            App.SessionLastUpdate = DateTime.UtcNow;
+                App.DefaultBudget = DefaultBudget;
+                IsBudgetCreated = App.DefaultBudget.IsCreated;
+                App.SessionLastUpdate = DateTime.UtcNow;
 
-            BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(App.DefaultBudgetID);
-            App.CurrentSettings = Settings;
+                BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(App.DefaultBudgetID);
+                App.CurrentSettings = Settings;
 
-            EnvelopeStats = new EnvelopeStats(DefaultBudget.Savings);
-            IsRefreshing = false;
-
+                EnvelopeStats = new EnvelopeStats(DefaultBudget.Savings);
+                IsRefreshing = false;
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "RefreshPage");
+            }
         }
 
         [RelayCommand]
         async Task SwapBudget()
         {
-            int PreviousBudgetID = _ds.GetUserDetailsAsync(App.UserDetails.Email).Result.PreviousDefaultBudgetID;
-            await _pt.ChangeDefaultBudget(App.UserDetails.UserID, PreviousBudgetID, true);
+            try
+            {
+                int PreviousBudgetID = _ds.GetUserDetailsAsync(App.UserDetails.Email).Result.PreviousDefaultBudgetID;
+                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, PreviousBudgetID, true);
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "SwapBudget");
+            }
         }
 
         [RelayCommand]
         async Task RecalculateBudget()
         {
-            if (App.CurrentPopUp == null)
+            try
             {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(500);
+
+                await _ds.ReCalculateBudget(App.DefaultBudgetID);
+                App.DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Full").Result;
+                DefaultBudget = App.DefaultBudget;
+                ReloadPage?.Invoke();
             }
-
-            await Task.Delay(500);
-
-            await _ds.ReCalculateBudget(App.DefaultBudgetID);
-            App.DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Full").Result;
-            DefaultBudget = App.DefaultBudget;
-            ReloadPage?.Invoke();
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "RecalculateBudget");
+            }
         }
 
     }

@@ -20,7 +20,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         async void GoToLandingPage()
         {
-            await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
+            await Shell.Current.GoToAsync($"//{nameof(LandingPage)}");
         }
     }
 }

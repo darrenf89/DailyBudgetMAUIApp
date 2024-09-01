@@ -58,135 +58,118 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public async void AddBill()
         {
-            try
+            Bill.BillBalanceAtLastPayDay = Bill.BillCurrentBalance;
+            string SuccessCheck = _ds.SaveNewBill(Bill,BudgetID).Result;
+            if(SuccessCheck == "OK")
             {
-                Bill.BillBalanceAtLastPayDay = Bill.BillCurrentBalance;
-                string SuccessCheck = _ds.SaveNewBill(Bill,BudgetID).Result;
-                if(SuccessCheck == "OK")
+                Bill.BillName = "";
+                Bill.BillPayee = "";
+                if (RedirectTo == "CreateNewBudget")
                 {
-                    Bill.BillName = "";
-                    Bill.BillPayee = "";
-                    if (RedirectTo == "CreateNewBudget")
+                    if (App.CurrentPopUp == null)
                     {
-                        if (App.CurrentPopUp == null)
-                        {
-                            var PopUp = new PopUpPage();
-                            App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
-                        }
-                        await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings", false);
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
                     }
-                    else if (RedirectTo == "ViewBills")
-                    {
-                        if (App.CurrentPopUp == null)
-                        {
-                            var PopUp = new PopUpPage();
-                            App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
-                        }
-
-                        await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
-                    }
-                    else
-                    {
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
-                    }
-                    
+                    await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings", false);
                 }
-            }
-            catch (Exception ex)
-            {
-                ErrorLog Error = _pt.HandleCatchedException(ex, "AddBill", "AddBill").Result;
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
+                else if (RedirectTo == "ViewBills")
+                {
+                    if (App.CurrentPopUp == null)
                     {
-                        ["Error"] = Error
-                    });
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
+
+                    await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
+                }
+                    
             }
         }
 
         public async void UpdateBill()
         {
-            try
+            if(Bill.BillCurrentBalance < Bill.BillBalanceAtLastPayDay)
             {
-                if(Bill.BillCurrentBalance < Bill.BillBalanceAtLastPayDay)
-                {
-                    Bill.BillBalanceAtLastPayDay = Bill.BillCurrentBalance;
-                }
-                string SuccessCheck = _ds.UpdateBill(Bill).Result;
-                if(SuccessCheck == "OK")
-                {
-                    Bill.BillName = "";
-                    Bill.BillPayee = "";
-                    if (RedirectTo == "CreateNewBudget")
-                    {
-                        if (App.CurrentPopUp == null)
-                        {
-                            var PopUp = new PopUpPage();
-                            App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
-                        }
-
-                        await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
-                    }
-                    else if (RedirectTo == "ViewBills")
-                    {
-                        if (App.CurrentPopUp == null)
-                        {
-                            var PopUp = new PopUpPage();
-                            App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
-                        }
-
-                        await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
-                    }
-                    else
-                    {
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
-                    }
-                }
+                Bill.BillBalanceAtLastPayDay = Bill.BillCurrentBalance;
             }
-            catch (Exception ex)
+            string SuccessCheck = _ds.UpdateBill(Bill).Result;
+            if(SuccessCheck == "OK")
             {
-                ErrorLog Error = _pt.HandleCatchedException(ex, "AddBill", "UpdateBill").Result;
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
+                Bill.BillName = "";
+                Bill.BillPayee = "";
+                if (RedirectTo == "CreateNewBudget")
+                {
+                    if (App.CurrentPopUp == null)
                     {
-                        ["Error"] = Error
-                    });
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
+
+                    await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                }
+                else if (RedirectTo == "ViewBills")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
+
+                    await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
+                }
             }
         }
 
         [RelayCommand]
         public async Task BackButton()
         {
-            Bill.BillName = "";
-            Bill.BillPayee = "";
-            if (RedirectTo == "CreateNewBudget")
+            try
             {
-                if (App.CurrentPopUp == null)
+                Bill.BillName = "";
+                Bill.BillPayee = "";
+                if (RedirectTo == "CreateNewBudget")
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
-            }
-            else if (RedirectTo == "ViewBills")
-            {
-                if (App.CurrentPopUp == null)
+                    await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                }
+                else if (RedirectTo == "ViewBills")
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
 
-                await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
+                    await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                await _pt.HandleException(ex, "AddBill", "BackButton");
             }
         }
 
@@ -209,13 +192,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($" --> {ex.Message}");
-                ErrorLog Error = _pt.HandleCatchedException(ex, "CreateNewBudget", "Constructor").Result;
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
-                    {
-                        ["Error"] = Error
-                    });
+                await _pt.HandleException(ex, "AddBill", "ChangeBillName");
             }
         }
 

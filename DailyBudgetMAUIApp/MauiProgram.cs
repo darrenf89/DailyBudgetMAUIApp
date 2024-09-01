@@ -86,6 +86,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EditBudgetSettings>();
         builder.Services.AddTransient<EditAccountSettings>();
         builder.Services.AddTransient<EditAccountDetails>();
+        builder.Services.AddTransient<NoNetworkAccess>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();
@@ -116,6 +117,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EditBudgetSettingsViewModel>();
         builder.Services.AddTransient<EditAccountSettingsViewModel>();
         builder.Services.AddTransient<EditAccountDetailsViewModel>();
+        builder.Services.AddTransient<NoNetworkAccessViewModel>();
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();
@@ -132,6 +134,7 @@ public static class MauiProgram
         builder.Services.AddTransient<PopupMoveBalance, PopupMoveBalanceViewModel>();
         builder.Services.AddTransient<LoadingPage>();
         builder.Services.AddTransient<LoadingPageTwo>();
+        builder.Services.AddTransient<PopUpNoNetwork>();
 
         //BottomSheets
         builder.Services.AddTransient<ViewTransactionFilterBottomSheet>();

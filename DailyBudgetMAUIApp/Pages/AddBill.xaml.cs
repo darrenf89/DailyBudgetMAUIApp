@@ -35,108 +35,115 @@ public partial class AddBill : ContentPage
 
     async protected override void OnAppearing()
     {
-        base.OnAppearing();
-
-        if (string.IsNullOrEmpty(_vm.NavigatedFrom))
+        try
         {
-            _vm.Bill = null;
-            _vm.BillID = 0;
-            _vm.BillPayee = "";
-            _vm.BillCategory = "";
-            _vm.RedirectTo = "";
-            _vm.BillName = "";
+            base.OnAppearing();
 
-            SelectBillType.IsVisible = true;
-            BillTypeSelected.IsVisible = false;
-            lblSelectedBillTitle.Text = "";
-            lblSelectedBillParaOne.Text = "";
-            lblSelectedBillParaTwo.Text = "";
-
-            brdBillDetails.IsVisible = false;
-            vslBillDetails.IsVisible = false;
-            brdBillTypes.IsVisible = false;
-
-            UpdateSelectedOption("");
-
-            _vm.BillRecurringText = "";
-        }
-        else if(string.Equals(_vm.NavigatedFrom, "ViewBillsNew", StringComparison.OrdinalIgnoreCase))
-        {
-            _vm.Bill = null;
-            _vm.BillID = 0;
-            _vm.RedirectTo = "ViewBills";
-            _vm.BillName = "";
-            _vm.BillPayee = "";
-            _vm.BillCategory = "";
-        }
-        else if (string.Equals(_vm.NavigatedFrom, "CreateNewBudget", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewBills", StringComparison.OrdinalIgnoreCase))
-        {
-            _vm.RedirectTo = _vm.NavigatedFrom;
-        }
-
-        if (_vm.BudgetID == 0)
-        {
-            _vm.BudgetID = App.DefaultBudgetID;
-        }
-
-        if (_vm.BillID == 0)
-        {
-            if(_vm.Bill == null)
+            if (string.IsNullOrEmpty(_vm.NavigatedFrom))
             {
-                _vm.Bill = new Bills();
-                _vm.Bill.BillPayee = "";
-                _vm.Bill.BillName = "";
-                _vm.Title = "Add a New Outgoing";
-                btnAddBill.IsVisible = true;
-            }   
+                _vm.Bill = null;
+                _vm.BillID = 0;
+                _vm.BillPayee = "";
+                _vm.BillCategory = "";
+                _vm.RedirectTo = "";
+                _vm.BillName = "";
+
+                SelectBillType.IsVisible = true;
+                BillTypeSelected.IsVisible = false;
+                lblSelectedBillTitle.Text = "";
+                lblSelectedBillParaOne.Text = "";
+                lblSelectedBillParaTwo.Text = "";
+
+                brdBillDetails.IsVisible = false;
+                vslBillDetails.IsVisible = false;
+                brdBillTypes.IsVisible = false;
+
+                UpdateSelectedOption("");
+
+                _vm.BillRecurringText = "";
+            }
+            else if(string.Equals(_vm.NavigatedFrom, "ViewBillsNew", StringComparison.OrdinalIgnoreCase))
+            {
+                _vm.Bill = null;
+                _vm.BillID = 0;
+                _vm.RedirectTo = "ViewBills";
+                _vm.BillName = "";
+                _vm.BillPayee = "";
+                _vm.BillCategory = "";
+            }
+            else if (string.Equals(_vm.NavigatedFrom, "CreateNewBudget", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewBills", StringComparison.OrdinalIgnoreCase))
+            {
+                _vm.RedirectTo = _vm.NavigatedFrom;
+            }
+
+            if (_vm.BudgetID == 0)
+            {
+                _vm.BudgetID = App.DefaultBudgetID;
+            }
+
+            if (_vm.BillID == 0)
+            {
+                if(_vm.Bill == null)
+                {
+                    _vm.Bill = new Bills();
+                    _vm.Bill.BillPayee = "";
+                    _vm.Bill.BillName = "";
+                    _vm.Title = "Add a New Outgoing";
+                    btnAddBill.IsVisible = true;
+                }   
+                else
+                {
+                    _vm.Title = "Add a New Outgoing";
+                    btnAddBill.IsVisible = true;
+
+                    LoadExistingBill();
+                }
+            }
             else
             {
-                _vm.Title = "Add a New Outgoing";
-                btnAddBill.IsVisible = true;
+                if(_vm.Bill is null)
+                {
+                    _vm.Bill = _ds.GetBillFromID(_vm.BillID).Result;
+                }
+                _vm.Title = $"Update Outgoing {_vm.Bill.BillName}";
+                btnUpdateBill.IsVisible = true;
 
                 LoadExistingBill();
             }
-        }
-        else
-        {
-            if(_vm.Bill is null)
-            {
-                _vm.Bill = _ds.GetBillFromID(_vm.BillID).Result;
-            }
-            _vm.Title = $"Update Outgoing {_vm.Bill.BillName}";
-            btnUpdateBill.IsVisible = true;
 
-            LoadExistingBill();
-        }
+            double AmountDue = (double?)_vm.Bill.BillAmount ?? 0;
+            entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
 
-        double AmountDue = (double?)_vm.Bill.BillAmount ?? 0;
-        entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
+            double CurrentSaved = (double?)_vm.Bill.BillCurrentBalance ?? 0;
+            entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
 
-        double CurrentSaved = (double?)_vm.Bill.BillCurrentBalance ?? 0;
-        entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
-
-        double RegularValue = (double?)_vm.Bill.RegularBillValue ?? 0;
-        lblRegularBillValue.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);  
+            double RegularValue = (double?)_vm.Bill.RegularBillValue ?? 0;
+            lblRegularBillValue.Text = RegularValue.ToString("c", CultureInfo.CurrentCulture);  
         
-        if(!string.IsNullOrEmpty(_vm.Bill.BillName))
-        {
-            _vm.BillName = _vm.Bill.BillName;
-        }
+            if(!string.IsNullOrEmpty(_vm.Bill.BillName))
+            {
+                _vm.BillName = _vm.Bill.BillName;
+            }
 
-        if (!string.IsNullOrEmpty(_vm.Bill.BillPayee))
-        {
-            _vm.BillPayee = _vm.Bill.BillPayee;
-        }
+            if (!string.IsNullOrEmpty(_vm.Bill.BillPayee))
+            {
+                _vm.BillPayee = _vm.Bill.BillPayee;
+            }
 
-        if (!string.IsNullOrEmpty(_vm.Bill.Category))
-        {
-            _vm.BillCategory = _vm.Bill.Category;
-        }
+            if (!string.IsNullOrEmpty(_vm.Bill.Category))
+            {
+                _vm.BillCategory = _vm.Bill.Category;
+            }
 
-        if (App.CurrentPopUp != null)
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
+        }
+        catch (Exception ex)
         {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            await _pt.HandleException(ex, "AddBill", "OnAppearing");
         }
     }
 
@@ -174,88 +181,137 @@ public partial class AddBill : ContentPage
 
     private void btnRecurringBill_Clicked(object sender, EventArgs e)
     {
-        ClearAllValidators();
+        try
+        {
+            ClearAllValidators();
 
-        _vm.Bill.IsRecuring = true;
+            _vm.Bill.IsRecuring = true;
 
-        SelectBillType.IsVisible = false;
-        BillTypeSelected.IsVisible = true;
-        lblSelectedBillTitle.Text = "You are adding a recurring outgoing";
-        lblSelectedBillParaOne.Text = "For most of your bills! Phone, car, Netflix, the list goes on ...";
-        lblSelectedBillParaTwo.Text = "Tell us how much, when the next bill is due and how often it occurs";
+            SelectBillType.IsVisible = false;
+            BillTypeSelected.IsVisible = true;
+            lblSelectedBillTitle.Text = "You are adding a recurring outgoing";
+            lblSelectedBillParaOne.Text = "For most of your bills! Phone, car, Netflix, the list goes on ...";
+            lblSelectedBillParaTwo.Text = "Tell us how much, when the next bill is due and how often it occurs";
 
-        brdBillDetails.IsVisible = true;
-        vslBillDetails.IsVisible = true;
-        brdBillTypes.IsVisible = true;
+            brdBillDetails.IsVisible = true;
+            vslBillDetails.IsVisible = true;
+            brdBillTypes.IsVisible = true;
 
-        _vm.BillRecurringText = "Recurring";
+            _vm.BillRecurringText = "Recurring";
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddBill", "btnRecurringBill_Clicked");
+        }
     }
     private void btnOneoffBill_Clicked(object sender, EventArgs e)
     {
-        ClearAllValidators();
+        try
+        {
+            ClearAllValidators();
 
-        _vm.Bill.IsRecuring = false;
+            _vm.Bill.IsRecuring = false;
 
-        SelectBillType.IsVisible = false;
-        BillTypeSelected.IsVisible = true;
-        lblSelectedBillTitle.Text = "You are adding a one off outgoing";
-        lblSelectedBillParaOne.Text = "For those one off bills, owe someone money?";
-        lblSelectedBillParaTwo.Text = "Tell us how much and when the bill is due";
+            SelectBillType.IsVisible = false;
+            BillTypeSelected.IsVisible = true;
+            lblSelectedBillTitle.Text = "You are adding a one off outgoing";
+            lblSelectedBillParaOne.Text = "For those one off bills, owe someone money?";
+            lblSelectedBillParaTwo.Text = "Tell us how much and when the bill is due";
 
-        brdBillDetails.IsVisible = true;
-        vslBillDetails.IsVisible = true;
-        brdBillTypes.IsVisible = false;
+            brdBillDetails.IsVisible = true;
+            vslBillDetails.IsVisible = true;
+            brdBillTypes.IsVisible = false;
 
-        _vm.BillRecurringText = "OneOff";
+            _vm.BillRecurringText = "OneOff";
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddBill", "btnOneoffBill_Clicked");
+        }
     }
 
     void AmountDue_Changed(object sender, TextChangedEventArgs e)
     {
-        ClearAllValidators();
-
-        decimal AmountDue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entAmountDue.CursorPosition > position)
+        try
         {
-            entAmountDue.CursorPosition = entAmountDue.Text.Length;
-        }
-        _vm.Bill.BillAmount = AmountDue;
+            ClearAllValidators();
 
-        lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
+            decimal AmountDue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entAmountDue.CursorPosition > position)
+            {
+                entAmountDue.CursorPosition = entAmountDue.Text.Length;
+            }
+            _vm.Bill.BillAmount = AmountDue;
+
+            lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddBill", "AmountDue_Changed");
+        }
     }
 
     void CurrentSaved_Changed(object sender, TextChangedEventArgs e)
     {
-        ClearAllValidators();
-
-        decimal CurrentSaved = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrentSaved.CursorPosition > position)
+        try
         {
-            entCurrentSaved.CursorPosition = entCurrentSaved.Text.Length;
-        }
-        _vm.Bill.BillCurrentBalance = CurrentSaved;
+            ClearAllValidators();
 
-        lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
+            decimal CurrentSaved = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrentSaved.CursorPosition > position)
+            {
+                entCurrentSaved.CursorPosition = entCurrentSaved.Text.Length;
+            }
+            _vm.Bill.BillCurrentBalance = CurrentSaved;
+
+            lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddBill", "OnAppearing");
+        }
     }
 
     private void dtpckBillDueDate_DateSelected(object sender, DateChangedEventArgs e)
     {
-        ClearAllValidators();
+        try
+        {
+            ClearAllValidators();
 
-        lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
+            lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddBill", "dtpckBillDueDate_DateSelected");
+        }
     }
 
     private void Option1Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("Everynth");
+        try
+        {
+            UpdateSelectedOption("Everynth");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddBill", "Option1Select_Tapped");
+        }
     }
 
     private void Option2Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("OfEveryMonth");
+        try
+        {
+            UpdateSelectedOption("OfEveryMonth");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddBill", "Option2Select_Tapped");
+        }
     }
 
     private void UpdateSelectedOption(string option)
@@ -353,39 +409,54 @@ public partial class AddBill : ContentPage
 
     void OfEveryMonthValue_Changed(object sender, TextChangedEventArgs e)
     {
-        Regex regex = new Regex(@"^\d+$");
-
-        if (e.NewTextValue != null && e.NewTextValue != "")
+        try
         {
-            if (!regex.IsMatch(e.NewTextValue))
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
             {
-                entOfEveryMonthValue.Text = e.OldTextValue;
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entOfEveryMonthValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entOfEveryMonthValue.Text = e.NewTextValue;
+                }
             }
-            else
-            {
-                entOfEveryMonthValue.Text = e.NewTextValue;
-            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddBill", "OfEveryMonthValue_Changed");
         }
     }
 
     void EveryNthValue_Changed(object sender, TextChangedEventArgs e)
     {
-        Regex regex = new Regex(@"^\d+$");
-
-        if (e.NewTextValue != null && e.NewTextValue != "")
+        try
         {
-            if (!regex.IsMatch(e.NewTextValue))
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
             {
-                entEverynthValue.Text = e.OldTextValue;
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entEverynthValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entEverynthValue.Text = e.NewTextValue;
+                }
             }
-            else
-            {
-                entEverynthValue.Text = e.NewTextValue;
-            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddBill", "EveryNthValue_Changed");
         }
     }
     private async Task<string> ChangeBillName()
     {
+
         string Description = "Every outgoing needs a name, we will refer to it by the name you give it and will make it easier to identify!";
         string DescriptionSub = "Call it something useful or call it something silly up to you really!";
         var popup = new PopUpPageSingleInput("Outgoing Name", Description, DescriptionSub, "Enter an outgoing name!", _vm.Bill.BillName, new PopUpPageSingleInputViewModel());
@@ -400,91 +471,117 @@ public partial class AddBill : ContentPage
     }
     private async void AddBill_Clicked(object sender, EventArgs e)
     {
-
-        if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+        try
         {
-            string status = await ChangeBillName();
-        }
+            if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+            {
+                string status = await ChangeBillName();
+            }
 
-        if (ValidateBillDetails())
+            if (ValidateBillDetails())
+            {
+                SaveBillTypeOptions();
+
+                _vm.AddBill();
+            }
+        }
+        catch (Exception ex)
         {
-            SaveBillTypeOptions();
-
-            _vm.AddBill();
+            await _pt.HandleException(ex, "AddBill", "AddBill_Clicked");
         }
-
     }
     private async void UpdateBill_Clicked(object sender, EventArgs e)
     {
-        if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+        try
         {
-            string status = await ChangeBillName();
+            if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+            {
+                string status = await ChangeBillName();
+            }
+
+            if (ValidateBillDetails())
+            {
+                SaveBillTypeOptions();
+
+                _vm.UpdateBill();
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddBill", "UpdateBill_Clicked");
         }
 
-        if (ValidateBillDetails())
-        {
-            SaveBillTypeOptions();
-
-            _vm.UpdateBill();
-        }
     }
 
     private async void SaveBill_Clicked(object sender, EventArgs e)
     {
-
-        if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+        try
         {
-            string status = await ChangeBillName();
+            if (_vm.Bill.BillName == "" || _vm.Bill.BillName == null)
+            {
+                string status = await ChangeBillName();
+            }
+
+            if (ValidateBillDetails())
+            {
+                SaveBillTypeOptions();
+
+                if(_vm.BillID == 0)
+                {
+                    _vm.AddBill();
+                }
+                else
+                {
+                    _vm.UpdateBill();
+                }
+            }
         }
-
-        if (ValidateBillDetails())
+        catch (Exception ex)
         {
-            SaveBillTypeOptions();
-
-            if(_vm.BillID == 0)
-            {
-                _vm.AddBill();
-            }
-            else
-            {
-                _vm.UpdateBill();
-            }
+            await _pt.HandleException(ex, "AddBill", "SaveBill_Clicked");
         }
     }
 
     private async void ResetBill_Clicked(object sender, EventArgs e)
     {
-        bool result = await DisplayAlert("Outgoing Reset", "Are you sure you want to Reset " + _vm.Bill.BillName , "Yes, continue", "Cancel");
-        if (result)
+        try
         {
-            SelectBillType.IsVisible = true;
-            BillTypeSelected.IsVisible = false;
-            lblSelectedBillTitle.Text = "";
-            lblSelectedBillParaOne.Text = "";
-            lblSelectedBillParaTwo.Text = "";
+            bool result = await DisplayAlert("Outgoing Reset", "Are you sure you want to Reset " + _vm.Bill.BillName , "Yes, continue", "Cancel");
+            if (result)
+            {
+                SelectBillType.IsVisible = true;
+                BillTypeSelected.IsVisible = false;
+                lblSelectedBillTitle.Text = "";
+                lblSelectedBillParaOne.Text = "";
+                lblSelectedBillParaTwo.Text = "";
 
-            brdBillDetails.IsVisible = false;
-            vslBillDetails.IsVisible = false;
-            brdBillTypes.IsVisible = false;
+                brdBillDetails.IsVisible = false;
+                vslBillDetails.IsVisible = false;
+                brdBillTypes.IsVisible = false;
 
-            UpdateSelectedOption("");
+                UpdateSelectedOption("");
 
-            double AmountDue = (double) 0;
-            entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
+                double AmountDue = (double) 0;
+                entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
 
-            double CurrentSaved = (double) 0;
-            entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
+                double CurrentSaved = (double) 0;
+                entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
 
-            _vm.Bill.RegularBillValue = 0;
-            _vm.Bill.BillDueDate = _vm.MinimumDate;
-            _vm.BillRecurringText = "";
+                _vm.Bill.RegularBillValue = 0;
+                _vm.Bill.BillDueDate = _vm.MinimumDate;
+                _vm.BillRecurringText = "";
 
-            _vm.Bill.BillType = "";
-            _vm.BillPayee = "";
-            _vm.BillCategory = "";
+                _vm.Bill.BillType = "";
+                _vm.BillPayee = "";
+                _vm.BillCategory = "";
 
-            SaveBillTypeOptions();
+                SaveBillTypeOptions();
 
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddBill", "ResetBill_Clicked");
         }
     }
     private bool ValidateBillDetails()
@@ -598,19 +695,26 @@ public partial class AddBill : ContentPage
 
     private async void SelectPayee_Tapped(object sender, TappedEventArgs e)
     {
-        HideKeyBoard();
-
-        SaveBillTypeOptions();
-
-        if (_vm.Bill.BillPayee is null)
+        try
         {
-            _vm.Bill.BillPayee = "";
-        }
-        await Shell.Current.GoToAsync($"/{nameof(SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
-            new Dictionary<string, object>
+            HideKeyBoard();
+
+            SaveBillTypeOptions();
+
+            if (_vm.Bill.BillPayee is null)
             {
-                ["Bill"] = _vm.Bill
-            });
+                _vm.Bill.BillPayee = "";
+            }
+            await Shell.Current.GoToAsync($"/{nameof(SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
+                new Dictionary<string, object>
+                {
+                    ["Bill"] = _vm.Bill
+                });
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddBill", "SelectPayee_Tapped");
+        }
     }
 
     private void HideKeyBoard()
@@ -627,19 +731,27 @@ public partial class AddBill : ContentPage
 
     private async void SelectCategory_Tapped(object sender, TappedEventArgs e)
     {
-        HideKeyBoard();
-
-        SaveBillTypeOptions();
-
-        if (_vm.Bill.Category is null)
+        try
         {
-            _vm.Bill.Category = "";
-        }
 
-        await Shell.Current.GoToAsync($"/{nameof(SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
-            new Dictionary<string, object>
+            HideKeyBoard();
+
+            SaveBillTypeOptions();
+
+            if (_vm.Bill.Category is null)
             {
-                ["Bill"] = _vm.Bill
-            });
+                _vm.Bill.Category = "";
+            }
+
+            await Shell.Current.GoToAsync($"/{nameof(SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
+                new Dictionary<string, object>
+                {
+                    ["Bill"] = _vm.Bill
+                });
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddBill", "SelectCategory_Tapped");
+        }
     }
 }

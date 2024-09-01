@@ -71,18 +71,17 @@ namespace DailyBudgetMAUIApp.ViewModels
             SFListHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 389;
 
             Title = $"Check Your Transactions {App.UserDetails.NickName}";
-
             Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
             RunningTotal = Budget.BankBalance.GetValueOrDefault();
             BalanceAfterPending = Budget.BankBalance.GetValueOrDefault();
             MaxNumberOfTransactions = Budget.AccountInfo.NumberOfTransactions;
 
             List<Transactions> LoadTransactions = new List<Transactions>();
-            LoadTransactions = _ds.GetCurrentPayPeriodTransactions(App.DefaultBudgetID, "ViewTransactions").Result;    
-            
-            foreach(Transactions T in LoadTransactions)
+            LoadTransactions = _ds.GetCurrentPayPeriodTransactions(App.DefaultBudgetID, "ViewTransactions").Result;
+
+            foreach (Transactions T in LoadTransactions)
             {
-                if(!T.IsTransacted)
+                if (!T.IsTransacted)
                 {
                     T.RunningTotal = 0;
                     if (T.IsIncome)
@@ -97,7 +96,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 else
                 {
                     T.RunningTotal = RunningTotal;
-                    if(T.IsIncome)
+                    if (T.IsIncome)
                     {
                         RunningTotal -= T.TransactionAmount.GetValueOrDefault();
                     }
@@ -114,8 +113,8 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             LoadChartData(LoadTransactions);
             LoadChartBrushed();
-
         }
+
 
         private void LoadChartBrushed()
         {
@@ -239,15 +238,22 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         async void LoadMoreItems(object obj)
         {
-            if(Transactions.Count() < MaxNumberOfTransactions)
+            try
             {
-                var listView = obj as Syncfusion.Maui.ListView.SfListView;
-                listView.IsLazyLoading = true;
-                await Task.Delay(2000);
+                if (Transactions.Count() < MaxNumberOfTransactions)
+                {
+                    var listView = obj as Syncfusion.Maui.ListView.SfListView;
+                    listView.IsLazyLoading = true;
+                    await Task.Delay(2000);
 
-                await LoadMoreTransactions();
+                    await LoadMoreTransactions();
 
-                listView.IsLazyLoading = false;
+                    listView.IsLazyLoading = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewTransactions", "LoadMoreItems");
             }
         }
 

@@ -6,7 +6,6 @@ using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Newtonsoft.Json;
-using System.Diagnostics;
 using DailySpendWebApp.Models;
 
 
@@ -85,28 +84,35 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         async void ResetPassword()
         {
-            await ResetSuccessFailureMessage();
-
-            var popup = new PopUpOTP(0, new PopUpOTPViewModel(new RestDataService()), "ResetPassword", new ProductTools(new RestDataService()), new RestDataService());
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
-
-            if((string)result.ToString() == "OK")
+            try
             {
-                ResetPasswordSuccess = true;
-            }
-            else
-            {
-                ResetPasswordFail = true;
-            }
+                await ResetSuccessFailureMessage();
 
+                var popup = new PopUpOTP(0, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ResetPassword", new ProductTools(new RestDataService()), new RestDataService());
+                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+                if((string)result.ToString() == "OK")
+                {
+                    ResetPasswordSuccess = true;
+                }
+                else
+                {
+                    ResetPasswordFail = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "LogonPage", "ResetPassword");
+            }
         }
 
         [RelayCommand]
         async void Login()
         {
-            await ResetSuccessFailureMessage();
             try
             {
+                await ResetSuccessFailureMessage();
+
                 if (!PageIsValid())
                 {
                     return;
@@ -126,7 +132,11 @@ namespace DailyBudgetMAUIApp.ViewModels
                         UserDetailsModel userDetails = new UserDetailsModel();
 
                         string salt = await _ds.GetUserSaltAsync(Email);
-                        
+                        if (salt is null)
+                        {
+                            return;
+                        }
+
                         switch (salt)
                         {
                             case "User not found":
@@ -165,7 +175,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 string status = await _ds.CreateNewOtpCode(userDetails.UserID, "ValidateEmail");
                                                 if (status == "OK" || status == "MaxLimit")
                                                 {
-                                                    var popup = new PopUpOTP(userDetails.UserID, new PopUpOTPViewModel(new RestDataService()), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
+                                                    var popup = new PopUpOTP(userDetails.UserID, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
                                                     var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
                                                     if ((string)result.ToString() == "OK")
@@ -254,20 +264,12 @@ namespace DailyBudgetMAUIApp.ViewModels
                     App.CurrentPopUp = null;
                     await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                 }
-
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($" --> {ex.Message}");
-                ErrorLog Error = await _pt.HandleCatchedException(ex, "LogonPage", "Login");
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
-                    {
-                        ["Error"] = Error
-                    });
+                await _pt.HandleException(ex, "LogonPage", "Login");
             }
-        }
-        
+        }        
 
     }
 }

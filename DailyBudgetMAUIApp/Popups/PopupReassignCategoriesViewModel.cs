@@ -9,6 +9,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class PopupReassignCategoriesViewModel : BaseViewModel
     {
         private readonly IRestDataService _ds;
+        private readonly IProductTools _pt;
 
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -30,7 +31,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private List<string> ddlCategories = new List<string>();
 
-        public PopupReassignCategoriesViewModel(Dictionary<string, int> InputReAssignCategories, int InputHeaderCatID, List<Categories> InputCategories, IRestDataService ds)
+        public PopupReassignCategoriesViewModel(Dictionary<string, int> InputReAssignCategories, int InputHeaderCatID, List<Categories> InputCategories, IRestDataService ds, IProductTools pt)
         {
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             MaxHeight = ScreenHeight * 0.4;
@@ -46,6 +47,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             HeaderCatID = InputHeaderCatID;
 
             _ds = ds;
+            _pt = pt;
 
             ReAssignCategories.Add("Do not reassign", 0);
             
@@ -57,7 +59,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public async Task DeleteCategory(Categories Cat, int ReAssignID, bool IsReAssign)
         {
-            await _ds.DeleteCategory(Cat.CategoryID, IsReAssign, ReAssignID);
+            try
+            {
+                await _ds.DeleteCategory(Cat.CategoryID, IsReAssign, ReAssignID);
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "PopupReassignCategoriesViewModel", "ChangeSelectedProfilePic");
+            }
         }
     }
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             x:Class="DailyBudgetMAUIApp.Pages.NoNetworkAccess"   
+             Shell.FlyoutBehavior="Disabled"
+             Shell.TabBarIsVisible="False"
+             Shell.NavBarIsVisible = "False">
+    
+    <VerticalStackLayout>
+        <Label 
+            Text="No Network Access"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+        <Button Text="Go home"
+            TextColor="White"
+            WidthRequest="180" 
+            Style="{StaticResource PrimaryButton}" 
+            Command="{Binding GoToLandingPageCommand}">
+            <Button.ImageSource>
+                <FontImageSource 
+                    FontFamily="MaterialDesignIcons"
+                    Glyph="{x:Static helpers:MaterialDesignIconsFonts.Lock_open}"
+                    Size="20" />
+            </Button.ImageSource>
+        </Button>
+    </VerticalStackLayout>
+    
+</ContentPage>

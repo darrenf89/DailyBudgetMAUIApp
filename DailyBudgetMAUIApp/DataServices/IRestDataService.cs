@@ -24,7 +24,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<Stream> DownloadUserProfilePicture(int UserID);
         public Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog);
         public Task<Budgets> GetBudgetDetailsAsync(int BudgetID, string Mode);
-        public Task<DateTime> GetBudgetLastUpdatedAsync(int BudgetID);
+        public Task<DateTime?> GetBudgetLastUpdatedAsync(int BudgetID);
         public Task<DateTime> GetBudgetValuesLastUpdatedAsync(int BudgetID, string page);
         public Task<DateTime> GetBudgetNextIncomePayDayAsync(int BudgetID);
         public Task<int> GetBudgetDaysBetweenPayDay(int BudgetID);

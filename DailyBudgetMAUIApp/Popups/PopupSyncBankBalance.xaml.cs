@@ -34,15 +34,22 @@ public partial class PopupSyncBankBalance : Popup
 
     void PayDayAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entPayDayAmount.CursorPosition > position)
+        try
         {
-            entPayDayAmount.CursorPosition = entPayDayAmount.Text.Length;
-        }
+                decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entPayDayAmount.CursorPosition > position)
+            {
+                entPayDayAmount.CursorPosition = entPayDayAmount.Text.Length;
+            }
 
-        _vm.Amount = PayDayAmount;
+            _vm.Amount = PayDayAmount;
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "PopupSyncBankBalance", "PayDayAmount_Changed");
+        }
     }
 
     private bool ValidatePage()
@@ -64,23 +71,30 @@ public partial class PopupSyncBankBalance : Popup
 
     private void AcceptUpdate_Saving(object sender, EventArgs e)
     {
-        if(ValidatePage())
+        try
         {
-            List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
-
-            PatchDoc BankBalance = new PatchDoc
+            if (ValidatePage())
             {
-                op = "replace",
-                path = "/BankBalance",
-                value = _vm.Amount
-            };
+                List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
 
-            BudgetUpdate.Add(BankBalance);
+                PatchDoc BankBalance = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/BankBalance",
+                    value = _vm.Amount
+                };
 
-            _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+                BudgetUpdate.Add(BankBalance);
 
-            App.DefaultBudget.BankBalance = _vm.Amount;
-            this.Close(_vm.Budget);
+                _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+
+                App.DefaultBudget.BankBalance = _vm.Amount;
+                this.Close(_vm.Budget);
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "PopupSyncBankBalance", "AcceptUpdate_Saving");
         }
     }
 

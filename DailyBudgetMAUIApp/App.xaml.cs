@@ -6,6 +6,8 @@ using Microsoft.Maui;
 using System.Drawing;
 using Color = Microsoft.Maui.Graphics.Color;
 using Microsoft.Maui.Platform;
+using DailyBudgetMAUIApp.Pages;
+
 
 
 
@@ -19,6 +21,7 @@ using DailyBudgetMAUIApp.Platforms.iOS.Mappers;
 using Microsoft.Maui.Controls.Compatibility.Platform.Android;
 using Android.Widget;
 using DailyBudgetMAUIApp.Platforms.Android.Mappers;
+using System.Runtime.ExceptionServices;
 #endif
 
 namespace DailyBudgetMAUIApp;
@@ -40,6 +43,7 @@ public partial class App : Application
     public static List<Color> ChartColor;
     public static double NavBarHeight;
     public static double StatusBarHeight;
+    public NetworkAccess PreviousNetworkAccess;
 
     public static int SessionPeriod = 7;
 

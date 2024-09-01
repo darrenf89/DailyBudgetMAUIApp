@@ -37,15 +37,22 @@ public partial class PopupEditNextPayInfo : Popup
 
     void PayDayAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entPayDayAmount.CursorPosition > position)
+        try
         {
-            entPayDayAmount.CursorPosition = entPayDayAmount.Text.Length;
-        }
+            decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entPayDayAmount.CursorPosition > position)
+            {
+                entPayDayAmount.CursorPosition = entPayDayAmount.Text.Length;
+            }
 
-        _vm.Amount = PayDayAmount;
+            _vm.Amount = PayDayAmount;
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "PopupEditNextPayInfo", "PayDayAmount_Changed");
+        }
     }
 
     private bool ValidatePage()
@@ -77,33 +84,40 @@ public partial class PopupEditNextPayInfo : Popup
 
     private void AcceptUpdate_Saving(object sender, EventArgs e)
     {
-        if(ValidatePage())
+        try
         {
-            List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
-
-            PatchDoc PayDayAmount = new PatchDoc
+            if (ValidatePage())
             {
-                op = "replace",
-                path = "/PayDayAmount",
-                value = _vm.Amount
-            };
+                List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
 
-            BudgetUpdate.Add(PayDayAmount);
+                PatchDoc PayDayAmount = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/PayDayAmount",
+                    value = _vm.Amount
+                };
 
-            PatchDoc NextIncomePayday = new PatchDoc
-            {
-                op = "replace",
-                path = "/NextIncomePayday",
-                value = _vm.Date.Date
-            };
+                BudgetUpdate.Add(PayDayAmount);
 
-            BudgetUpdate.Add(NextIncomePayday);
+                PatchDoc NextIncomePayday = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/NextIncomePayday",
+                    value = _vm.Date.Date
+                };
 
-            _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+                BudgetUpdate.Add(NextIncomePayday);
 
-            App.DefaultBudget.NextIncomePayday = _vm.Date.Date;
-            App.DefaultBudget.PaydayAmount = _vm.Amount;
-            this.Close(_vm.Budget);
+                _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+
+                App.DefaultBudget.NextIncomePayday = _vm.Date.Date;
+                App.DefaultBudget.PaydayAmount = _vm.Amount;
+                this.Close(_vm.Budget);
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "PopupEditNextPayInfo", "AcceptUpdate_Saving");
         }
     }
 
@@ -114,15 +128,21 @@ public partial class PopupEditNextPayInfo : Popup
 
     private void Reset_Saving(object sender, EventArgs e)
     {
-        grdUpdateBtns.IsVisible = true;
+        try
+        {
+            grdUpdateBtns.IsVisible = true;
 
-        _vm.Budget.PaydayAmount = _vm.OriginalAmount;
-        _vm.Budget.NextIncomePayday = _vm.OriginalDate;
+            _vm.Budget.PaydayAmount = _vm.OriginalAmount;
+            _vm.Budget.NextIncomePayday = _vm.OriginalDate;
 
-        double PayDayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
+            double PayDayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
+            entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
 
-        entNextIncomePayday.Date = _vm.Budget.NextIncomePayday.GetValueOrDefault();
-
+            entNextIncomePayday.Date = _vm.Budget.NextIncomePayday.GetValueOrDefault();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "PopupEditNextPayInfo", "Reset_Saving");
+        }
     }
 }

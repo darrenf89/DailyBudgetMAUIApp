@@ -86,46 +86,65 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         private async void SelectNext(object obj)
         {
-            IsPreviousEnabled = true;
-
-            if(SelectedIndex < EventList.Count() - 1)
+            try
             {
-                SelectedIndex++;
-                await LoadEventCard(EventList[SelectedIndex].Notes, (int)EventList[SelectedIndex].Id);
-            }
+                IsPreviousEnabled = true;
 
-            if (SelectedIndex == EventList.Count() - 1)
+                if(SelectedIndex < EventList.Count() - 1)
+                {
+                    SelectedIndex++;
+                    await LoadEventCard(EventList[SelectedIndex].Notes, (int)EventList[SelectedIndex].Id);
+                }
+
+                if (SelectedIndex == EventList.Count() - 1)
+                {
+                    IsNextEnabled = false;
+                }
+            }
+            catch (Exception ex)
             {
-                IsNextEnabled = false;
+                await _pt.HandleException(ex, "ViewCalendar", "SelectNext");
             }
-
         }
 
         [RelayCommand]
         private async void SelectPrevious(object obj)
         {
-            IsNextEnabled = true;
-
-            if (SelectedIndex > 0)
+            try
             {
-                SelectedIndex--;
-                await LoadEventCard(EventList[SelectedIndex].Notes, (int)EventList[SelectedIndex].Id);
-            }
+                IsNextEnabled = true;
 
-            if (SelectedIndex == 0)
+                if (SelectedIndex > 0)
+                {
+                    SelectedIndex--;
+                    await LoadEventCard(EventList[SelectedIndex].Notes, (int)EventList[SelectedIndex].Id);
+                }
+
+                if (SelectedIndex == 0)
+                {
+                    IsPreviousEnabled = false;
+                }
+            }
+            catch (Exception ex)
             {
-                IsPreviousEnabled = false;
+                await _pt.HandleException(ex, "ViewCalendar", "SelectPrevious");
             }
-
         }
 
         [RelayCommand]
         private async void LoadMoreEvents(object obj)
         {
-            ShowBusyIndicator = true;
-            await Task.Delay(500);
-            await GenerateSchedulerAppointments(((SchedulerQueryAppointmentsEventArgs)obj).VisibleDates.ToList());
-            ShowBusyIndicator = false;
+            try
+            {
+                ShowBusyIndicator = true;
+                await Task.Delay(500);
+                await GenerateSchedulerAppointments(((SchedulerQueryAppointmentsEventArgs)obj).VisibleDates.ToList());
+                ShowBusyIndicator = false;
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewCalendar", "LoadMoreEvents");
+            }
         }
 
         private async Task GenerateSchedulerAppointments(List<DateTime> visibleDates)

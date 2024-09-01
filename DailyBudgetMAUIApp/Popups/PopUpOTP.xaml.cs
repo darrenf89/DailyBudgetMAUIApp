@@ -24,22 +24,29 @@ public partial class PopUpOTP : Popup
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
-
-        if (OTPType == "ShareBudget")
+        try
         {
-            _vm.ShareBudgetRequest = _ds.GetShareBudgetRequestByID(UserID).Result;
-            _vm.UserID = _vm.ShareBudgetRequest.SharedWithUserAccountID;
+
+            if (OTPType == "ShareBudget")
+            {
+                _vm.ShareBudgetRequest = _ds.GetShareBudgetRequestByID(UserID).Result;
+                _vm.UserID = _vm.ShareBudgetRequest.SharedWithUserAccountID;
+            }
+            else
+            {
+                _vm.UserID = UserID;
+            }
+
+            _vm.OTPType = OTPType;
+            _vm.OTP = new OTP();
+            _vm.OTP.OTPCode = "";
+
+            LoadOTPType();
         }
-        else
+        catch (Exception ex)
         {
-            _vm.UserID = UserID;
+            _pt.HandleException(ex, "PopUpOTP", "PopUpOTP");
         }
-
-        _vm.OTPType = OTPType;
-        _vm.OTP = new OTP();
-        _vm.OTP.OTPCode = "";
-
-        LoadOTPType();
     }
 
     private void LoadOTPType()
@@ -130,127 +137,154 @@ public partial class PopUpOTP : Popup
     }
 
     private void ValidateOTP_Popup(object sender, EventArgs e)
-	{
-        ResetSuccessFailureMessage();
-        if (_vm.OTPType == "ValidateEmail")
+    {
+        try
         {
-            if (_vm.UserID == 0)
+            ResetSuccessFailureMessage();
+            if (_vm.OTPType == "ValidateEmail")
             {
-                if(_vm.EmailRequired && _vm.EmailValid)
+                if (_vm.UserID == 0)
                 {
-                    _vm.UserID = _ds.GetUserIdFromEmail(_vm.UserEmail).Result;
-                    _vm.OTP.UserAccountID = _vm.UserID;
+                    if(_vm.EmailRequired && _vm.EmailValid)
+                    {
+                        _vm.UserID = _ds.GetUserIdFromEmail(_vm.UserEmail).Result;
+                        _vm.OTP.UserAccountID = _vm.UserID;
 
-                    if (_vm.UserID == 0)
-                    {
-                        _vm.EmailNotFound = true;
-                    }
-                    else
-                    {
-                        CloseKeyBoard();
-                        LoadOTPType();
-                    }                        
-                }
-            }
-            else
-            {
-                if(_vm.OTP.OTPCode.Length < 6)
-                {
-                    _vm.OTPRequired = true;
-                }
-                else
-                {
-                    _vm.OTP.OTPExpiryTime = DateTime.UtcNow;
-                    _vm.OTP.UserAccountID = _vm.UserID;
-                    _vm.OTP.OTPType = _vm.OTPType;
-                    string status = _ds.ValidateOTPCodeEmail(_vm.OTP).Result;
-                    if(status == "OK")
-                    {
-                        _vm.OTPValidated = true;
-                        CloseKeyBoard();
-                        this.Close("OK");
-                    }
-                    else
-                    {
-                        _vm.OTPNotFound = true;
-                    }
-                }                
-            }
-        }
-        else if(_vm.OTPType == "ResetPassword")
-        {
-            if (_vm.UserID == 0)
-            {
-                if (_vm.EmailRequired && _vm.EmailValid)
-                {
-                    _vm.UserID = _ds.GetUserIdFromEmail(_vm.UserEmail).Result;
-                    _vm.OTP.UserAccountID = _vm.UserID;
-
-                    if (_vm.UserID == 0)
-                    {
-                        _vm.EmailNotFound = true;
-                    }
-                    else
-                    {
-                        string status = _ds.CreateNewOtpCode(_vm.UserID, _vm.OTPType).Result;
-                        if (status == "OK")
+                        if (_vm.UserID == 0)
                         {
-                            CloseKeyBoard();
-                            LoadOTPType();
-                        }
-                        else if (status == "MaxLimit")
-                        {
-                            _vm.MaxLimitFailure = true;
+                            _vm.EmailNotFound = true;
                         }
                         else
                         {
-                            _vm.ResendFailure = true;
+                            CloseKeyBoard();
+                            LoadOTPType();
+                        }                        
+                    }
+                }
+                else
+                {
+                    if(_vm.OTP.OTPCode.Length < 6)
+                    {
+                        _vm.OTPRequired = true;
+                    }
+                    else
+                    {
+                        _vm.OTP.OTPExpiryTime = DateTime.UtcNow;
+                        _vm.OTP.UserAccountID = _vm.UserID;
+                        _vm.OTP.OTPType = _vm.OTPType;
+                        string status = _ds.ValidateOTPCodeEmail(_vm.OTP).Result;
+                        if(status == "OK")
+                        {
+                            _vm.OTPValidated = true;
+                            CloseKeyBoard();
+                            this.Close("OK");
+                        }
+                        else
+                        {
+                            _vm.OTPNotFound = true;
+                        }
+                    }                
+                }
+            }
+            else if(_vm.OTPType == "ResetPassword")
+            {
+                if (_vm.UserID == 0)
+                {
+                    if (_vm.EmailRequired && _vm.EmailValid)
+                    {
+                        _vm.UserID = _ds.GetUserIdFromEmail(_vm.UserEmail).Result;
+                        _vm.OTP.UserAccountID = _vm.UserID;
+
+                        if (_vm.UserID == 0)
+                        {
+                            _vm.EmailNotFound = true;
+                        }
+                        else
+                        {
+                            string status = _ds.CreateNewOtpCode(_vm.UserID, _vm.OTPType).Result;
+                            if (status == "OK")
+                            {
+                                CloseKeyBoard();
+                                LoadOTPType();
+                            }
+                            else if (status == "MaxLimit")
+                            {
+                                _vm.MaxLimitFailure = true;
+                            }
+                            else
+                            {
+                                _vm.ResendFailure = true;
+                            }
+                        }
+                    }
+                }
+                else if (_vm.OTPValidated)
+                {
+                    if(_vm.PasswordSameSame && _vm.PasswordStrong && _vm.PasswordRequired)
+                    {
+                        RegisterModel User = new RegisterModel();
+                        User.Salt = _ds.GetUserSaltAsync(_vm.UserEmail).Result;
+                        User.Password = _vm.Password;
+                        User = _pt.ResetUserPassword(User);
+
+                        List<PatchDoc> UserDetails = new List<PatchDoc>();
+
+                        PatchDoc NewSalt = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/Salt",
+                            value = User.Salt
+                        };
+
+                        PatchDoc NewPassword = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/Password",
+                            value = User.Password
+                        };
+
+                        UserDetails.Add(NewSalt);
+                        UserDetails.Add(NewPassword);
+
+                        string status = _ds.PatchUserAccount(_vm.UserID, UserDetails).Result;
+
+                        if(status == "OK")
+                        {
+                            CloseKeyBoard();
+                            this.Close("OK");
+                        }
+                        else
+                        {
+                            _vm.PasswordResetFailure = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (_vm.OTP.OTPCode.Length < 6)
+                    {
+                        _vm.OTPRequired = true;
+                    }
+                    else
+                    {
+                        _vm.OTP.OTPExpiryTime = DateTime.UtcNow;
+                        _vm.OTP.UserAccountID = _vm.UserID;
+                        _vm.OTP.OTPType = _vm.OTPType;
+                        string status = _ds.ValidateOTPCodeEmail(_vm.OTP).Result;
+                        if (status == "OK")
+                        {
+                            _vm.OTPValidated = true;
+                            CloseKeyBoard();
+                            LoadOTPType();
+                        }
+                        else
+                        {
+                            _vm.OTPNotFound = true;
                         }
                     }
                 }
             }
-            else if (_vm.OTPValidated)
-            {
-                if(_vm.PasswordSameSame && _vm.PasswordStrong && _vm.PasswordRequired)
-                {
-                    RegisterModel User = new RegisterModel();
-                    User.Salt = _ds.GetUserSaltAsync(_vm.UserEmail).Result;
-                    User.Password = _vm.Password;
-                    User = _pt.ResetUserPassword(User);
-
-                    List<PatchDoc> UserDetails = new List<PatchDoc>();
-
-                    PatchDoc NewSalt = new PatchDoc
-                    {
-                        op = "replace",
-                        path = "/Salt",
-                        value = User.Salt
-                    };
-
-                    PatchDoc NewPassword = new PatchDoc
-                    {
-                        op = "replace",
-                        path = "/Password",
-                        value = User.Password
-                    };
-
-                    UserDetails.Add(NewSalt);
-                    UserDetails.Add(NewPassword);
-
-                    string status = _ds.PatchUserAccount(_vm.UserID, UserDetails).Result;
-
-                    if(status == "OK")
-                    {
-                        CloseKeyBoard();
-                        this.Close("OK");
-                    }
-                    else
-                    {
-                        _vm.PasswordResetFailure = true;
-                    }
-                }
-            }
-            else
+            else if (_vm.OTPType == "ShareBudget")
             {
                 if (_vm.OTP.OTPCode.Length < 6)
                 {
@@ -261,12 +295,17 @@ public partial class PopUpOTP : Popup
                     _vm.OTP.OTPExpiryTime = DateTime.UtcNow;
                     _vm.OTP.UserAccountID = _vm.UserID;
                     _vm.OTP.OTPType = _vm.OTPType;
-                    string status = _ds.ValidateOTPCodeEmail(_vm.OTP).Result;
+                    string status = _ds.ValidateOTPCodeShareBudget(_vm.OTP, _vm.ShareBudgetRequest.SharedBudgetRequestID).Result;
                     if (status == "OK")
                     {
+                        _vm.ShareBudgetRequest.IsVerified = true;
                         _vm.OTPValidated = true;
                         CloseKeyBoard();
-                        LoadOTPType();
+                        this.Close(_vm.ShareBudgetRequest);
+                    }
+                    else if(status == "Error")
+                    {
+                        return;
                     }
                     else
                     {
@@ -275,35 +314,11 @@ public partial class PopUpOTP : Popup
                 }
             }
         }
-        else if (_vm.OTPType == "ShareBudget")
+        catch (Exception ex)
         {
-            if (_vm.OTP.OTPCode.Length < 6)
-            {
-                _vm.OTPRequired = true;
-            }
-            else
-            {
-                _vm.OTP.OTPExpiryTime = DateTime.UtcNow;
-                _vm.OTP.UserAccountID = _vm.UserID;
-                _vm.OTP.OTPType = _vm.OTPType;
-                string status = _ds.ValidateOTPCodeShareBudget(_vm.OTP, _vm.ShareBudgetRequest.SharedBudgetRequestID).Result;
-                if (status == "OK")
-                {
-                    _vm.ShareBudgetRequest.IsVerified = true;
-                    _vm.OTPValidated = true;
-                    CloseKeyBoard();
-                    this.Close(_vm.ShareBudgetRequest);
-                }
-                else if(status == "Error")
-                {
-                    return;
-                }
-                else
-                {
-                    _vm.OTPNotFound = true;
-                }
-            }
+            _pt.HandleException(ex, "PopUpOTP", "ValidateOTP_Popup");
         }
+
     }
 
     private void CloseKeyBoard()

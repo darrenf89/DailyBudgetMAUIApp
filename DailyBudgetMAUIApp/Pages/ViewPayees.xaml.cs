@@ -19,8 +19,16 @@ public partial class ViewPayees : ContentPage
         {
             if (_addPayee != value)
             {
-                _addPayee = value;
-                LoadData();
+                try
+                {
+                    _addPayee = value;
+                    LoadData();
+                }
+                catch (Exception ex)
+                {
+                    _pt.HandleException(ex, "ViewPayees", "_addPayee");
+                }
+
             }
         }
     }
@@ -41,11 +49,18 @@ public partial class ViewPayees : ContentPage
         var timer = Application.Current.Dispatcher.CreateTimer();
         _timer = timer;
         timer.Interval = TimeSpan.FromSeconds(45);
-        timer.Tick += async (s, e) => 
+        timer.Tick += async (s, e) =>
         {
-            _vm.ChartUpdating = true;
-            await CycleThroughChart();
-            _vm.ChartUpdating = false;
+            try
+            {
+                _vm.ChartUpdating = true;
+                await CycleThroughChart();
+                _vm.ChartUpdating = false;
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewPayees", "timer.Tick");
+            }
         };
         timer.Start();
         _vm.IsPlaying = true;
@@ -60,8 +75,15 @@ public partial class ViewPayees : ContentPage
  
     protected async override void OnAppearing()
     {
-        base.OnAppearing();
-        await LoadData();
+        try
+        {
+            base.OnAppearing();
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewPayees", "OnAppearing");
+        }
     }
     private async Task LoadData()
     {
@@ -205,182 +227,245 @@ public partial class ViewPayees : ContentPage
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewPayees", "HomeButton_Clicked");
+        }
     }
 
     private async void SwipeGestureRecognizer_Swiped(object sender, SwipedEventArgs e)
     {
-        switch (e.Direction)
+        try
         {
-            case SwipeDirection.Left:
-                if(_vm.SelectedIndex < (_vm.PayPeriods.Count()-1))
-                {
-                    _vm.SelectedIndex += 1;
-                    await SwitchChart(_vm.SelectedIndex);
-                }
+            switch (e.Direction)
+            {
+                case SwipeDirection.Left:
+                    if(_vm.SelectedIndex < (_vm.PayPeriods.Count()-1))
+                    {
+                        _vm.SelectedIndex += 1;
+                        await SwitchChart(_vm.SelectedIndex);
+                    }
+                    break;
+                case SwipeDirection.Right:
+                    if (_vm.SelectedIndex > 0)
+                    {
+                        _vm.SelectedIndex -= 1;
+                        await SwitchChart(_vm.SelectedIndex);
+                    }
                 break;
-            case SwipeDirection.Right:
-                if (_vm.SelectedIndex > 0)
-                {
-                    _vm.SelectedIndex -= 1;
-                    await SwitchChart(_vm.SelectedIndex);
-                }
-                break;
-        }       
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewPayees", "SwipeGestureRecognizer_Swiped");
+        }
     }
 
     private void btnPlayPause_Clicked(object sender, EventArgs e)
     {
-        if(_vm.IsPlaying)
+        try
         {
-            _vm.IsPlaying = false;
-            _timer.Stop();
+            if (_vm.IsPlaying)
+            {
+                _vm.IsPlaying = false;
+                _timer.Stop();
+            }
+            else
+            {
+                _vm.IsPlaying = true;
+                _timer.Start();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            _vm.IsPlaying = true;
-            _timer.Start();
+            _pt.HandleException(ex, "ViewPayees", "btnPlayPause_Clicked");
         }
     }
 
     private async void TabCarousel_SwipeEnded(object sender, EventArgs e)
     {
-        var Carousel = (SfCarousel)sender;
-        int Index = Carousel.SelectedIndex;
+        try
+        {
+            var Carousel = (SfCarousel)sender;
+            int Index = Carousel.SelectedIndex;
 
-        _vm.SelectedIndex = Index;
-        await SwitchChart(Index);
+            _vm.SelectedIndex = Index;
+            await SwitchChart(Index);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewPayees", "TabCarousel_SwipeEnded");
+        }
 
     }
 
     private async void TabCarousel_SelectionChanged(object sender, Syncfusion.Maui.Core.Carousel.SelectionChangedEventArgs e)
     {
-        var Carousel = (SfCarousel)sender;
-        int Index = Carousel.SelectedIndex;
+        try
+        {
+            var Carousel = (SfCarousel)sender;
+            int Index = Carousel.SelectedIndex;
 
-        _vm.SelectedIndex = Index;
-        await SwitchChart(Index);
+            _vm.SelectedIndex = Index;
+            await SwitchChart(Index);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewPayees", "TabCarousel_SelectionChanged");
+        }
     }
 
     private async void DeleteCategory_Tapped(object sender, TappedEventArgs e)
     {
-        Payees payee = (Payees)e.Parameter;
-
-        bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete payee?", $"Are you sure you want to Delete {payee.Payee}?", "Yes", "No!");
-        if (Delete)
+        try
         {
-            List<string> Payees = await _ds.GetPayeeList(App.DefaultBudgetID);
-            string[] PayeeList = Payees.ToArray();
-            var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
-            if(reassign == "Cancel")
-            {
+            Payees payee = (Payees)e.Parameter;
 
+            bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete payee?", $"Are you sure you want to Delete {payee.Payee}?", "Yes", "No!");
+            if (Delete)
+            {
+                List<string> Payees = await _ds.GetPayeeList(App.DefaultBudgetID);
+                string[] PayeeList = Payees.ToArray();
+                var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
+                if(reassign == "Cancel")
+                {
+
+                }
+                else if(reassign == "No")
+                {
+                    await _ds.DeletePayee(App.DefaultBudgetID, payee.Payee, "");
+
+                    int index = _vm.Payees.IndexOf(payee);
+
+                    _vm.Payees.RemoveAt(index);
+                    _vm.PayeesChart.RemoveAt(index);
+                }   
+                else
+                {
+                    await _ds.DeletePayee(App.DefaultBudgetID, payee.Payee, reassign);
+
+                    int index = _vm.Payees.IndexOf(payee);
+
+                    _vm.Payees.RemoveAt(index);
+                    _vm.PayeesChart.RemoveAt(index);
+                }
+
+                listView.RefreshView();
+                listView.RefreshItem();
             }
-            else if(reassign == "No")
-            {
-                await _ds.DeletePayee(App.DefaultBudgetID, payee.Payee, "");
-
-                int index = _vm.Payees.IndexOf(payee);
-
-                _vm.Payees.RemoveAt(index);
-                _vm.PayeesChart.RemoveAt(index);
-            }   
-            else
-            {
-                await _ds.DeletePayee(App.DefaultBudgetID, payee.Payee, reassign);
-
-                int index = _vm.Payees.IndexOf(payee);
-
-                _vm.Payees.RemoveAt(index);
-                _vm.PayeesChart.RemoveAt(index);
-            }
-
-            listView.RefreshView();
-            listView.RefreshItem();
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewPayees", "DeleteCategory_Tapped");
         }
     }
 
     private void EditCategory_Tapped(object sender, TappedEventArgs e)
     {
-        if (!_vm.Payees.Where(p => p.IsEditMode).Any())
-        {        
-            Payees payee = (Payees)e.Parameter;
-            payee.IsEditMode = true;
+        try
+        {
+            if (!_vm.Payees.Where(p => p.IsEditMode).Any())
+            {        
+                Payees payee = (Payees)e.Parameter;
+                payee.IsEditMode = true;
 
-            listView.RefreshItem();
+                listView.RefreshItem();
 
-            _vm.OldPayeeName = payee.Payee;
+                _vm.OldPayeeName = payee.Payee;
 
-            var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
-            var EntryList = Entries.ToList();
-            foreach(BorderlessEntry ent in EntryList)
-            {
-                if(ent.Text == payee.Payee)
+                var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
+                var EntryList = Entries.ToList();
+                foreach(BorderlessEntry ent in EntryList)
                 {
-                    ent.Focus();
-                    return;
+                    if(ent.Text == payee.Payee)
+                    {
+                        ent.Focus();
+                        return;
+                    }
                 }
             }
+        }
+        catch (Exception ex)
+        {
+             _pt.HandleException(ex, "ViewPayees", "EditCategory_Tapped");
         }
     }
 
     private void ApplyChanges_Clicked(object sender, EventArgs e)
     {
-        var Button = (Button)sender;
-        Payees payee = (Payees)Button.BindingContext;
-
-        _ds.UpdatePayee(App.DefaultBudgetID, _vm.OldPayeeName, payee.Payee);
-
-        payee.IsEditMode = false;
-
-        listView.RefreshItem();
-
-        var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
-        var EntryList = Entries.ToList();
-        foreach (BorderlessEntry ent in EntryList)
+        try
         {
-            if (ent.Text == payee.Payee)
+                var Button = (Button)sender;
+            Payees payee = (Payees)Button.BindingContext;
+
+            _ds.UpdatePayee(App.DefaultBudgetID, _vm.OldPayeeName, payee.Payee);
+
+            payee.IsEditMode = false;
+
+            listView.RefreshItem();
+
+            var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
+            var EntryList = Entries.ToList();
+            foreach (BorderlessEntry ent in EntryList)
             {
-                ent.IsEnabled = false;
-                ent.IsEnabled = true;
-                return;
+                if (ent.Text == payee.Payee)
+                {
+                    ent.IsEnabled = false;
+                    ent.IsEnabled = true;
+                    return;
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "ViewPayees", "ApplyChanges_Clicked");
         }
     }
 
     private async void ViewTransactions_Tapped(object sender, TappedEventArgs e)
     {
-        var Border = (Border)sender;
-        Payees payee = (Payees)Border.BindingContext;
-
-        if (!payee.IsEditMode)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            var Border = (Border)sender;
+            Payees payee = (Payees)Border.BindingContext;
 
-            await Task.Delay(1000);
-
-            FilterModel Filters = new FilterModel
+            if (!payee.IsEditMode)
             {
-                PayeeFilter = new List<string>
-                {
-                    payee.Payee
-                }
-            };
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
 
-            await Shell.Current.GoToAsync($"/{nameof(ViewFilteredTransactions)}",
-                new Dictionary<string, object>
+                await Task.Delay(1000);
+
+                FilterModel Filters = new FilterModel
                 {
-                    ["Filters"] = Filters
-                });
+                    PayeeFilter = new List<string>
+                    {
+                        payee.Payee
+                    }
+                };
+
+                await Shell.Current.GoToAsync($"/{nameof(ViewFilteredTransactions)}",
+                    new Dictionary<string, object>
+                    {
+                        ["Filters"] = Filters
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewPayees", "ViewTransactions_Tapped");
         }
     }
 }

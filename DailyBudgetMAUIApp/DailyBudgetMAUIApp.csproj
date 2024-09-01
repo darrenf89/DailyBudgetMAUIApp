@@ -113,11 +113,17 @@
 	  <Compile Update="Pages\EditBudgetSettings.xaml.cs">
 	    <DependentUpon>EditBudgetSettings.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\NoNetworkAccess.xaml.cs">
+	    <DependentUpon>NoNetworkAccess.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\ViewPayees.xaml.cs">
 	    <DependentUpon>ViewPayees.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Platforms\iOS\Mappers\BorderEntryMapper.cs">
 	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+	  </Compile>
+	  <Compile Update="Popups\PopUpNoNetwork.xaml.cs">
+	    <DependentUpon>PopUpNoNetwork.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Popups\PopupSyncBankBalance.xaml.cs">
 	    <DependentUpon>PopupSyncBankBalance.xaml</DependentUpon>
@@ -227,10 +233,16 @@
 	  <MauiXaml Update="Pages\EditBudgetSettings.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\NoNetworkAccess.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewCalendar.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewPayees.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Popups\PopUpNoNetwork.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Popups\PopupSyncBankBalance.xaml">

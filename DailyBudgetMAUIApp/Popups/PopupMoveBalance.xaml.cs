@@ -212,116 +212,123 @@ public partial class PopupMoveBalance : Popup
 
     private async void AcceptUpdate_Saving(object sender, EventArgs e)
     {
-        if(ValidatePage())
+        try
         {
-            bool MoveBalance = await Application.Current.MainPage.DisplayAlert($"Move money around?", $"Are you sure you want to move {entAmount.Text} from {_vm.FromSelectedMoveBalance.Name} to {_vm.ToSelectedMoveBalance.Name}", "Yes", "No");
-            if (MoveBalance)
+            if (ValidatePage())
             {
-                decimal FromAmount = _vm.FromSelectedMoveBalance.Balance - _vm.Amount;
-                decimal ToAmount = _vm.ToSelectedMoveBalance.Balance + _vm.Amount;
-                switch (_vm.FromSelectedMoveBalance.Type)
+                bool MoveBalance = await Application.Current.MainPage.DisplayAlert($"Move money around?", $"Are you sure you want to move {entAmount.Text} from {_vm.FromSelectedMoveBalance.Name} to {_vm.ToSelectedMoveBalance.Name}", "Yes", "No");
+                if (MoveBalance)
                 {
-                    case "Budget":
-                        break;
-                    case "Bill":
-                        Bills bill = await _ds.GetBillFromID(_vm.FromSelectedMoveBalance.Id);
+                    decimal FromAmount = _vm.FromSelectedMoveBalance.Balance - _vm.Amount;
+                    decimal ToAmount = _vm.ToSelectedMoveBalance.Balance + _vm.Amount;
+                    switch (_vm.FromSelectedMoveBalance.Type)
+                    {
+                        case "Budget":
+                            break;
+                        case "Bill":
+                            Bills bill = await _ds.GetBillFromID(_vm.FromSelectedMoveBalance.Id);
 
-                        List<PatchDoc> BillUpdate = new List<PatchDoc>();
+                            List<PatchDoc> BillUpdate = new List<PatchDoc>();
 
-                        PatchDoc BillAmount = new PatchDoc
-                        {
-                            op = "replace",
-                            path = "/BillCurrentBalance",
-                            value = FromAmount
-                        };
-
-                        BillUpdate.Add(BillAmount);
-
-                        if(bill.BillBalanceAtLastPayDay > FromAmount)
-                        {
-                            PatchDoc BillBalanceAtLastPayDay = new PatchDoc
+                            PatchDoc BillAmount = new PatchDoc
                             {
                                 op = "replace",
-                                path = "/BillBalanceAtLastPayDay",
+                                path = "/BillCurrentBalance",
                                 value = FromAmount
                             };
 
-                            BillUpdate.Add(BillBalanceAtLastPayDay);
-                        }
+                            BillUpdate.Add(BillAmount);
 
-                        await _ds.PatchBill(_vm.FromSelectedMoveBalance.Id, BillUpdate);
-                        break;
-                    case "Saving":
+                            if(bill.BillBalanceAtLastPayDay > FromAmount)
+                            {
+                                PatchDoc BillBalanceAtLastPayDay = new PatchDoc
+                                {
+                                    op = "replace",
+                                    path = "/BillBalanceAtLastPayDay",
+                                    value = FromAmount
+                                };
 
-                        List<PatchDoc> SavingUpdate = new List<PatchDoc>();
+                                BillUpdate.Add(BillBalanceAtLastPayDay);
+                            }
 
-                        PatchDoc SavingAmount = new PatchDoc
-                        {
-                            op = "replace",
-                            path = "/CurrentBalance",
-                            value = FromAmount
-                        };
+                            await _ds.PatchBill(_vm.FromSelectedMoveBalance.Id, BillUpdate);
+                            break;
+                        case "Saving":
 
-                        SavingUpdate.Add(SavingAmount);
+                            List<PatchDoc> SavingUpdate = new List<PatchDoc>();
 
-                        await _ds.PatchSaving(_vm.FromSelectedMoveBalance.Id, SavingUpdate);
-                        break;
-                    default:
-                        break;
-                }
-
-                switch (_vm.ToSelectedMoveBalance.Type)
-                {
-                    case "Budget":
-                        break;
-                    case "Bill":
-                        Bills bill = await _ds.GetBillFromID(_vm.ToSelectedMoveBalance.Id);
-
-                        List<PatchDoc> BillUpdate = new List<PatchDoc>();
-
-                        PatchDoc BillAmount = new PatchDoc
-                        {
-                            op = "replace",
-                            path = "/BillCurrentBalance",
-                            value = ToAmount
-                        };
-
-                        BillUpdate.Add(BillAmount);
-
-                        if (bill.BillBalanceAtLastPayDay > ToAmount)
-                        {
-                            PatchDoc BillBalanceAtLastPayDay = new PatchDoc
+                            PatchDoc SavingAmount = new PatchDoc
                             {
                                 op = "replace",
-                                path = "/BillBalanceAtLastPayDay",
+                                path = "/CurrentBalance",
+                                value = FromAmount
+                            };
+
+                            SavingUpdate.Add(SavingAmount);
+
+                            await _ds.PatchSaving(_vm.FromSelectedMoveBalance.Id, SavingUpdate);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    switch (_vm.ToSelectedMoveBalance.Type)
+                    {
+                        case "Budget":
+                            break;
+                        case "Bill":
+                            Bills bill = await _ds.GetBillFromID(_vm.ToSelectedMoveBalance.Id);
+
+                            List<PatchDoc> BillUpdate = new List<PatchDoc>();
+
+                            PatchDoc BillAmount = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/BillCurrentBalance",
                                 value = ToAmount
                             };
 
-                            BillUpdate.Add(BillBalanceAtLastPayDay);
-                        }
+                            BillUpdate.Add(BillAmount);
 
-                        await _ds.PatchBill(_vm.ToSelectedMoveBalance.Id, BillUpdate);
-                        break;
-                    case "Saving":
-                        List<PatchDoc> SavingUpdate = new List<PatchDoc>();
+                            if (bill.BillBalanceAtLastPayDay > ToAmount)
+                            {
+                                PatchDoc BillBalanceAtLastPayDay = new PatchDoc
+                                {
+                                    op = "replace",
+                                    path = "/BillBalanceAtLastPayDay",
+                                    value = ToAmount
+                                };
 
-                        PatchDoc SavingAmount = new PatchDoc
-                        {
-                            op = "replace",
-                            path = "/CurrentBalance",
-                            value = ToAmount
-                        };
+                                BillUpdate.Add(BillBalanceAtLastPayDay);
+                            }
 
-                        SavingUpdate.Add(SavingAmount);
+                            await _ds.PatchBill(_vm.ToSelectedMoveBalance.Id, BillUpdate);
+                            break;
+                        case "Saving":
+                            List<PatchDoc> SavingUpdate = new List<PatchDoc>();
 
-                        await _ds.PatchSaving(_vm.ToSelectedMoveBalance.Id, SavingUpdate);
-                        break;
-                    default:
-                        break;
+                            PatchDoc SavingAmount = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/CurrentBalance",
+                                value = ToAmount
+                            };
+
+                            SavingUpdate.Add(SavingAmount);
+
+                            await _ds.PatchSaving(_vm.ToSelectedMoveBalance.Id, SavingUpdate);
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
 
-            this.Close("OK");
+                this.Close("OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "PopupMoveBalance", "ChangeSelectedProfilePic");
         }
     }
 

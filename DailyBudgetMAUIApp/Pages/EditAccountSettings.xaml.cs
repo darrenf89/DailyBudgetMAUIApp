@@ -1,3 +1,4 @@
+using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.ViewModels;
 using IeuanWalker.Maui.Switch;
@@ -58,13 +59,15 @@ public partial class EditAccountSettings : ContentPage
     public double ScreenHeight { get; set; }
 
     private readonly EditAccountSettingsViewModel _vm;
+    private readonly IProductTools _pt;
 
-    public EditAccountSettings(EditAccountSettingsViewModel viewModel)
+    public EditAccountSettings(EditAccountSettingsViewModel viewModel, IProductTools pt)
 	{
 		InitializeComponent();      
 
         this.BindingContext = viewModel;
         _vm = viewModel;
+        _pt = pt;
 
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 60;
@@ -73,43 +76,50 @@ public partial class EditAccountSettings : ContentPage
 
     protected async override void OnAppearing()
     {
-        base.OnAppearing();
-
-        TopBV.WidthRequest = ScreenWidth;
-        MainAbs.WidthRequest = ScreenWidth;
-        MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
-        MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
-
-        await _vm.OnLoad();
-
-        if(_vm.User.ProfilePicture.Contains("Avatar"))
+        try
         {
-            ProfilePicture.ContentType = ContentType.AvatarCharacter;
-            bool Success = Enum.TryParse(_vm.User.ProfilePicture, out AvatarCharacter Avatar);
-            if(Success)
+            base.OnAppearing();
+
+            TopBV.WidthRequest = ScreenWidth;
+            MainAbs.WidthRequest = ScreenWidth;
+            MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
+            MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
+
+            await _vm.OnLoad();
+
+            if(_vm.User.ProfilePicture.Contains("Avatar"))
             {
-                ProfilePicture.AvatarCharacter = Avatar;
-                int Number = Convert.ToInt32(_vm.User.ProfilePicture[_vm.User.ProfilePicture.Length - 1]);
-                Math.DivRem(Number, 8, out int index);
-                ProfilePicture.Background = App.ChartColor[index];
+                ProfilePicture.ContentType = ContentType.AvatarCharacter;
+                bool Success = Enum.TryParse(_vm.User.ProfilePicture, out AvatarCharacter Avatar);
+                if(Success)
+                {
+                    ProfilePicture.AvatarCharacter = Avatar;
+                    int Number = Convert.ToInt32(_vm.User.ProfilePicture[_vm.User.ProfilePicture.Length - 1]);
+                    Math.DivRem(Number, 8, out int index);
+                    ProfilePicture.Background = App.ChartColor[index];
+                }
+                else
+                {
+                     ProfilePicture.AvatarCharacter = AvatarCharacter.Avatar1;
+                     ProfilePicture.Background = App.ChartColor[1];
+                }
             }
             else
             {
-                 ProfilePicture.AvatarCharacter = AvatarCharacter.Avatar1;
-                 ProfilePicture.Background = App.ChartColor[1];
+                ProfilePicStream = await _vm.GetUserProfilePictureStream(App.UserDetails.UserID);
+            }
+
+            vslPckrSwitchBudget.Content = _vm.SwitchBudgetPicker;
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
             }
         }
-        else
+        catch (Exception ex)
         {
-            ProfilePicStream = await _vm.GetUserProfilePictureStream(App.UserDetails.UserID);
-        }
-
-        vslPckrSwitchBudget.Content = _vm.SwitchBudgetPicker;
-
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            await _pt.HandleException(ex, "EditAccountSettings", "OnAppearing");
         }
     }
 

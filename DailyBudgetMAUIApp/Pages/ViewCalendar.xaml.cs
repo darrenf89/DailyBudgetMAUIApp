@@ -25,69 +25,91 @@ namespace DailyBudgetMAUIApp.Pages
 
         protected async override void OnAppearing()
         {
-            Application.Current.Resources.TryGetValue("Primary", out var Primary);
-            Application.Current.Resources.TryGetValue("Gray400", out var Tertiary);
-
-            Scheduler.HeaderView.TextStyle = new SchedulerTextStyle
+            try
             {
-                TextColor = (Color)Primary,
-                FontSize = 25,
-                FontFamily = "OpenSansSemibold"
-            };
+                Application.Current.Resources.TryGetValue("Primary", out var Primary);
+                Application.Current.Resources.TryGetValue("Gray400", out var Tertiary);
 
-            Scheduler.AgendaView.WeekHeaderSettings.TextStyle = new SchedulerTextStyle
-            {
-                TextColor = (Color)Tertiary,
-                FontSize = 12              
-            };
+                Scheduler.HeaderView.TextStyle = new SchedulerTextStyle
+                {
+                    TextColor = (Color)Primary,
+                    FontSize = 25,
+                    FontFamily = "OpenSansSemibold"
+                };
 
-            base.OnAppearing();
-            await _vm.LoadData();
+                Scheduler.AgendaView.WeekHeaderSettings.TextStyle = new SchedulerTextStyle
+                {
+                    TextColor = (Color)Tertiary,
+                    FontSize = 12              
+                };
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
+                base.OnAppearing();
+                await _vm.LoadData();
+
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
             }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewCalendar", "OnAppearing");
+            }
+
         }
         private async void HomeButton_Clicked(object sender, EventArgs e)
         {
-            if (App.CurrentPopUp == null)
+            try
             {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(500);
+
+                await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
             }
-
-            await Task.Delay(500);
-
-            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewCalendar", "HomeButton_Clicked");
+            }
         }
 
         private async void Scheduler_Tapped(object sender, SchedulerTappedEventArgs e)
         {
-            var Appointments = e.Appointments;
-
-            if (Appointments != null)
+            try
             {
-                SchedulerAppointment Appointment = (SchedulerAppointment)Appointments[0];
-                await _vm.LoadEventCard(Appointment.Notes, (int)Appointment.Id);
-                _vm.SelectedIndex = _vm.EventList.IndexOf(Appointment);
-                if (_vm.SelectedIndex == 0)
+                var Appointments = e.Appointments;
+
+                if (Appointments != null)
                 {
-                    _vm.IsNextEnabled = true;
-                    _vm.IsPreviousEnabled = false;
+                    SchedulerAppointment Appointment = (SchedulerAppointment)Appointments[0];
+                    await _vm.LoadEventCard(Appointment.Notes, (int)Appointment.Id);
+                    _vm.SelectedIndex = _vm.EventList.IndexOf(Appointment);
+                    if (_vm.SelectedIndex == 0)
+                    {
+                        _vm.IsNextEnabled = true;
+                        _vm.IsPreviousEnabled = false;
+                    }
+                    else if (_vm.SelectedIndex == _vm.EventList.Count() - 1)
+                    {
+                        _vm.IsNextEnabled = false;
+                        _vm.IsPreviousEnabled = true;
+                    }
+                    else
+                    {
+                        _vm.IsNextEnabled = true;
+                        _vm.IsPreviousEnabled = true;
+                    }
                 }
-                else if (_vm.SelectedIndex == _vm.EventList.Count() - 1)
-                {
-                    _vm.IsNextEnabled = false;
-                    _vm.IsPreviousEnabled = true;
-                }
-                else
-                {
-                    _vm.IsNextEnabled = true;
-                    _vm.IsPreviousEnabled = true;
-                }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewCalendar", "Scheduler_Tapped");
             }
         }
         

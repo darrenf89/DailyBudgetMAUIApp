@@ -2,12 +2,12 @@ using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class ErrorPage : ContentPage
+public partial class NoNetworkAccess : ContentPage
 {
-	public ErrorPage(ErrorPageViewModel viewModel)
+	public NoNetworkAccess(NoNetworkAccessViewModel viewModel)
 	{
-		InitializeComponent();
         this.BindingContext = viewModel;
+        InitializeComponent();
     }
 
     protected async override void OnAppearing()
@@ -18,7 +18,7 @@ public partial class ErrorPage : ContentPage
             App.CurrentPopUp = null;
         }
 
-        base.OnAppearing();
+        base.OnAppearing(); 
     }
 
 }

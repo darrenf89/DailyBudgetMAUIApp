@@ -35,68 +35,38 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
 
     private async void CreateNewEnvelope_Tapped(object sender, TappedEventArgs e)
     {
-        bool result = await Shell.Current.DisplayAlert("Create new Envelope?", "Are you sure you want to create a new envelope?", "Yes", "No");
-        if (result)
+        try
         {
-            try
+            bool result = await Shell.Current.DisplayAlert("Create new Envelope?", "Are you sure you want to create a new envelope?", "Yes", "No");
+            if (result)
             {
-                if (App.CurrentBottomSheet != null)
+                try
                 {
-                    await this.DismissAsync();
-                    App.CurrentBottomSheet = null;
+                    if (App.CurrentBottomSheet != null)
+                    {
+                        await this.DismissAsync();
+                        App.CurrentBottomSheet = null;
+                    }
                 }
-            }
-            catch (Exception)
-            {
+                catch (Exception)
+                {
 
-            }
+                }
 
-            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(AddSaving)}?SavingType=Envelope");
+                await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(AddSaving)}?SavingType=Envelope");
+            }
         }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "EnvelopeOptionsBottomSheet", "CreateNewEnvelope_Tapped");
+        }
+
     }
 
     private async void ViewAllEnvelopes_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
-
-        if (App.CurrentBottomSheet != null)
-        {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
-        }
-
-        await Shell.Current.GoToAsync($"///{nameof(DailyBudgetMAUIApp.Pages.ViewEnvelopes)}");
-    }
-
-    private async void SpendMoney_Tapped(object sender, TappedEventArgs e)
-    {
-        if (App.CurrentBottomSheet != null)
-        {
-            await this.DismissAsync();
-            App.CurrentBottomSheet = null;
-        }
-
-        List<Savings>? savings = await _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID);
-        Dictionary<string, int> EnvelopeSavings = new Dictionary<string, int>();
-        foreach (var s in savings)
-        {
-            EnvelopeSavings.Add(s.SavingsName, s.SavingID);
-        }
-
-        string[] EnvelopeList = EnvelopeSavings.Keys.ToArray();
-        var SelectEnvelope = await Application.Current.MainPage.DisplayActionSheet($"Select which stash you want to pay from!", "Cancel", null, EnvelopeList);
-        if (SelectEnvelope == "Cancel")
-        {
-
-        }
-        else
-        {
-            int SavingsID = EnvelopeSavings[SelectEnvelope];
             if (App.CurrentPopUp == null)
             {
                 var PopUp = new PopUpPage();
@@ -104,22 +74,76 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
                 Application.Current.MainPage.ShowPopup(PopUp);
             }
 
-            string SpendType = "EnvelopeSaving";
-            Transactions T = new Transactions
+            if (App.CurrentBottomSheet != null)
             {
-                IsSpendFromSavings = true,
-                SavingID = SavingsID,
-                SavingName = SelectEnvelope,
-                SavingsSpendType = SpendType,
-                EventType = "Envelope",
-                TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow)
-            };
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
 
-            await Shell.Current.GoToAsync($"/{nameof(AddTransaction)}?BudgetID={App.DefaultBudget.BudgetID}&NavigatedFrom=ViewMainPage&TransactionID=0",
-                new Dictionary<string, object>
-                {
-                    ["Transaction"] = T
-                });
+            await Shell.Current.GoToAsync($"///{nameof(DailyBudgetMAUIApp.Pages.ViewEnvelopes)}");
         }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "EnvelopeOptionsBottomSheet", "ViewAllEnvelopes_Tapped");
+        }
+
+    }
+
+    private async void SpendMoney_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            if (App.CurrentBottomSheet != null)
+            {
+                await this.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+
+            List<Savings>? savings = await _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID);
+            Dictionary<string, int> EnvelopeSavings = new Dictionary<string, int>();
+            foreach (var s in savings)
+            {
+                EnvelopeSavings.Add(s.SavingsName, s.SavingID);
+            }
+
+            string[] EnvelopeList = EnvelopeSavings.Keys.ToArray();
+            var SelectEnvelope = await Application.Current.MainPage.DisplayActionSheet($"Select which stash you want to pay from!", "Cancel", null, EnvelopeList);
+            if (SelectEnvelope == "Cancel")
+            {
+
+            }
+            else
+            {
+                int SavingsID = EnvelopeSavings[SelectEnvelope];
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                string SpendType = "EnvelopeSaving";
+                Transactions T = new Transactions
+                {
+                    IsSpendFromSavings = true,
+                    SavingID = SavingsID,
+                    SavingName = SelectEnvelope,
+                    SavingsSpendType = SpendType,
+                    EventType = "Envelope",
+                    TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow)
+                };
+
+                await Shell.Current.GoToAsync($"/{nameof(AddTransaction)}?BudgetID={App.DefaultBudget.BudgetID}&NavigatedFrom=ViewMainPage&TransactionID=0",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = T
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "EnvelopeOptionsBottomSheet", "SpendMoney_Tapped");
+        }
+
     }
 }

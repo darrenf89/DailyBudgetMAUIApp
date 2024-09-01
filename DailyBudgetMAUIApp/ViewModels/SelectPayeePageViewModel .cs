@@ -58,18 +58,23 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         private async void ClosePayee(object obj)
         {
-            if (App.CurrentPopUp == null)
+            try
             {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(500);
+
+                await Shell.Current.GoToAsync($"..");
             }
-
-            await Task.Delay(500);
-
-            await Shell.Current.GoToAsync($"..");
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "SelectPayee", "ClosePayee");
+            }
         }
-
-
     }
 }

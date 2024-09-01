@@ -75,191 +75,247 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
     private async void ViewTransactions_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        if (App.CurrentBottomSheet != null)
-        {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewTransactions)}");
         }
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewTransactions)}");
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "ViewTransactions_Tapped");
+        }
     }
 
     private async void ViewBills_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        if (App.CurrentBottomSheet != null)
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewBills)}");
+        }
+        catch (Exception ex)
         {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "ViewBills_Tapped");
         }
-
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewBills)}");
     }
 
     private async void ViewSavings_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        if (App.CurrentBottomSheet != null)
-        {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
         }
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "ViewSavings_Tapped");
+        }
     }
 
     private async void ViewIncomes_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        if (App.CurrentBottomSheet != null)
-        {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewIncomes)}");
         }
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewIncomes)}");
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "ViewIncomes_Tapped");
+        }
     }
 
     private async void EditPayInfo_Tapped(object sender, TappedEventArgs e)
     {
-        var popup = new PopupEditNextPayInfo(App.DefaultBudget, new PopupEditNextPayInfoViewModel(), new ProductTools(new RestDataService()), new RestDataService());
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
-        if(result is Budgets)
+        try
         {
-            App.DefaultBudget = (Budgets)result;
+            var popup = new PopupEditNextPayInfo(App.DefaultBudget, new PopupEditNextPayInfoViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            if(result is Budgets)
+            {
+                App.DefaultBudget = (Budgets)result;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "EditPayInfo_Tapped");
         }
     }
 
     private async void EditBudgetSettings_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentBottomSheet != null)
+        try
         {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
-        }
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
 
-        if (App.CurrentPopUp == null)
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(500);
+
+            EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()));
+
+            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+        }
+        catch (Exception ex)
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "EditBudgetSettings_Tapped");
         }
-
-        await Task.Delay(500);
-
-        EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-
-        await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
     }
 
     private async void SyncBankBalance_Tapped(object sender, TappedEventArgs e)
     {
-        var popup = new PopupSyncBankBalance(App.DefaultBudget, new PopupSyncBankBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
-        if (result is Budgets)
+        try
         {
-            App.DefaultBudget = (Budgets)result;
+            var popup = new PopupSyncBankBalance(App.DefaultBudget, new PopupSyncBankBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            if (result is Budgets)
+            {
+                App.DefaultBudget = (Budgets)result;
+                }
         }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "SyncBankBalance_Tapped");
+        }
+
     }
 
     private async void UserSettings_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentBottomSheet != null)
+        try
         {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
-        }
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
 
-        if (App.CurrentPopUp == null)
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(500);
+
+            EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()));
+
+            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+        }
+        catch (Exception ex)
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "UserSettings_Tapped");
         }
-
-        await Task.Delay(500);
-
-        EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()));
-
-        await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
     }
 
     private async void CreateNewBudget_Tapped(object sender, TappedEventArgs e)
     {
-        var result = await Shell.Current.DisplayPromptAsync("Create a new budget?", "Before you start creating a new budget give it a name and then let's get going!","Ok","Cancel");
-        if (result != null)
+        try
         {
-            try
+            var result = await Shell.Current.DisplayPromptAsync("Create a new budget?", "Before you start creating a new budget give it a name and then let's get going!","Ok","Cancel");
+            if (result != null)
             {
                 if (App.CurrentBottomSheet != null)
                 {
                     await this.DismissAsync();
                     App.CurrentBottomSheet = null;
                 }
-            }
-            catch (Exception)
-            {
 
-            }
+                Budgets NewBudget = new Budgets();
 
-
-            Budgets NewBudget = new Budgets();
-
-            if (!string.IsNullOrEmpty(result)) 
-            {
-                NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email, "PremiumPlus");
-
-                List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
-
-                PatchDoc BudgetName = new PatchDoc
+                if (!string.IsNullOrEmpty(result)) 
                 {
-                    op = "replace",
-                    path = "/BudgetName",
-                    value = result
-                };
+                    NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email, "PremiumPlus");
 
-                BudgetUpdate.Add(BudgetName);
+                    List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
 
-                await _ds.PatchBudget(NewBudget.BudgetID, BudgetUpdate);
-                NewBudget.BudgetName = result;
+                    PatchDoc BudgetName = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/BudgetName",
+                        value = result
+                    };
+
+                    BudgetUpdate.Add(BudgetName);
+
+                    await _ds.PatchBudget(NewBudget.BudgetID, BudgetUpdate);
+                    NewBudget.BudgetName = result;
                 
+                }
+                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, NewBudget.BudgetID, false);
+                App.DefaultBudgetID = NewBudget.BudgetID;
+                App.DefaultBudget = NewBudget;
+                App.HasVisitedCreatePage = true;
+
+                if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
+                {
+                    Preferences.Remove(nameof(App.DefaultBudgetID));
+                }
+                Preferences.Set(nameof(App.DefaultBudgetID), NewBudget.BudgetID);
+
+
+                await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
+
             }
-            await _pt.ChangeDefaultBudget(App.UserDetails.UserID, NewBudget.BudgetID, false);
-            App.DefaultBudgetID = NewBudget.BudgetID;
-            App.DefaultBudget = NewBudget;
-            App.HasVisitedCreatePage = true;
-
-            if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
-            {
-                Preferences.Remove(nameof(App.DefaultBudgetID));
-            }
-            Preferences.Set(nameof(App.DefaultBudgetID), NewBudget.BudgetID);
-
-
-            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
-
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "CreateNewBudget_Tapped");
         }
     }
 
@@ -270,63 +326,84 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
     private async void ShareBudget_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentBottomSheet != null)
+        try
         {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
-        }
-
-        ShareBudgetRequest SBR = new ShareBudgetRequest
-        {
-            SharedBudgetID = App.DefaultBudgetID,
-            IsVerified = false,
-            SharedByUserEmail = App.UserDetails.Email,
-            RequestInitiated = DateTime.UtcNow
-        };
-
-        ShareBudget page = new ShareBudget(SBR, new RestDataService());
-
-        page.Detents = new DetentsCollection()
-        {
-            new FixedContentDetent
+            if (App.CurrentBottomSheet != null)
             {
-                IsDefault = true                
-            },
-            new FullscreenDetent()
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
 
-        };
+            ShareBudgetRequest SBR = new ShareBudgetRequest
+            {
+                SharedBudgetID = App.DefaultBudgetID,
+                IsVerified = false,
+                SharedByUserEmail = App.UserDetails.Email,
+                RequestInitiated = DateTime.UtcNow
+            };
 
-        page.HasBackdrop = true;
-        page.CornerRadius = 30;
+            ShareBudget page = new ShareBudget(SBR, new RestDataService(), new ProductTools(new RestDataService()));
 
-        App.CurrentBottomSheet = page;
-        page.ShowAsync();
+            page.Detents = new DetentsCollection()
+            {
+                new FixedContentDetent
+                {
+                    IsDefault = true                
+                },
+                new FullscreenDetent()
+
+            };
+
+            page.HasBackdrop = true;
+            page.CornerRadius = 30;
+
+            App.CurrentBottomSheet = page;
+            page.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "ShareBudget_Tapped");
+        }
     }
 
     private async void SwitchBudget_Tapped(object sender, TappedEventArgs e)
     {
-        SwitchBudgetPicker = await _pt.SwitchBudget("Budget Options");
-        SwitchBudgetPicker.HeightRequest = 0.1;
-        MainVSL.Children.Add(SwitchBudgetPicker);
-        SwitchBudgetPicker.Focus();
+        try
+        {
+            SwitchBudgetPicker = await _pt.SwitchBudget("Budget Options");
+            SwitchBudgetPicker.HeightRequest = 0.1;
+            MainVSL.Children.Add(SwitchBudgetPicker);
+            SwitchBudgetPicker.Focus();
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "SwitchBudget_Tapped");
+        }
     }
 
     private async void ViewEnvelopes_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        if (App.CurrentBottomSheet != null)
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewEnvelopes)}");
+        }
+        catch (Exception ex)
         {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "ViewEnvelopes_Tapped");
         }
-
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewEnvelopes)}");
     }
 
     private void UpgradeSubscription_Tapped(object sender, TappedEventArgs e)
@@ -359,12 +436,19 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
     private async void MoveBalance_Tapped(object sender, TappedEventArgs e)
     {
-        var popup = new PopupMoveBalance(App.DefaultBudget, "Budget",0, false, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
-        await Task.Delay(100);
-        if (result.ToString() == "OK")
+        try
         {
-            App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+            var popup = new PopupMoveBalance(App.DefaultBudget, "Budget",0, false, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            await Task.Delay(100);
+            if (result.ToString() == "OK")
+            {
+                App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "MoveBalance_Tapped");
         }
     }
 }

@@ -88,10 +88,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]    
         async void SignUp()
         {
-            await ResetSuccessFailureMessage();
+            
             try
             {
-                if(!PageIsValid())                
+                await ResetSuccessFailureMessage();
+                if (!PageIsValid())                
                 {
                     return;
                 }
@@ -124,7 +125,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                             {
                                 RegisterSuccess = true;
 
-                                var popup = new PopUpOTP(ReturnUser.UserID, new PopUpOTPViewModel(new RestDataService()), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
+                                var popup = new PopUpOTP(ReturnUser.UserID, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
                                 var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
                                 if((string)result.ToString() == "OK")
@@ -199,21 +200,23 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
             catch(Exception ex)
             {
-                Debug.WriteLine($"Error Trying to get User Details in DataRestServices --> {ex.Message}");
-                ErrorLog Error = await _pt.HandleCatchedException(ex, "RegisterPage", "SignUp");
-                await Application.Current.MainPage.Navigation.PopModalAsync();
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
-                    {
-                        ["Error"] = Error
-                    });
+                await _pt.HandleException(ex, "RegisterPage", "SignUp");
             }
         }
 
         [RelayCommand]
         async void NavigateSignIn()
         {
-            await Shell.Current.GoToAsync($"../{nameof(LogonPage)}");
+            try
+            {
+                await Shell.Current.GoToAsync($"../{nameof(LogonPage)}");
+            }
+            catch (Exception ex)
+            {
+
+                await _pt.HandleException(ex, "RegisterPage", "NavigateSignIn");
+            }
+
         }
     }
 }

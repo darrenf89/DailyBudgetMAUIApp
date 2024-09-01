@@ -38,40 +38,53 @@ public partial class EditProfilePictureBottomSheet : BottomSheet
         lblTitle.Text = $"Edit profile picture";
 
         this.PropertyChanged += ViewTransactionFilterBottomSheet_PropertyChanged;
-
-        FillAvatarFlexLayout();        
+        try
+        {
+            FillAvatarFlexLayout();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditProfilePictureBottomSheet", "EditProfilePictureBottomSheet");
+        }
 
     }
 
     private void ViewTransactionFilterBottomSheet_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        string PropertyChange = (string)e.PropertyName;
-        if (PropertyChange == "SelectedDetent")
+        try
         {
-            double Height = this.Height;
-
-            BottomSheet Sender = (BottomSheet)sender;
-
-            if (Sender.SelectedDetent is FullscreenDetent)
+            string PropertyChange = (string)e.PropertyName;
+            if (PropertyChange == "SelectedDetent")
             {
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, Height - 60, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
-            else if (Sender.SelectedDetent is MediumDetent)
-            {
-                MediumDetent detent = (MediumDetent)Sender.SelectedDetent;
+                double Height = this.Height;
 
-                double NewHeight = (Height * detent.Ratio) - 60;
+                BottomSheet Sender = (BottomSheet)sender;
 
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, NewHeight, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
-            else if (Sender.SelectedDetent is FixedContentDetent)
-            {
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
+                if (Sender.SelectedDetent is FullscreenDetent)
+                {
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, Height - 60, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+                else if (Sender.SelectedDetent is MediumDetent)
+                {
+                    MediumDetent detent = (MediumDetent)Sender.SelectedDetent;
 
+                    double NewHeight = (Height * detent.Ratio) - 60;
+
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, NewHeight, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+                else if (Sender.SelectedDetent is FixedContentDetent)
+                {
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditProfilePictureBottomSheet", "ViewTransactionFilterBottomSheet_PropertyChanged");
         }
     }
 
@@ -126,7 +139,16 @@ public partial class EditProfilePictureBottomSheet : BottomSheet
 
             TapGestureRecognizer TapGesture = new TapGestureRecognizer();
             TapGesture.NumberOfTapsRequired = 1;
-            TapGesture.Tapped += async (s, e) => await UpdateSelectedAvatar(Avatar);
+            TapGesture.Tapped += async (s, e) => {
+                try
+                {
+                    await UpdateSelectedAvatar(Avatar);
+                }
+                catch (Exception ex)
+                {
+                    await _pt.HandleException(ex, "EditProfilePictureBottomSheet", "TapGesture.Tapped");
+                }                
+            }; 
             AvatarView.GestureRecognizers.Add(TapGesture);
 
             flxAvatars.Children.Add(AvatarView);
@@ -160,47 +182,54 @@ public partial class EditProfilePictureBottomSheet : BottomSheet
 
     private async void UploadPicture_Clicked(object sender, EventArgs e)
     {
-        FileResult UploadFile = await MediaPicker.PickPhotoAsync();
-
-        if (UploadFile is null) return;
-
-        if (UploadFile.OpenReadAsync().Result.Length < 3000000)
+        try
         {
-            string result = await _ds.UploadUserProfilePicture(App.UserDetails.UserID, UploadFile);
+            FileResult UploadFile = await MediaPicker.PickPhotoAsync();
 
-            if(result == "OK")
+            if (UploadFile is null) return;
+
+            if (UploadFile.OpenReadAsync().Result.Length < 3000000)
             {
-                List<PatchDoc> UserUpdate = new List<PatchDoc>();
+                string result = await _ds.UploadUserProfilePicture(App.UserDetails.UserID, UploadFile);
 
-                PatchDoc ProfilePicture = new PatchDoc
+                if(result == "OK")
                 {
-                    op = "replace",
-                    path = "/ProfilePicture",
-                    value = "Upload"
-                };
+                    List<PatchDoc> UserUpdate = new List<PatchDoc>();
 
-                UserUpdate.Add(ProfilePicture);
+                    PatchDoc ProfilePicture = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/ProfilePicture",
+                        value = "Upload"
+                    };
 
-                await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                    UserUpdate.Add(ProfilePicture);
 
-                EditAccountSettings CurrentPage = (EditAccountSettings)Shell.Current.CurrentPage;
-                CurrentPage.ProfilePicStream = await UploadFile.OpenReadAsync();
+                    await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
 
-                if (App.CurrentBottomSheet != null)
+                    EditAccountSettings CurrentPage = (EditAccountSettings)Shell.Current.CurrentPage;
+                    CurrentPage.ProfilePicStream = await UploadFile.OpenReadAsync();
+
+                    if (App.CurrentBottomSheet != null)
+                    {
+                        await this.DismissAsync();
+                        App.CurrentBottomSheet = null;
+                    }
+                }    
+                else
                 {
-                    await this.DismissAsync();
-                    App.CurrentBottomSheet = null;
+
                 }
-            }    
+
+            }
             else
             {
 
             }
-
         }
-        else
+        catch (Exception ex)
         {
-
+            await _pt.HandleException(ex, "EditProfilePictureBottomSheet", "UploadPicture_Clicked");
         }
     }
 }

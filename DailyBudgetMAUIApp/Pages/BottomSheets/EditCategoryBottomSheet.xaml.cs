@@ -50,106 +50,125 @@ public partial class EditCategoryBottomSheet : BottomSheet
         this.PropertyChanged += ViewTransactionFilterBottomSheet_PropertyChanged;
 
         MaterialDesignIconsFonts obj = new MaterialDesignIconsFonts();
-
-        Icons = _pt.GetIcons().Result;
-        FillIconFlexLayout(SelectedIcon);
-        ToggleIconButtons(SelectedIcon);
+        try
+        {
+            Icons = _pt.GetIcons().Result;
+            FillIconFlexLayout(SelectedIcon);
+            ToggleIconButtons(SelectedIcon);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditCategoryBottomSheet", "EditCategoryBottomSheet");
+        }
     }
 
     private void ViewTransactionFilterBottomSheet_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        string PropertyChange = (string)e.PropertyName;
-        if (PropertyChange == "SelectedDetent")
+        try
         {
-            double Height = this.Height;
-
-            BottomSheet Sender = (BottomSheet)sender;
-
-            if (Sender.SelectedDetent is FullscreenDetent)
+            string PropertyChange = (string)e.PropertyName;
+            if (PropertyChange == "SelectedDetent")
             {
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, Height - 60, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
-            else if (Sender.SelectedDetent is MediumDetent)
-            {
-                MediumDetent detent = (MediumDetent)Sender.SelectedDetent;
+                double Height = this.Height;
 
-                double NewHeight = (Height * detent.Ratio) - 60;
+                BottomSheet Sender = (BottomSheet)sender;
 
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, NewHeight, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
-            else if (Sender.SelectedDetent is FixedContentDetent)
-            {
-                MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
-                MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
-            }
+                if (Sender.SelectedDetent is FullscreenDetent)
+                {
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, Height - 60, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+                else if (Sender.SelectedDetent is MediumDetent)
+                {
+                    MediumDetent detent = (MediumDetent)Sender.SelectedDetent;
 
+                    double NewHeight = (Height * detent.Ratio) - 60;
+
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.None);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, NewHeight, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+                else if (Sender.SelectedDetent is FixedContentDetent)
+                {
+                    MainAbs.SetLayoutFlags(BtnApply, AbsoluteLayoutFlags.PositionProportional);
+                    MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
+                }
+
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditCategoryBottomSheet", "ViewTransactionFilterBottomSheet_PropertyChanged");
         }
     }
 
     private async void AddCategory_Clicked(object sender, EventArgs e)
     {
-
-        validator.IsVisible = false;
-        lblValidator.Text = "";
-
-        if (string.IsNullOrEmpty(entCategoryName.Text))
+        try
         {
-            validator.IsVisible = true;
-            lblValidator.Text = "You have to give the category a name";
-            return;
-        }
+            validator.IsVisible = false;
+            lblValidator.Text = "";
 
-        if (string.IsNullOrEmpty(SelectedIcon))
-        {
-            validator.IsVisible = true;
-            lblValidator.Text = "You have to give the category an icon";
-            return;
-        }
+            if (string.IsNullOrEmpty(entCategoryName.Text))
+            {
+                validator.IsVisible = true;
+                lblValidator.Text = "You have to give the category a name";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(SelectedIcon))
+            {
+                validator.IsVisible = true;
+                lblValidator.Text = "You have to give the category an icon";
+                return;
+            }
 
 
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        await Task.Delay(500);
+            await Task.Delay(500);
 
-        List<PatchDoc> patchDoc = new List<PatchDoc>();
+            List<PatchDoc> patchDoc = new List<PatchDoc>();
 
-        PatchDoc CategoryName = new PatchDoc
-        {
-            op = "replace",
-            path = "/CategoryName",
-            value = entCategoryName.Text
-        };
-        patchDoc.Add(CategoryName);
+            PatchDoc CategoryName = new PatchDoc
+            {
+                op = "replace",
+                path = "/CategoryName",
+                value = entCategoryName.Text
+            };
+            patchDoc.Add(CategoryName);
 
-        PatchDoc CategoryIcon = new PatchDoc
-        {
-            op = "replace",
-            path = "/CategoryIcon",
-            value = SelectedIcon
-        };
+            PatchDoc CategoryIcon = new PatchDoc
+            {
+                op = "replace",
+                path = "/CategoryIcon",
+                value = SelectedIcon
+            };
 
-        patchDoc.Add(CategoryIcon);
+            patchDoc.Add(CategoryIcon);
 
-        string result = await _ds.PatchCategory(Category.CategoryID, patchDoc);
+            string result = await _ds.PatchCategory(Category.CategoryID, patchDoc);
 
-        entCategoryName.IsEnabled = false;
-        entCategoryName.IsEnabled = true;
-        entIconSearch.IsEnabled = false;
-        entIconSearch.IsEnabled = true;
+            entCategoryName.IsEnabled = false;
+            entCategoryName.IsEnabled = true;
+            entIconSearch.IsEnabled = false;
+            entIconSearch.IsEnabled = true;
        
-        await Shell.Current.GoToAsync($"{nameof(ViewCategories)}");
+            await Shell.Current.GoToAsync($"{nameof(ViewCategories)}");
 
-        if (App.CurrentBottomSheet != null)
+            if (App.CurrentBottomSheet != null)
+            {
+                await this.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+        }
+        catch (Exception ex)
         {
-            await this.DismissAsync();
-            App.CurrentBottomSheet = null;
+            await _pt.HandleException(ex, "EditCategoryBottomSheet", "AddCategory_Clicked");
         }
 
     }
@@ -184,7 +203,14 @@ public partial class EditCategoryBottomSheet : BottomSheet
 
     private void entIconSearch_TextChanged(object sender, TextChangedEventArgs e)
     {
-        FillIconFlexLayout(e.NewTextValue);
+        try
+        {
+            FillIconFlexLayout(e.NewTextValue);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditCategoryBottomSheet", "entIconSearch_TextChanged");
+        }
     }
 
     private void FillIconFlexLayout(string search)
@@ -227,7 +253,17 @@ public partial class EditCategoryBottomSheet : BottomSheet
                 Color = (Color)Info
             };
 
-            FilterButton.Clicked += (s, e) => ToggleIconButtons(icon.Key);
+            FilterButton.Clicked += (s, e) =>
+            {
+                try
+                {
+                    ToggleIconButtons(icon.Key);
+                }
+                catch (Exception ex)
+                {
+                    _pt.HandleException(ex, "EditCategoryBottomSheet", "FilterButton.Clicked");
+                }
+            };
 
             flxIcons.Children.Add(FilterButton);
             IconsButtons.Add(icon.Key, FilterButton);

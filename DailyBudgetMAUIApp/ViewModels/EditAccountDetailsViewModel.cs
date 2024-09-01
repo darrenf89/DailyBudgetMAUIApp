@@ -6,7 +6,6 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
-using Microsoft.Maui.Primitives;
 using System.Globalization;
 using The49.Maui.BottomSheet;
 
@@ -135,39 +134,54 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         private async Task CloseSettings(object obj)
         {
-            if (App.CurrentPopUp == null)
+            try
             {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(500);
+
+                await Shell.Current.GoToAsync($"..");
             }
-
-            await Task.Delay(500);
-
-            await Shell.Current.GoToAsync($"..");
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "EditAccountDetails", "CloseSettings");
+            }
         }               
 
         [RelayCommand]
         private async Task ChangeSelectedProfilePic()
         {
-            EditProfilePictureBottomSheet page = new EditProfilePictureBottomSheet( new ProductTools(new RestDataService()), new RestDataService());
-
-            page.Detents = new DetentsCollection()
+            try
             {
-                new FixedContentDetent            
+                EditProfilePictureBottomSheet page = new EditProfilePictureBottomSheet( new ProductTools(new RestDataService()), new RestDataService());
+
+                page.Detents = new DetentsCollection()
                 {
-                    IsDefault = true
-                },
-                new MediumDetent(),
-                new FullscreenDetent()
-            };
+                    new FixedContentDetent            
+                    {
+                        IsDefault = true
+                    },
+                    new MediumDetent(),
+                    new FullscreenDetent()
+                };
 
-            page.HasBackdrop = true;
-            page.CornerRadius = 0;
+                page.HasBackdrop = true;
+                page.CornerRadius = 0;
 
-            App.CurrentBottomSheet = page;
+                App.CurrentBottomSheet = page;
 
-            await page.ShowAsync();
+                await page.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "EditAccountDetails", "ChangeSelectedProfilePic");
+            }
+
         }
 
         public async Task<Stream> GetUserProfilePictureStream(int UserID)

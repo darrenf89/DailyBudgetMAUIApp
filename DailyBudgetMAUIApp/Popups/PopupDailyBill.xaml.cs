@@ -37,15 +37,22 @@ public partial class PopupDailyBill : Popup
 
     void BillAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal BillAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entBillAmount.CursorPosition > position)
+        try
         {
-            entBillAmount.CursorPosition = entBillAmount.Text.Length;
-        }
+            decimal BillAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entBillAmount.CursorPosition > position)
+            {
+                entBillAmount.CursorPosition = entBillAmount.Text.Length;
+            }
 
-        _vm.Bill.BillAmount = BillAmount;
+            _vm.Bill.BillAmount = BillAmount;
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "PopupDailyBill", "BillAmount_Changed");
+        }
     }
 
     private void Close_Saving(object sender, EventArgs e)
@@ -60,52 +67,74 @@ public partial class PopupDailyBill : Popup
 
     private void DeleteNo_Saving(object sender, EventArgs e)
     {
-        grdFirstBtns.IsVisible = false;
-        grdUpdateBtns.IsVisible = true;
-        grdDeleteBtns.IsVisible = false;
+        try
+        {
+            grdFirstBtns.IsVisible = false;
+            grdUpdateBtns.IsVisible = true;
+            grdDeleteBtns.IsVisible = false;
 
-        vslDeleteBill.IsVisible = false;
-        vslSavingComplete.IsVisible = true;
+            vslDeleteBill.IsVisible = false;
+            vslSavingComplete.IsVisible = true;
  
-        lblBillAmount.IsVisible = false;
-        lblTargetDate.IsVisible = false;
+            lblBillAmount.IsVisible = false;
+            lblTargetDate.IsVisible = false;
 
-        entBillAmount.IsVisible = true;
-        entTargetDate.IsVisible = true;
+            entBillAmount.IsVisible = true;
+            entTargetDate.IsVisible = true;
 
-        double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
-        entBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
+            double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
+            entBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "PopupDailyBill", "DeleteNo_Saving");
+        }
 
-        
+
     }
 
     private void Delete_Saving(object sender, EventArgs e)
     {
-        grdFirstBtns.IsVisible = false;
-        grdUpdateBtns.IsVisible = false;
-        grdDeleteBtns.IsVisible = true;
+        try
+        {
+            grdFirstBtns.IsVisible = false;
+            grdUpdateBtns.IsVisible = false;
+            grdDeleteBtns.IsVisible = true;
 
-        vslDeleteBill.IsVisible = true;
-        vslSavingComplete.IsVisible = false;
+            vslDeleteBill.IsVisible = true;
+            vslSavingComplete.IsVisible = false;
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "PopupDailyBill", "Delete_Saving");
+        }
     }
 
     private void Update_Saving(object sender, EventArgs e)
     {
-        grdFirstBtns.IsVisible = false;
-        grdUpdateBtns.IsVisible = true;
-        grdDeleteBtns.IsVisible = false;
+        try
+        {
+
+            grdFirstBtns.IsVisible = false;
+            grdUpdateBtns.IsVisible = true;
+            grdDeleteBtns.IsVisible = false;
 
 
-        lblBillAmount.IsVisible = false;
-        lblTargetDate.IsVisible = false;
+            lblBillAmount.IsVisible = false;
+            lblTargetDate.IsVisible = false;
 
-        entBillAmount.IsVisible = true;
-        entTargetDate.IsVisible = true;
+            entBillAmount.IsVisible = true;
+            entTargetDate.IsVisible = true;
 
-        double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
-        entBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
+            double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
+            entBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "PopupDailyBill", "ChangeSelectedProfilePic");
+        }
 
-        
+
     }
 
     private bool ValidatePage()
@@ -137,46 +166,60 @@ public partial class PopupDailyBill : Popup
 
     private void AcceptUpdate_Saving(object sender, EventArgs e)
     {
-        if(ValidatePage())
+        try
         {
-
-            int DaysToSavingDate = (int)Math.Ceiling((_vm.Bill.BillDueDate.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
-            decimal? AmountOutstanding = _vm.Bill.BillAmount - _vm.Bill.BillCurrentBalance;
-
-            if (DaysToSavingDate != 0)
+            if (ValidatePage())
             {
-                _vm.Bill.RegularBillValue = AmountOutstanding / DaysToSavingDate;
+
+                int DaysToSavingDate = (int)Math.Ceiling((_vm.Bill.BillDueDate.GetValueOrDefault().Date - DateTime.Today.Date).TotalDays);
+                decimal? AmountOutstanding = _vm.Bill.BillAmount - _vm.Bill.BillCurrentBalance;
+
+                if (DaysToSavingDate != 0)
+                {
+                    _vm.Bill.RegularBillValue = AmountOutstanding / DaysToSavingDate;
+                }
+                else
+                {
+                    _vm.Bill.RegularBillValue = AmountOutstanding;
+                }            
+
+                this.Close(_vm.Bill);
             }
-            else
-            {
-                _vm.Bill.RegularBillValue = AmountOutstanding;
-            }            
-
-            this.Close(_vm.Bill);
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "PopupDailyBill", "ChangeSelectedProfilePic");
         }
     }
 
     private void Reset_Saving(object sender, EventArgs e)
     {
-        grdFirstBtns.IsVisible = true;
-        grdUpdateBtns.IsVisible = false;
-        grdDeleteBtns.IsVisible = false;
+        try
+        {
+            grdFirstBtns.IsVisible = true;
+            grdUpdateBtns.IsVisible = false;
+            grdDeleteBtns.IsVisible = false;
 
-        _vm.Bill.BillAmount = _vm.OriginalAmount;
-        _vm.Bill.BillDueDate = _vm.OriginalDate;
+            _vm.Bill.BillAmount = _vm.OriginalAmount;
+            _vm.Bill.BillDueDate = _vm.OriginalDate;
 
-        lblBillAmount.IsVisible = true;
-        lblTargetDate.IsVisible = true;
+            lblBillAmount.IsVisible = true;
+            lblTargetDate.IsVisible = true;
 
-        entBillAmount.IsVisible = false;
-        entTargetDate.IsVisible = false;
+            entBillAmount.IsVisible = false;
+            entTargetDate.IsVisible = false;
 
-        double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
-        lblBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
+            double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
+            lblBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
 
-        string GoalDate = _vm.Bill.BillDueDate.GetValueOrDefault().ToShortDateString();
-        lblTargetDate.Text = GoalDate;
-        
+            string GoalDate = _vm.Bill.BillDueDate.GetValueOrDefault().ToShortDateString();
+            lblTargetDate.Text = GoalDate;
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "PopupDailyBill", "ChangeSelectedProfilePic");
+        }
+
 
     }
 }

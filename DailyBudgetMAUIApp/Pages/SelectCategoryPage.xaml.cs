@@ -74,46 +74,53 @@ public partial class SelectCategoryPage : ContentPage
 
     async protected override void OnAppearing()
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
-
-        await Task.Delay(10);
-
-        TopBV.WidthRequest = ScreenWidth;
-        MainAbs.WidthRequest = ScreenWidth;
-        MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
-        MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
-
-        base.OnAppearing();
-
-        _vm.CategoryList = _ds.GetCategories(_vm.BudgetID).Result;
-
-        if (_vm.CategoryList.Count == 0)
-        {
-            brdNoCategories.IsVisible = true;
-            vslCategories.IsVisible = false;
-        }
-        else
-        {
-            brdNoCategories.IsVisible = false;
-            vslCategories.IsVisible = true;
-        }
-
-        foreach (Categories Category in _vm.CategoryList)
-        {
-            if (!Category.IsSubCategory)
+            if (App.CurrentPopUp == null)
             {
-                _vm.GroupCategoryList.Add(Category);
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
             }
-        }
 
-        FillSubCategoryLists(_vm.GroupCategoryList);
-        LoadCategoryList();
-        LoadCategoryFilter();
+            await Task.Delay(10);
+
+            TopBV.WidthRequest = ScreenWidth;
+            MainAbs.WidthRequest = ScreenWidth;
+            MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
+            MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
+
+            base.OnAppearing();
+
+            _vm.CategoryList = _ds.GetCategories(_vm.BudgetID).Result;
+
+            if (_vm.CategoryList.Count == 0)
+            {
+                brdNoCategories.IsVisible = true;
+                vslCategories.IsVisible = false;
+            }
+            else
+            {
+                brdNoCategories.IsVisible = false;
+                vslCategories.IsVisible = true;
+            }
+
+            foreach (Categories Category in _vm.CategoryList)
+            {
+                if (!Category.IsSubCategory)
+                {
+                    _vm.GroupCategoryList.Add(Category);
+                }
+            }
+
+            FillSubCategoryLists(_vm.GroupCategoryList);
+            LoadCategoryList();
+            LoadCategoryFilter();
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "SelectCategory", "OnAppearing");
+        }
 
     }
 
@@ -583,25 +590,116 @@ public partial class SelectCategoryPage : ContentPage
 
     private async void AddNewSubCategory(string CategoryGroup, int CategoryID)
     {
-        Grid VSL = AddNewCat[CategoryGroup];
-        Border border = (Border)VSL.Children[1];
-        Grid grid = (Grid)border.Content;
-        BorderlessEntry Entry = (BorderlessEntry)grid.Children[0];
-        string name = Entry.Text;
-
-        Categories NewCat = new Categories
+        try
         {
-            CategoryGroupID = CategoryID,
-            IsSubCategory = true,
-            CategoryName = name
-        };
+            Grid VSL = AddNewCat[CategoryGroup];
+            Border border = (Border)VSL.Children[1];
+            Grid grid = (Grid)border.Content;
+            BorderlessEntry Entry = (BorderlessEntry)grid.Children[0];
+            string name = Entry.Text;
 
-        Entry.IsEnabled = false;
-        Entry.IsEnabled = true;
+            Categories NewCat = new Categories
+            {
+                CategoryGroupID = CategoryID,
+                IsSubCategory = true,
+                CategoryName = name
+            };
 
-        bool result = await DisplayAlert($"Add {name}", $"Are you sure you want to add {name} as a new Category?", "Yes, continue", "No, go back!");
-        if (result)
+            Entry.IsEnabled = false;
+            Entry.IsEnabled = true;
+
+            bool result = await DisplayAlert($"Add {name}", $"Are you sure you want to add {name} as a new Category?", "Yes, continue", "No, go back!");
+            if (result)
+            {
+
+                AddNewCat[CategoryGroup].RemoveAt(1);
+
+                Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
+                Label AddNewHeaderLabel = new Label
+                {
+                    Text = "Add New Category",
+                    Margin = new Thickness(10, 0, 0, 0),
+                    TextColor = (Color)Gray400,
+                    FontSize = 14,
+                    HorizontalOptions = LayoutOptions.Start,
+                    VerticalOptions = LayoutOptions.Center
+                };
+
+                AddNewCat[CategoryGroup].Add(AddNewHeaderLabel, 1, 0);
+
+                NewCat = _ds.AddNewSubCategory(_vm.BudgetID, NewCat).Result;
+
+                _vm.SubCategoryList.Add(NewCat);
+                LoadCategoryList();
+            }
+        }
+        catch (Exception ex)
         {
+            await _pt.HandleException(ex, "SelectCategory", "AddNewSubCategory");
+        }
+
+    }
+
+    private async void ShowHideCategoryGroup(string CategoryGroup)
+    {
+        try
+        {
+            VerticalStackLayout vsl = SubCatList[CategoryGroup];
+            double vslHeight = SubCatHeight[CategoryGroup];
+            Button ExpandButton = CatExpandButton[CategoryGroup];
+
+            Application.Current.Resources.TryGetValue("Primary", out var Primary);
+
+            if (!vsl.IsVisible)
+            {
+                vsl.IsVisible = true;
+                vsl.HeightRequest = 0;
+                var animation = new Animation(v => vsl.HeightRequest = v, 0, vslHeight);
+                animation.Commit(this, "vslOptionsShow", 16, 1000, Easing.CubicOut);
+
+                ExpandButton.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cf",
+                    Size = 40,
+                    Color = (Color)Primary
+                };
+            }
+            else
+            {
+                var animation = new Animation(v => vsl.HeightRequest = v, vslHeight, 0);
+                animation.Commit(this, "FilterOptionsHide", 16, 1000, Easing.CubicOut, (v, c) =>
+                {
+                    vsl.IsVisible = false;
+                });
+
+                ExpandButton.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5ce",
+                    Size = 40,
+                    Color = (Color)Primary
+                };
+
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "SelectCategory", "ShowHideCategoryGroup");
+        }
+    }
+
+    private void ClearAddNewCategory(string CategoryGroup)
+    {
+        try
+        {
+            Grid VSL = AddNewCat[CategoryGroup];
+            Border border = (Border)VSL.Children[1];
+            Grid grid = (Grid)border.Content;
+            BorderlessEntry Entry = (BorderlessEntry)grid.Children[0];
+
+            Entry.IsEnabled = false;
+            Entry.IsEnabled = true;
 
             AddNewCat[CategoryGroup].RemoveAt(1);
 
@@ -609,7 +707,7 @@ public partial class SelectCategoryPage : ContentPage
             Label AddNewHeaderLabel = new Label
             {
                 Text = "Add New Category",
-                Margin = new Thickness(10, 0, 0, 0),
+                Margin = new Thickness(10,0,0,0),
                 TextColor = (Color)Gray400,
                 FontSize = 14,
                 HorizontalOptions = LayoutOptions.Start,
@@ -617,117 +715,53 @@ public partial class SelectCategoryPage : ContentPage
             };
 
             AddNewCat[CategoryGroup].Add(AddNewHeaderLabel, 1, 0);
-
-            NewCat = _ds.AddNewSubCategory(_vm.BudgetID, NewCat).Result;
-
-            _vm.SubCategoryList.Add(NewCat);
-            LoadCategoryList();
         }
-
-    }
-
-    private async void ShowHideCategoryGroup(string CategoryGroup)
-    {
-        VerticalStackLayout vsl = SubCatList[CategoryGroup];
-        double vslHeight = SubCatHeight[CategoryGroup];
-        Button ExpandButton = CatExpandButton[CategoryGroup];
-
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-
-        if (!vsl.IsVisible)
+        catch (Exception ex)
         {
-            vsl.IsVisible = true;
-            vsl.HeightRequest = 0;
-            var animation = new Animation(v => vsl.HeightRequest = v, 0, vslHeight);
-            animation.Commit(this, "vslOptionsShow", 16, 1000, Easing.CubicOut);
-
-            ExpandButton.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cf",
-                Size = 40,
-                Color = (Color)Primary
-            };
+            _pt.HandleException(ex, "SelectCategory", "ClearAddNewCategory");
         }
-        else
-        {
-            var animation = new Animation(v => vsl.HeightRequest = v, vslHeight, 0);
-            animation.Commit(this, "FilterOptionsHide", 16, 1000, Easing.CubicOut, (v, c) =>
-            {
-                vsl.IsVisible = false;
-            });
-
-            ExpandButton.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5ce",
-                Size = 40,
-                Color = (Color)Primary
-            };
-
-        }
-    }
-
-    private void ClearAddNewCategory(string CategoryGroup)
-    {
-        Grid VSL = AddNewCat[CategoryGroup];
-        Border border = (Border)VSL.Children[1];
-        Grid grid = (Grid)border.Content;
-        BorderlessEntry Entry = (BorderlessEntry)grid.Children[0];
-
-        Entry.IsEnabled = false;
-        Entry.IsEnabled = true;
-
-        AddNewCat[CategoryGroup].RemoveAt(1);
-
-        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
-        Label AddNewHeaderLabel = new Label
-        {
-            Text = "Add New Category",
-            Margin = new Thickness(10,0,0,0),
-            TextColor = (Color)Gray400,
-            FontSize = 14,
-            HorizontalOptions = LayoutOptions.Start,
-            VerticalOptions = LayoutOptions.Center
-        };
-
-        AddNewCat[CategoryGroup].Add(AddNewHeaderLabel, 1, 0);
     }
 
     private async void SelectCategory_Tapped(object sender, TappedEventArgs e)
     {
-
-        Categories Category = (Categories)e.Parameter;
-
-        if (_vm.PageType == "Transaction")
+        try
         {
-            bool result = await DisplayAlert($"Select {Category.CategoryName}", $"Are you sure you want to select {Category.CategoryName} as the Category?", "Yes, continue", "No, go back!");
-            if (result)
-            {
-                _vm.Transaction.Category = Category.CategoryName;
-                _vm.Transaction.CategoryID = Category.CategoryID;
+            Categories Category = (Categories)e.Parameter;
 
-                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&TransactionID={_vm.Transaction.TransactionID}",
-                    new Dictionary<string, object>
-                    {
-                        ["Transaction"] = _vm.Transaction
-                    });
+            if (_vm.PageType == "Transaction")
+            {
+                bool result = await DisplayAlert($"Select {Category.CategoryName}", $"Are you sure you want to select {Category.CategoryName} as the Category?", "Yes, continue", "No, go back!");
+                if (result)
+                {
+                    _vm.Transaction.Category = Category.CategoryName;
+                    _vm.Transaction.CategoryID = Category.CategoryID;
+
+                    await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&TransactionID={_vm.Transaction.TransactionID}",
+                        new Dictionary<string, object>
+                        {
+                            ["Transaction"] = _vm.Transaction
+                        });
+                }
+            }
+            else if (_vm.PageType == "Bill")
+            {
+                bool result = await DisplayAlert($"Select {Category.CategoryName}", $"Are you sure you want to select {Category.CategoryName} as the Category?", "Yes, continue", "No, go back!");
+                if (result)
+                {
+                    _vm.Bill.Category = Category.CategoryName;
+                    _vm.Bill.CategoryID = Category.CategoryID;
+
+                    await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&BillID={_vm.Bill.BillID}",
+                        new Dictionary<string, object>
+                        {
+                            ["Bill"] = _vm.Bill
+                        });
+                }
             }
         }
-        else if (_vm.PageType == "Bill")
+        catch (Exception ex)
         {
-            bool result = await DisplayAlert($"Select {Category.CategoryName}", $"Are you sure you want to select {Category.CategoryName} as the Category?", "Yes, continue", "No, go back!");
-            if (result)
-            {
-                _vm.Bill.Category = Category.CategoryName;
-                _vm.Bill.CategoryID = Category.CategoryID;
-
-                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&BillID={_vm.Bill.BillID}",
-                    new Dictionary<string, object>
-                    {
-                        ["Bill"] = _vm.Bill
-                    });
-            }
+            await _pt.HandleException(ex, "SelectCategory", "SelectCategory_Tapped");
         }
     }
 
@@ -764,113 +798,133 @@ public partial class SelectCategoryPage : ContentPage
 
     private async void BackButton_Clicked(object sender, EventArgs e)
     {
-        if(_vm.PageType=="Transaction")
+        try
         {
-            _vm.Transaction.Category = "";
-            _vm.Transaction.CategoryID = 0;
-
-            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&TransactionID={_vm.Transaction.TransactionID}",
-            new Dictionary<string, object>
+            if (_vm.PageType=="Transaction")
             {
-                ["Transaction"] = _vm.Transaction
-            });
-        }
-        else if(_vm.PageType=="Bill")
-        {
-            _vm.Bill.Category = "";
-            _vm.Bill.CategoryID = 0;
+                _vm.Transaction.Category = "";
+                _vm.Transaction.CategoryID = 0;
 
-            await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&BillID={_vm.Bill.BillID}",
-            new Dictionary<string, object>
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&TransactionID={_vm.Transaction.TransactionID}",
+                new Dictionary<string, object>
+                {
+                    ["Transaction"] = _vm.Transaction
+                });
+            }
+            else if(_vm.PageType=="Bill")
             {
-                ["Bill"] = _vm.Bill
-            });
-        }
-        else
-        {
-            await Shell.Current.GoToAsync($"..");
-        }
+                _vm.Bill.Category = "";
+                _vm.Bill.CategoryID = 0;
 
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&BillID={_vm.Bill.BillID}",
+                new Dictionary<string, object>
+                {
+                    ["Bill"] = _vm.Bill
+                });
+            }
+            else
+            {
+                await Shell.Current.GoToAsync($"..");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "SelectCategory", "BackButton_Clicked");
+        }
     }
 
     private void AscSort_Clicked(object sender, EventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        if (AscSort.Style == (Style)buttonUnclicked)
+        try
         {
-            AscSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue876",
-                Size = 15,
-                Color = (Color)White
-            };
-            AscSort.Style = (Style)buttonClicked;
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-            DesSort.Style = (Style)buttonUnclicked;
-            DesSort.ImageSource = new FontImageSource
+            if (AscSort.Style == (Style)buttonUnclicked)
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                AscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue876",
+                    Size = 15,
+                    Color = (Color)White
+                };
+                AscSort.Style = (Style)buttonClicked;
+
+                DesSort.Style = (Style)buttonUnclicked;
+                DesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
+            else
+            {
+                AscSort.Style = (Style)buttonUnclicked;
+                AscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
         }
-        else
+        catch (Exception ex)
         {
-            AscSort.Style = (Style)buttonUnclicked;
-            AscSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+            _pt.HandleException(ex, "SelectCategory", "AscSort_Clicked");
         }
     }
 
     private void DesSort_Clicked(object sender, EventArgs e)
     {
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        if (DesSort.Style == (Style)buttonUnclicked)
+        try
         {
-            DesSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue876",
-                Size = 15,
-                Color = (Color)White
-            };
-            DesSort.Style = (Style)buttonClicked;
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
+            Application.Current.Resources.TryGetValue("White", out var White);
 
-            AscSort.Style = (Style)buttonUnclicked;
-            AscSort.ImageSource = new FontImageSource
+            if (DesSort.Style == (Style)buttonUnclicked)
             {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
+                DesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue876",
+                    Size = 15,
+                    Color = (Color)White
+                };
+                DesSort.Style = (Style)buttonClicked;
+
+                AscSort.Style = (Style)buttonUnclicked;
+                AscSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
+            else
+            {
+                DesSort.Style = (Style)buttonUnclicked;
+                DesSort.ImageSource = new FontImageSource
+                {
+                    FontFamily = "MaterialDesignIcons",
+                    Glyph = "\ue5cd",
+                    Size = 15,
+                    Color = (Color)Info
+                };
+            }
         }
-        else
+        catch (Exception ex)
         {
-            DesSort.Style = (Style)buttonUnclicked;
-            DesSort.ImageSource = new FontImageSource
-            {
-                FontFamily = "MaterialDesignIcons",
-                Glyph = "\ue5cd",
-                Size = 15,
-                Color = (Color)Info
-            };
-        }                
+            _pt.HandleException(ex, "SelectCategory", "DesSort_Clicked");
+        }
     }
 
     private void SortCategories(string SortDirection)
@@ -889,35 +943,108 @@ public partial class SelectCategoryPage : ContentPage
 
     private async void SortFilterApply_Clicked(object sender, EventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
-
-        await Task.Delay(10);
-
-        entCatFilterSearch.IsEnabled = false;
-        entCatFilterSearch.IsEnabled = true;
-
-        _vm.GroupCategoryList.Clear();
-        _vm.SubCategoryList.Clear();
-
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-        Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
-
-        if (FilteredGroupCat.Count > 0)
-        {
-            var TempList = new List<Categories>();
-            foreach (int i in FilteredGroupCat)
+            if (App.CurrentPopUp == null)
             {
-                TempList = _vm.CategoryList.Where(c => c.CategoryGroupID == i && !c.IsSubCategory).ToList();
-                _vm.GroupCategoryList.AddRange(TempList);
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(10);
+
+            entCatFilterSearch.IsEnabled = false;
+            entCatFilterSearch.IsEnabled = true;
+
+            _vm.GroupCategoryList.Clear();
+            _vm.SubCategoryList.Clear();
+
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+            Application.Current.Resources.TryGetValue("buttonClicked", out var buttonClicked);
+
+            if (FilteredGroupCat.Count > 0)
+            {
+                var TempList = new List<Categories>();
+                foreach (int i in FilteredGroupCat)
+                {
+                    TempList = _vm.CategoryList.Where(c => c.CategoryGroupID == i && !c.IsSubCategory).ToList();
+                    _vm.GroupCategoryList.AddRange(TempList);
+                }
+            }
+            else
+            {
+                foreach (Categories Category in _vm.CategoryList)
+                {
+                    if (!Category.IsSubCategory)
+                    {
+                        _vm.GroupCategoryList.Add(Category);
+                    }
+                }
+            }
+
+            FillSubCategoryLists(_vm.GroupCategoryList);
+
+            string SearchText = "";
+            if (!string.IsNullOrEmpty(entCatFilterSearch.Text))
+            {
+                SearchText = entCatFilterSearch.Text;
+            }
+
+            _vm.SubCategoryList = _vm.SubCategoryList.Where(x => x.CategoryName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            for (int i = _vm.GroupCategoryList.Count - 1; i >= 0; i--)
+            {
+                if (_vm.SubCategoryList.Where(x => x.CategoryGroupID == _vm.GroupCategoryList[i].CategoryGroupID).ToList().Count == 0)
+                {
+                    _vm.GroupCategoryList.RemoveAt(i);
+                }
+            }
+
+            if (DesSort.Style == (Style)buttonClicked)
+            {
+                SortCategories("des");
+            }
+            else if (AscSort.Style == (Style)buttonClicked)
+            {
+                SortCategories("asc");
+            }
+
+            LoadCategoryList();
+
+            acrFilterOption_Tapped(null, null);
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
             }
         }
-        else
+        catch (Exception ex)
         {
+            await _pt.HandleException(ex, "SelectCategory", "SortFilterApply_Clicked");
+        }
+    }
+
+    private async void ClearAllFilter_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            var LoadingPage = new LoadingPageTwo();
+            await Application.Current.MainPage.Navigation.PushModalAsync(LoadingPage, true);
+
+            Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
+
+            DesSort.Style = (Style)buttonUnclicked;
+            DesSort.ImageSource = null;
+            AscSort.Style = (Style)buttonUnclicked;
+            AscSort.ImageSource = null;
+
+            entCatFilterSearch.Text = "";
+
+            _vm.GroupCategoryList.Clear();
+            _vm.SubCategoryList.Clear();
+
             foreach (Categories Category in _vm.CategoryList)
             {
                 if (!Category.IsSubCategory)
@@ -925,103 +1052,58 @@ public partial class SelectCategoryPage : ContentPage
                     _vm.GroupCategoryList.Add(Category);
                 }
             }
+
+            FillSubCategoryLists(_vm.GroupCategoryList);
+            LoadCategoryList();
+            LoadCategoryFilter();
+
+            await Application.Current.MainPage.Navigation.PopModalAsync();
         }
-
-        FillSubCategoryLists(_vm.GroupCategoryList);
-
-        string SearchText = "";
-        if (!string.IsNullOrEmpty(entCatFilterSearch.Text))
+        catch (Exception ex)
         {
-            SearchText = entCatFilterSearch.Text;
+            await _pt.HandleException(ex, "SelectCategory", "ClearAllFilter_Tapped");
         }
-
-        _vm.SubCategoryList = _vm.SubCategoryList.Where(x => x.CategoryName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
-
-        for (int i = _vm.GroupCategoryList.Count - 1; i >= 0; i--)
-        {
-            if (_vm.SubCategoryList.Where(x => x.CategoryGroupID == _vm.GroupCategoryList[i].CategoryGroupID).ToList().Count == 0)
-            {
-                _vm.GroupCategoryList.RemoveAt(i);
-            }
-        }
-
-        if (DesSort.Style == (Style)buttonClicked)
-        {
-            SortCategories("des");
-        }
-        else if (AscSort.Style == (Style)buttonClicked)
-        {
-            SortCategories("asc");
-        }
-
-        LoadCategoryList();
-
-        acrFilterOption_Tapped(null, null);
-
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
-        }
-    }
-
-    private async void ClearAllFilter_Tapped(object sender, TappedEventArgs e)
-    {
-        var LoadingPage = new LoadingPageTwo();
-        await Application.Current.MainPage.Navigation.PushModalAsync(LoadingPage, true);
-
-        Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
-
-        DesSort.Style = (Style)buttonUnclicked;
-        DesSort.ImageSource = null;
-        AscSort.Style = (Style)buttonUnclicked;
-        AscSort.ImageSource = null;
-
-        entCatFilterSearch.Text = "";
-
-        _vm.GroupCategoryList.Clear();
-        _vm.SubCategoryList.Clear();
-
-        foreach (Categories Category in _vm.CategoryList)
-        {
-            if (!Category.IsSubCategory)
-            {
-                _vm.GroupCategoryList.Add(Category);
-            }
-        }
-
-        FillSubCategoryLists(_vm.GroupCategoryList);
-        LoadCategoryList();
-        LoadCategoryFilter();
-
-        await Application.Current.MainPage.Navigation.PopModalAsync();
     }
 
     private void acrFilterOption_Tapped(object sender, TappedEventArgs e)
     {
-        if (!FilterOption.IsVisible)
+        try
         {
-            FilterOption.IsVisible = true;
-            FilterOptionIcon.Glyph = "\ue5cf";
+            if (!FilterOption.IsVisible)
+            {
+                FilterOption.IsVisible = true;
+                FilterOptionIcon.Glyph = "\ue5cf";
+            }
+            else
+            {
+                FilterOption.IsVisible = false;
+                FilterOptionIcon.Glyph = "\ue5ce";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            FilterOption.IsVisible = false;
-            FilterOptionIcon.Glyph = "\ue5ce";
+            _pt.HandleException(ex, "SelectCategory", "acrFilterOption_Tapped");
         }
     }
 
     private void acrCategoryList_Tapped(object sender, TappedEventArgs e)
     {
-        if (!CategoryList.IsVisible)
+        try
         {
-            CategoryList.IsVisible = true;
-            CategoryListIcon.Glyph = "\ue5cf";
+            if (!CategoryList.IsVisible)
+            {
+                CategoryList.IsVisible = true;
+                CategoryListIcon.Glyph = "\ue5cf";
+            }
+            else
+            {
+                CategoryList.IsVisible = false;
+                CategoryListIcon.Glyph = "\ue5ce";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            CategoryList.IsVisible = false;
-            CategoryListIcon.Glyph = "\ue5ce";
+            _pt.HandleException(ex, "SelectCategory", "acrCategoryList_Tapped");
         }
     }
 }

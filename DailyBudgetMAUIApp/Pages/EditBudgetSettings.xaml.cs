@@ -1,11 +1,10 @@
 using DailyBudgetMAUIApp.ViewModels;
-using The49.Maui.BottomSheet;
 using Microsoft.Maui.Layouts;
-using System.Globalization;
 using System.Text.RegularExpressions;
 using IeuanWalker.Maui.Switch.Events;
 using IeuanWalker.Maui.Switch.Helpers;
 using IeuanWalker.Maui.Switch;
+using DailyBudgetMAUIApp.DataServices;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -16,14 +15,16 @@ public partial class EditBudgetSettings : ContentPage
     public double ScreenHeight { get; set; }
 
     private readonly EditBudgetSettingsViewModel _vm;
+    private readonly IProductTools _pt;
     private IDispatcherTimer _timer;
 
-    public EditBudgetSettings(EditBudgetSettingsViewModel viewModel)
+    public EditBudgetSettings(EditBudgetSettingsViewModel viewModel, IProductTools pt)
 	{
 		InitializeComponent();
 
         this.BindingContext = viewModel;
         _vm = viewModel;
+        _pt = pt;
 
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 60;
@@ -32,52 +33,66 @@ public partial class EditBudgetSettings : ContentPage
 
     protected async override void OnAppearing()
     {
-        base.OnAppearing();
-
-        TopBV.WidthRequest = ScreenWidth;
-        MainAbs.WidthRequest = ScreenWidth;
-        MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
-        MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));       
-
-        lblTitle.Text = $"Budget settings";
-
-        await _vm.OnLoad();
-
-        pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;            
-        pckrDateFormat.SelectedIndex = _vm.SelectedDateFormats.Id - 1;
-        pckrNumberFormat.SelectedIndex = _vm.SelectedNumberFormats.Id - 1;
-        pckrTimeZone.SelectedIndex = _vm.SelectedTimeZone.TimeZoneID - 1;
-
-        UpdateSelectedOption(_vm.PayDayTypeText);
-
-        dtpckPayDay.MinimumDate = DateTime.UtcNow.AddDays(1);
-
-        _vm.HasCurrencyPlacementChanged = false;
-        _vm.HasCurrencySymbolChanged = false;
-        _vm.HasTimeZoneChanged = false;
-        _vm.HasNumberFormatsChanged = false;
-        _vm.HasDateFormatChanged = false;
-        _vm.HasPayAmountChanged = false;
-        _vm.HasPayDayDateChanged = false;
-        _vm.HasPayDayTypeTextChanged = false;
-        _vm.HasBorrowPayChanged = false;
-        _vm.HasPayDayOptionsChanged = false;
-
-        var timer = Application.Current.Dispatcher.CreateTimer();
-        _timer = timer;
-        timer.Interval = TimeSpan.FromSeconds(1);
-        timer.Tick += async (s, e) =>
+        try
         {
-            await _vm.UpdateTime();
-        };
-        timer.Start();
+            base.OnAppearing();
 
-        _vm.BtnApply = BtnApply;
+            TopBV.WidthRequest = ScreenWidth;
+            MainAbs.WidthRequest = ScreenWidth;
+            MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
+            MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));       
 
-        if (App.CurrentPopUp != null)
+            lblTitle.Text = $"Budget settings";
+
+            await _vm.OnLoad();
+
+            pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;            
+            pckrDateFormat.SelectedIndex = _vm.SelectedDateFormats.Id - 1;
+            pckrNumberFormat.SelectedIndex = _vm.SelectedNumberFormats.Id - 1;
+            pckrTimeZone.SelectedIndex = _vm.SelectedTimeZone.TimeZoneID - 1;
+
+            UpdateSelectedOption(_vm.PayDayTypeText);
+
+            dtpckPayDay.MinimumDate = DateTime.UtcNow.AddDays(1);
+
+            _vm.HasCurrencyPlacementChanged = false;
+            _vm.HasCurrencySymbolChanged = false;
+            _vm.HasTimeZoneChanged = false;
+            _vm.HasNumberFormatsChanged = false;
+            _vm.HasDateFormatChanged = false;
+            _vm.HasPayAmountChanged = false;
+            _vm.HasPayDayDateChanged = false;
+            _vm.HasPayDayTypeTextChanged = false;
+            _vm.HasBorrowPayChanged = false;
+            _vm.HasPayDayOptionsChanged = false;
+
+            var timer = Application.Current.Dispatcher.CreateTimer();
+            _timer = timer;
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += async (s, e) =>
+            {
+                try
+                {
+                    await _vm.UpdateTime();
+                }
+                catch (Exception ex)
+                {
+                    await _pt.HandleException(ex, "EditBudgetSettings", "timer.Tick");
+                }
+            };
+            timer.Start();
+
+            _vm.BtnApply = BtnApply;
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
+        }
+        catch (Exception ex)
         {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            await _pt.HandleException(ex, "EditBudgetSettings", "OnAppearing");
         }
     }
 
@@ -112,84 +127,147 @@ public partial class EditBudgetSettings : ContentPage
 
     private void acrCurrencySetting_Tapped(object sender, TappedEventArgs e)
     {
-        if (!CurrencySetting.IsVisible)
+        try
         {
-            CurrencySetting.IsVisible = true;
-            CurrencySettingIcon.Glyph = "\ue5cf";
+            if (!CurrencySetting.IsVisible)
+            {
+                CurrencySetting.IsVisible = true;
+                CurrencySettingIcon.Glyph = "\ue5cf";
+            }
+            else
+            {
+                CurrencySetting.IsVisible = false;
+                CurrencySettingIcon.Glyph = "\ue5ce";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            CurrencySetting.IsVisible = false;
-            CurrencySettingIcon.Glyph = "\ue5ce";
+            _pt.HandleException(ex, "EditBudgetSettings", "acrCurrencySetting_Tapped");
         }
     }
 
     private void acrDateTimeSetting_Tapped(object sender, TappedEventArgs e)
     {
-        if (!DateTimeSetting.IsVisible)
+        try
         {
-            DateTimeSetting.IsVisible = true;
-            DateTimeIcon.Glyph = "\ue5cf";
+            if (!DateTimeSetting.IsVisible)
+            {
+                DateTimeSetting.IsVisible = true;
+                DateTimeIcon.Glyph = "\ue5cf";
+            }
+            else
+            {
+                DateTimeSetting.IsVisible = false;
+                DateTimeIcon.Glyph = "\ue5ce";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            DateTimeSetting.IsVisible = false;
-            DateTimeIcon.Glyph = "\ue5ce";
+            _pt.HandleException(ex, "EditBudgetSettings", "acrDateTimeSetting_Tapped");
         }
     }
 
     private void acrPayDaySetting_Tapped(object sender, TappedEventArgs e)
     {
-        if (!PayDaySetting.IsVisible)
+        try
         {
-            PayDaySetting.IsVisible = true;
-            PayDayIcon.Glyph = "\ue5cf";
+            if (!PayDaySetting.IsVisible)
+            {
+                PayDaySetting.IsVisible = true;
+                PayDayIcon.Glyph = "\ue5cf";
+            }
+            else
+            {
+                PayDaySetting.IsVisible = false;
+                PayDayIcon.Glyph = "\ue5ce";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            PayDaySetting.IsVisible = false;
-            PayDayIcon.Glyph = "\ue5ce";
+            _pt.HandleException(ex, "EditBudgetSettings", "acrPayDaySetting_Tapped");
         }
     }
 
     private void acrBudgetToggleSetting_Tapped(object sender, TappedEventArgs e)
     {
-        if (!BudgetToggleSetting.IsVisible)
+        try
         {
-            BudgetToggleSetting.IsVisible = true;
-            BudgetToggleIcon.Glyph = "\ue5cf";
+            if (!BudgetToggleSetting.IsVisible)
+            {
+                BudgetToggleSetting.IsVisible = true;
+                BudgetToggleIcon.Glyph = "\ue5cf";
+            }
+            else
+            {
+                BudgetToggleSetting.IsVisible = false;
+                BudgetToggleIcon.Glyph = "\ue5ce";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            BudgetToggleSetting.IsVisible = false;
-            BudgetToggleIcon.Glyph = "\ue5ce";
+            _pt.HandleException(ex, "EditBudgetSettings", "acrBudgetToggleSetting_Tapped");
         }
     }
 
     private void ChangeSelectedCurrency_Tapped(object sender, TappedEventArgs e)
     {
-        _vm.ChangeSelectedCurrency();
-        CurrencySearch.Text = "";
+        try
+        {
+            _vm.ChangeSelectedCurrency();
+            CurrencySearch.Text = "";
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditBudgetSettings", "ChangeSelectedCurrency_Tapped");
+        }
     }
 
     private void Option1Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("Everynth");
+        try
+        {
+            UpdateSelectedOption("Everynth");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditBudgetSettings", "Option1Select_Tapped");
+        }
     }
 
     private void Option2Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("WorkingDays");
+        try
+        {
+            UpdateSelectedOption("WorkingDays");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditBudgetSettings", "Option2Select_Tapped");
+        }
     }
 
     private void Option3Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("OfEveryMonth");
+        try
+        {
+            UpdateSelectedOption("OfEveryMonth");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditBudgetSettings", "Option3Select_Tapped");
+        }
     }
 
     private void Option4Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("LastOfTheMonth");
+        try
+        {
+            UpdateSelectedOption("LastOfTheMonth");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditBudgetSettings", "Option4Select_Tapped");
+        }
     }
 
     private void UpdateSelectedOption(string option)
@@ -335,52 +413,74 @@ public partial class EditBudgetSettings : ContentPage
 
     void EveryNthValue_Changed(object sender, TextChangedEventArgs e)
     {
-        Regex regex = new Regex(@"^\d+$");
-
-        if (e.NewTextValue != null && e.NewTextValue != "")
+        try
         {
-            if (!regex.IsMatch(e.NewTextValue))
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
             {
-                entEverynthValue.Text = e.OldTextValue;
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entEverynthValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entEverynthValue.Text = e.NewTextValue;
+                }
             }
-            else
-            {
-                entEverynthValue.Text = e.NewTextValue;
-            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditBudgetSettings", "EveryNthValue_Changed");
         }
     }
 
     void WorkingDaysValue_Changed(object sender, TextChangedEventArgs e)
     {
-        Regex regex = new Regex(@"^\d+$");
-
-        if (e.NewTextValue != null && e.NewTextValue != "")
+        try
         {
-            if (!regex.IsMatch(e.NewTextValue))
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
             {
-                entWorkingDaysValue.Text = e.OldTextValue;
-            }
-            else
-            {
-                entWorkingDaysValue.Text = e.NewTextValue;
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entWorkingDaysValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entWorkingDaysValue.Text = e.NewTextValue;
+                }
             }
         }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditBudgetSettings", "WorkingDaysValue_Changed");
+        }
+
     }
 
     void OfEveryMonthValue_Changed(object sender, TextChangedEventArgs e)
     {
-        Regex regex = new Regex(@"^\d+$");
-
-        if (e.NewTextValue != null && e.NewTextValue != "")
+        try
         {
-            if (!regex.IsMatch(e.NewTextValue))
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
             {
-                entOfEveryMonthValue.Text = e.OldTextValue;
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entOfEveryMonthValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entOfEveryMonthValue.Text = e.NewTextValue;
+                }
             }
-            else
-            {
-                entOfEveryMonthValue.Text = e.NewTextValue;
-            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "EditBudgetSettings", "OfEveryMonthValue_Changed");
         }
     }
 }

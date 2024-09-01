@@ -31,9 +31,16 @@ public partial class ViewTransactions : ContentPage
         {
             if(_filters != value)
             {
-                _filters = value;
-                listView.DataSource.Filter = FilterContacts;
-                listView.DataSource.RefreshFilter();
+                try
+                {
+                    _filters = value;
+                    listView.DataSource.Filter = FilterContacts;
+                    listView.DataSource.RefreshFilter();
+                }
+                catch (Exception ex)
+                {
+                    _pt.HandleException(ex, "ViewTransactions", "FilterModel");
+                }
             }
         }
     }
@@ -75,28 +82,42 @@ public partial class ViewTransactions : ContentPage
 
     protected async override void OnAppearing()
     {
-        base.OnAppearing();
-
-        AbsMain.SetLayoutBounds(vslChart, new Rect(0, 0, _vm.ScreenWidth, _vm.ChartContentHeight + 10));
-        AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, _vm.ChartContentHeight + 10, _vm.ScreenWidth, _vm.ScreenHeight));
-
-        if (App.CurrentPopUp != null)
+        try
         {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            base.OnAppearing();
+
+            AbsMain.SetLayoutBounds(vslChart, new Rect(0, 0, _vm.ScreenWidth, _vm.ChartContentHeight + 10));
+            AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, _vm.ChartContentHeight + 10, _vm.ScreenWidth, _vm.ScreenHeight));            
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewTransactions", "OnAppearing");
         }
     }
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewTransactions", "HomeButton_Clicked");
+        }
     }
 
     protected override void OnSizeAllocated(double width, double height)
@@ -108,73 +129,95 @@ public partial class ViewTransactions : ContentPage
 
     private async void ListView_ItemTapped(object sender, Syncfusion.Maui.ListView.ItemTappedEventArgs e)
     {
-
-        var ListView = (SfListView)sender;
-        Transactions tappedTransaction = (Transactions)e.DataItem;
-
-        if (tappedItem == tappedTransaction)
+        try
         {
-            tappedItem.IsVisible = false;
-            tappedItem = null;
+            var ListView = (SfListView)sender;
+            Transactions tappedTransaction = (Transactions)e.DataItem;
+
+            if (tappedItem == tappedTransaction)
+            {
+                tappedItem.IsVisible = false;
+                tappedItem = null;
+
+                ListView.RefreshItem();
+                ListView.RefreshView();
+
+                return;
+            }
+
+            if (tappedItem != null && tappedItem.IsVisible)
+            {
+                tappedItem.IsVisible = false;
+            }
+
+            tappedItem = tappedTransaction;
+            tappedItem.IsVisible = true;
 
             ListView.RefreshItem();
             ListView.RefreshView();
 
-            return;
+            int index = listView.DataSource.DisplayItems.IndexOf(tappedTransaction); 
+            listView.ItemsLayout.ScrollToRowIndex(index, Microsoft.Maui.Controls.ScrollToPosition.Center, false);
         }
-
-        if (tappedItem != null && tappedItem.IsVisible)
+        catch (Exception ex)
         {
-            tappedItem.IsVisible = false;
+            await _pt.HandleException(ex, "ViewTransactions", "ListView_ItemTapped");
         }
-
-        tappedItem = tappedTransaction;
-        tappedItem.IsVisible = true;
-
-        ListView.RefreshItem();
-        ListView.RefreshView();
-
-        int index = listView.DataSource.DisplayItems.IndexOf(tappedTransaction); 
-        listView.ItemsLayout.ScrollToRowIndex(index, Microsoft.Maui.Controls.ScrollToPosition.Center, false);
     }
 
     private async void EditTransaction_Tapped(object sender, TappedEventArgs e)
     {
-        Transactions T = (Transactions)e.Parameter;
-
-        bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
-        if (EditTransaction)
+        try
         {
-            await Shell.Current.GoToAsync($"{nameof(ViewTransactions)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={T.TransactionID}&NavigatedFrom=ViewTransactions",
-                new Dictionary<string, object>
-                {
-                    ["Transaction"] = T
-                });
+            Transactions T = (Transactions)e.Parameter;
+
+            bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
+            if (EditTransaction)
+            {
+                await Shell.Current.GoToAsync($"{nameof(ViewTransactions)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={T.TransactionID}&NavigatedFrom=ViewTransactions",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = T
+                    });
+                }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewTransactions", "EditTransaction_Tapped");
         }
     }
 
     private async void DeleteTransaction_Tapped(object sender, TappedEventArgs e)
     {
-        Transactions T = (Transactions)e.Parameter;
-
-        bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
-        if (DeleteTransaction)
+        try
         {
-            await _ds.DeleteTransaction(T.TransactionID);
-        }
+            Transactions T = (Transactions)e.Parameter;
 
-        if(_vm.Transactions.Contains(T))
+            bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
+            if (DeleteTransaction)
+            {
+                await _ds.DeleteTransaction(T.TransactionID);
+            }
+
+            if(_vm.Transactions.Contains(T))
+            {
+                _vm.Transactions.Remove(T);
+            }
+
+            listView.RefreshItem();
+            listView.RefreshView();
+        }
+        catch (Exception ex)
         {
-            _vm.Transactions.Remove(T);
+            await _pt.HandleException(ex, "ViewTransactions", "DeleteTransaction_Tapped");
         }
-
-        listView.RefreshItem();
-        listView.RefreshView();
     }
 
     private async void ListViewScrollView_Scrolled(object sender, ScrolledEventArgs e)
     {
-        _vm.SFListHeight = _vm.ScreenHeight - vslHeader.Height - App.NavBarHeight - App.StatusBarHeight - TitleView.Height - 49;
+        try
+        {
+            _vm.SFListHeight = _vm.ScreenHeight - vslHeader.Height - App.NavBarHeight - App.StatusBarHeight - TitleView.Height - 49;
 
         double HeightDifference = CurrentScrollY - (double)e.ScrollY;
         double YChangeAmount = HeightDifference / 2;
@@ -238,6 +281,11 @@ public partial class ViewTransactions : ContentPage
         }
 
         CurrentScrollY = (double)e.ScrollY;
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewTransactions", "ListViewScrollView_Scrolled");
+        }
     }
 
     private async void Content_Loaded(object sender, EventArgs e)
@@ -251,18 +299,25 @@ public partial class ViewTransactions : ContentPage
 
     private void SearchAmount_TextChanged(object sender, TextChangedEventArgs e)
     {
-        decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entSearchAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSearchAmount.CursorPosition > position)
+        try
         {
-            entSearchAmount.CursorPosition = entSearchAmount.Text.Length;
-        }
+            decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entSearchAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSearchAmount.CursorPosition > position)
+            {
+                entSearchAmount.CursorPosition = entSearchAmount.Text.Length;
+            }
 
-        if (listView.DataSource != null)
+            if (listView.DataSource != null)
+            {
+                listView.DataSource.Filter = FilterContacts;
+                listView.DataSource.RefreshFilter();
+            }
+        }
+        catch (Exception ex)
         {
-            listView.DataSource.Filter = FilterContacts;
-            listView.DataSource.RefreshFilter();
+            _pt.HandleException(ex, "ViewTransactions", "SearchAmount_TextChanged");
         }
     }
 
@@ -365,24 +420,31 @@ public partial class ViewTransactions : ContentPage
 
     private async void FilterItems_Tapped(object sender, TappedEventArgs e)
     {
-        ViewTransactionFilterBottomSheet page = new ViewTransactionFilterBottomSheet(Filters);
+        try
+        {
+            ViewTransactionFilterBottomSheet page = new ViewTransactionFilterBottomSheet(Filters, new ProductTools(new RestDataService()));
 
-        page.Detents = new DetentsCollection()
-        {            
-            new FullscreenDetent(),
-            new MediumDetent(),
-            new FixedContentDetent
-            {
-                IsDefault = true
-            }
-        };
+            page.Detents = new DetentsCollection()
+            {            
+                new FullscreenDetent(),
+                new MediumDetent(),
+                new FixedContentDetent
+                {
+                    IsDefault = true
+                }
+            };
 
-        page.HasBackdrop = true;
-        page.CornerRadius = 0;
+            page.HasBackdrop = true;
+            page.CornerRadius = 0;
 
-        App.CurrentBottomSheet = page;
+            App.CurrentBottomSheet = page;
 
-        await page.ShowAsync();
+            await page.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewTransactions", "FilterItems_Tapped");
+        }
     }
 }
 

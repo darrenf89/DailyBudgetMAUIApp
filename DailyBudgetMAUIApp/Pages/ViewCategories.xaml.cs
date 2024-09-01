@@ -22,11 +22,18 @@ public partial class ViewCategories : ContentPage
         {
             if (_addCategoryList != value)
             {
-                _addCategoryList = value;
-                _vm.Categories.Clear();
-                foreach (Categories c in AddCategoryList)
+                try
                 {
-                    _vm.Categories.Add(c);
+                    _addCategoryList = value;
+                    _vm.Categories.Clear();
+                    foreach (Categories c in AddCategoryList)
+                    {
+                        _vm.Categories.Add(c);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _pt.HandleException(ex, "ViewCategories", "_addCategoryList");
                 }
             }
         }
@@ -51,9 +58,16 @@ public partial class ViewCategories : ContentPage
         timer.Interval = TimeSpan.FromSeconds(45);
         timer.Tick += async (s, e) =>
         {
-            _vm.ChartUpdating = true;
-            await CycleThroughChart();
-            _vm.ChartUpdating = false;
+            try
+            {
+                _vm.ChartUpdating = true;
+                await CycleThroughChart();
+                _vm.ChartUpdating = false;
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewCategories", "timer.Tick");
+            }
         };
         timer.Start();
         _vm.IsPlaying = true;
@@ -68,22 +82,29 @@ public partial class ViewCategories : ContentPage
  
     protected async override void OnAppearing()
     {
-        base.OnAppearing();
-
-        _vm.OnLoad();
-
-        var size = _vm.ScreenWidth / 170;
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.SpanCount = (int)size;
-        listView.ItemsLayout = gridLayout;
-
-        listView.RefreshView();
-        listView.RefreshItem();
-
-        if (App.CurrentPopUp != null)
+        try
         {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            base.OnAppearing();
+
+            await _vm.OnLoad();
+
+            var size = _vm.ScreenWidth / 170;
+            GridLayout gridLayout = new GridLayout();
+            gridLayout.SpanCount = (int)size;
+            listView.ItemsLayout = gridLayout;
+
+            listView.RefreshView();
+            listView.RefreshItem();
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewCategories", "OnAppearing");
         }
     }
 
@@ -164,60 +185,75 @@ public partial class ViewCategories : ContentPage
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewCategories", "HomeButton_Clicked");
+        }
     }
 
     private async void ListViewTapped_Tapped(object sender, TappedEventArgs e)
     {
-        var PopUp = new PopUpPage();
-        App.CurrentPopUp = PopUp;
-        Application.Current.MainPage.ShowPopup(PopUp);
-
-        Categories Category = (Categories)e.Parameter;
-
-        if(Category.CategoryID == -1)
+        try
         {
-            AddNewCategoryBottomSheet page = new AddNewCategoryBottomSheet(_vm.Categories, new ProductTools(new RestDataService()), new RestDataService());
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.MainPage.ShowPopup(PopUp);
 
-            page.Detents = new DetentsCollection()
+            Categories Category = (Categories)e.Parameter;
+
+            if(Category.CategoryID == -1)
             {
-                new FullscreenDetent()
-            };
+                AddNewCategoryBottomSheet page = new AddNewCategoryBottomSheet(_vm.Categories, new ProductTools(new RestDataService()), new RestDataService());
 
-            page.HasBackdrop = true;
-            page.CornerRadius = 0;
+                page.Detents = new DetentsCollection()
+                {
+                    new FullscreenDetent()
+                };
 
-            App.CurrentBottomSheet = page;
+                page.HasBackdrop = true;
+                page.CornerRadius = 0;
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
+                App.CurrentBottomSheet = page;
+
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+
+                await page.ShowAsync();
             }
+            else
+            {
+                await Task.Delay(1000);
 
-            await page.ShowAsync();
+                await Shell.Current.GoToAsync($"///{nameof(ViewCategories)}/{nameof(ViewCategory)}?HeaderCatId={Category.CategoryID}");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await Task.Delay(1000);
-
-            await Shell.Current.GoToAsync($"///{nameof(ViewCategories)}/{nameof(ViewCategory)}?HeaderCatId={Category.CategoryID}");
+            await _pt.HandleException(ex, "ViewCategories", "ListViewTapped_Tapped");
         }
     }
 
     private async void SwipeGestureRecognizer_Swiped(object sender, SwipedEventArgs e)
     {
-        
 
-        switch (e.Direction)
+        try
         {
+            switch (e.Direction)
+            {
             case SwipeDirection.Left:
                 if(_vm.SelectedIndex < (_vm.PayPeriods.Count()-1))
                 {
@@ -232,39 +268,66 @@ public partial class ViewCategories : ContentPage
                     await SwitchChart(_vm.SelectedIndex);
                 }
                 break;
-        }       
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewCategories", "SwipeGestureRecognizer_Swiped");
+        }
     }
 
     private void btnPlayPause_Clicked(object sender, EventArgs e)
     {
-        if(_vm.IsPlaying)
+        try
         {
-            _vm.IsPlaying = false;
-            _timer.Stop();
+            if (_vm.IsPlaying)
+            {
+                _vm.IsPlaying = false;
+                _timer.Stop();
+            }
+            else
+            {
+                _vm.IsPlaying = true;
+                _timer.Start();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            _vm.IsPlaying = true;
-            _timer.Start();
+             _pt.HandleException(ex, "ViewCategories", "btnPlayPause_Clicked");
         }
     }
 
     private async void TabCarousel_SwipeEnded(object sender, EventArgs e)
     {
-        var Carousel = (SfCarousel)sender;
-        int Index = Carousel.SelectedIndex;
+        try
+        {
+            var Carousel = (SfCarousel)sender;
+            int Index = Carousel.SelectedIndex;
 
-        _vm.SelectedIndex = Index;
-        await SwitchChart(Index);
+            _vm.SelectedIndex = Index;
+            await SwitchChart(Index);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewCategories", "TabCarousel_SwipeEnded");
+        }
+
 
     }
 
     private async void TabCarousel_SelectionChanged(object sender, Syncfusion.Maui.Core.Carousel.SelectionChangedEventArgs e)
     {
-        var Carousel = (SfCarousel)sender;
-        int Index = Carousel.SelectedIndex;
+        try
+        {
+            var Carousel = (SfCarousel)sender;
+            int Index = Carousel.SelectedIndex;
 
-        _vm.SelectedIndex = Index;
-        await SwitchChart(Index);
+            _vm.SelectedIndex = Index;
+            await SwitchChart(Index);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewCategories", "TabCarousel_SelectionChanged");
+        }
     }
 }

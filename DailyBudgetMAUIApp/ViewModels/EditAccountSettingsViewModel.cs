@@ -136,204 +136,232 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         private async Task CloseSettings(object obj)
         {
-            if (App.CurrentPopUp == null)
+            try
             {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(500);
+
+                await Shell.Current.GoToAsync($"..");
             }
-
-            await Task.Delay(500);
-
-            await Shell.Current.GoToAsync($"..");
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "EditAccountSettings", "CloseSettings");
+            }
         }
 
         [RelayCommand]
         private async Task DeleteUserAccount()
         {
-            var Email = await Application.Current.MainPage.DisplayPromptAsync($"Are you sure you want to delete your account?", $"Enter the accounts email address to delete the account", "Ok", "Cancel");
-            if (Email != null)
+            try
             {
-                if(string.Equals(Email, App.UserDetails.Email, StringComparison.OrdinalIgnoreCase))
+                var Email = await Application.Current.MainPage.DisplayPromptAsync($"Are you sure you want to delete your account?", $"Enter the accounts email address to delete the account", "Ok", "Cancel");
+                if (Email != null)
                 {
-                    string result = await _ds.DeleteUserAccount(App.UserDetails.UserID);
-                    if (result == "OK")
+                    if(string.Equals(Email, App.UserDetails.Email, StringComparison.OrdinalIgnoreCase))
                     {
-                        AppShell Shell = new AppShell();
-                        await Shell.Logout();
+                        string result = await _ds.DeleteUserAccount(App.UserDetails.UserID);
+                        if (result == "OK")
+                        {
+                            AppShell Shell = new AppShell();
+                            await Shell.Logout();
 
-                        await Application.Current.MainPage.DisplayAlert($"Account Deleted", $"Your account has been permanently deleted and there is no way to recover it now. If you want to start budgeting again create a new account", "Ok");
+                            await Application.Current.MainPage.DisplayAlert($"Account Deleted", $"Your account has been permanently deleted and there is no way to recover it now. If you want to start budgeting again create a new account", "Ok");
 
+                        }
+                        else
+                        {
+                            await Application.Current.MainPage.DisplayAlert($"Opps something went wrong", $"There was an issue deleting your account, please try again and if the issue persists please contact us so can help", "Ok");
+
+                        }
                     }
                     else
                     {
-                        await Application.Current.MainPage.DisplayAlert($"Opps something went wrong", $"There was an issue deleting your account, please try again and if the issue persists please contact us so can help", "Ok");
-
+                        await Application.Current.MainPage.DisplayAlert("That is not the correct email", "Your account has not been deleted please try again." ,"OK");
                     }
                 }
-                else
-                {
-                    await Application.Current.MainPage.DisplayAlert("That is not the correct email", "Your account has not been deleted please try again." ,"OK");
-                }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "EditAccountSettings", "DeleteUserAccount");
             }
         }
 
         [RelayCommand]
         private async Task UpdatePassword()
         {
-            await Task.Delay(5);
-
-            if (NewPasswordRequired & PasswordRequired & PasswordConfirmRequired & NewPasswordValid)
+            try
             {
-                bool UpdatePassword = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to update your password?", $"Forgot your current password and you can reset it from the logon screen using your email", "Yes", "No");
-                if (UpdatePassword)
+                await Task.Delay(5);
+
+                if (NewPasswordRequired & PasswordRequired & PasswordConfirmRequired & NewPasswordValid)
                 {
-                    if (App.CurrentPopUp == null)
+                    bool UpdatePassword = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to update your password?", $"Forgot your current password and you can reset it from the logon screen using your email", "Yes", "No");
+                    if (UpdatePassword)
                     {
-                        var PopUp = new PopUpPage();
-                        App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
-                    }
-
-                    await Task.Delay(1);
-
-                    string salt = await _ds.GetUserSaltAsync(App.UserDetails.Email);
-                    UserDetailsModel userDetails = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
-                    string HashPassword = _pt.GenerateHashedPassword(CurrentPassword, salt);
-
-                    if (userDetails.Password != HashPassword)
-                    {
-                        CurrentPasswordValid = false;
-                        NewPasswordMatch = true;
-                    }
-                    else
-                    {
-                        if(NewPassword != NewPasswordConfirm)
+                        if (App.CurrentPopUp == null)
                         {
-                            NewPasswordMatch = false;
-                            CurrentPasswordValid = true;
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.MainPage.ShowPopup(PopUp);
+                        }
+
+                        await Task.Delay(1);
+
+                        string salt = await _ds.GetUserSaltAsync(App.UserDetails.Email);
+                        UserDetailsModel userDetails = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
+                        string HashPassword = _pt.GenerateHashedPassword(CurrentPassword, salt);
+
+                        if (userDetails.Password != HashPassword)
+                        {
+                            CurrentPasswordValid = false;
+                            NewPasswordMatch = true;
                         }
                         else
                         {
-                            RegisterModel NewPasswordUser = new RegisterModel
+                            if(NewPassword != NewPasswordConfirm)
                             {
-                                Password = NewPassword
-                            };
-
-
-                            NewPasswordUser = _pt.CreateUserSecurityDetails(NewPasswordUser);
-
-                            if(!string.IsNullOrEmpty(NewPasswordUser.Salt))
+                                NewPasswordMatch = false;
+                                CurrentPasswordValid = true;
+                            }
+                            else
                             {
-                                List<PatchDoc> UserUpdate = new List<PatchDoc>();
-
-                                PatchDoc Salt = new PatchDoc
+                                RegisterModel NewPasswordUser = new RegisterModel
                                 {
-                                    op = "replace",
-                                    path = "/Salt",
-                                    value = NewPasswordUser.Salt
+                                    Password = NewPassword
                                 };
 
-                                PatchDoc Password = new PatchDoc
+
+                                NewPasswordUser = _pt.CreateUserSecurityDetails(NewPasswordUser);
+
+                                if(!string.IsNullOrEmpty(NewPasswordUser.Salt))
                                 {
-                                    op = "replace",
-                                    path = "/Password",
-                                    value = NewPasswordUser.Password
-                                };
+                                    List<PatchDoc> UserUpdate = new List<PatchDoc>();
 
-                                UserUpdate.Add(Salt);
-                                UserUpdate.Add(Password);
+                                    PatchDoc Salt = new PatchDoc
+                                    {
+                                        op = "replace",
+                                        path = "/Salt",
+                                        value = NewPasswordUser.Salt
+                                    };
 
-                                string result = await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
-                                if(result == "OK")
-                                {
-                                    PasswordChangedMessageVisible = true;
-                                    PasswordNotChangedMessageVisible = false;
+                                    PatchDoc Password = new PatchDoc
+                                    {
+                                        op = "replace",
+                                        path = "/Password",
+                                        value = NewPasswordUser.Password
+                                    };
 
-                                    CurrentPassword = "";
-                                    NewPassword = "";
-                                    NewPasswordConfirm = "";
+                                    UserUpdate.Add(Salt);
+                                    UserUpdate.Add(Password);
 
-                                    NewPasswordRequired = true;
-                                    PasswordRequired = true;
-                                    PasswordConfirmRequired = true;
-                                    NewPasswordValid = true;
-                                    NewPasswordMatch = true;
-                                    CurrentPasswordValid = true;
+                                    string result = await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                                    if(result == "OK")
+                                    {
+                                        PasswordChangedMessageVisible = true;
+                                        PasswordNotChangedMessageVisible = false;
+
+                                        CurrentPassword = "";
+                                        NewPassword = "";
+                                        NewPasswordConfirm = "";
+
+                                        NewPasswordRequired = true;
+                                        PasswordRequired = true;
+                                        PasswordConfirmRequired = true;
+                                        NewPasswordValid = true;
+                                        NewPasswordMatch = true;
+                                        CurrentPasswordValid = true;
+
+                                    }
+                                    else
+                                    {
+                                        PasswordNotChangedMessageVisible = true;
+                                        PasswordChangedMessageVisible = false;
+
+                                        CurrentPassword = "";
+                                        NewPassword = "";
+                                        NewPasswordConfirm = "";
+
+                                        NewPasswordRequired = true;
+                                        PasswordRequired = true;
+                                        PasswordConfirmRequired = true;
+                                        NewPasswordValid = true;
+                                        NewPasswordMatch = true;
+                                        CurrentPasswordValid = true;
+                                    }
 
                                 }
-                                else
-                                {
-                                    PasswordNotChangedMessageVisible = true;
-                                    PasswordChangedMessageVisible = false;
-
-                                    CurrentPassword = "";
-                                    NewPassword = "";
-                                    NewPasswordConfirm = "";
-
-                                    NewPasswordRequired = true;
-                                    PasswordRequired = true;
-                                    PasswordConfirmRequired = true;
-                                    NewPasswordValid = true;
-                                    NewPasswordMatch = true;
-                                    CurrentPasswordValid = true;
-                                }
-
                             }
                         }
                     }
                 }
-            }
 
-            if (App.CurrentPopUp != null)
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+            }
+            catch (Exception ex)
             {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
+                await _pt.HandleException(ex, "EditAccountSettings", "UpdatePassword");
             }
         }
 
         [RelayCommand]
         private async Task UpdateNickname()
         {
-            await Task.Delay(15);
-
-            if (NickNameRequired)
+            try
             {
-                bool UpdateNickName = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to update your nickname?", $"Are you sure you want to update your nickaname to {NewNickName}?", "Yes", "No");
-                if (UpdateNickName)
+                await Task.Delay(15);
+
+                if (NickNameRequired)
                 {
-                    List<PatchDoc> UserUpdate = new List<PatchDoc>();
-
-                    PatchDoc EmailPatch = new PatchDoc
+                    bool UpdateNickName = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to update your nickname?", $"Are you sure you want to update your nickaname to {NewNickName}?", "Yes", "No");
+                    if (UpdateNickName)
                     {
-                        op = "replace",
-                        path = "/NickName",
-                        value = NewNickName
-                    };
+                        List<PatchDoc> UserUpdate = new List<PatchDoc>();
 
-                    UserUpdate.Add(EmailPatch);
+                        PatchDoc EmailPatch = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/NickName",
+                            value = NewNickName
+                        };
 
-                    string result = await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                        UserUpdate.Add(EmailPatch);
 
-                    if (result == "OK")
-                    {
-                        User.NickName = NewNickName;
+                        string result = await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
 
-                        NicknameChangedMessageVisible = true;
-                        NicknameNotChangedMessageVisible = false;
-                        NewNickName = "";
-                        NickNameRequired = true;
+                        if (result == "OK")
+                        {
+                            User.NickName = NewNickName;
+
+                            NicknameChangedMessageVisible = true;
+                            NicknameNotChangedMessageVisible = false;
+                            NewNickName = "";
+                            NickNameRequired = true;
                         
-                    }
-                    else
-                    {
-                        NicknameChangedMessageVisible = false;
-                        NicknameNotChangedMessageVisible = true;
-                        NewNickName = "";
-                        NickNameRequired = true;
-                    }
+                        }
+                        else
+                        {
+                            NicknameChangedMessageVisible = false;
+                            NicknameNotChangedMessageVisible = true;
+                            NewNickName = "";
+                            NickNameRequired = true;
+                        }
 
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "EditAccountSettings", "UpdateNickname");
             }
         }
 
@@ -341,56 +369,63 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         private async Task UpdateEmail()
         {
-            await Task.Delay(5);
-
-            if (EmailRequired & EmailValid)
+            try
             {
-                bool UpdateEmail = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to update your email?", $"Are you sure you want to update your email to {NewEmail}? Make sure you have access to this email or you might have some issues!", "Yes", "No");
-                if (UpdateEmail)
+                await Task.Delay(5);
+
+                if (EmailRequired & EmailValid)
                 {
-                    UserDetailsModel UserDetails = await _ds.GetUserDetailsAsync(NewEmail);
-                    if (UserDetails.Error != null)
+                    bool UpdateEmail = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to update your email?", $"Are you sure you want to update your email to {NewEmail}? Make sure you have access to this email or you might have some issues!", "Yes", "No");
+                    if (UpdateEmail)
                     {
-                        List<PatchDoc> UserUpdate = new List<PatchDoc>();
-
-                        PatchDoc EmailPatch = new PatchDoc
+                        UserDetailsModel UserDetails = await _ds.GetUserDetailsAsync(NewEmail);
+                        if (UserDetails.Error != null)
                         {
-                            op = "replace",
-                            path = "/Email",
-                            value = NewEmail
-                        };
+                            List<PatchDoc> UserUpdate = new List<PatchDoc>();
 
-                        UserUpdate.Add(EmailPatch);
+                            PatchDoc EmailPatch = new PatchDoc
+                            {
+                                op = "replace",
+                                path = "/Email",
+                                value = NewEmail
+                            };
 
-                        string result = await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                            UserUpdate.Add(EmailPatch);
 
-                        if(result == "OK")
-                        {
-                            User.Email = NewEmail;
+                            string result = await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
 
-                            EmailChangedMessageVisible = true;
-                            EmailNotChangedMessageVisible = false;
-                            NewEmail = "";
-                            EmailValid = true;
-                            EmailRequired = true;
+                            if(result == "OK")
+                            {
+                                User.Email = NewEmail;
+
+                                EmailChangedMessageVisible = true;
+                                EmailNotChangedMessageVisible = false;
+                                NewEmail = "";
+                                EmailValid = true;
+                                EmailRequired = true;
                             
+                            }
+                            else
+                            {
+                                EmailChangedMessageVisible = false;
+                                EmailNotChangedMessageVisible = true;
+                                NewEmail = "";
+                                EmailValid = true;
+                                EmailRequired = true;
+                            }
                         }
                         else
                         {
-                            EmailChangedMessageVisible = false;
-                            EmailNotChangedMessageVisible = true;
-                            NewEmail = "";
-                            EmailValid = true;
-                            EmailRequired = true;
+                            await Application.Current.MainPage.DisplayAlert("Opps", "An account already exists with this email. Please use a different email or recover the account if this is your email", "OK");
                         }
-                    }
-                    else
-                    {
-                        await Application.Current.MainPage.DisplayAlert("Opps", "An account already exists with this email. Please use a different email or recover the account if this is your email", "OK");
-                    }
 
 
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "EditAccountSettings", "UpdateEmail");
             }
         }
             
@@ -398,24 +433,31 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         private async Task ChangeSelectedProfilePic()
         {
-            EditProfilePictureBottomSheet page = new EditProfilePictureBottomSheet( new ProductTools(new RestDataService()), new RestDataService());
-
-            page.Detents = new DetentsCollection()
+            try
             {
-                new FixedContentDetent            
+                EditProfilePictureBottomSheet page = new EditProfilePictureBottomSheet( new ProductTools(new RestDataService()), new RestDataService());
+
+                page.Detents = new DetentsCollection()
                 {
-                    IsDefault = true
-                },
-                new MediumDetent(),
-                new FullscreenDetent()
-            };
+                    new FixedContentDetent            
+                    {
+                        IsDefault = true
+                    },
+                    new MediumDetent(),
+                    new FullscreenDetent()
+                };
 
-            page.HasBackdrop = true;
-            page.CornerRadius = 0;
+                page.HasBackdrop = true;
+                page.CornerRadius = 0;
 
-            App.CurrentBottomSheet = page;
+                App.CurrentBottomSheet = page;
 
-            await page.ShowAsync();
+                await page.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "EditAccountSettings", "ChangeSelectedProfilePic");
+            }
         }
 
         public async Task<Stream> GetUserProfilePictureStream(int UserID)
@@ -426,53 +468,67 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         private async Task CreateNewBudget()
         {
-            string? SubType = "Basic";
-            string BudgetType = "";
-
-            if (!string.IsNullOrEmpty(App.UserDetails.SubscriptionType))
+            try
             {
-                SubType = App.UserDetails.SubscriptionType;
-            }
+                string? SubType = "Basic";
+                string BudgetType = "";
 
-            string action = "Basic";
-
-            if (SubType == "Premium")
-            {
-                action = await Shell.Current.DisplayActionSheet("What type of budget would you like to create?", "Cancel", null, "Basic", "Premium");
-            }
-            else if (SubType == "PremiumPlus")
-            {
-                action = await Shell.Current.DisplayActionSheet("What type of budget would you like to create?", "Cancel", null, "Basic", "Premium", "PremiumPlus");
-            }
-
-            if (action != "Cancel")
-            {
-                BudgetType = action;
-
-                bool result = await Shell.Current.DisplayAlert("Create a new budget?", $"Are you sure you want to create a new {BudgetType} budget?", "Yes", "No");
-                if (result)
+                if (!string.IsNullOrEmpty(App.UserDetails.SubscriptionType))
                 {
-                    Budgets NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email, BudgetType);
-                    await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
-
+                    SubType = App.UserDetails.SubscriptionType;
                 }
+
+                string action = "Basic";
+
+                if (SubType == "Premium")
+                {
+                    action = await Shell.Current.DisplayActionSheet("What type of budget would you like to create?", "Cancel", null, "Basic", "Premium");
+                }
+                else if (SubType == "PremiumPlus")
+                {
+                    action = await Shell.Current.DisplayActionSheet("What type of budget would you like to create?", "Cancel", null, "Basic", "Premium", "PremiumPlus");
+                }
+
+                if (action != "Cancel")
+                {
+                    BudgetType = action;
+
+                    bool result = await Shell.Current.DisplayAlert("Create a new budget?", $"Are you sure you want to create a new {BudgetType} budget?", "Yes", "No");
+                    if (result)
+                    {
+                        Budgets NewBudget = await _ds.CreateNewBudget(App.UserDetails.Email, BudgetType);
+                        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "EditAccountSettings", "CreateNewBudget");
             }
         }
 
         partial void OnIsDPAChanged(bool oldValue, bool newValue)
         {
-            List<PatchDoc> UserUpdate = new List<PatchDoc>();
-
-            PatchDoc IsDPAPermissions = new PatchDoc
+            try
             {
-                op = "replace",
-                path = "/isDPAPermissions",
-                value = IsDPA
-            };
+                List<PatchDoc> UserUpdate = new List<PatchDoc>();
 
-            UserUpdate.Add(IsDPAPermissions);
+                PatchDoc IsDPAPermissions = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/isDPAPermissions",
+                    value = IsDPA
+                };
 
-            _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                UserUpdate.Add(IsDPAPermissions);
+
+                _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+            }
+            catch (Exception ex)
+            {
+                _pt.HandleException(ex, "EditAccountSettings", "OnIsDPAChanged");
+            }
         }
 
     }

@@ -137,8 +137,11 @@ public partial class MainPage : ContentPage
                 {
                     if (DateTime.UtcNow.Subtract(App.SessionLastUpdate) > new TimeSpan(0, 0, 3, 0))
                     {
-                        DateTime LastUpdated = _ds.GetBudgetLastUpdatedAsync(_vm.DefaultBudgetID).Result;
-
+                        DateTime? LastUpdated = _ds.GetBudgetLastUpdatedAsync(_vm.DefaultBudgetID).Result;
+                        if(LastUpdated is null)
+                        {
+                            return;
+                        }
                         if (App.SessionLastUpdate < LastUpdated)
                         {
 
@@ -171,37 +174,32 @@ public partial class MainPage : ContentPage
             _vm.DefaultBudget = App.DefaultBudget;
             _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
             App.SessionLastUpdate = DateTime.UtcNow;
+
+            if (App.DefaultBudget.IsCreated)
+            {
+                App.DefaultBudget = await _pt.BudgetDailyCycle(App.DefaultBudget);
+                _vm.DefaultBudget = App.DefaultBudget;
+            }
+
+            if (!App.DefaultBudget.IsCreated && !App.HasVisitedCreatePage)
+            {
+                App.HasVisitedCreatePage = true;
+
+                await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={App.DefaultBudgetID}&NavigatedFrom=Budget Settings");
+                return;
+            }
+
+            await LoadMainDashboardContent();
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
         }
         catch (Exception ex)
         {
-            ErrorLog Error = await _pt.HandleCatchedException(ex, "MainPage", "LoadDefaultBudget");
-            await Shell.Current.GoToAsync(nameof(ErrorPage),
-                new Dictionary<string, object>
-                {
-                    ["Error"] = Error
-                });
-        }
-
-        if (App.DefaultBudget.IsCreated)
-        {
-            App.DefaultBudget = await _pt.BudgetDailyCycle(App.DefaultBudget);
-            _vm.DefaultBudget = App.DefaultBudget;
-        }
-
-        if (!App.DefaultBudget.IsCreated && !App.HasVisitedCreatePage)
-        {
-            App.HasVisitedCreatePage = true;
-
-            await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={App.DefaultBudgetID}&NavigatedFrom=Budget Settings");
-            return;
-        }
-
-        await LoadMainDashboardContent();
-
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            await _pt.HandleException(ex, "MainPage", "OnAppearing");
         }
     }  
 
@@ -1069,29 +1067,35 @@ public partial class MainPage : ContentPage
 
     private void ShareBudget_Tapped(object sender, TappedEventArgs e)
     {
-        ShareBudgetRequest SBR = new ShareBudgetRequest
+        try
         {
-            SharedBudgetID = _vm.DefaultBudgetID,
-            IsVerified = false,
-            SharedByUserEmail = App.UserDetails.Email,
-            RequestInitiated = DateTime.UtcNow
-        };
+            ShareBudgetRequest SBR = new ShareBudgetRequest
+            {
+                SharedBudgetID = _vm.DefaultBudgetID,
+                IsVerified = false,
+                SharedByUserEmail = App.UserDetails.Email,
+                RequestInitiated = DateTime.UtcNow
+            };
 
-        ShareBudget page = new ShareBudget(SBR, new RestDataService());
+            ShareBudget page = new ShareBudget(SBR, new RestDataService(), new ProductTools(new RestDataService()));
 
-        page.Detents = new DetentsCollection()
+            page.Detents = new DetentsCollection()
+            {
+                new FixedContentDetent(),
+                new FullscreenDetent()
+
+            };
+
+            page.HasBackdrop = true;
+            page.CornerRadius = 30;
+
+            App.CurrentBottomSheet = page;
+            page.ShowAsync();
+        }
+        catch (Exception ex)
         {
-            new FixedContentDetent(),
-            new FullscreenDetent()
-
-        };
-
-        page.HasBackdrop = true;
-        page.CornerRadius = 30;
-
-        App.CurrentBottomSheet = page;
-        page.ShowAsync();
-
+            _pt.HandleException(ex, "MainPage", "ShareBudget_Tapped");
+        }
     }
 
     private void ViewShareBudget_Tapped(object sender, TappedEventArgs e)
@@ -1102,18 +1106,29 @@ public partial class MainPage : ContentPage
 
     private async void VerifyBudgetShare_Tapped(object sender, TappedEventArgs e)
     {
-        var popup = new PopUpOTP(_vm.DefaultBudget.AccountInfo.BudgetShareRequestID, new PopUpOTPViewModel(new RestDataService()), "ShareBudget", new ProductTools(new RestDataService()), new RestDataService());
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
-
-        if ((string)result.ToString() != "User Closed")
+        try
         {
-            ShareBudgetRequest BudgetRequest = (ShareBudgetRequest)result;
+            var popup = new PopUpOTP(_vm.DefaultBudget.AccountInfo.BudgetShareRequestID, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ShareBudget", new ProductTools(new RestDataService()), new RestDataService());
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
-            bool DefaultBudgetYesNo = await Application.Current.MainPage.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
-
-            if (DefaultBudgetYesNo)
+            if ((string)result.ToString() != "User Closed")
             {
-                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID, true);
+                ShareBudgetRequest BudgetRequest = (ShareBudgetRequest)result;
+
+                bool DefaultBudgetYesNo = await Application.Current.MainPage.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
+
+                if (DefaultBudgetYesNo)
+                {
+                    await _pt.ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID, true);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Page TopPage = Shell.Current.Navigation.NavigationStack[Shell.Current.Navigation.NavigationStack.Count - 1];
+            if (TopPage.GetType() != typeof(NoNetworkAccess) && TopPage.GetType() != typeof(ErrorPage))
+            {
+                await _pt.HandleException(ex, "LogonPage", "Login");
             }
         }
     }
@@ -1125,54 +1140,76 @@ public partial class MainPage : ContentPage
 
     private void YourTransactionsOption_Tapped(object sender, TappedEventArgs e)
     {
-        TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet();
-
-        page.Detents = new DetentsCollection()
+        try
         {
-            new FixedContentDetent()
-        };
+            TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet();
 
-        page.HasBackdrop = true;
-        page.CornerRadius = 0;
+            page.Detents = new DetentsCollection()
+            {
+                new FixedContentDetent()
+            };
 
-        App.CurrentBottomSheet = page;
+            page.HasBackdrop = true;
+            page.CornerRadius = 0;
 
-        page.ShowAsync();
+            App.CurrentBottomSheet = page;
+
+            page.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "MainPage", "YourTransactionsOption_Tapped");
+        }
     }
 
 
     private void BudgetMoreOptions_Tapped(object sender, TappedEventArgs e)
     {
-        BudgetOptionsBottomSheet page = new BudgetOptionsBottomSheet(_vm.DefaultBudget, new ProductTools(new RestDataService()),new RestDataService());
-
-        page.Detents = new DetentsCollection()
+        try
         {
-            new FixedContentDetent()
-        };
+            BudgetOptionsBottomSheet page = new BudgetOptionsBottomSheet(_vm.DefaultBudget, new ProductTools(new RestDataService()),new RestDataService());
 
-        page.HasBackdrop = true;
-        page.CornerRadius = 0;
+            page.Detents = new DetentsCollection()
+            {
+                new FixedContentDetent()
+            };
 
-        App.CurrentBottomSheet = page;
+            page.HasBackdrop = true;
+            page.CornerRadius = 0;
 
-        page.ShowAsync();
+            App.CurrentBottomSheet = page;
+
+            page.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "MainPage", "BudgetMoreOptions_Tapped");
+        }
     }
 
     private void EnvelopeSavingsMoreOptions_Tapped(object sender, TappedEventArgs e)
     {
-        EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
-
-        page.Detents = new DetentsCollection()
+        try
         {
-            new FixedContentDetent()
-        };
+            EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
 
-        page.HasBackdrop = true;
-        page.CornerRadius = 0;
+            page.Detents = new DetentsCollection()
+            {
+                new FixedContentDetent()
+            };
 
-        App.CurrentBottomSheet = page;
+            page.HasBackdrop = true;
+            page.CornerRadius = 0;
 
-        page.ShowAsync();
+            App.CurrentBottomSheet = page;
+
+            page.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "MainPage", "EnvelopeSavingsMoreOptions_Tapped");
+        }
+
     }
 
     private async Task<SfCarousel> CreateSavingCarousel()
@@ -2177,81 +2214,123 @@ public partial class MainPage : ContentPage
 
     private async Task IncomeCarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
     {
-        Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
+        try
+        {
+            Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
 
-        var Carousel = (SfCarousel)Sender;
-        var Elements = IncomeCarouselIdent.GetVisualTreeDescendants();
+            var Carousel = (SfCarousel)Sender;
+            var Elements = IncomeCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+            int Index = (Carousel.SelectedIndex * 2) + 1;
 
-        Border button = (Border)Elements[Index];
-        await button.BackgroundColorTo((Color)Gray100, 16, 500, Easing.CubicIn);
+            Border button = (Border)Elements[Index];
+            await button.BackgroundColorTo((Color)Gray100, 16, 500, Easing.CubicIn);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "IncomeCarouselSwipeStarted");
+        }
 
     }
     private async Task IncomeCarouselSwipeEnded(object Sender, EventArgs Event)
     {
-        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
+        try
+        {
+            Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
 
-        var Carousel = (SfCarousel)Sender;
-        var Elements = IncomeCarouselIdent.GetVisualTreeDescendants();
+            var Carousel = (SfCarousel)Sender;
+            var Elements = IncomeCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+            int Index = (Carousel.SelectedIndex * 2) + 1;
 
-        Border button = (Border)Elements[Index];
-        await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
+            Border button = (Border)Elements[Index];
+            await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "IncomeCarouselSwipeEnded");
+        }
     }
 
     private async Task CarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
     {
-        Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
+        try
+        {
+            Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
 
-        var Carousel = (SfCarousel)Sender;
-        var Elements = SavingCarouselIdent.GetVisualTreeDescendants();
+            var Carousel = (SfCarousel)Sender;
+            var Elements = SavingCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+            int Index = (Carousel.SelectedIndex * 2) + 1;
 
-        Border button = (Border)Elements[Index];
-        await button.BackgroundColorTo((Color)Gray100,16,500,Easing.CubicIn);
+            Border button = (Border)Elements[Index];
+            await button.BackgroundColorTo((Color)Gray100,16,500,Easing.CubicIn);
+
+        }
+        catch (Exception ex)
+        {
+           await _pt.HandleException(ex, "MainPage", "CarouselSwipeStarted");
+        }
 
     }
 
     private async Task CarouselSwipeEnded(object Sender, EventArgs Event)
     {
-        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
+        try
+        {
+            Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
 
-        var Carousel = (SfCarousel)Sender;
-        var Elements = SavingCarouselIdent.GetVisualTreeDescendants();
+            var Carousel = (SfCarousel)Sender;
+            var Elements = SavingCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+            int Index = (Carousel.SelectedIndex * 2) + 1;
 
-        Border button = (Border)Elements[Index];
-        await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
+            Border button = (Border)Elements[Index];
+            await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "CarouselSwipeEnded");
+        }
     }
     private async Task BillCarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
     {
-        Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
+        try
+        {
+            Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
 
-        var Carousel = (SfCarousel)Sender;
-        var Elements = BillCarouselIdent.GetVisualTreeDescendants();
+            var Carousel = (SfCarousel)Sender;
+            var Elements = BillCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+            int Index = (Carousel.SelectedIndex * 2) + 1;
 
-        Border button = (Border)Elements[Index];
-        await button.BackgroundColorTo((Color)Gray100, 16, 500, Easing.CubicIn);
-
+            Border button = (Border)Elements[Index];
+            await button.BackgroundColorTo((Color)Gray100, 16, 500, Easing.CubicIn);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "BillCarouselSwipeStarted");
+        }
     }
 
     private async Task BillCarouselSwipeEnded(object Sender, EventArgs Event)
     {
-        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
+        try
+        {
+            Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
 
-        var Carousel = (SfCarousel)Sender;
-        var Elements = BillCarouselIdent.GetVisualTreeDescendants();
+            var Carousel = (SfCarousel)Sender;
+            var Elements = BillCarouselIdent.GetVisualTreeDescendants();
 
-        int Index = (Carousel.SelectedIndex * 2) + 1;
+            int Index = (Carousel.SelectedIndex * 2) + 1;
 
-        Border button = (Border)Elements[Index];
-        await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
+            Border button = (Border)Elements[Index];
+            await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "BillCarouselSwipeEnded");
+        }
     }
     private void RefreshView_Refreshing(object sender, EventArgs e)
     {
@@ -2260,128 +2339,179 @@ public partial class MainPage : ContentPage
 
     private void SavingsMoreOptions_Tapped(object sender, TappedEventArgs e)
     {
-        EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
-
-        page.Detents = new DetentsCollection()
+        try
         {
-            new FixedContentDetent()
-        };
+            EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
 
-        page.HasBackdrop = true;
-        page.CornerRadius = 0;
+            page.Detents = new DetentsCollection()
+            {
+                new FixedContentDetent()
+            };
 
-        App.CurrentBottomSheet = page;
+            page.HasBackdrop = true;
+            page.CornerRadius = 0;
 
-        page.ShowAsync();
+            App.CurrentBottomSheet = page;
+
+            page.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "MainPage", "SavingsMoreOptions_Tapped");
+        }
+
     }
 
     private async void ExtraIncoDetails_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
-        }
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
 
-        if (App.CurrentBottomSheet != null)
-        {
-            await App.CurrentBottomSheet.DismissAsync();
-            App.CurrentBottomSheet = null;
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewIncomes)}");
         }
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewIncomes)}");
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "ExtraIncoDetails_Tapped");
+        }
     }
 
     private async void ExtraBillInfo_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewBills)}");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "ExtraBillInfo_Tapped");
         }
 
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewBills)}");
     }
 
     private async void ExtraSavingInfo_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "ExtraSavingInfo_Tapped");
         }
 
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
     }
 
     private async void SeeMoreTransactions_Tapped(object sender, TappedEventArgs e)
     {
+        try
+        {
+            if (!vslRecentTransactions.IsVisible)
+            {           
+                vslRecentTransactions.IsVisible = true;
+                fisRecentTransactionHideShow.Glyph = "\ue5cf";
+                vslRecentTransactions.HeightRequest = 0;
 
-        if (!vslRecentTransactions.IsVisible)
-        {           
-            vslRecentTransactions.IsVisible = true;
-            fisRecentTransactionHideShow.Glyph = "\ue5cf";
-            vslRecentTransactions.HeightRequest = 0;
+                var animation = new Animation(v => vslRecentTransactions.HeightRequest = v, 0, _vm.RecentTransactionsHeight);
+                animation.Commit(this, "ShowRecentTran", 16, 100, Easing.CubicIn);
 
-            var animation = new Animation(v => vslRecentTransactions.HeightRequest = v, 0, _vm.RecentTransactionsHeight);
-            animation.Commit(this, "ShowRecentTran", 16, 100, Easing.CubicIn);
-
-            await MainScrollView.ScrollToAsync(vslRecentTransactions, ScrollToPosition.Start, true);
-        }
-        else
-        {           
-            var animation = new Animation(v => vslRecentTransactions.HeightRequest = v, _vm.RecentTransactionsHeight, 0);
-            animation.Commit(this, "HideRecentTran", 16, 1000, Easing.CubicIn, async (v, c) =>
-            {
-                fisRecentTransactionHideShow.Glyph = "\ue5ce";
-                vslRecentTransactions.IsVisible = false;
-                await MainScrollView.ScrollToAsync(brdYourTransactions,ScrollToPosition.Start, true);
+                await MainScrollView.ScrollToAsync(vslRecentTransactions, ScrollToPosition.Start, true);
+            }
+            else
+            {           
+                var animation = new Animation(v => vslRecentTransactions.HeightRequest = v, _vm.RecentTransactionsHeight, 0);
+                animation.Commit(this, "HideRecentTran", 16, 1000, Easing.CubicIn, async (v, c) =>
+                {
+                    fisRecentTransactionHideShow.Glyph = "\ue5ce";
+                    vslRecentTransactions.IsVisible = false;
+                    await MainScrollView.ScrollToAsync(brdYourTransactions,ScrollToPosition.Start, true);
                 
-            });
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "SeeMoreTransactions_Tapped");
         }
     }
 
     private async void EditTransaction_Tapped(object sender, TappedEventArgs e)
     {
-        bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
-        if (EditTransaction)
+        try
         {
-            Transactions T = (Transactions)e.Parameter;
-            await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={T.TransactionID}&NavigatedFrom=ViewMainPage",
-                new Dictionary<string, object>
-                {
-                    ["Transaction"] = T
-                });
+            bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
+            if (EditTransaction)
+            {
+                Transactions T = (Transactions)e.Parameter;
+                await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={T.TransactionID}&NavigatedFrom=ViewMainPage",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = T
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "EditTransaction_Tapped");
         }
     }
 
     private async void DeleteTransaction_Tapped(object sender, TappedEventArgs e)
     {
-        bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
-        if (DeleteTransaction)
+        try
         {
-            Transactions transaction = (Transactions)e.Parameter;
-            await _ds.DeleteTransaction(transaction.TransactionID);
-
-            _vm.RecentTransactions.Clear();
-
-            List<Transactions> RecentTrans = await _ds.GetRecentTransactions(_vm.DefaultBudgetID, 6, "MainPage");
-            foreach (Transactions T in RecentTrans)
+            bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
+            if (DeleteTransaction)
             {
-                _vm.RecentTransactions.Add(T);
+                Transactions transaction = (Transactions)e.Parameter;
+                await _ds.DeleteTransaction(transaction.TransactionID);
+
+                _vm.RecentTransactions.Clear();
+
+                List<Transactions> RecentTrans = await _ds.GetRecentTransactions(_vm.DefaultBudgetID, 6, "MainPage");
+                foreach (Transactions T in RecentTrans)
+                {
+                    _vm.RecentTransactions.Add(T);
+                }
+
+                LVTransactions.RefreshItem();
+                LVTransactions.RefreshView();
+
+
+                _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+
+                App.DefaultBudget = _vm.DefaultBudget;
+                _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+                App.SessionLastUpdate = DateTime.UtcNow;
             }
-
-            LVTransactions.RefreshItem();
-            LVTransactions.RefreshView();
-
-
-            _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
-
-            App.DefaultBudget = _vm.DefaultBudget;
-            _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
-            App.SessionLastUpdate = DateTime.UtcNow;
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "DeleteTransaction_Tapped");
         }
     }
 
@@ -2425,77 +2555,105 @@ public partial class MainPage : ContentPage
 
     private async void btnTransactionAmount_Clicked(object sender, EventArgs e)
     {
-        Transactions T = new Transactions
+        try
         {
-            TransactionAmount = _vm.TransactionAmount,
-            IsSpendFromSavings = false,
-            SavingID = null,
-            SavingName = null,
-            TransactionDate = DateTime.UtcNow,
-            WhenAdded = DateTime.UtcNow,
-            IsIncome = false,
-            Category = null,
-            Payee = null,
-            Notes = null,
-            CategoryID = null,
-            IsTransacted = true,
-            SavingsSpendType = null,
-            EventType = "Transaction"
-        };
+            Transactions T = new Transactions
+            {
+                TransactionAmount = _vm.TransactionAmount,
+                IsSpendFromSavings = false,
+                SavingID = null,
+                SavingName = null,
+                TransactionDate = DateTime.UtcNow,
+                WhenAdded = DateTime.UtcNow,
+                IsIncome = false,
+                Category = null,
+                Payee = null,
+                Notes = null,
+                CategoryID = null,
+                IsTransacted = true,
+                SavingsSpendType = null,
+                EventType = "Transaction"
+            };
 
-        T = await _ds.SaveNewTransaction(T, App.DefaultBudget.BudgetID);
-        QuickTransaction_Tapped(null, null);      
+            T = await _ds.SaveNewTransaction(T, App.DefaultBudget.BudgetID);
+            QuickTransaction_Tapped(null, null);      
 
-        _vm.SnackBar = "Transaction Added";
-        _vm.SnackID = T.TransactionID;
+            _vm.SnackBar = "Transaction Added";
+            _vm.SnackID = T.TransactionID;
 
-        ProcessSnackBar();
+            ProcessSnackBar();
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "btnTransactionAmount_Clicked");
+        }
 
     }
 
     private async void CoverOverspend_Tapped(object sender, TappedEventArgs e)
     {
-        var popup = new PopupMoveBalance(App.DefaultBudget, "Budget", 0, true, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
-        await Task.Delay(100);
-        if (result.ToString() == "OK")
+        try
         {
-            App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+            var popup = new PopupMoveBalance(App.DefaultBudget, "Budget", 0, true, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            await Task.Delay(100);
+            if (result.ToString() == "OK")
+            {
+                App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "CoverOverspend_Tapped");
         }
     }
 
     private void CategoryOptions_Tapped(object sender, TappedEventArgs e)
     {
-        CategoryOptionsBottomSheet page = new CategoryOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
-
-        page.Detents = new DetentsCollection()
+        try
         {
-            new FixedContentDetent()
-        };
+            CategoryOptionsBottomSheet page = new CategoryOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
 
-        page.HasBackdrop = true;
-        page.CornerRadius = 0;
+            page.Detents = new DetentsCollection()
+            {
+                new FixedContentDetent()
+            };
 
-        App.CurrentBottomSheet = page;
+            page.HasBackdrop = true;
+            page.CornerRadius = 0;
 
-        page.ShowAsync();
+            App.CurrentBottomSheet = page;
+
+            page.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "MainPage", "CategoryOptions_Tapped");
+        }
     }
 
     private void PayeeOptions_Tapped(object sender, TappedEventArgs e)
     {
-        PayeeOptionsBottomSheet page = new PayeeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
-
-        page.Detents = new DetentsCollection()
+        try
         {
-            new FixedContentDetent()
-        };
+            PayeeOptionsBottomSheet page = new PayeeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
 
-        page.HasBackdrop = true;
-        page.CornerRadius = 0;
+            page.Detents = new DetentsCollection()
+            {
+                new FixedContentDetent()
+            };
 
-        App.CurrentBottomSheet = page;
+            page.HasBackdrop = true;
+            page.CornerRadius = 0;
 
-        page.ShowAsync();
+            App.CurrentBottomSheet = page;
+
+            page.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "MainPage", "PayeeOptions_Tapped");
+        }
     }
 
     private void YourBudgetCalendarOptions_Tapped(object sender, TappedEventArgs e)
@@ -2505,25 +2663,40 @@ public partial class MainPage : ContentPage
 
     private async void SwitchBudgetMain_Tapped(object sender, TappedEventArgs e)
     {
-        SwitchBudgetPicker = await _pt.SwitchBudget("Dashboard");
-        MainVSLView.Children.Add(SwitchBudgetPicker);
-        SwitchBudgetPicker.Focus();
+        try
+        {
+            SwitchBudgetPicker = await _pt.SwitchBudget("Dashboard");
+            MainVSLView.Children.Add(SwitchBudgetPicker);
+            SwitchBudgetPicker.Focus();
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "SwitchBudgetMain_Tapped");
+        }
     }
 
     private async void Upload_Clicked(object sender, EventArgs e)
     {
-        FileResult UploadFile = await MediaPicker.PickPhotoAsync();
-
-        if (UploadFile is null) return;
-
-        if (UploadFile.OpenReadAsync().Result.Length < 3000000)
+        try
         {
-            await _ds.UploadUserProfilePicture(App.UserDetails.UserID, UploadFile);
+            FileResult UploadFile = await MediaPicker.PickPhotoAsync();
+
+            if (UploadFile is null) return;
+
+            if (UploadFile.OpenReadAsync().Result.Length < 3000000)
+            {
+                await _ds.UploadUserProfilePicture(App.UserDetails.UserID, UploadFile);
+            }
+            else
+            {
+
+            }
         }
-        else
+        catch (Exception ex)
         {
+            await _pt.HandleException(ex, "MainPage", "OnAppearing");
+        }
 
-        }        
     }
 }
 

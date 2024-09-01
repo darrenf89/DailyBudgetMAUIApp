@@ -28,68 +28,74 @@ public partial class AddIncome : ContentPage
 
     async protected override void OnAppearing()
     {
-
-        if (_vm.BudgetID == 0)
+        try
         {
-            _vm.BudgetID = App.DefaultBudgetID;
-        }
-
-        if (_vm.IncomeID == 0)
-        {
-
-            _vm.Title = "Add New Income";
-            _vm.Income = new IncomeEvents();
-            btnAddIncome.IsVisible = true;
-
-        }
-        else
-        {
-            _vm.Income = _ds.GetIncomeFromID(_vm.IncomeID).Result;
-            btnUpdateIncome.IsVisible = true;
-            _vm.Title = $"Update Income {_vm.Income.IncomeName}";
-            SelectIncomeType.IsVisible = false;
-            IncomeTypeSelected.IsVisible = true;
-
-            if (_vm.Income.IsRecurringIncome)
+            if (_vm.BudgetID == 0)
             {
-                btnRecurringIncome_Clicked(new object(), new EventArgs());
-                if (_vm.Income.IsInstantActive ?? false)
-                {
-                    UpdateIncomeActiveYesNo("Yes");
-                }
-                else
-                {
-                    UpdateIncomeActiveYesNo("No");
-                }
-                UpdateSelectedOption(_vm.Income.RecurringIncomeType);
+                _vm.BudgetID = App.DefaultBudgetID;
+            }
+
+            if (_vm.IncomeID == 0)
+            {
+
+                _vm.Title = "Add New Income";
+                _vm.Income = new IncomeEvents();
+                btnAddIncome.IsVisible = true;
 
             }
             else
             {
-                btnOneOffIncome_Clicked(new object(), new EventArgs());
-                
-                if (_vm.Income.IsInstantActive ?? false)
+                _vm.Income = _ds.GetIncomeFromID(_vm.IncomeID).Result;
+                btnUpdateIncome.IsVisible = true;
+                _vm.Title = $"Update Income {_vm.Income.IncomeName}";
+                SelectIncomeType.IsVisible = false;
+                IncomeTypeSelected.IsVisible = true;
+
+                if (_vm.Income.IsRecurringIncome)
                 {
-                    UpdateIncomeActiveYesNo("Yes");
+                    btnRecurringIncome_Clicked(new object(), new EventArgs());
+                    if (_vm.Income.IsInstantActive ?? false)
+                    {
+                        UpdateIncomeActiveYesNo("Yes");
+                    }
+                    else
+                    {
+                        UpdateIncomeActiveYesNo("No");
+                    }
+                    UpdateSelectedOption(_vm.Income.RecurringIncomeType);
+
                 }
                 else
                 {
-                    UpdateIncomeActiveYesNo("No");
-                }
+                    btnOneOffIncome_Clicked(new object(), new EventArgs());
                 
+                    if (_vm.Income.IsInstantActive ?? false)
+                    {
+                        UpdateIncomeActiveYesNo("Yes");
+                    }
+                    else
+                    {
+                        UpdateIncomeActiveYesNo("No");
+                    }
+                
+                }
+
             }
 
+            double IncomeAmount = (double?)_vm.Income.IncomeAmount ?? 0;
+            entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
+
+            base.OnAppearing();
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
         }
-
-        double IncomeAmount = (double?)_vm.Income.IncomeAmount ?? 0;
-        entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
-
-        base.OnAppearing();
-
-        if (App.CurrentPopUp != null)
+        catch (Exception ex)
         {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
+            await _pt.HandleException(ex, "AddIncome", "OnAppearing");
         }
     }
 
@@ -118,80 +124,116 @@ public partial class AddIncome : ContentPage
 
     async private void ResetIncome_Clicked(object sender, EventArgs e)
     {
-        ClearAllValidators();
-
-        bool result = await DisplayAlert("Income Reset", "Are you sure you want to Income " + _vm.Income.IncomeName, "Yes, continue", "Cancel");
-        if (result)
+        try
         {
-            SelectIncomeType.IsVisible = true;
-            IncomeTypeSelected.IsVisible = false;
+            ClearAllValidators();
 
-            lblSelectedIncomeTitle.Text = "";
-            lblSelectedIncomeParaOne.Text = "";
-            lblSelectedIncomeParaTwo.Text = "";
+            bool result = await DisplayAlert("Income Reset", "Are you sure you want to Income " + _vm.Income.IncomeName, "Yes, continue", "Cancel");
+            if (result)
+            {
+                SelectIncomeType.IsVisible = true;
+                IncomeTypeSelected.IsVisible = false;
 
-            brdSavingRecurringTypeSelected.IsVisible = false;
-            vslIncomeInstantActive.IsVisible = false;
-            vslIncomeDetails.IsVisible = false;
-            brdRecurringIncomeTypeSelected.IsVisible = false;
+                lblSelectedIncomeTitle.Text = "";
+                lblSelectedIncomeParaOne.Text = "";
+                lblSelectedIncomeParaTwo.Text = "";
 
-            _vm.IncomeTypeText = "";
-            _vm.Income.IsRecurringIncome = false;
+                brdSavingRecurringTypeSelected.IsVisible = false;
+                vslIncomeInstantActive.IsVisible = false;
+                vslIncomeDetails.IsVisible = false;
+                brdRecurringIncomeTypeSelected.IsVisible = false;
 
-            UpdateIncomeActiveYesNo("");
-            UpdateSelectedOption("");
+                _vm.IncomeTypeText = "";
+                _vm.Income.IsRecurringIncome = false;
+
+                UpdateIncomeActiveYesNo("");
+                UpdateSelectedOption("");
+            }
+        }
+        catch (Exception ex)
+        {
+
+            await _pt.HandleException(ex, "AddIncome", "ResetIncome_Clicked");
         }
     }
 
     private void btnOneOffIncome_Clicked(object sender, EventArgs e)
     {
-        ClearAllValidators();
+        try
+        {
+            ClearAllValidators();
 
-        SelectIncomeType.IsVisible = false;
-        IncomeTypeSelected.IsVisible = true;
+            SelectIncomeType.IsVisible = false;
+            IncomeTypeSelected.IsVisible = true;
 
-        lblSelectedIncomeTitle.Text = "You are adding a one off Income";
-        lblSelectedIncomeParaOne.Text = "Any income you know you are going to get but will only receive it once";
-        lblSelectedIncomeParaTwo.Text = "Maybe a gift from family, sold something big ... or small, any extra money you get put it in here.";
+            lblSelectedIncomeTitle.Text = "You are adding a one off Income";
+            lblSelectedIncomeParaOne.Text = "Any income you know you are going to get but will only receive it once";
+            lblSelectedIncomeParaTwo.Text = "Maybe a gift from family, sold something big ... or small, any extra money you get put it in here.";
 
-        brdSavingRecurringTypeSelected.IsVisible = true;
-        vslIncomeInstantActive.IsVisible = true;
-        vslIncomeDetails.IsVisible = true;
-        brdRecurringIncomeTypeSelected.IsVisible = false;
+            brdSavingRecurringTypeSelected.IsVisible = true;
+            vslIncomeInstantActive.IsVisible = true;
+            vslIncomeDetails.IsVisible = true;
+            brdRecurringIncomeTypeSelected.IsVisible = false;
 
-        _vm.IncomeTypeText = "OneOff";
-        _vm.Income.IsRecurringIncome = false;
+            _vm.IncomeTypeText = "OneOff";
+            _vm.Income.IsRecurringIncome = false;
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddIncome", "btnOneOffIncome_Clicked");
+        }
 
     }
 
     private void btnRecurringIncome_Clicked(object sender, EventArgs e)
     {
-        ClearAllValidators();
+        try
+        {
+            ClearAllValidators();
 
-        SelectIncomeType.IsVisible = false;
-        IncomeTypeSelected.IsVisible = true;
+            SelectIncomeType.IsVisible = false;
+            IncomeTypeSelected.IsVisible = true;
 
-        lblSelectedIncomeTitle.Text = "You are adding a recurring Income";
-        lblSelectedIncomeParaOne.Text = "Any income outside of your main pay you get on a regular and consistent way!";
-        lblSelectedIncomeParaTwo.Text = "Maybe a second part time job, some cash from investments or maybe you have really generous friends?!";
+            lblSelectedIncomeTitle.Text = "You are adding a recurring Income";
+            lblSelectedIncomeParaOne.Text = "Any income outside of your main pay you get on a regular and consistent way!";
+            lblSelectedIncomeParaTwo.Text = "Maybe a second part time job, some cash from investments or maybe you have really generous friends?!";
 
-        brdSavingRecurringTypeSelected.IsVisible = true;
-        vslIncomeInstantActive.IsVisible = true;
-        vslIncomeDetails.IsVisible = true;
-        brdRecurringIncomeTypeSelected.IsVisible = true;
+            brdSavingRecurringTypeSelected.IsVisible = true;
+            vslIncomeInstantActive.IsVisible = true;
+            vslIncomeDetails.IsVisible = true;
+            brdRecurringIncomeTypeSelected.IsVisible = true;
 
-        _vm.IncomeTypeText = "Recurring";
-        _vm.Income.IsRecurringIncome = true;
+            _vm.IncomeTypeText = "Recurring";
+            _vm.Income.IsRecurringIncome = true;
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddIncome", "btnRecurringIncome_Clicked");
+        }
     }
 
     private void IncomeActiveYesSelect_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateIncomeActiveYesNo("Yes");
+        try
+        {
+            UpdateIncomeActiveYesNo("Yes");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddIncome", "IncomeActiveYesSelect_Tapped");
+        }
     }
 
     private void IncomeActiveNoSelect_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateIncomeActiveYesNo("No");
+        try
+        {
+            UpdateIncomeActiveYesNo("No");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddIncome", "IncomeActiveNoSelect_Tapped");
+        }
     }
 
     private void UpdateIncomeActiveYesNo(string option)
@@ -256,12 +298,26 @@ public partial class AddIncome : ContentPage
     }
     private void Option1Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("Everynth");
+        try
+        {
+            UpdateSelectedOption("Everynth");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddIncome", "Option1Select_Tapped");
+        }
     }
 
     private void Option2Select_Tapped(object sender, TappedEventArgs e)
     {
-        UpdateSelectedOption("OfEveryMonth");
+        try
+        {
+            UpdateSelectedOption("OfEveryMonth");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddIncome", "Option2Select_Tapped");
+        }
     }
 
     private void UpdateSelectedOption(string option)
@@ -336,40 +392,53 @@ public partial class AddIncome : ContentPage
 
     void OfEveryMonthValue_Changed(object sender, TextChangedEventArgs e)
     {
-        ClearAllValidators();
-
-        Regex regex = new Regex(@"^\d+$");
-
-        if (e.NewTextValue != null && e.NewTextValue != "")
+        try
         {
-            if (!regex.IsMatch(e.NewTextValue))
+            ClearAllValidators();
+
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
             {
-                entOfEveryMonthValue.Text = e.OldTextValue;
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entOfEveryMonthValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entOfEveryMonthValue.Text = e.NewTextValue;
+                }
             }
-            else
-            {
-                entOfEveryMonthValue.Text = e.NewTextValue;
-            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddIncome", "OfEveryMonthValue_Changed");
         }
     }
 
     void EveryNthValue_Changed(object sender, TextChangedEventArgs e)
     {
-
-        ClearAllValidators();
-
-        Regex regex = new Regex(@"^\d+$");
-
-        if (e.NewTextValue != null && e.NewTextValue != "")
+        try
         {
-            if (!regex.IsMatch(e.NewTextValue))
+            ClearAllValidators();
+
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
             {
-                entEverynthValue.Text = e.OldTextValue;
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entEverynthValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entEverynthValue.Text = e.NewTextValue;
+                }
             }
-            else
-            {
-                entEverynthValue.Text = e.NewTextValue;
-            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddIncome", "EveryNthValue_Changed");
         }
     }
 
@@ -393,18 +462,27 @@ public partial class AddIncome : ContentPage
     }
     void IncomeAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal IncomeAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entIncomeAmount.CursorPosition > position)
+        try
         {
-            entIncomeAmount.CursorPosition = entIncomeAmount.Text.Length;
+            decimal IncomeAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+            entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entIncomeAmount.CursorPosition > position)
+            {
+                entIncomeAmount.CursorPosition = entIncomeAmount.Text.Length;
+            }
+            _vm.Income.IncomeAmount = IncomeAmount;
         }
-        _vm.Income.IncomeAmount = IncomeAmount;
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddIncome", "IncomeAmount_Changed");
+        }
+
     }
 
     private async Task<string> ChangeIncomeName()
     {
+
         string Description = "Every income needs a name, we will refer to it by the name you give it and this will make it easier to identify!";
         string DescriptionSub = "Call it something useful or call it something silly up to you really!";
         var popup = new PopUpPageSingleInput("Income Name", Description, DescriptionSub, "Enter an Income name!", _vm.Income.IncomeName, new PopUpPageSingleInputViewModel());
@@ -420,31 +498,45 @@ public partial class AddIncome : ContentPage
 
     private async void AddIncome_Clicked(object sender, EventArgs e)
     {
-        if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
+        try
         {
-            string status = await ChangeIncomeName();
+            if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
+            {
+                string status = await ChangeIncomeName();
+            }
+
+            if(ValidateIncomeDetails())
+            {
+                SaveIncomeTypeOptions();
+
+                _vm.AddIncome();
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "AddIncome", "AddIncome_Clicked");
         }
 
-        if(ValidateIncomeDetails())
-        {
-            SaveIncomeTypeOptions();
-
-            _vm.AddIncome();
-        }
-        
     }
     private async void UpdateIncome_Clicked(object sender, EventArgs e)
     {
-        if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
+        try
         {
-            string status = await ChangeIncomeName();
+            if (_vm.Income.IncomeName == "" || _vm.Income.IncomeName == null)
+            {
+                string status = await ChangeIncomeName();
+            }
+
+            if (ValidateIncomeDetails())
+            {
+                SaveIncomeTypeOptions();
+
+                _vm.UpdateIncome();
+            }
         }
-
-        if (ValidateIncomeDetails())
+        catch (Exception ex)
         {
-            SaveIncomeTypeOptions();
-
-            _vm.UpdateIncome();
+            await _pt.HandleException(ex, "AddIncome", "UpdateIncome_Clicked");
         }
     }
 
