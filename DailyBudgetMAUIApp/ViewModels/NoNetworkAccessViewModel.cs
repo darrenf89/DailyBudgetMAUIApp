@@ -2,6 +2,7 @@
 using DailyBudgetMAUIApp.Pages;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DailyBudgetMAUIApp.DataServices;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -16,9 +17,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string txtConnectionStatus = "";
         [ObservableProperty]
         private Color colorConnectionStatus;
+        private readonly IProductTools _pt;
 
-        public NoNetworkAccessViewModel()
+        public NoNetworkAccessViewModel(IProductTools pt)
         {
+            _pt = pt;
             Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
         }
         ~NoNetworkAccessViewModel()
@@ -49,7 +52,21 @@ namespace DailyBudgetMAUIApp.ViewModels
         [RelayCommand]
         async void GoToLandingPage()
         {
-            await Shell.Current.GoToAsync($"//{nameof(LandingPage)}");
+            try
+            {
+                if (App.UserDetails is not null && App.UserDetails.SessionExpiry > DateTime.UtcNow)
+                {
+                    await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync($"//{nameof(LandingPage)}");
+                }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "NoNetworkAccess", "GoToLandingPage");
+            }
         }
     }
 }
