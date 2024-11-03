@@ -72,13 +72,21 @@ namespace DailyBudgetMAUIApp.DataServices
 
         }
 
-        public async Task<ErrorLog> HandleException(Exception ex, string Page, string Method)
+        public async Task HandleException(Exception ex, string Page, string Method)
         {
-            ErrorLog Error = new ErrorLog(ex, Page, Method);
-
-            Page TopPage = Shell.Current.Navigation.NavigationStack[Shell.Current.Navigation.NavigationStack.Count - 1];
-            if (TopPage.GetType() != typeof(NoNetworkAccess) && TopPage.GetType() != typeof(ErrorPage))
-            {                
+            if (ex.Message == "Connectivity")
+            {
+                //TODO: TAKE THEM TO THE NO INTERNET PAGE
+                await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
+            }
+            else if (ex.Message == "Server Connectivity")
+            {
+                //TODO: TAKE THEM TO THE NO INTERNET PAGE
+                await Shell.Current.GoToAsync($"{nameof(NoServerAccess)}");
+            }
+            else
+            {
+                ErrorLog Error = new ErrorLog(ex, Page, Method);
                 if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
                 {
                     Error = await _ds.CreateNewErrorLog(Error);
@@ -87,9 +95,8 @@ namespace DailyBudgetMAUIApp.DataServices
                     new Dictionary<string, object>
                     {
                         ["Error"] = Error
-                    });                
+                    });
             }
-            return Error;
         }
 
         public DateTime? GetBudgetLastUpdated(int BudgetID)

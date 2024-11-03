@@ -247,14 +247,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                 break;
                             default:
-                                throw new Exception("Error Calling API");                            
+                                throw new Exception("Server Connectivity");                            
                         }
                     }
                     else
                     {
                         await App.CurrentPopUp.CloseAsync();
                         App.CurrentPopUp = null;
-                        await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
+                        await Application.Current.MainPage.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                     }
                 }
                 else 
@@ -262,7 +262,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     IsButtonBusy = false;
                     await App.CurrentPopUp.CloseAsync();
                     App.CurrentPopUp = null;
-                    await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                 }
             }
             catch (Exception ex)

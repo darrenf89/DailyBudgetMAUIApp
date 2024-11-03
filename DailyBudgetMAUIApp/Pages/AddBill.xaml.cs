@@ -29,14 +29,22 @@ public partial class AddBill : ContentPage
 
     async protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
+
         base.OnNavigatedFrom(args);
         _vm.NavigatedFrom = "";
+    }
+
+    async protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+
+        base.OnNavigatedTo(args);
     }
 
     async protected override void OnAppearing()
     {
         try
         {
+
             base.OnAppearing();
 
             if (string.IsNullOrEmpty(_vm.NavigatedFrom))

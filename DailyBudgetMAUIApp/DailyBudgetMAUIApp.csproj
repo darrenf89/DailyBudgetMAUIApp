@@ -52,6 +52,7 @@
 	  <None Remove="Platforms\Android\Resources\xml\network_security_config.xml" />
 	  <None Remove="Resources\Fonts\manolo-mono.ttf" />
 	  <None Remove="Resources\Fonts\MaterialIcons-Regular.ttf" />
+	  <None Remove="Resources\Images\disconnectedpage.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -113,6 +114,9 @@
 	  <Compile Update="Pages\EditBudgetSettings.xaml.cs">
 	    <DependentUpon>EditBudgetSettings.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\NoServerAccess.xaml.cs">
+	    <DependentUpon>NoServerAccess.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\NoNetworkAccess.xaml.cs">
 	    <DependentUpon>NoNetworkAccess.xaml</DependentUpon>
 	  </Compile>
@@ -121,6 +125,9 @@
 	  </Compile>
 	  <Compile Update="Platforms\iOS\Mappers\BorderEntryMapper.cs">
 	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+	  </Compile>
+	  <Compile Update="Popups\PopUpNoServer.xaml.cs">
+	    <DependentUpon>PopUpNoServer.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Popups\PopUpNoNetwork.xaml.cs">
 	    <DependentUpon>PopUpNoNetwork.xaml</DependentUpon>
@@ -233,6 +240,9 @@
 	  <MauiXaml Update="Pages\EditBudgetSettings.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\NoServerAccess.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\NoNetworkAccess.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -240,6 +250,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewPayees.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Popups\PopUpNoServer.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Popups\PopUpNoNetwork.xaml">

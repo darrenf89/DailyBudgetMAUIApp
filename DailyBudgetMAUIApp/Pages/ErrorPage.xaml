@@ -1,31 +1,52 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:ABI.Microsoft.UI.Xaml.Resources;assembly=Microsoft.WinUI"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              x:Class="DailyBudgetMAUIApp.Pages.ErrorPage"   
              Shell.FlyoutBehavior="Disabled"
              Shell.TabBarIsVisible="False"
-             Shell.NavBarIsVisible = "False">
-    
-    <VerticalStackLayout>
-        <Label 
-            Text="{Binding Error.ErrorMessage}"
+             Shell.NavBarIsVisible = "False"
+             Background="#ecdbc3">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" ColumnDefinitions="*,2*,*" VerticalOptions="Fill">
+        <Image Grid.Column="1" Grid.Row="2" Source="error.png" Aspect="AspectFill" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,60,0,0"/>
+        <Label Grid.Column="0" Grid.Row="0" Margin="0,60,0,10" Grid.ColumnSpan="3" 
+            Text="Well That's Awkward"
             VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-        <Button Text="Go home"
+            HorizontalOptions="Center" 
+            TextColor="{StaticResource Gray950}" 
+            FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}"
+            FontFamily="OpenSansSemibold"/>
+        <Label Grid.Column="0" Grid.Row="1" Margin="20,10,20,0" Grid.ColumnSpan="3" 
+            Text="Something went wrong when on our side, I'm going to blame it on the graduates."
+            HorizontalTextAlignment="Center"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" 
+            TextColor="{StaticResource Gray700}"
+            FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}"
+            LineHeight="1.5"/>
+        <Label Grid.Column="0" Grid.Row="3" Margin="20,60,20,0" Grid.ColumnSpan="3" 
+            Text="{Binding TxtErrorMessage}"
+            HorizontalTextAlignment="Center"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" 
+            TextColor="{StaticResource Gray700}"
+            FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"
+            LineHeight="1.2"/>
+        <VerticalStackLayout Grid.Column="0" Grid.Row="5" VerticalOptions="End" Grid.ColumnSpan="3">
+            <Button  Text="GO BACK" Margin="80,0,80,140" Padding="0,10,0,10" 
             TextColor="White"
-            WidthRequest="180" 
-            Style="{StaticResource PrimaryButton}" 
+            CornerRadius="26"
+            FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"
+            IsEnabled="{Binding BtnIsEnabled}"
             Command="{Binding GoToLandingPageCommand}">
-            <Button.ImageSource>
-                <FontImageSource 
+                <Button.ImageSource>
+                    <FontImageSource 
                     FontFamily="MaterialDesignIcons"
                     Glyph="{x:Static helpers:MaterialDesignIconsFonts.Lock_open}"
                     Size="20" />
-            </Button.ImageSource>
-        </Button>
-    </VerticalStackLayout>
-    
+                </Button.ImageSource>
+            </Button>
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>

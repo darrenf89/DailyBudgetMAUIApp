@@ -1,17 +1,13 @@
 ﻿using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
 using DailySpendWebApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DailyBudgetMAUIApp.DataServices
 {
     public interface IRestDataService
     {
+        public Task<bool> CheckNetworkConnection();
+        public Task<bool> CheckConnectionStrengthAsync();
         public Task<string> PatchUserAccount(int UserID, List<PatchDoc> PatchDoc);
         public Task<UserDetailsModel> RegisterNewUserAsync(RegisterModel User);
         public Task<string> GetUserSaltAsync(string UserEmail);

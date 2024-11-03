@@ -1,15 +1,15 @@
 ﻿using DailyBudgetMAUIApp.Models;
 using System.Text;
 using System.Text.Json;
-using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Net;
 using DailySpendWebApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using System.Transactions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.ViewModels;
+using System.Net.NetworkInformation;
+using System.Diagnostics;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -23,12 +23,18 @@ namespace DailyBudgetMAUIApp.DataServices
         private readonly string _url;
         private readonly JsonSerializerOptions _jsonSerialiserOptions;
         private NetworkAccess PreviousNetworkAccess = NetworkAccess.Internet;
-        private bool CheckNetworkChanged = true;
+
+        private readonly int maxRetries = 4;
+        private readonly int delayMilliseconds = 5000;
+        private readonly TimeSpan timeoutMilliseconds = TimeSpan.FromMilliseconds(10000);
+        private DateTime LastServerHealthCheck;
 
         public RestDataService()
         {
-            _httpClient = new HttpClient();
-            //_baseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5074" : "https://localhost:7141";
+            _httpClient = new HttpClient
+            {
+                Timeout = timeoutMilliseconds
+            };
             _baseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "https://dailybudgetwebapi.azurewebsites.net/" : "https://dailybudgetwebapi.azurewebsites.net/";
             _url = $"{_baseAddress}api/v1";
 
@@ -37,32 +43,19 @@ namespace DailyBudgetMAUIApp.DataServices
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
 
-            Connectivity.ConnectivityChanged +=  ConnectivityChangedHandler;
         }
 
-        private async void ConnectivityChangedHandler(object sender, ConnectivityChangedEventArgs e)
-        {
-            PreviousNetworkAccess = e.NetworkAccess;
-            if(CheckNetworkChanged)
-            {
-                if (e.NetworkAccess == NetworkAccess.Internet)
-                {
-                    //TODO: SHOW POPUP SAYING INTERNET RETURNED WOULD THEY LIKE TO RETURN TO THEIR BUDGETTING
-                }
-                else if (PreviousNetworkAccess == NetworkAccess.Internet)
-                {
-                    //TODO: TAKE THEM TO THE NO INTERNET PAGE
-                    await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
-                }
-            }
-        }
-
-        private async void HandleError(Exception ex, string Page, string Method)
+        private async Task HandleError(Exception ex, string Page, string Method)
         {
             if (ex.Message == "Connectivity")
             {
                 //TODO: TAKE THEM TO THE NO INTERNET PAGE
                 await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
+            }
+            else if (ex.Message == "Server Connectivity")
+            {
+                //TODO: TAKE THEM TO THE NO INTERNET PAGE
+                await Shell.Current.GoToAsync($"{nameof(NoServerAccess)}");
             }
             else
             {
@@ -79,48 +72,6 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        private async Task<bool> CheckNetworkConnection()
-        {
-            CheckNetworkChanged = false;
-
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                
-                //TODO: SHOW POPUP
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
-
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpNoNetwork();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
-
-                await Task.Delay(1000);
-
-                int i = 0;
-                while(Connectivity.Current.NetworkAccess != NetworkAccess.Internet && i < 30)
-                {
-                    await Task.Delay(1000);
-                    i++;
-                }
-
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
-
-            }
-
-            CheckNetworkChanged = true;
-
-            return Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
-        }
         public async Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog)
         {
             ErrorLog ErrorLog = new();
@@ -136,7 +87,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<ErrorLog>(NewLog, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/error/adderrorlogentry", request).Result;
+                HttpResponseMessage response = PostHttpRequestAsync($"{_url}/error/adderrorlogentry", request).Result;
                 string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
@@ -166,37 +117,414 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public async Task<string> PatchUserAccount(int UserID, List<PatchDoc> PatchDoc)
+        public async Task<bool> CheckConnectionStrengthAsync()
         {
-
             try
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                if(this.LastServerHealthCheck.AddMinutes(1) < DateTime.UtcNow)
                 {
-                    throw new HttpRequestException("Connectivity");
-                }
+                    HttpClient pingClient = new HttpClient
+                    {
+                        Timeout = TimeSpan.FromMilliseconds(5000)
+                    };
 
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                    var stopwatch = Stopwatch.StartNew();
+                    //var request = new HttpRequestMessage(HttpMethod.Head, $"{_url}/healthCheck");
+                    //HttpResponseMessage response = await pingClient.SendAsync(request);
+                    HttpResponseMessage response = pingClient.GetAsync($"{_url}/healthCheck").Result;
+                    stopwatch.Stop();
 
-                HttpResponseMessage response = _httpClient.PatchAsync($"{_url}/userAccounts/{UserID}", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        double roundTripTime = stopwatch.Elapsed.TotalMilliseconds;
+                        if (roundTripTime > 2000)
+                        {
+                            //TODO: SHOW A POPUP
+                            if (App.CurrentPopUp != null)
+                            {
+                                await App.CurrentPopUp.CloseAsync();
+                                App.CurrentPopUp = null;
+                            }
 
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
+                            if (App.CurrentPopUp == null)
+                            {
+                                var PopUp = new PopUpNoServer(new PopUpNoServerViewModel());
+                                App.CurrentPopUp = PopUp;
+                                Application.Current.MainPage.ShowPopup(PopUp);
+                            }
+
+                            int i = 0;
+                            while (roundTripTime > 2000 && i < 2)
+                            {
+                                await Task.Delay(200);
+                                stopwatch = Stopwatch.StartNew();
+                                //request = new HttpRequestMessage(HttpMethod.Head, $"{_url}/healthCheck");
+                                //response = await pingClient.SendAsync(request);
+                                response = pingClient.GetAsync($"{_url}/healthCheck").Result;
+                                stopwatch.Stop();
+
+                                roundTripTime = stopwatch.Elapsed.TotalMilliseconds;
+                                i++;
+                            }
+
+                            if (App.CurrentPopUp != null)
+                            {
+                                await App.CurrentPopUp.CloseAsync();
+                                App.CurrentPopUp = null;
+                            }
+
+                            return roundTripTime < 2000;
+                        }
+                        else
+                        {
+                            this.LastServerHealthCheck = DateTime.UtcNow;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
+                    return true;
                 }
+
+                //TODO: Use Azure Health Check when I pay for it.
+                //using (var ping = new Ping())
+                //{                    
+                //    Send a ping request asynchronously
+                //    PingReply reply = await ping.SendPingAsync($"{_url}/userAccounts/registeruser", 10000);
+
+                //    if (reply.Status == IPStatus.Success)
+                //    {
+                //        long roundTripTime = reply.RoundtripTime;
+
+                //        if (roundTripTime > 200)
+                //        {
+                //            //TODO: SHOW A POPUP
+                //            if (App.CurrentPopUp != null)
+                //            {
+                //                await App.CurrentPopUp.CloseAsync();
+                //                App.CurrentPopUp = null;
+                //            }
+
+                //            if (App.CurrentPopUp == null)
+                //            {
+                //                var PopUp = new PopUpNoNetwork(new PopUpNoNetworkViewModel());
+                //                App.CurrentPopUp = PopUp;
+                //                Application.Current.MainPage.ShowPopup(PopUp);
+                //            }                        
+
+                //            int i = 0;
+                //            while (roundTripTime > 200 && i < 30)
+                //            {
+                //                await Task.Delay(200);
+                //                reply = await ping.SendPingAsync(_baseAddress, 1000);
+                //                roundTripTime = reply.RoundtripTime;
+                //                i++;
+                //            }
+
+                //            if (App.CurrentPopUp != null)
+                //            {
+                //                await App.CurrentPopUp.CloseAsync();
+                //                App.CurrentPopUp = null;
+                //            }
+
+                //            return roundTripTime < 200;
+                //        }
+                //        else
+                //        {
+                //            return true;
+                //        }
+                //    }
+                //    else
+                //    {
+                //        return false;
+                //    }
+                //}
             }
             catch (Exception ex)
             {
-                HandleError(ex, "PatchUserAccount", "PatchUserAccount");
-                throw new Exception(ex.Message);
+                return false;
+            }
+
+        }
+
+        public async Task<bool> CheckNetworkConnection()
+        {
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {                
+                //TODO: SHOW POPUP
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpNoNetwork(new PopUpNoNetworkViewModel());
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(1);
+
+                int i = 0;
+                while(Connectivity.Current.NetworkAccess != NetworkAccess.Internet && i < 30)
+                {
+                    await Task.Delay(1000);
+                    i++;
+                }
+
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+            }
+
+            return Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
+        }
+
+        public async Task CheckConnectivity()
+        {
+            bool IsNetworkConnection = await CheckNetworkConnection();
+            if (!IsNetworkConnection)
+            {
+                throw new HttpRequestException("Connectivity");
+            }
+
+            bool IsServerConnection = await CheckConnectionStrengthAsync();
+            if (!IsServerConnection)
+            {
+                throw new HttpRequestException("Server Connectivity");
+            }
+        }
+
+        private async Task<HttpResponseMessage> GetHttpRequestAsync(string requestURL)
+        {
+            int attempt = 0;
+            await CheckConnectivity();
+
+            while (attempt < maxRetries)
+            {
+                try
+                {
+                    attempt++;
+                    HttpResponseMessage response = _httpClient.GetAsync(requestURL).Result;
+                    await HideServerConnectionPopup();
+                    return response;
+                }
+                catch (TaskCanceledException ex)
+                {
+                    Console.WriteLine($"Request timed out (attempt {attempt}): {ex.Message}");
+                }
+                catch(Exception ex)
+                {
+                    if (!(ex.Message == "One or more errors occurred. (Canceled)" || ex.Message == "One or more errors occurred. (A task was canceled.)"))
+                    {
+                        throw;
+                    }                   
+                    
+                }
+
+                if (attempt == 1)
+                {
+                    await ShowServerConnectionPopup();
+                }
+
+                if (attempt != maxRetries)
+                {
+                    int delay = delayMilliseconds * (int)Math.Pow(2, attempt - 1);
+                    await Task.Delay(delay);
+                }
+
+            }
+
+            // If all retries fail throw an exception
+            await HideServerConnectionPopup();
+            throw new HttpRequestException("Server Connectivity");
+        }
+
+        private async Task<HttpResponseMessage> PostHttpRequestAsync(string requestURL, HttpContent content)
+        {
+            int attempt = 0;
+            await CheckConnectivity();
+
+            while (attempt < maxRetries)
+            {
+                try
+                {
+                    attempt++;
+                    HttpResponseMessage response = _httpClient.PostAsync(requestURL, content).Result;
+                    await HideServerConnectionPopup();
+                    return response;
+                }
+                catch (TaskCanceledException ex)
+                {
+                    Console.WriteLine($"Request timed out (attempt {attempt}): {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    if (!(ex.Message == "One or more errors occurred. (Canceled)" || ex.Message == "One or more errors occurred. (A task was canceled.)"))
+                    {
+                        throw;
+                    }
+                }
+
+                if (attempt == 1)
+                {
+                    await ShowServerConnectionPopup();
+                }
+
+                if (attempt != maxRetries)
+                {
+                    int delay = delayMilliseconds * (int)Math.Pow(2, attempt - 1);
+                    await Task.Delay(delay);
+                }
+            }
+
+            // If all retries fail throw an exception
+            await HideServerConnectionPopup();
+            throw new HttpRequestException("Server Connectivity");
+        }
+
+        private async Task<HttpResponseMessage> PatchHttpRequestAsync(string requestURL, HttpContent content)
+        {
+            int attempt = 0;
+            await CheckConnectivity();
+
+            while (attempt < maxRetries)
+            {
+                try
+                {
+                    attempt++;                    
+                    HttpResponseMessage response = _httpClient.PatchAsync(requestURL, content).Result;
+                    await HideServerConnectionPopup();
+                    return response;
+                }
+                catch (TaskCanceledException ex)
+                {
+                    Console.WriteLine($"Request timed out (attempt {attempt}): {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    if (!(ex.Message == "One or more errors occurred. (Canceled)" || ex.Message == "One or more errors occurred. (A task was canceled.)"))
+                    {
+                        throw;
+                    }
+                }
+
+                if (attempt == 1)
+                {
+                    await ShowServerConnectionPopup();
+                }
+
+                if (attempt != maxRetries)
+                {
+                    int delay = delayMilliseconds * (int)Math.Pow(2, attempt - 1);
+                    await Task.Delay(delay);
+                }
+            }
+
+            // If all retries fail throw an exception
+            await HideServerConnectionPopup();
+            throw new HttpRequestException("Server Connectivity");
+        }
+
+        private async Task<HttpResponseMessage> PutHttpRequestAsync(string requestURL, HttpContent content)
+        {
+            int attempt = 0;
+            await CheckConnectivity();
+
+            while (attempt < maxRetries)
+            {
+                try
+                {
+                    attempt++;                    
+                    HttpResponseMessage response = _httpClient.PutAsync(requestURL, content).Result;
+                    await HideServerConnectionPopup();
+                    return response;
+                }
+                catch (TaskCanceledException ex)
+                {
+                    Console.WriteLine($"Request timed out (attempt {attempt}): {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    if (!(ex.Message == "One or more errors occurred. (Canceled)" || ex.Message == "One or more errors occurred. (A task was canceled.)"))
+                    {
+                        throw;
+                    }
+                }
+
+                if (attempt == 1)
+                {
+                    await ShowServerConnectionPopup();
+                }
+
+                if (attempt != maxRetries)
+                {
+                    int delay = delayMilliseconds * (int)Math.Pow(2, attempt - 1);
+                    await Task.Delay(delay);
+                }
+            }
+
+            // If all retries fail throw an exception
+            await HideServerConnectionPopup();
+            throw new HttpRequestException("Server Connectivity");
+        }
+
+        public async Task ShowServerConnectionPopup()
+        {
+            await Task.Delay(1);
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
+
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpNoServer(new PopUpNoServerViewModel());
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+        }
+        public async Task HideServerConnectionPopup()
+        {
+            if (App.CurrentPopUp != null)
+            {
+                var type = App.CurrentPopUp.GetType();
+                if (type.Name == "PopUpNoServer")
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+            }
+        }
+
+        public async Task<string> PatchUserAccount(int UserID, List<PatchDoc> PatchDoc)
+        {
+
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/userAccounts/{UserID}", request);
+            string content = response.Content.ReadAsStringAsync().Result;
+            if (response.IsSuccessStatusCode)
+            {
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
 
         }
@@ -204,35 +532,19 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             RegisterModel User = new RegisterModel();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getsalt/{System.Web.HttpUtility.UrlEncode(UserEmail)}");
+            string content = response.Content.ReadAsStringAsync().Result;
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getsalt/{System.Web.HttpUtility.UrlEncode(UserEmail)}").Result;
-                string content = response.Content.ReadAsStringAsync().Result;
+                User = System.Text.Json.JsonSerializer.Deserialize<RegisterModel>(content, _jsonSerialiserOptions);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    
-                    User = System.Text.Json.JsonSerializer.Deserialize<RegisterModel>(content, _jsonSerialiserOptions);
-
-                    return User.Salt;
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
-                
+                return User.Salt;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetUserSaltAsync", "GetUserSaltAsync");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -245,36 +557,22 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             UserDetailsModel UserModel = new();
 
-            try
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<RegisterModel>(User, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/userAccounts/registeruser", request);
+            string content = response.Content.ReadAsStringAsync().Result;
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<RegisterModel>(User, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/userAccounts/registeruser", request).Result;
-                string content =  response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    UserModel = System.Text.Json.JsonSerializer.Deserialize<UserDetailsModel>(content, _jsonSerialiserOptions);
-                    UserModel.Error = null;
-                    return UserModel;
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }       
+                UserModel = System.Text.Json.JsonSerializer.Deserialize<UserDetailsModel>(content, _jsonSerialiserOptions);
+                UserModel.Error = null;
+                return UserModel;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "RegisterNewUserAsync", "RegisterNewUserAsync");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -282,82 +580,49 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             UserDetailsModel User = new();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getLogonDetails/{System.Web.HttpUtility.UrlEncode(UserEmail)}");
+            string content = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getLogonDetails/{System.Web.HttpUtility.UrlEncode(UserEmail)}").Result;
-                string content = "";
-                content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    User = System.Text.Json.JsonSerializer.Deserialize<UserDetailsModel>(content, _jsonSerialiserOptions);
-                    User.Error = null;
-                    return User;
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                User = System.Text.Json.JsonSerializer.Deserialize<UserDetailsModel>(content, _jsonSerialiserOptions);
+                User.Error = null;
+                return User;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetUserDetailsAsync", "GetUserDetailsAsync");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
+
         }
 
         public async Task<UserAddDetails> GetUserAddDetails(int UserID)
         {
             UserAddDetails User = new UserAddDetails();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getuseradddetails/{UserID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    User = serializer.Deserialize<UserAddDetails>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getuseradddetails/{UserID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                if (response.IsSuccessStatusCode)
-                {
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        User = serializer.Deserialize<UserAddDetails>(reader);
-                    }
-
-                    return User;
-                }
-                else
-                {
-                    ErrorClass error = new ErrorClass();
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                        HandleError(new Exception(error.ErrorMessage), "GetUserAddDetails", "GetUserAddDetails");
-                        return null;
-                    }
-                }
+                return User;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetUserAddDetails", "GetUserAddDetails");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                    throw new Exception(error.ErrorMessage);
+                }
             }
         }
 
@@ -365,214 +630,142 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             UserAddDetails User = new UserAddDetails();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/downgrageuseraccount/{UserID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/downgrageuseraccount/{UserID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = new ErrorClass();
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                        HandleError(new Exception(error.ErrorMessage), "DowngradeUserAccount", "DowngradeUserAccount");
-                        return null;
-                    }
-                }
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "DowngradeUserAccount", "DowngradeUserAccount");
-                throw new Exception(ex.Message);
-            }
-        }
-        public async Task<string> PostUserAddDetails(UserAddDetails User)
-        {
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<UserAddDetails>(User, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/userAccounts/postuseradddetails", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
                     throw new Exception(error.ErrorMessage);
                 }
             }
-            catch (Exception ex)
+        }
+
+        public async Task<string> PostUserAddDetails(UserAddDetails User)
+        {
+
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<UserAddDetails>(User, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/userAccounts/postuseradddetails", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                HandleError(ex, "PostUserAddDetails", "PostUserAddDetails");
-                throw new Exception(ex.Message);
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<string> UploadUserProfilePicture(int UserID, FileResult File)
         {
 
-            try
+            var content = new MultipartFormDataContent
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                { new StreamContent(await File.OpenReadAsync()), "file", File.FileName }
+            };
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/userAccounts/uploaduserprofilepicture/{UserID}", content);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
+            {
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
                 }
 
-                var content = new MultipartFormDataContent
-                {
-                    { new StreamContent(await File.OpenReadAsync()), "file", File.FileName }
-                };
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/userAccounts/uploaduserprofilepicture/{UserID}", content).Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return "OK";
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "UploadProfilePicture", "UploadUserProfilePicture");
-                throw new Exception(ex.Message);
-            }
+                throw new Exception(error.ErrorMessage);
+            }                    
         }
 
         public async Task<Stream> DownloadUserProfilePicture(int UserID)
         {
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/downloaduserprofilepicture/{UserID}");
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/downloaduserprofilepicture/{UserID}").Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                     return await response.Content.ReadAsStreamAsync();        
-                }
-                else
-                {
-                    ErrorClass error = new ErrorClass();
-                    using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                    using (StreamReader sr = new StreamReader(s))
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                    }
-
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                return await response.Content.ReadAsStreamAsync();
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "DownloadProfilePicture", "DownloadProfilePicture");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<Budgets> GetBudgetDetailsAsync(int BudgetID, string Mode)
         {
             Budgets Budget = new Budgets();
-
-            try
+                   
+            string ApiMethod = "";
+            if (Mode == "Full")
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string ApiMethod = "";
-                if (Mode == "Full")
-                {
-                    ApiMethod = "getbudgetdetailsfull";
-                }
-                else if(Mode == "Limited")
-                {
-                    ApiMethod = "getbudgetdetailsonly";
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/{ApiMethod}/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        Budget = serializer.Deserialize<Budgets>(reader);
-                    }
-
-                    return Budget;
-                }
-                else
-                {
-                    ErrorClass error = new ErrorClass();
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                    }
-
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                ApiMethod = "getbudgetdetailsfull";
             }
-            catch (Exception ex)
+            else if (Mode == "Limited")
             {
-                HandleError(ex, "GetBudgetDetailsAsync", "GetBudgetDetailsAsync");
-                throw new Exception(ex.Message);
+                ApiMethod = "getbudgetdetailsonly";
+            }
+
+
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/{ApiMethod}/{BudgetID}");
+            await HideServerConnectionPopup();
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
+            {
+
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    Budget = serializer.Deserialize<Budgets>(reader);
+                }
+
+                return Budget;
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -580,145 +773,80 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Budgets Budget = new Budgets();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/nextincomepayday/{BudgetID}");
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
+                Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/nextincomepayday/{BudgetID}").Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
-
-                    return Budget.NextIncomePayday ?? DateTime.MinValue;
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                return Budget.NextIncomePayday ?? DateTime.MinValue;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetBudgetNextIncomePayDayAsync", "GetBudgetNextIncomePayDayAsync");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<int> GetBudgetDaysBetweenPayDay(int BudgetID)
         {
             Budgets Budget = new Budgets();
+                 
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/daystopaydaynext/{BudgetID}");
+            string content = await response.Content.ReadAsStringAsync();
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/daystopaydaynext/{BudgetID}").Result;
-                string content = response.Content.ReadAsStringAsync().Result;
+                Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    
-                    Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
-
-                    return Budget.AproxDaysBetweenPay.GetValueOrDefault();
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                return Budget.AproxDaysBetweenPay.GetValueOrDefault();
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetBudgetDaysBetweenPayDay", "GetBudgetDaysBetweenPayDay");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<DateTime?> GetBudgetLastUpdatedAsync(int BudgetID)
         {
             Budgets Budget = new Budgets();
+             
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/getlastupdated/{BudgetID}"); 
+            string content = await response.Content.ReadAsStringAsync();
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getlastupdated/{BudgetID}").Result;
-                string content = response.Content.ReadAsStringAsync().Result;
+                Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
 
-                if (response.IsSuccessStatusCode)
-                {
-
-                    Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
-
-                    return Budget.LastUpdated;
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                return Budget.LastUpdated;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetBudgetLastUpdatedAsync", "GetBudgetLastUpdatedAsync");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<DateTime> GetBudgetValuesLastUpdatedAsync(int BudgetID, string Page)
         {
-            Budgets Budget = new Budgets();
+            Budgets Budget = new Budgets();                 
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/getbudgetvalueslastupdated/{BudgetID}");
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getbudgetvalueslastupdated/{BudgetID}").Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
-
-                    return Budget.BudgetValuesLastUpdated;
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    HandleError(new Exception(error.ErrorMessage), Page, "GetBudgetValuesLastUpdatedAsync");
-
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
+                return Budget.BudgetValuesLastUpdated;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, Page, "GetBudgetValuesLastUpdatedAsync");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -726,257 +854,158 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             BudgetSettings BudgetSettings = new BudgetSettings();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getbudgetsettings/{BudgetID}");
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getbudgetsettings/{BudgetID}").Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    BudgetSettings = System.Text.Json.JsonSerializer.Deserialize<BudgetSettings>(content, _jsonSerialiserOptions);
-
-                    return BudgetSettings;
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
-                }
-
+                BudgetSettings = System.Text.Json.JsonSerializer.Deserialize<BudgetSettings>(content, _jsonSerialiserOptions);
+                return BudgetSettings;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetBudgetSettings", "GetBudgetSettings");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
             }
         }
 
         public async Task<BudgetSettingValues> GetBudgetSettingsValues(int BudgetID)
         {
-            BudgetSettingValues BudgetSettings = new BudgetSettingValues();
+            BudgetSettingValues BudgetSettings = new BudgetSettingValues();                  
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getbudgetsettingsvalues/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    BudgetSettings = serializer.Deserialize<BudgetSettingValues>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getbudgetsettingsvalues/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        BudgetSettings = serializer.Deserialize<BudgetSettingValues>(reader);
-                    }
-
-                    return BudgetSettings;
-                }
-                else
-                {
-
-                    ErrorClass error = new ErrorClass();
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                    }
-
-                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
-                }
-
+                return BudgetSettings;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetBudgetSettingsValues", "GetBudgetSettingsValues");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
             }
         }
 
         public async Task<Budgets> CreateNewBudget(string UserEmail, string? BudgetType = "Basic")
         {
             Budgets Budget = new Budgets();
+                
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/createnewbudget/{UserEmail}/{BudgetType}");
+            string content = await response.Content.ReadAsStringAsync();
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
+                Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/createnewbudget/{UserEmail}/{BudgetType}").Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    Budget = System.Text.Json.JsonSerializer.Deserialize<Budgets>(content, _jsonSerialiserOptions);
-
-                    return Budget;
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
-                }
-
+                return Budget;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "CreateNewBudget", "CreateNewBudget");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
             }
         }
 
         public async Task<string> DeleteBudget(int BudgetID, int UserID)
         {
+                
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/deletebudget/{BudgetID}/{UserID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    Dictionary<string, string> result = serializer.Deserialize<Dictionary<string, string>>(reader);
+                    string returnString = result["result"];
+                    return returnString;
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/deletebudget/{BudgetID}/{UserID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            Dictionary<string,string> result = serializer.Deserialize<Dictionary<string, string>>(reader);
-                            string returnString = result["result"];
-                            return returnString;
-                        }
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "DeleteBudget", "DeleteBudget");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
         public async Task<string> ReCalculateBudget(int BudgetID)
         {
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/recalculateBudget/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    return "OK";
+                }
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/recalculateBudget/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            return "OK";
-                        }
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "DeleteBudget", "DeleteBudget");
-                throw new Exception(ex.Message);
+                throw new Exception(error.ErrorMessage);
             }
         }
         
         public async Task<string> DeleteUserAccount(int UserID)
         {
- 
-            try
+
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/deleteaccount/{UserID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    Dictionary<string,string> result = serializer.Deserialize<Dictionary<string, string>>(reader);
+                    string returnString = result["result"];
+                    return returnString;
+                }
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/deleteaccount/{UserID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            Dictionary<string,string> result = serializer.Deserialize<Dictionary<string, string>>(reader);
-                            string returnString = result["result"];
-                            return returnString;
-                        }
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "DeleteUserAccount", "DeleteUserAccount");
-                throw new Exception(ex.Message);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -984,48 +1013,31 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<lut_CurrencySymbol> Currencies = new List<lut_CurrencySymbol>();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getcurrencysymbols/{SearchQuery}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    Currencies = serializer.Deserialize<List<lut_CurrencySymbol>>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencysymbols/{SearchQuery}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        Currencies = serializer.Deserialize<List<lut_CurrencySymbol>>(reader);
-                    }
-
-                    return Currencies;
-                }
-                else
-                {
-                    ErrorClass error = new ErrorClass();
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                    }
-
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                return Currencies;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetCurrencySymbols", "GetCurrencySymbols");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -1033,149 +1045,101 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<lut_CurrencyPlacement> Placements = new List<lut_CurrencyPlacement>();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getcurrencyplcements/{Query}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    Placements = serializer.Deserialize<List<lut_CurrencyPlacement>>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencyplcements/{Query}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            Placements = serializer.Deserialize<List<lut_CurrencyPlacement>>(reader);
-                        }
-
-                        return Placements;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return Placements;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetCurrencyPlacements", "GetCurrencyPlacements");
-                throw new Exception(ex.Message);
-            }
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
+            }
         }
 
         public async Task<List<lut_BudgetTimeZone>> GetBudgetTimeZones(string Query)
         {
             List<lut_BudgetTimeZone> TimeZones = new List<lut_BudgetTimeZone>();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getbudgettimezones/{Query}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    TimeZones = serializer.Deserialize<List<lut_BudgetTimeZone>>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getbudgettimezones/{Query}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            TimeZones = serializer.Deserialize<List<lut_BudgetTimeZone>>(reader);
-                        }
-
-                        return TimeZones;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return TimeZones;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetBudgetTimeZones", "GetBudgetTimeZones");
-                throw new Exception(ex.Message);
-            }
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
+            }
         }
 
         public async Task<List<lut_DateFormat>> GetDateFormatsByString(string SearchQuery)
         {
             List<lut_DateFormat> DateFormats = new List<lut_DateFormat>();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getdateformatsbystring/{SearchQuery}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    DateFormats = serializer.Deserialize<List<lut_DateFormat>>(reader);
+                            
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getdateformatsbystring/{SearchQuery}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            DateFormats = serializer.Deserialize<List<lut_DateFormat>>(reader);
-                            
-                        }
-
-                        return DateFormats;
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
+                return DateFormats;
 
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetDateFormatsByString", "GetDateFormatsByString");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -1183,96 +1147,66 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             lut_DateFormat DateFormat = new lut_DateFormat();
 
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getdateformatsbyid/{ShortDatePattern}/{Seperator}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    DateFormat = serializer.Deserialize<lut_DateFormat>(reader);
+                    return DateFormat;
+                }                        
+
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getdateformatsbyid/{ShortDatePattern}/{Seperator}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            DateFormat = serializer.Deserialize<lut_DateFormat>(reader);
-                            return DateFormat;
-                        }                        
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "GetDateFormatsByString", "GetDateFormatsByString");
-                throw new Exception(ex.Message);
+                throw new Exception(error.ErrorMessage);
             }
         }
+
         public async Task<lut_BudgetTimeZone> GetTimeZoneById(int TimeZoneID)
         {
             lut_BudgetTimeZone TimeZone = new lut_BudgetTimeZone();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/gettimezonebyid/{TimeZoneID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    TimeZone = serializer.Deserialize<lut_BudgetTimeZone>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/gettimezonebyid/{TimeZoneID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            TimeZone = serializer.Deserialize<lut_BudgetTimeZone>(reader);
-                        }
-
-                        return TimeZone;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return TimeZone;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetTimeZoneById", "GetTimeZoneById");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -1280,48 +1214,33 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             lut_NumberFormat NumberFormat = new lut_NumberFormat();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getnumberformatsbyid/{CurrencyDecimalDigits}/{CurrencyDecimalSeparator}/{CurrencyGroupSeparator}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    NumberFormat = serializer.Deserialize<lut_NumberFormat>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getnumberformatsbyid/{CurrencyDecimalDigits}/{CurrencyDecimalSeparator}/{CurrencyGroupSeparator}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            NumberFormat = serializer.Deserialize<lut_NumberFormat>(reader);
-                        }
-
-                        return NumberFormat;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return NumberFormat;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetNumberFormatsById", "GetNumberFormatsById");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -1329,46 +1248,31 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             lut_ShortDatePattern ShaortDatePattern = new lut_ShortDatePattern();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getshortdatepatternbyid/{ShortDatePatternID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ShaortDatePattern = serializer.Deserialize<lut_ShortDatePattern>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getshortdatepatternbyid/{ShortDatePatternID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            ShaortDatePattern = serializer.Deserialize<lut_ShortDatePattern>(reader);
-                        }
-
-                        return ShaortDatePattern;
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
+                return ShaortDatePattern;
 
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetShortDatePatternById", "GetShortDatePatternById");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -1376,47 +1280,31 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             lut_DateSeperator DateSeperator = new lut_DateSeperator();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getdateseperatorbyid/{DateSeperatorID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    DateSeperator = serializer.Deserialize<lut_DateSeperator>(reader);
                 }
 
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getdateseperatorbyid/{DateSeperatorID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            DateSeperator = serializer.Deserialize<lut_DateSeperator>(reader);
-                        }
-
-                        return DateSeperator;
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
+                return DateSeperator;
 
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetDateSeperatorById", "GetDateSeperatorById");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -1424,138 +1312,95 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             lut_CurrencyGroupSeparator GroupSeparator = new lut_CurrencyGroupSeparator();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getcurrencygroupseparatorbyid/{CurrencyGroupSeparatorId}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    GroupSeparator = serializer.Deserialize<lut_CurrencyGroupSeparator>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencygroupseparatorbyid/{CurrencyGroupSeparatorId}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            GroupSeparator = serializer.Deserialize<lut_CurrencyGroupSeparator>(reader);
-                        }
-
-                        return GroupSeparator;
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
+                return GroupSeparator;
 
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetCurrencyGroupSeparatorById", "GetCurrencyGroupSeparatorById");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
+
         public async Task<lut_CurrencyDecimalSeparator> GetCurrencyDecimalSeparatorById(int CurrencyDecimalSeparatorId)
         {
             lut_CurrencyDecimalSeparator DecimalSeparator = new lut_CurrencyDecimalSeparator();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getcurrencydecimalseparatorbyid/{CurrencyDecimalSeparatorId}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    DecimalSeparator = serializer.Deserialize<lut_CurrencyDecimalSeparator>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencydecimalseparatorbyid/{CurrencyDecimalSeparatorId}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            DecimalSeparator = serializer.Deserialize<lut_CurrencyDecimalSeparator>(reader);
-                        }
-
-                        return DecimalSeparator;
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
+                return DecimalSeparator;
 
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetCurrencyDecimalSeparatorById", "GetCurrencyDecimalSeparatorById");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
+
         public async Task<lut_CurrencyDecimalDigits> GetCurrencyDecimalDigitsById(int CurrencyDecimalDigitsId)
         {
             lut_CurrencyDecimalDigits DecimalDigits = new lut_CurrencyDecimalDigits();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getcurrencydecimaldigitsbyid/{CurrencyDecimalDigitsId}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    DecimalDigits = serializer.Deserialize<lut_CurrencyDecimalDigits>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getcurrencydecimaldigitsbyid/{CurrencyDecimalDigitsId}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            DecimalDigits = serializer.Deserialize<lut_CurrencyDecimalDigits>(reader);
-                        }
-
-                        return DecimalDigits;
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
+                return DecimalDigits;
 
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetCurrencyDecimalDigitsById", "GetCurrencyDecimalDigitsById");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -1563,81 +1408,51 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<lut_NumberFormat> NumberFormat = new List<lut_NumberFormat>();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getnumberformats");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    NumberFormat = serializer.Deserialize<List<lut_NumberFormat>>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgetsettings/getnumberformats").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            NumberFormat = serializer.Deserialize<List<lut_NumberFormat>>(reader);
-                        }
-
-                        return NumberFormat;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return NumberFormat;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetNumberFormats", "GetNumberFormats");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
         public async Task<string> UpdatePayPeriodStats(PayPeriodStats Stats)
         {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<PayPeriodStats>(Stats, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/budgets/updatepayperiodstats", request);
+            string content = response.Content.ReadAsStringAsync().Result;
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<PayPeriodStats>(Stats, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/budgets/updatepayperiodstats", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "UpdatePayPeriodStats", "UpdatePayPeriodStats");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -1645,152 +1460,90 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             PayPeriodStats stats = new PayPeriodStats();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/createnewpayperiodstats/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    stats = serializer.Deserialize<PayPeriodStats>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/createnewpayperiodstats/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            stats = serializer.Deserialize<PayPeriodStats>(reader);
-                        }
-
-                        return stats;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return stats;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "CreateNewPayPeriodStats", "CreateNewPayPeriodStats");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<string> PatchBudget(int BudgetID, List<PatchDoc> PatchDoc)
         {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
+            HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/budgets/updatebudget/{BudgetID}", request);
+            string content = response.Content.ReadAsStringAsync().Result;
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PatchAsync($"{_url}/budgets/updatebudget/{BudgetID}", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "PatchBudget", "PatchBudget");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
-
         }
 
         public async Task<string> PatchBudgetSettings(int BudgetID, List<PatchDoc> PatchDoc)
         {
-            try
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/budgetsettings/updatebudgetsettings/{BudgetID}", request);
+            string content = response.Content.ReadAsStringAsync().Result;
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PatchAsync($"{_url}/budgetsettings/updatebudgetsettings/{BudgetID}", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "PatchBudgetSettings", "PatchBudgetSettings");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
-
         }
 
         public async Task<string> UpdateBudgetSettings(int BudgetID, BudgetSettings BS)
         {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<BudgetSettings>(BS, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
+            HttpResponseMessage response = await PutHttpRequestAsync($"{_url}/budgetsettings/{BudgetID}", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<BudgetSettings>(BS, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PutAsync($"{_url}/budgetsettings/{BudgetID}", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                HandleError(ex, "UpdateBudgetSettings", "UpdateBudgetSettings");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
@@ -1798,1310 +1551,761 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Bills Bill = new Bills();
 
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/bills/getbillfromid/{BillID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    Bill = serializer.Deserialize<Bills>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/bills/getbillfromid/{BillID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        Bill = serializer.Deserialize<Bills>(reader);
-                    }
-
-                    return Bill;
-                }
-                else
-                {
-                    ErrorClass error = new ErrorClass();
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                    }
-
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                return Bill;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetBillFromID", "GetBillFromID");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<string>SaveNewBill(Bills Bill, int BudgetID)
         {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Bills>(Bill, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/bills/savenewbill/{BudgetID}", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Bills>(Bill, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/bills/savenewbill/{BudgetID}", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }       
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "SaveNewBill", "SaveNewBill");
-                throw new Exception(ex.Message);
-            }
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
+            }       
         }
 
         public async Task<string>UpdateBill(Bills Bill)
         {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Bills>(Bill, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/bills/updatebill", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                if (!CheckNetworkConnection().Result)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Bills>(Bill, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/bills/updatebill", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }       
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "UpdateBill", "UpdateBill");
-                throw new Exception(ex.Message);
-            }
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
+            }       
         }
 
         public async Task<string> PatchBill(int BillID, List<PatchDoc> PatchDoc)
         {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
+            HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/bills/patchbill/{BillID}", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response =  _httpClient.PatchAsync($"{_url}/bills/patchbill/{BillID}", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "PatchBill", "PatchBill");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
-
         }
 
         public async Task<string> DeleteBill(int BillID)
         {
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/bills/deletebill/{BillID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    return "OK";
+                }
+                                                
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/bills/deletebill/{BillID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            return "OK";
-                        }
-                                                
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "DeleteBill", "DeleteBill");
-                throw new Exception(ex.Message);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<List<Bills>> GetBudgetBills(int BudgetID, string page)
         {
             List<Bills> Bills = new List<Bills>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/bills/getbudgetbills/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    Bills = serializer.Deserialize<List<Bills>>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/bills/getbudgetbills/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            Bills = serializer.Deserialize<List<Bills>>(reader);
-                        }
-
-                        return Bills;
+                return Bills;
                                                 
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, page, "GetAllBudgetSavings");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<Savings> GetSavingFromID(int SavingID)
         {
             Savings Saving = new Savings();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/getsavingfromid/{SavingID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    Saving = serializer.Deserialize<Savings>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/getsavingfromid/{SavingID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            Saving = serializer.Deserialize<Savings>(reader);
-                        }
-
-                        return Saving;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return Saving;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetSavingFromID", "GetSavingFromID");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<int> SaveNewSaving(Savings Saving, int BudgetID)
         {
-            try
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Savings>(Saving, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/savings/savenewsaving/{BudgetID}", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Savings>(Saving, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/savings/savenewsaving/{BudgetID}", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    int SavingID = System.Text.Json.JsonSerializer.Deserialize<int>(content, _jsonSerialiserOptions);
-                    return SavingID;
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
+                int SavingID = System.Text.Json.JsonSerializer.Deserialize<int>(content, _jsonSerialiserOptions);
+                return SavingID;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "SaveNewSaving", "SaveNewSaving");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<string> UpdateSaving(Savings Saving)
         {
-            try
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Savings>(Saving, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/savings/updatesaving", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Savings>(Saving, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/savings/updatesaving", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "SaveNewSaving", "SaveNewSaving");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<string> PatchSaving(int SavingID, List<PatchDoc> PatchDoc)
         {
-            try
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/savings/patchsaving/{SavingID}", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PatchAsync($"{_url}/savings/patchsaving/{SavingID}", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "PatchSaving", "PatchSaving");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<string> DeleteSaving(int SavingID)
         {
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/deletesaving/{SavingID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    return "OK";
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/deletesaving/{SavingID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            return "OK";
-                        }
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "DeleteSaving", "DeleteSaving");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<List<Savings>> GetAllBudgetSavings(int BudgetID)
         {
             List<Savings> Savings = new List<Savings>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/getallbudgetsavings/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    Savings = serializer.Deserialize<List<Savings>>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/getallbudgetsavings/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            Savings = serializer.Deserialize<List<Savings>>(reader);
-                        }
-
-                        return Savings;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return Savings;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetAllBudgetSavings", "GetAllBudgetSavings");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<IncomeEvents> GetIncomeFromID(int IncomeID)
         {
             IncomeEvents Income = new IncomeEvents();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/incomes/getincomefromid/{IncomeID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    Income = serializer.Deserialize<IncomeEvents>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/incomes/getincomefromid/{IncomeID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        Income = serializer.Deserialize<IncomeEvents>(reader);
-                    }
-
-                    return Income;
-                }
-                else
-                {
-                    ErrorClass error = new ErrorClass();
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                    }
-
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                return Income;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetIncomeFromID", "GetIncomeFromID");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<string>SaveNewIncome(IncomeEvents Income, int BudgetID)
         {
-            try
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<IncomeEvents>(Income, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/incomes/savenewincome/{BudgetID}", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<IncomeEvents>(Income, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/incomes/savenewincome/{BudgetID}", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }       
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "SaveNewIncome", "SaveNewIncome");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<string>UpdateIncome(IncomeEvents Income)
         {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<IncomeEvents>(Income, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/incomes/updateincome", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<IncomeEvents>(Income, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/incomes/updateincome", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }       
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "UpdateIncome", "UpdateIncome");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<string> PatchIncome(int IncomeID, List<PatchDoc> PatchDoc)
         {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
+            HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/incomes/patchincome/{IncomeID}", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response =  _httpClient.PatchAsync($"{_url}/incomes/patchincome/{IncomeID}", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "UpdateIncome", "UpdateIncome");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
-
         }
 
         public async Task<string> DeleteIncome(int IncomeID)
         {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/incomes/deleteincome/{IncomeID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    return "OK";
+                }                           
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/incomes/deleteincome/{IncomeID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            return "OK";
-                        }
-                                                
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "DeleteIncome", "DeleteIncome");
-                throw new Exception(ex.Message);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<List<IncomeEvents>> GetBudgetIncomes(int BudgetID, string page)
         {
             List<IncomeEvents> IncomeEvents = new List<IncomeEvents>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/incomes/getbudgetincomeevents/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    IncomeEvents = serializer.Deserialize<List<IncomeEvents>>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/incomes/getbudgetincomeevents/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            IncomeEvents = serializer.Deserialize<List<IncomeEvents>>(reader);
-                        }
-
-                        return IncomeEvents;
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return IncomeEvents;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, page, "GetBudgetIncomes");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
         public async Task<string> UpdateBudgetValues(int budgetID)
         {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/updatebudgetvalues/{budgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    return "OK";
+                }
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/updatebudgetvalues/{budgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            return "OK";
-                        }
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "UpdateBudgetValues", "UpdateBudgetValues");
-                throw new Exception(ex.Message);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<Transactions> SaveNewTransaction(Transactions Transaction, int BudgetID)
         {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Transactions>(Transaction, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/transactions/savenewtransaction/{BudgetID}", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Transactions>(Transaction, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/transactions/savenewtransaction/{BudgetID}", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    Transactions ReturnTransactions = System.Text.Json.JsonSerializer.Deserialize<Transactions>(content, _jsonSerialiserOptions);
-                    return ReturnTransactions;
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
+                Transactions ReturnTransactions = System.Text.Json.JsonSerializer.Deserialize<Transactions>(content, _jsonSerialiserOptions);
+                return ReturnTransactions;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "SaveNewTransaction", "SaveNewTransaction");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
         public async Task<Transactions> TransactTransaction(int TransactionID)
         {
             Transactions Transaction = new Transactions();
-
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/transacttransaction/{TransactionID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    Transaction = serializer.Deserialize<Transactions>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/transacttransaction/{TransactionID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            Transaction = serializer.Deserialize<Transactions>(reader);
-                        }
-
-                        return Transaction;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return Transaction;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "TransactTransaction", "TransactTransaction");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
         public async Task<string> UpdateTransaction(Transactions Transaction)
         {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Transactions>(Transaction, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/transactions/updatetransaction", request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Transactions>(Transaction, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/transactions/updatetransaction", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                    throw new Exception(error.ErrorMessage);
-                }
+                return "OK";
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "UpdateTransaction", "UpdateTransaction");
-                throw new Exception(ex.Message);
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<string> DeleteTransaction(int TransactionID)
         {
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/deletetransaction/{TransactionID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    return "OK";
+                }
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/deletetransaction/{TransactionID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            return "OK";
-                        }
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "DeleteTransaction", "DeleteTransaction");
-                throw new Exception(ex.Message);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<List<string>> GetBudgetEventTypes(int BudgetID)
         {
             List<string> EventTypes = new List<string>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/getbudgeteventtypes/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    EventTypes = serializer.Deserialize<List<string>>(reader);
+                }
+                return EventTypes;
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getbudgeteventtypes/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            EventTypes = serializer.Deserialize<List<string>>(reader);
-                        }
-                        return EventTypes;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-
-                HandleError(ex, "GetBudgetEventTypes", "GetBudgetEventTypes");
-                throw new Exception(ex.Message);
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<Transactions> GetTransactionFromID(int TransactionID)
         {
             Transactions Transaction = new Transactions();
-
-            try
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/gettransactionfromid/{TransactionID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    Transaction = serializer.Deserialize<Transactions>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/gettransactionfromid/{TransactionID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-                if (response.IsSuccessStatusCode)
-                {
-
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        Transaction = serializer.Deserialize<Transactions>(reader);
-                    }
-
-                    return Transaction;
-                }
-                else
-                {
-                    ErrorClass error = new ErrorClass();
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                    }
-
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                return Transaction;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetTransactionFromID", "GetTransactionFromID");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<Budgets> GetAllBudgetTransactions(int BudgetID)
         {
             Budgets Budget = new Budgets();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/getallbudgettransactions/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    Budget = serializer.Deserialize<Budgets>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getallbudgettransactions/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        Budget = serializer.Deserialize<Budgets>(reader);
-                    }
-
-                    return Budget;
-                }
-                else
-                {
-                    ErrorClass error = new ErrorClass();
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                    }
-
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                return Budget;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, "GetAllBudgetTransactions", "GetAllBudgetTransactions");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<List<Transactions>> GetRecentTransactions(int BudgetID, int NumberOf, string page)
         {
             List<Transactions> transactions = new List<Transactions>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/getrecenttransactions/{BudgetID}/{NumberOf}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    transactions = serializer.Deserialize<List<Transactions>>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getrecenttransactions/{BudgetID}/{NumberOf}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            transactions = serializer.Deserialize<List<Transactions>>(reader);
-                        }
-
-                        return transactions;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return transactions;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, page, "GetRecentTransactions");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<List<Transactions>> GetCurrentPayPeriodTransactions(int BudgetID, string page)
         {
             List<Transactions> transactions = new List<Transactions>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/getcurrentpayperiodtransactions/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                if (response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException("Connectivity");
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        transactions = serializer.Deserialize<List<Transactions>>(reader);
+                    }
+
+                    return transactions;
                 }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getcurrentpayperiodtransactions/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
                     {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            transactions = serializer.Deserialize<List<Transactions>>(reader);
-                        }
-
-                        return transactions;
+                        error = serializer.Deserialize<ErrorClass>(reader);
                     }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, page, "GetCurrentPayPeriodTransactions");
-                throw new Exception(ex.Message);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<List<Transactions>> GetFilteredTransactions(int BudgetID, FilterModel Filters, string page)
         {
             List<Transactions> transactions = new List<Transactions>();
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FilterModel>(Filters, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FilterModel>(Filters, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/transactions/getfilteredtransactions/{BudgetID}", request).Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            transactions = serializer.Deserialize<List<Transactions>>(reader);
-                        }
-
-                        return transactions;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, page, "GetCurrentPayPeriodTransactions");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<List<Transactions>> GetRecentTransactionsOffset(int BudgetID, int NumberOf, int Offset ,string page)
-        {
-            List<Transactions> transactions = new List<Transactions>();
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/transactions/getrecenttransactionsoffset/{BudgetID}/{NumberOf}/{Offset}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            transactions = serializer.Deserialize<List<Transactions>>(reader);
-                        }
-
-                        return transactions;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, page, "GetRecentTransactionsOffset");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<Budgets> SaveBudgetDailyCycle(Budgets budget)
-        {
-  
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Budgets>(budget, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/budgets/savebudgetdailycycle", request).Result;
-
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/transactions/getfilteredtransactions/{BudgetID}", request);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
                 {
+
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
                         Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                        budget = serializer.Deserialize<Budgets>(reader);
+                        transactions = serializer.Deserialize<List<Transactions>>(reader);
                     }
 
-                    return budget;
+                    return transactions;
                 }
                 else
-                {   
+                {
                     ErrorClass error = new ErrorClass();
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
@@ -3112,90 +2316,82 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     throw new Exception(error.ErrorMessage);
                 }
-            }
-            catch (Exception ex)
+        }
+
+        public async Task<List<Transactions>> GetRecentTransactionsOffset(int BudgetID, int NumberOf, int Offset ,string page)
+        {
+            List<Transactions> transactions = new List<Transactions>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/getrecenttransactionsoffset/{BudgetID}/{NumberOf}/{Offset}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        transactions = serializer.Deserialize<List<Transactions>>(reader);
+                    }
+
+                    return transactions;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<Budgets> SaveBudgetDailyCycle(Budgets budget)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Budgets>(budget, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/budgets/savebudgetdailycycle", request);
+
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
-                HandleError(ex, "SaveBudgetDailyCycle", "SaveBudgetDailyCycle");
-                throw new Exception(ex.Message);
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    budget = serializer.Deserialize<Budgets>(reader);
+                }
+
+                return budget;
+            }
+            else
+            {   
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<string> CreateNewOtpCodeShareBudget(int UserID, int ShareBudgetID)
         {
             OTP UserOTP = new OTP();
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/otp/createnewotpcodesharebudget/{UserID}/{ShareBudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-                    if (response.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        return "MaxLimit";
-                    }
-                    else if (response.IsSuccessStatusCode)
-                    {
-
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            UserOTP = serializer.Deserialize<OTP>(reader);
-                        }
-
-                        if (UserOTP.OTPID == 0)
-                        {
-                            return "Error";
-                        }
-                        else
-                        {
-                            return "OK";
-                        }
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "CreateNewOtpCodeShareBudget", "CreateNewOtpCodeShareBudget");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<string> CreateNewOtpCode(int UserID, string OTPType)
-        {
-            OTP UserOTP = new OTP();
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/otp/createnewotpcode/{UserID}/{OTPType}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-                if(response.StatusCode == HttpStatusCode.NotFound)
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/otp/createnewotpcodesharebudget/{UserID}/{ShareBudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+                if (response.StatusCode == HttpStatusCode.NotFound)
                 {
                     return "MaxLimit";
                 }
@@ -3217,7 +2413,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         return "OK";
                     }
-                        
+
                 }
                 else
                 {
@@ -3231,135 +2427,162 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     throw new Exception(error.ErrorMessage);
                 }
+        }
 
-            }
-            catch (Exception ex)
+        public async Task<string> CreateNewOtpCode(int UserID, string OTPType)
+        {
+            OTP UserOTP = new OTP();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/otp/createnewotpcode/{UserID}/{OTPType}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+            if(response.StatusCode == HttpStatusCode.NotFound)
             {
-                HandleError(ex, "CreateNewOtpCode", "CreateNewOtpCode");
-                throw new Exception(ex.Message);
+                return "MaxLimit";
+            }
+            else if (response.IsSuccessStatusCode)
+            {
+
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    UserOTP = serializer.Deserialize<OTP>(reader);
+                }
+
+                if (UserOTP.OTPID == 0)
+                {
+                    return "Error";
+                }
+                else
+                {
+                    return "OK";
+                }
+                        
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
         public async Task<string> ValidateOTPCodeEmail(OTP UserOTP)
         {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<OTP>(UserOTP, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            try
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/otp/validateotpcodeemail", request);
+
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<OTP>(UserOTP, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/otp/validateotpcodeemail", request).Result;
-
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    return "Error";
-                }
-                else if (response.IsSuccessStatusCode)
-                {
-                    return "OK";
-                }
-                else
-                {
-                    ErrorClass error = new ErrorClass();
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                    }
-
-                    throw new Exception(error.ErrorMessage);
-                }
+                return "Error";
             }
-            catch (Exception ex)
+            else if (response.IsSuccessStatusCode)
             {
-                HandleError(ex, "ValidateOTPCodeEmail", "ValidateOTPCodeEmail");
-                throw new Exception(ex.Message);
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<int> GetUserIdFromEmail(string UserEmail)
         {
             UserDetailsModel User = new UserDetailsModel();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/otp/getuseridfromemail/{UserEmail}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/otp/getuseridfromemail/{UserEmail}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    return 0;
-                }
-                else if (response.IsSuccessStatusCode)
-                {
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        User = serializer.Deserialize<UserDetailsModel>(reader);
-                    }
-
-                    return User.UserID;
-                }
-                else
-                {
-                    ErrorClass error = new ErrorClass();
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                        error = serializer.Deserialize<ErrorClass>(reader);
-                    }
-
-                    throw new Exception(error.ErrorMessage);
-                }
-
+                return 0;
             }
-            catch (Exception ex)
+            else if (response.IsSuccessStatusCode)
             {
-                HandleError(ex, "GetUserIdFromEmail", "GetUserIdFromEmail");
-                throw new Exception(ex.Message);
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    User = serializer.Deserialize<UserDetailsModel>(reader);
+                }
+
+                return User.UserID;
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
 
         public async Task<List<string>> GetPayeeList(int BudgetID)
         {
             List<string>? Payee = new List<string>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/payee/getpayeelist/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    Payee = serializer.Deserialize<List<string>>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/getpayeelist/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
+                return Payee;
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
+            }
+        }
+        
+        public async Task<List<Payees>> GetPayeeListFull(int BudgetID)
+        {
+            List<Payees>? Payee = new List<Payees>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/payee/getpayeelistfull/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
                 {
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
                         Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                        Payee = serializer.Deserialize<List<string>>(reader);
+                        Payee = serializer.Deserialize<List<Payees>>(reader);
                     }
 
                     return Payee;
@@ -3375,396 +2598,43 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     throw new Exception(error.ErrorMessage);
                 }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "GetPayeeList", "GetPayeeList");
-                throw new Exception(ex.Message);
-            }
-        }
-        
-        public async Task<List<Payees>> GetPayeeListFull(int BudgetID)
-        {
-            List<Payees>? Payee = new List<Payees>();
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/getpayeelistfull/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            Payee = serializer.Deserialize<List<Payees>>(reader);
-                        }
-
-                        return Payee;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                HandleError(ex, "GetPayeeListFull", "GetPayeeListFull");
-                throw new Exception(ex.Message);
-            }
         }
 
         public async Task<Categories> GetPayeeLastCategory(int BudgetID, string PayeeName)
         {
             Categories Category = new Categories();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/payee/getpayeelastcategory/{BudgetID}/{PayeeName}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                if (response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException("Connectivity");
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Category = serializer.Deserialize<Categories>(reader);
+                    }
+
+                    return Category;
                 }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/getpayeelastcategory/{BudgetID}/{PayeeName}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
                     {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            Category = serializer.Deserialize<Categories>(reader);
-                        }
-
-                        return Category;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
                     }
 
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "GetPayeeLastCategory", "GetPayeeLastCategory");
-                throw new Exception(ex.Message);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<string> DeletePayee(int BudgetID, string OldPayeeName, string NewPayeeName)
         {
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/deletepayee/{BudgetID}/{OldPayeeName}/{NewPayeeName}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return "OK";
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                HandleError(ex, "DeletePayee", "DeletePayee");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<string> UpdatePayee(int BudgetID, string OldPayeeName, string NewPayeeName)
-        {
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/payee/updatepayee/{BudgetID}/{OldPayeeName}/{NewPayeeName}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return "OK";
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                //Write Debug Line and then throw the exception to the next level of the stack to be handled
-                HandleError(ex, "UpdatePayee", "UpdatePayee");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<List<Categories>> GetCategories(int BudgetID)
-        {
-            List<Categories>? categories = new List<Categories>();
-
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getcategories/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            categories = serializer.Deserialize<List<Categories>>(reader);
-                        }
-
-                        return categories;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "GetCategories", "GetCategories");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<Categories> GetCategoryFromID(int CategoryID)
-        {
-            Categories? Category = new Categories();
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getcategoryfromid/{CategoryID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            Category = serializer.Deserialize<Categories>(reader);
-                        }
-
-                        return Category;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "GetCategoryFromID", "GetCategoryFromID");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<int> AddNewCategory(int BudgetID, DefaultCategories Category)
-        {
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                int CategoryID;
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<DefaultCategories>(Category, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/categories/addnewcategory/{BudgetID}", request).Result;
-
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            CategoryID = serializer.Deserialize<int>(reader);
-                        }
-
-                        return CategoryID;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "AddNewCategory", "AddNewCategory");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<Categories> AddNewSubCategory(int BudgetID, Categories Category)
-        {
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Categories>(Category, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/categories/addnewsubcategory/{BudgetID}", request).Result;
-
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            Category = serializer.Deserialize<Categories>(reader);
-                        }
-
-                        return Category;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "AddNewSubCategory", "AddNewSubCategory");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<string> PatchCategory(int CategoryID, List<PatchDoc> PatchDoc)
-        {
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PatchAsync($"{_url}/categories/patchcategory/{CategoryID}", request).Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))                    
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/payee/deletepayee/{BudgetID}/{OldPayeeName}/{NewPayeeName}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -3776,422 +2646,116 @@ namespace DailyBudgetMAUIApp.DataServices
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
                         Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
                         error = serializer.Deserialize<ErrorClass>(reader);
                     }
-                        throw new Exception(error.ErrorMessage);
+                    throw new Exception(error.ErrorMessage);
                 }
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "PatchCategory", "PatchCategory");
-                throw new Exception(ex.Message);
-            }
-
         }
-        public async Task<string> UpdateAllTransactionsCategoryName(int CategoryID)
+
+        public async Task<string> UpdatePayee(int BudgetID, string OldPayeeName, string NewPayeeName)
         {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/payee/updatepayee/{BudgetID}/{OldPayeeName}/{NewPayeeName}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                if (response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException("Connectivity");
+                    return "OK";
                 }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/Updatealltransactionscategoryname/{CategoryID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
                     {
-                        return "OK";
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
                     }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-                        throw new Exception(error.ErrorMessage);
-                    }
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "UpdateAllTransactionsCategoryName", "UpdateAllTransactionsCategoryName");
-                throw new Exception(ex.Message);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
-        public async Task<List<Categories>> GetAllHeaderCategoryDetailsFull(int BudgetID)
+        public async Task<List<Categories>> GetCategories(int BudgetID)
         {
             List<Categories>? categories = new List<Categories>();
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getallheadercategorydetailsfull/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            categories = serializer.Deserialize<List<Categories>>(reader);
-                        }
-
-                        return categories;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "ViewCategories", "GetAllHeaderCategoryDetailsFull");
-                throw new Exception(ex.Message);
-            }
-        }
-        public async Task<List<Categories>> GetHeaderCategoryDetailsFull(int CategoryID, int BudgetID)
-        {
-            List<Categories>? categories = new List<Categories>();
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getheadercategorydetailsfull/{CategoryID}/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            categories = serializer.Deserialize<List<Categories>>(reader);
-                        }
-
-                        return categories;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "ViewCategories", "GetHeaderCategoryDetailsFull");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<string> DeleteCategory(int CategoryID, bool IsReassign, int ReAssignID)
-        {
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/deletecategory/{CategoryID}/{IsReassign}/{ReAssignID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return "OK";
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-                        throw new Exception(error.ErrorMessage);
-                    }
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "DeleteCategory", "DeleteCategory");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<Dictionary<string, int>> GetAllCategoryNames(int BudgetID)
-        {
-            Dictionary<string, int> Categories = new Dictionary<string, int>();
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/categories/getallcategorynames/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            Categories = serializer.Deserialize<Dictionary<string, int>>(reader);
-                        }
-
-                        return Categories;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-                        throw new Exception(error.ErrorMessage);
-                    }
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "GetAllCategoryNames", "GetAllCategoryNames");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<List<Savings>> GetBudgetEnvelopeSaving(int BudgetID)
-        {
-            List<Savings>? Savings = new List<Savings>();
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/getbudgetenvelopesaving/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            Savings = serializer.Deserialize<List<Savings>>(reader);
-                        }
-
-                        return Savings;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "GetBudgetEnvelopeSaving", "GetBudgetEnvelopeSaving");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<List<Savings>> GetBudgetRegularSaving(int BudgetID)
-        {
-            List<Savings>? Savings = new List<Savings>();
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/savings/getbudgetregularsaving/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            Savings = serializer.Deserialize<List<Savings>>(reader);
-                        }
-
-                        return Savings;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "GetBudgetRegularSaving", "GetBudgetRegularSaving");
-                throw new Exception(ex.Message);
-            }
-        }
-        public async Task<string> ShareBudgetRequest(ShareBudgetRequest BudgetShare)
-        {
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<ShareBudgetRequest>(BudgetShare, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/budgets/sharebudgetrequest", request).Result;
-
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            BudgetShare = serializer.Deserialize<ShareBudgetRequest>(reader);
-                        }
-
-                        if (BudgetShare.SharedBudgetID != 0)
-                        {
-                            return "OK";
-                        }
-                        else
-                        {
-                            return "Not Saved";
-                        }                        
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        if (error.ErrorMessage == "User Not Found")
-                        {
-                            return "User Not Found";
-                        }
-                        else if(error.ErrorMessage == "Budget Already Shared")
-                        {
-                            return "Budget Already Shared";
-                        }
-                        else if (error.ErrorMessage == "Share Request Active")
-                        {
-                            return "Share Request Active";
-                        }
-                        else
-                        {
-                            throw new Exception(error.ErrorMessage);
-                        }
-                    }
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "ShareBudgetRequest", "ShareBudgetRequest");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<FirebaseDevices> RegisterNewFirebaseDevice(FirebaseDevices NewDevice)
-        {
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FirebaseDevices>(NewDevice, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/firebasedevices/registernewfirebasedevice", request).Result;
-
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/getcategories/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
                 {
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
                         Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                        NewDevice = serializer.Deserialize<FirebaseDevices>(reader);
+                        categories = serializer.Deserialize<List<Categories>>(reader);
                     }
 
-                    return NewDevice;
+                    return categories;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                }  
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<Categories> GetCategoryFromID(int CategoryID)
+        {
+            Categories? Category = new Categories();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/getcategoryfromid/{CategoryID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Category = serializer.Deserialize<Categories>(reader);
+                    }
+
+                    return Category;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<int> AddNewCategory(int BudgetID, DefaultCategories Category)
+        {
+            int CategoryID;
+
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<DefaultCategories>(Category, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/categories/addnewcategory/{BudgetID}", request);
+
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        CategoryID = serializer.Deserialize<int>(reader);
+                    }
+
+                    return CategoryID;
+                }
                 else
                 {
                     ErrorClass error = new ErrorClass();
@@ -4204,82 +2768,73 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     throw new Exception(error.ErrorMessage);
                 }
-            }
-            catch (Exception ex)
+        }
+
+        public async Task<Categories> AddNewSubCategory(int BudgetID, Categories Category)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Categories>(Category, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/categories/addnewsubcategory/{BudgetID}", request);
+
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Category = serializer.Deserialize<Categories>(reader);
+                    }
+
+                    return Category;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<string> PatchCategory(int CategoryID, List<PatchDoc> PatchDoc)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/categories/patchcategory/{CategoryID}", request);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))                    
+
+            if (response.IsSuccessStatusCode)
             {
-                HandleError(ex, "RegisterNewFirebaseDevice", "RegisterNewFirebaseDevice");
-                throw new Exception(ex.Message);
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+                throw new Exception(error.ErrorMessage);
             }
         }
 
-        public async Task<FirebaseDevices> UpdateDeviceUserDetails(FirebaseDevices NewDevice)
+        public async Task<string> UpdateAllTransactionsCategoryName(int CategoryID)
         {
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FirebaseDevices>(NewDevice, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/firebasedevices/updatedeviceuserdetails", request).Result;
-
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            NewDevice = serializer.Deserialize<FirebaseDevices>(reader);
-                        }
-
-                        return NewDevice;
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "UpdateDeviceUserDetails", "UpdateDeviceUserDetails");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<string> ValidateOTPCodeShareBudget(OTP UserOTP, int SharedBudgetRequestID)
-        {
-
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
-                {
-                    throw new HttpRequestException("Connectivity");
-                }
-
-                string jsonRequest = System.Text.Json.JsonSerializer.Serialize<OTP>(UserOTP, _jsonSerialiserOptions);
-                StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/otp/validateotpcodesharebudget/{SharedBudgetRequestID}", request).Result;
-
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/Updatealltransactionscategoryname/{CategoryID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -4294,189 +2849,440 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         error = serializer.Deserialize<ErrorClass>(reader);
                     }
-
-                        throw new Exception(error.ErrorMessage);
+                    throw new Exception(error.ErrorMessage);
                 }
-            }
-            catch (Exception ex)
+        }
+
+        public async Task<List<Categories>> GetAllHeaderCategoryDetailsFull(int BudgetID)
+        {
+            List<Categories>? categories = new List<Categories>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/getallheadercategorydetailsfull/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        categories = serializer.Deserialize<List<Categories>>(reader);
+                    }
+
+                    return categories;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+        public async Task<List<Categories>> GetHeaderCategoryDetailsFull(int CategoryID, int BudgetID)
+        {
+            List<Categories>? categories = new List<Categories>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/getheadercategorydetailsfull/{CategoryID}/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        categories = serializer.Deserialize<List<Categories>>(reader);
+                    }
+
+                    return categories;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<string> DeleteCategory(int CategoryID, bool IsReassign, int ReAssignID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/deletecategory/{CategoryID}/{IsReassign}/{ReAssignID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<Dictionary<string, int>> GetAllCategoryNames(int BudgetID)
+        {
+            Dictionary<string, int> Categories = new Dictionary<string, int>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/getallcategorynames/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Categories = serializer.Deserialize<Dictionary<string, int>>(reader);
+                    }
+
+                    return Categories;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<List<Savings>> GetBudgetEnvelopeSaving(int BudgetID)
+        {
+            List<Savings>? Savings = new List<Savings>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/getbudgetenvelopesaving/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Savings = serializer.Deserialize<List<Savings>>(reader);
+                    }
+
+                    return Savings;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<List<Savings>> GetBudgetRegularSaving(int BudgetID)
+        {
+            List<Savings>? Savings = new List<Savings>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/getbudgetregularsaving/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Savings = serializer.Deserialize<List<Savings>>(reader);
+                    }
+
+                    return Savings;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+        public async Task<string> ShareBudgetRequest(ShareBudgetRequest BudgetShare)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<ShareBudgetRequest>(BudgetShare, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/budgets/sharebudgetrequest", request);
+
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        BudgetShare = serializer.Deserialize<ShareBudgetRequest>(reader);
+                    }
+
+                    if (BudgetShare.SharedBudgetID != 0)
+                    {
+                        return "OK";
+                    }
+                    else
+                    {
+                        return "Not Saved";
+                    }                        
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    if (error.ErrorMessage == "User Not Found")
+                    {
+                        return "User Not Found";
+                    }
+                    else if(error.ErrorMessage == "Budget Already Shared")
+                    {
+                        return "Budget Already Shared";
+                    }
+                    else if (error.ErrorMessage == "Share Request Active")
+                    {
+                        return "Share Request Active";
+                    }
+                    else
+                    {
+                        throw new Exception(error.ErrorMessage);
+                    }
+                }
+        }
+
+        public async Task<FirebaseDevices> RegisterNewFirebaseDevice(FirebaseDevices NewDevice)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FirebaseDevices>(NewDevice, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/firebasedevices/registernewfirebasedevice", request);
+
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
             {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    NewDevice = serializer.Deserialize<FirebaseDevices>(reader);
+                }
 
-                HandleError(ex, "PopUpOTP", "ValidateOTPCodeShareBudget");
-                throw new Exception(ex.Message);
+                return NewDevice;
+
+            }  
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
+        }
 
+        public async Task<FirebaseDevices> UpdateDeviceUserDetails(FirebaseDevices NewDevice)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FirebaseDevices>(NewDevice, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/firebasedevices/updatedeviceuserdetails", request);
+
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        NewDevice = serializer.Deserialize<FirebaseDevices>(reader);
+                    }
+
+                    return NewDevice;
+
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<string> ValidateOTPCodeShareBudget(OTP UserOTP, int SharedBudgetRequestID)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<OTP>(UserOTP, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/otp/validateotpcodesharebudget/{SharedBudgetRequestID}", request);
+
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
+            {
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                    throw new Exception(error.ErrorMessage);
+            }
         }
 
         public async Task<ShareBudgetRequest> GetShareBudgetRequestByID(int SharedBudgetRequestID)
         {
             ShareBudgetRequest ShareRequest = new ShareBudgetRequest();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/getsharebudgetrequestbyid/{SharedBudgetRequestID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                if (response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException("Connectivity");
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        ShareRequest = serializer.Deserialize<ShareBudgetRequest>(reader);
+                    }
+
+                    return ShareRequest;
+
                 }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/getsharebudgetrequestbyid/{SharedBudgetRequestID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
                     {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            ShareRequest = serializer.Deserialize<ShareBudgetRequest>(reader);
-                        }
-
-                        return ShareRequest;
-
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
                     }
 
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "GetShareBudgetRequestByID", "GetShareBudgetRequestByID");
-                throw new Exception(ex.Message);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<string> CancelCurrentShareBudgetRequest(int BudgetID)
         {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/cancelcurrentsharebudgetrequest/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                if (response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException("Connectivity");
+                    return "OK";
                 }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/cancelcurrentsharebudgetrequest/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
                     {
-                        return "OK";
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
                     }
 
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "CancelCurrentShareBudgetRequest", "CancelCurrentShareBudgetRequest");
-                throw new Exception(ex.Message);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<string> StopSharingBudget(int BudgetID)
         {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/stopsharingbudget/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
-            {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                if (response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException("Connectivity");
+                    return "OK";
                 }
-
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/budgets/stopsharingbudget/{BudgetID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
                     {
-                        return "OK";
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
                     }
 
-            }
-            catch (Exception ex)
-            {
-                HandleError(ex, "StopSharingBudget", "StopSharingBudget");
-                throw new Exception(ex.Message);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<List<Budgets>> GetUserAccountBudgets(int UserID, string page)
         {
             List<Budgets> budgets = new List<Budgets>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getuseraccountbudgets/{UserID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                bool IsNetworkConnection = await CheckNetworkConnection();
-                if (!IsNetworkConnection)
+                using (JsonReader reader = new JsonTextReader(sr))
                 {
-                    throw new HttpRequestException("Connectivity");
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    budgets = serializer.Deserialize<List<Budgets>>(reader);
                 }
 
-                HttpResponseMessage response = _httpClient.GetAsync($"{_url}/userAccounts/getuseraccountbudgets/{UserID}").Result;
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
-                using (StreamReader sr = new StreamReader(s))
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            budgets = serializer.Deserialize<List<Budgets>>(reader);
-                        }
-
-                        return budgets;
-                    }
-                    else
-                    {
-                        ErrorClass error = new ErrorClass();
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                            error = serializer.Deserialize<ErrorClass>(reader);
-                        }
-
-                        throw new Exception(error.ErrorMessage);
-                    }
-
+                return budgets;
             }
-            catch (Exception ex)
+            else
             {
-                HandleError(ex, page, "ValidateOTPCodeShareBudget");
-                throw new Exception(ex.Message);
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
             }
         }
-
     }
 }

@@ -20,10 +20,12 @@ namespace DailyBudgetMAUIApp.Models
             this.DeviceModel = DeviceInfo.Current.Model;
             this.BudgetID = App.DefaultBudgetID;
             this.WhenAdded = DateTime.UtcNow;
+            this.StackTrace = ex.StackTrace;
             
         }
         public int ErrorLogID { get; set; }
         public string? ErrorMessage { get; set;}
+        public string? StackTrace { get; set;}
         public string? ErrorPage { get; set; }
         public string? ErrorMethod { get; set; }
         public string? DeviceName { get; set; }

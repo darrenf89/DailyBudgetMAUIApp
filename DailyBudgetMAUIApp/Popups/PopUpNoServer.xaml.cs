@@ -4,10 +4,10 @@ using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopUpNoNetwork : Popup
+public partial class PopUpNoServer : Popup
 {
-    private readonly PopUpNoNetworkViewModel _vm;
-    public PopUpNoNetwork(PopUpNoNetworkViewModel viewModel)
+    private readonly PopUpNoServerViewModel _vm;
+    public PopUpNoServer(PopUpNoServerViewModel viewModel)
 	{
 		InitializeComponent();
 		MainGrid.HeightRequest = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;

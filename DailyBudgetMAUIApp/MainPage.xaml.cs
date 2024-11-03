@@ -15,8 +15,6 @@ using Syncfusion.Maui.ProgressBar;
 using Microsoft.Maui.Controls.Shapes;
 using CommunityToolkit.Maui.Extensions;
 using Syncfusion.Maui.Scheduler;
-using Plugin.MauiMTAdmob;
-using Plugin.MauiMTAdmob.Extra;
 
 
 namespace DailyBudgetMAUIApp;
@@ -93,13 +91,12 @@ public partial class MainPage : ContentPage
     }
 
     protected async override void OnAppearing()
-    {
-
-        base.OnAppearing();
-        ProcessSnackBar();
-        
+    {        
         try
         {
+            base.OnAppearing();
+            ProcessSnackBar();
+
             _vm.DefaultBudget = null;
             _vm.DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID), 1);
             if (_vm.DefaultBudgetID != 0)
@@ -1007,62 +1004,73 @@ public partial class MainPage : ContentPage
 
     private async Task UndoAddNew(int ID, string Type)
     {
-        if (Type == "Transaction")
+        try
         {
-            Transactions Transaction = await _ds.GetTransactionFromID(ID);
-            Transaction.TransactionID = 0;
+            if (Type == "Transaction")
+            {
+                Transactions Transaction = await _ds.GetTransactionFromID(ID);
+                Transaction.TransactionID = 0;
 
-            await _ds.DeleteTransaction(ID);
+                await _ds.DeleteTransaction(ID);
 
-            await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}&NavigatedFrom=ViewMainPage",
-                    new Dictionary<string, object>
-                    {
-                        ["Transaction"] = Transaction
-                    });
+                await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={_vm.DefaultBudgetID}&NavigatedFrom=ViewMainPage",
+                        new Dictionary<string, object>
+                        {
+                            ["Transaction"] = Transaction
+                        });
+            }
+            else if (Type == "Saving")
+            {
+                Savings saving = await _ds.GetSavingFromID(ID);
+                saving.SavingID = 0;
+
+                await _ds.DeleteSaving(ID);
+
+                await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(AddSaving)}?BudgetID={_vm.DefaultBudgetID}&SavingID={-1}",
+                        new Dictionary<string, object>
+                        {
+                            ["Saving"] = saving
+                        });
+            }
         }
-        else if (Type == "Saving")
+        catch (Exception ex)
         {
-            Savings saving = await _ds.GetSavingFromID(ID);
-            saving.SavingID = 0;
-
-            await _ds.DeleteSaving(ID);
-
-            await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(AddSaving)}?BudgetID={_vm.DefaultBudgetID}&SavingID={-1}",
-                    new Dictionary<string, object>
-                    {
-                        ["Saving"] = saving
-                    });
+            await _pt.HandleException(ex, "MainPage", "UndoAddNew");
         }
-
 
     }
     private async Task UndoCreateBudget(int BudgetID)
     {
-
-        if (App.CurrentPopUp == null)
+        try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+            PatchDoc BudgetStage = new PatchDoc
+            {
+                op = "replace",
+                path = "/IsCreated",
+                value = false
+            };
+
+            BudgetUpdate.Add(BudgetStage);
+            var PatchBudgetResult = await _ds.PatchBudget(BudgetID, BudgetUpdate);
+
+            if(PatchBudgetResult == "OK")
+            {
+                await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Finalise Budget");
+            }
         }
-
-        List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
-
-        PatchDoc BudgetStage = new PatchDoc
+        catch (Exception ex)
         {
-            op = "replace",
-            path = "/IsCreated",
-            value = false
-        };
-
-        BudgetUpdate.Add(BudgetStage);
-        var PatchBudgetResult = await _ds.PatchBudget(BudgetID, BudgetUpdate);
-
-        if(PatchBudgetResult == "OK")
-        {
-            await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Finalise Budget");
+            await _pt.HandleException(ex, "MainPage", "UndoCreateBudget");
         }
-
     }
 
     private void ShareBudget_Tapped(object sender, TappedEventArgs e)
@@ -1128,7 +1136,7 @@ public partial class MainPage : ContentPage
             Page TopPage = Shell.Current.Navigation.NavigationStack[Shell.Current.Navigation.NavigationStack.Count - 1];
             if (TopPage.GetType() != typeof(NoNetworkAccess) && TopPage.GetType() != typeof(ErrorPage))
             {
-                await _pt.HandleException(ex, "LogonPage", "Login");
+                await _pt.HandleException(ex, "MainPage", "VerifyBudgetShare_Tapped");
             }
         }
     }
@@ -2694,7 +2702,7 @@ public partial class MainPage : ContentPage
         }
         catch (Exception ex)
         {
-            await _pt.HandleException(ex, "MainPage", "OnAppearing");
+            await _pt.HandleException(ex, "MainPage", "Upload_Clicked");
         }
 
     }

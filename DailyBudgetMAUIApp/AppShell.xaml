@@ -8,7 +8,7 @@
     Shell.FlyoutBehavior="Disabled"
     Shell.TabBarIsVisible="True"
     xmlns:ContentDI="clr-namespace:Maui.FixesAndWorkarounds;assembly=PureWeen.Maui.FixesAndWorkarounds">
-
+    
     <ShellItem Route="LandingPage" FlyoutItemIsVisible="False">
         <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:LandingPage}"/>
     </ShellItem>

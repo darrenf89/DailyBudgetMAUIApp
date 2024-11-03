@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+           x:Class="DailyBudgetMAUIApp.Handlers.PopUpNoServer"
+           xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+           xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+           xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+           CanBeDismissedByTappingOutsideOfPopup="False"
+           Color="#80000000">
+    <Grid ColumnDefinitions="*" RowDefinitions="*" x:Name="MainGrid" BackgroundColor="#CC000000">
+        <Border x:Name="border" Grid.Row="0" Grid.Column="0" Style="{DynamicResource DashboardMainContent}" StrokeThickness="0" VerticalOptions="Center" HorizontalOptions="Center" StrokeShape="RoundRectangle 10" Background="#ecdbc3" Padding="0">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Margin="0,0,0,15">
+                <Image Grid.Column="0" Grid.Row="1" Source="disconnectedpage.png" Aspect="AspectFill" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,20,0,10"/>
+                <Label Text="Something isn't right" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Center" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,0,0,10" Padding="10,0,10,0"/>
+                <Label Text="Sorry about this, we can't connect to our servers. Stay with us we will keep trying." FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Center" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Gray950}" Margin="0,10,0,20" Padding="10,0,10,0"/>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</xct:Popup>
