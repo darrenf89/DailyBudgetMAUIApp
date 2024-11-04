@@ -6,7 +6,7 @@ using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class ViewSavings : ContentPage
+public partial class ViewSavings : BasePage
 {
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;

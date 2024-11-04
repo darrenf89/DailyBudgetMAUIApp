@@ -2,7 +2,7 @@ using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class ErrorPage : ContentPage
+public partial class ErrorPage : BasePage
 {
     private readonly ErrorPageViewModel _vm;
     public ErrorPage(ErrorPageViewModel viewModel)

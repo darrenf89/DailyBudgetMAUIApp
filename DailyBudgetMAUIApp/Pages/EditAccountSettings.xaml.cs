@@ -10,7 +10,7 @@ using Syncfusion.Maui.Core;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class EditAccountSettings : ContentPage
+public partial class EditAccountSettings : BasePage
 {
     public string _updatedAvatar = "";
     public string UpdatedAvatar

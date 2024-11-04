@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<local:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
             x:Class="DailyBudgetMAUIApp.Pages.EditAccountSettings"
+             xmlns:local="clr-namespace:DailyBudgetMAUIApp"
             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
             xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
             xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
@@ -231,4 +232,4 @@
             </Grid>
         </AbsoluteLayout>
     </VerticalStackLayout>
-</ContentPage>
+</local:BasePage>

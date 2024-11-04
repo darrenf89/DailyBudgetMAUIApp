@@ -10,7 +10,7 @@ using System.Globalization;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class AddSaving : ContentPage
+public partial class AddSaving : BasePage
 {
     private readonly AddSavingViewModel _vm;
     private readonly IProductTools _pt;

@@ -12,7 +12,7 @@ using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class ViewCategories : ContentPage
+public partial class ViewCategories : BasePage
 {
     public List<Categories> _addCategoryList = new List<Categories>();
     public List<Categories> AddCategoryList

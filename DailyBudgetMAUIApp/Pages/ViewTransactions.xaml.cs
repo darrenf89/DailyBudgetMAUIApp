@@ -3,7 +3,6 @@ using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
-using DailyBudgetMAUIApp.Popups;
 using CommunityToolkit.Maui.Views;
 using Syncfusion.Maui.ListView;
 using Syncfusion.Maui.DataSource;
@@ -15,7 +14,7 @@ using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class ViewTransactions : ContentPage
+public partial class ViewTransactions : BasePage
 {
     private readonly ViewTransactionsViewModel _vm;
     private readonly IRestDataService _ds;

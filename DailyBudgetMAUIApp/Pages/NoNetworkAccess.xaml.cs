@@ -2,7 +2,7 @@ using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class NoNetworkAccess : ContentPage
+public partial class NoNetworkAccess : BasePage
 {
     private readonly NoNetworkAccessViewModel _vm;
     public NoNetworkAccess(NoNetworkAccessViewModel viewModel)

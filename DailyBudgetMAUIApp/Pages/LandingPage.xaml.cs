@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class LandingPage : ContentPage
+public partial class LandingPage : BasePage
 {
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;

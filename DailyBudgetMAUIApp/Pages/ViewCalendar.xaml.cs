@@ -7,7 +7,7 @@ using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.Pages
 {
-    public partial class ViewCalendar : ContentPage
+    public partial class ViewCalendar : BasePage
     {
         private readonly ViewCalendarViewModel _vm;
         private readonly IProductTools _pt;

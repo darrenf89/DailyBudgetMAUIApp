@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class AddBill : ContentPage
+public partial class AddBill : BasePage
 {
     private readonly AddBillViewModel _vm;
     private readonly IProductTools _pt;

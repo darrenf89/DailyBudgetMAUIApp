@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<local:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyBudgetMAUIApp.Pages.SelectCategoryPage"
+             xmlns:local="clr-namespace:DailyBudgetMAUIApp"
              Title="SelectPayeePage"
              Shell.PresentationMode="ModalAnimated"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
@@ -102,4 +103,4 @@
             </ScrollView>
         </Grid>
     </AbsoluteLayout>
-</ContentPage>
+</local:BasePage>

@@ -8,7 +8,7 @@ using Microsoft.Maui.Layouts;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class SelectPayeePage : ContentPage
+public partial class SelectPayeePage : BasePage
 {
 	private readonly IRestDataService _ds;
 	private readonly IProductTools _pt;

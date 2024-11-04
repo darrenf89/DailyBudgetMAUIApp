@@ -2,7 +2,7 @@ using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class NoServerAccess : ContentPage
+public partial class NoServerAccess : BasePage
 {
     private readonly NoServerAccessViewModel _vm;
     public NoServerAccess(NoServerAccessViewModel viewModel)

@@ -15,7 +15,7 @@ using IeuanWalker.Maui.Switch.Helpers;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class CreateNewBudget : ContentPage
+public partial class CreateNewBudget : BasePage
 {
     private readonly CreateNewBudgetViewModel _vm;
     private readonly IProductTools _pt;

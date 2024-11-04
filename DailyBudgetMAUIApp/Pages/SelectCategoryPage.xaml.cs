@@ -9,7 +9,7 @@ using Microsoft.Maui.Controls.Shapes;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class SelectCategoryPage : ContentPage
+public partial class SelectCategoryPage : BasePage
 {
 	private readonly IRestDataService _ds;
 	private readonly IProductTools _pt;

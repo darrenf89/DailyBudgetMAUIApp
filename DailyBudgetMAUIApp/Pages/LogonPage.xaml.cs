@@ -2,7 +2,7 @@ using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class LogonPage : ContentPage
+public partial class LogonPage : BasePage
 {
 	public LogonPage(LogonPageViewModel viewModel)
 	{

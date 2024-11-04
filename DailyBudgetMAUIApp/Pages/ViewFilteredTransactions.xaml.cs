@@ -6,7 +6,7 @@ using Syncfusion.Maui.DataSource;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class ViewFilteredTransactions : ContentPage
+public partial class ViewFilteredTransactions : BasePage
 {
     private readonly ViewFilteredTransactionsViewModel _vm;
     private readonly IRestDataService _ds;

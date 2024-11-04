@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<local:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:local="clr-namespace:DailyBudgetMAUIApp"
              x:Class="DailyBudgetMAUIApp.Pages.NoNetworkAccess"   
              Shell.FlyoutBehavior="Disabled"
              Shell.TabBarIsVisible="False"
@@ -49,4 +50,4 @@
         </VerticalStackLayout>
     </Grid>
 
-</ContentPage>
+</local:BasePage>

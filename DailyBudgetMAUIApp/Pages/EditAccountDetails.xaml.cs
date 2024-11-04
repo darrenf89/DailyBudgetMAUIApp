@@ -6,7 +6,7 @@ using Syncfusion.Maui.Core;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class EditAccountDetails : ContentPage
+public partial class EditAccountDetails : BasePage
 {
     public string _updatedAvatar = "";
     public string UpdatedAvatar

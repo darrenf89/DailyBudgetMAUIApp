@@ -9,7 +9,7 @@ using Syncfusion.Maui.DataSource.Extensions;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class ViewPayees : ContentPage
+public partial class ViewPayees : BasePage
 {
     public Payees _addPayee = new Payees();
     public Payees AddPayee

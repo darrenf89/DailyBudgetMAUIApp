@@ -22,7 +22,6 @@ namespace DailyBudgetMAUIApp.DataServices
         private readonly string _baseAddress;
         private readonly string _url;
         private readonly JsonSerializerOptions _jsonSerialiserOptions;
-        private NetworkAccess PreviousNetworkAccess = NetworkAccess.Internet;
 
         private readonly int maxRetries = 4;
         private readonly int delayMilliseconds = 5000;

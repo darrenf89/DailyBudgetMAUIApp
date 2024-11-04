@@ -19,7 +19,7 @@ using Syncfusion.Maui.Scheduler;
 
 namespace DailyBudgetMAUIApp;
 
-public partial class MainPage : ContentPage
+public partial class MainPage : BasePage
 {
     private readonly MainPageViewModel _vm;
     private readonly IRestDataService _ds;
@@ -93,7 +93,7 @@ public partial class MainPage : ContentPage
     protected async override void OnAppearing()
     {        
         try
-        {
+        {            
             base.OnAppearing();
             ProcessSnackBar();
 

@@ -14,7 +14,7 @@ using Plugin.MauiMTAdmob;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class AddTransaction : ContentPage
+public partial class AddTransaction : BasePage
 {
     private readonly AddTransactionViewModel _vm;
     private readonly IProductTools _pt;

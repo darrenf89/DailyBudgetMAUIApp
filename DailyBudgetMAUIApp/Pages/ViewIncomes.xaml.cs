@@ -7,7 +7,7 @@ using DailyBudgetMAUIApp.Popups;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class ViewIncomes : ContentPage
+public partial class ViewIncomes : BasePage
 {
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;

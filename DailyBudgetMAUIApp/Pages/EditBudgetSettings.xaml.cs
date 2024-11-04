@@ -8,7 +8,7 @@ using DailyBudgetMAUIApp.DataServices;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class EditBudgetSettings : ContentPage
+public partial class EditBudgetSettings : BasePage
 {
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
