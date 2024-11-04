@@ -1150,7 +1150,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet();
+            TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
 
             page.Detents = new DetentsCollection()
             {

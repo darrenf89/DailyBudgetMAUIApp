@@ -14,9 +14,12 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
 
-    public TransactionOptionsBottomSheet()
+    public TransactionOptionsBottomSheet(IRestDataService ds, IProductTools pt)
     {
         InitializeComponent();
+
+        _ds = ds;
+        _pt = pt;
 
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         var ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
@@ -26,7 +29,13 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
         {
             Category.IsVisible = false;
             Payee.IsVisible = false;
+            IsPremiumAccount.IsVisible = true;
+            IsPremiumAccountTwo.IsVisible = true;
+        }
+        else
+        {
             IsPremiumAccount.IsVisible = false;
+            IsPremiumAccountTwo.IsVisible = false;
         }
 
         //MainScrollView.MaximumHeightRequest = ScreenHeight - 280;
@@ -144,5 +153,122 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
         {
             await _pt.HandleException(ex, "TransactionOptionsBottomSheet", "ViewPayees_Tapped");
         }
+    }
+
+    private async void SpendMoney_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            if (App.CurrentBottomSheet != null)
+            {
+                await this.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+
+            List<Savings>? savings = await _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID);
+            Dictionary<string, int> EnvelopeSavings = new Dictionary<string, int>();
+            foreach (var s in savings)
+            {
+                EnvelopeSavings.Add(s.SavingsName, s.SavingID);
+            }
+
+            string[] EnvelopeList = EnvelopeSavings.Keys.ToArray();
+            var SelectEnvelope = await Application.Current.MainPage.DisplayActionSheet($"Select which stash you want to pay from!", "Cancel", null, EnvelopeList);
+            if (SelectEnvelope == "Cancel")
+            {
+
+            }
+            else
+            {
+                int SavingsID = EnvelopeSavings[SelectEnvelope];
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                string SpendType = "EnvelopeSaving";
+                Transactions T = new Transactions
+                {
+                    IsSpendFromSavings = true,
+                    SavingID = SavingsID,
+                    SavingName = SelectEnvelope,
+                    SavingsSpendType = SpendType,
+                    EventType = "Envelope",
+                    TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow)
+                };
+
+                await Shell.Current.GoToAsync($"/{nameof(AddTransaction)}?BudgetID={App.DefaultBudget.BudgetID}&NavigatedFrom=ViewMainPage&TransactionID=0",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = T
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "TransactionOptionsBottomSheet", "SpendMoney_Tapped");
+        }
+
+    }
+
+    private async void SpendSavingMoney_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            if (App.CurrentBottomSheet != null)
+            {
+                await this.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+
+            List<Savings>? savings = await _ds.GetAllBudgetSavings(App.DefaultBudgetID);
+            Dictionary<string, int> Savings = new Dictionary<string, int>();
+            foreach (var s in savings)
+            {
+                Savings.Add(s.SavingsName, s.SavingID);
+            }
+
+            string[] EnvelopeList = Savings.Keys.ToArray();
+            var SelectedSaving = await Application.Current.MainPage.DisplayActionSheet($"Select which saving you want to pay from!", "Cancel", null, EnvelopeList);
+            if (SelectedSaving == "Cancel")
+            {
+
+            }
+            else
+            {
+                int SavingsID = Savings[SelectedSaving];
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                Savings Saving = await _ds.GetSavingFromID(SavingsID);
+                string SpendType = Saving.SavingsType == "SavingsBuilder" ? "BuildingSaving" : "MaintainValues";
+                Transactions T = new Transactions
+                {
+                    IsSpendFromSavings = true,
+                    SavingID = Saving.SavingID,
+                    SavingName = Saving.SavingsName,
+                    SavingsSpendType = SpendType,
+                    EventType = "Saving",
+                    TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow)
+                };
+
+                await Shell.Current.GoToAsync($"/{nameof(AddTransaction)}?BudgetID={App.DefaultBudget.BudgetID}&NavigatedFrom=ViewMainPage&TransactionID=0",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = T
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "TransactionOptionsBottomSheet", "SpendSavingMoney_Tapped");
+        }
+
     }
 }
