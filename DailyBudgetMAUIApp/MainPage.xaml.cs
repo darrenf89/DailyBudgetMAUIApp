@@ -1085,7 +1085,7 @@ public partial class MainPage : BasePage
                 RequestInitiated = DateTime.UtcNow
             };
 
-            ShareBudget page = new ShareBudget(SBR, new RestDataService(), new ProductTools(new RestDataService()));
+            ShareBudget page = new ShareBudget(SBR, _ds, _pt);
 
             page.Detents = new DetentsCollection()
             {
@@ -1116,7 +1116,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            var popup = new PopUpOTP(_vm.DefaultBudget.AccountInfo.BudgetShareRequestID, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ShareBudget", new ProductTools(new RestDataService()), new RestDataService());
+            var popup = new PopUpOTP(_vm.DefaultBudget.AccountInfo.BudgetShareRequestID, new PopUpOTPViewModel(_ds, _pt), "ShareBudget", _pt, _ds);
             var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
             if ((string)result.ToString() != "User Closed")
@@ -1150,7 +1150,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
+            TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet(_ds, _pt);
 
             page.Detents = new DetentsCollection()
             {
@@ -1175,7 +1175,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            BudgetOptionsBottomSheet page = new BudgetOptionsBottomSheet(_vm.DefaultBudget, new ProductTools(new RestDataService()),new RestDataService());
+            BudgetOptionsBottomSheet page = new BudgetOptionsBottomSheet(_vm.DefaultBudget, _pt,_ds);
 
             page.Detents = new DetentsCollection()
             {
@@ -1199,7 +1199,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
+            EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(_ds, _pt);
 
             page.Detents = new DetentsCollection()
             {
@@ -2349,7 +2349,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
+            EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(_ds, _pt);
 
             page.Detents = new DetentsCollection()
             {
@@ -2602,7 +2602,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            var popup = new PopupMoveBalance(App.DefaultBudget, "Budget", 0, true, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+            var popup = new PopupMoveBalance(App.DefaultBudget, "Budget", 0, true, new PopupMoveBalanceViewModel(), _pt, _ds);
             var result = await Application.Current.MainPage.ShowPopupAsync(popup);
             await Task.Delay(100);
             if (result.ToString() == "OK")
@@ -2620,7 +2620,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            CategoryOptionsBottomSheet page = new CategoryOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
+            CategoryOptionsBottomSheet page = new CategoryOptionsBottomSheet(_ds, _pt);
 
             page.Detents = new DetentsCollection()
             {
@@ -2644,7 +2644,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            PayeeOptionsBottomSheet page = new PayeeOptionsBottomSheet(new RestDataService(), new ProductTools(new RestDataService()));
+            PayeeOptionsBottomSheet page = new PayeeOptionsBottomSheet(_ds, _pt);
 
             page.Detents = new DetentsCollection()
             {

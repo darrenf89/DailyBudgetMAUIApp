@@ -3,7 +3,6 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using DailySpendWebApp.Models;
 using Newtonsoft.Json;
-using System.Diagnostics;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -58,7 +57,8 @@ public partial class LandingPage : BasePage
                     {
                         FirebaseDeviceID = FirebaseID,
                         UserAccountID = userDetails.UserID,
-                        LoginExpiryDate = userDetails.SessionExpiry
+                        LoginExpiryDate = userDetails.SessionExpiry,
+                        FirebaseToken = SecureStorage.Default.GetAsync("FirebaseToken").Result
                     };
 
                     try

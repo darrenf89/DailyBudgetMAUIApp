@@ -108,5 +108,11 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> CancelCurrentShareBudgetRequest(int BudgetID);
         public Task<string> StopSharingBudget(int BudgetID);
         public Task<List<Budgets>> GetUserAccountBudgets(int UserID, string page);
+        public Task<List<CustomerSupport>> GetSupports(int UserID, string page);
+        public Task<CustomerSupport> GetSupport(int SupportID, string page);
+        public Task<CustomerSupport> CreateSupport(int UserID, CustomerSupport Support);
+        public Task<CustomerSupportMessage> AddReply(int SupportID, CustomerSupportMessage Reply);
+        public Task<string> SaveSupportFile(FileResult File);
+        public Task<Stream> DownloadFile(int SupportID);
     }
 }

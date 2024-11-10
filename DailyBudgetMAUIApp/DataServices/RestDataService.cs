@@ -10,6 +10,7 @@ using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.ViewModels;
 using System.Net.NetworkInformation;
 using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -118,13 +119,14 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<bool> CheckConnectionStrengthAsync()
         {
+            return true;
             try
             {
                 if(this.LastServerHealthCheck.AddMinutes(1) < DateTime.UtcNow)
                 {
                     HttpClient pingClient = new HttpClient
                     {
-                        Timeout = TimeSpan.FromMilliseconds(5000)
+                        Timeout = TimeSpan.FromMilliseconds(60000)
                     };
 
                     var stopwatch = Stopwatch.StartNew();
@@ -172,7 +174,7 @@ namespace DailyBudgetMAUIApp.DataServices
                                 App.CurrentPopUp = null;
                             }
 
-                            return roundTripTime < 2000;
+                            return true;
                         }
                         else
                         {
@@ -571,6 +573,10 @@ namespace DailyBudgetMAUIApp.DataServices
             else
             {
                 ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                if(error.ErrorMessage.ToLower() == "invalid email" || error.ErrorMessage.ToLower() == "email already in use")
+                {
+                    UserModel.Error = error;
+                }
                 throw new Exception(error.ErrorMessage);
             }
         }
@@ -590,6 +596,12 @@ namespace DailyBudgetMAUIApp.DataServices
             else
             {
                 ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                if (error.ErrorMessage.ToLower() == "user not found")
+                {
+                    User.Error = error;
+                    return User;
+                }
+
                 throw new Exception(error.ErrorMessage);
             }
 
@@ -3274,6 +3286,180 @@ namespace DailyBudgetMAUIApp.DataServices
             else
             {
                 ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
+            }
+        }
+
+        public async Task<List<CustomerSupport>> GetSupports(int UserID, string page) 
+        {
+            List<CustomerSupport> Support = new List<CustomerSupport>();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/supports/getsupports/{UserID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Support = serializer.Deserialize<List<CustomerSupport>>(reader);
+                    }
+
+                    return Support;
+
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+        public async Task<CustomerSupport> GetSupport(int SupportID, string page) 
+        {
+            CustomerSupport Support = new CustomerSupport();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/supports/getsupport/{SupportID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Support = serializer.Deserialize<CustomerSupport>(reader);
+                    }
+
+                    return Support;
+
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+        public async Task<CustomerSupport> CreateSupport(int UserID, CustomerSupport Support) 
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<CustomerSupport>(Support, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/supports/createsupport/{UserID}", request);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
+            {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    Support = serializer.Deserialize<CustomerSupport>(reader);
+                }
+
+                return Support;
+            }
+            else
+            {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
+                    throw new Exception(error.ErrorMessage);
+                }                
+            }
+        }
+        public async Task<CustomerSupportMessage> AddReply(int SupportID, CustomerSupportMessage Reply)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<CustomerSupportMessage>(Reply, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/supports/addreply/{SupportID}", request);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Reply = serializer.Deserialize<CustomerSupportMessage>(reader);
+                    }
+
+                    return Reply;
+                }
+                else
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
+                        throw new Exception(error.ErrorMessage);
+                    }
+                }
+        }
+
+        public async Task<string> SaveSupportFile(FileResult File) 
+        {
+            var content = new MultipartFormDataContent
+            {
+                { new StreamContent(await File.OpenReadAsync()), "file", File.FileName }
+            };
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/supports/savefile", content);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Dictionary<string, string> result = serializer.Deserialize<Dictionary<string, string>>(reader);
+                        string returnString = result["fileName"];
+                        return returnString;
+                    }
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+        public async Task<Stream> DownloadFile(int SupportID) 
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/supports/downloadfile/{SupportID}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStreamAsync();
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
                 using (JsonReader reader = new JsonTextReader(sr))
                 {
                     Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();

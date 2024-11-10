@@ -10,6 +10,9 @@ using Maui.FixesAndWorkarounds;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Helpers;
 using System.Reflection;
+using Plugin.Maui.AppRating;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Alerts;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -1131,7 +1134,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
                     if (Transaction.TransactionDate.GetValueOrDefault().Date == GetBudgetLocalTime(DateTime.UtcNow).Date)
                     {
-                        var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), new ProductTools(new RestDataService()));
+                        var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), this);
                         var result = await Application.Current.MainPage.ShowPopupAsync(popup);
                         if ((string)result.ToString() == "OK")
                         {
@@ -1170,7 +1173,7 @@ namespace DailyBudgetMAUIApp.DataServices
             if (budget.NextIncomePayday.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
             {
                 //Confirm pay amount and date!
-                var popup = new PopupDailyPayDay(budget, new PopupDailyPayDayViewModel(), new ProductTools(new RestDataService()));
+                var popup = new PopupDailyPayDay(budget, new PopupDailyPayDayViewModel(), this);
                 var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
                 if ((string)result.ToString() == "OK")
@@ -1296,7 +1299,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         }
                         else
                         {
-                            var popup = new PopupDailySaving(Saving, new PopupDailySavingViewModel(), new ProductTools(new RestDataService()));
+                            var popup = new PopupDailySaving(Saving, new PopupDailySavingViewModel(), this);
                             var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
                             if ((string)result.ToString() == "OK")
@@ -1331,7 +1334,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (Bill.BillDueDate.GetValueOrDefault().Date == budget.BudgetValuesLastUpdated.Date)
                 {
-                    var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), new ProductTools(new RestDataService()));
+                    var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), this);
                     var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
                     if ((string)result.ToString() == "OK")
@@ -1367,7 +1370,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (Income.DateOfIncomeEvent.Date == budget.BudgetValuesLastUpdated.Date)
                 {
-                    var popup = new PopupDailyIncome(Income, new PopupDailyIncomeViewModel(), new ProductTools(new RestDataService()));
+                    var popup = new PopupDailyIncome(Income, new PopupDailyIncomeViewModel(), this);
                     var result = await Application.Current.MainPage.ShowPopupAsync(popup);
                     if ((string)result.ToString() == "OK")
                     {
@@ -1406,7 +1409,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         if (Transaction.TransactionDate.GetValueOrDefault().Date < GetBudgetLocalTime(DateTime.UtcNow).Date)
                         {
-                            var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), new ProductTools(new RestDataService()));
+                            var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), this);
                             var result = await Application.Current.MainPage.ShowPopupAsync(popup);
                             if ((string)result.ToString() == "OK")
                             {
@@ -1662,7 +1665,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     Preferences.Remove("NavigationType");
                     Preferences.Remove("NavigationID");
 
-                    var popup = new PopUpOTP(ShareBudgetRequestID, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ShareBudget", new ProductTools(new RestDataService()), new RestDataService());
+                    var popup = new PopUpOTP(ShareBudgetRequestID, new PopUpOTPViewModel(_ds, this), "ShareBudget", this, _ds);
                     var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
                     if ((string)result.ToString() != "User Closed")
@@ -1885,254 +1888,16 @@ namespace DailyBudgetMAUIApp.DataServices
 
         private async Task LoadPremiumTabBar()
         {
-            App.MainTabBar.Items.Add(new ShellContent()
-            {
-                Title = "Dashboard",
-                Route = "MainPage",
-                Icon = "dashboard.svg",
-                ContentTemplate = new DataTemplate(() => new MainPage(new MainPageViewModel(new RestDataService(), new ProductTools(new RestDataService())), new RestDataService(), new ProductTools(new RestDataService())))
-
-            });
-
-            App.MainTabBar.Items.Add(new ShellContent()
-            {
-                Title = "Outgoings",
-                Route = "AddBill",
-                Icon = "bill.svg",
-                ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.MainTabBar.Items.Add(new ShellContent()
-            {
-                Title = "Transaction",
-                Route = "AddTransaction",
-                Icon = "transaction.svg",
-                ContentTemplate = new DataTemplate(() => new AddTransaction(new AddTransactionViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.MainTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Income",
-                Route = "AddIncome",
-                Icon = "income.svg",
-                ContentTemplate = new DataTemplate(() => new AddIncome(new AddIncomeViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.MainTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Saving",
-                Route = "AddSaving",
-                Icon = "saving.svg",
-                ContentTemplate = new DataTemplate(() => new AddSaving(new AddSavingViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Transaction",
-                Route = "ViewTransactions",
-                Icon = "transaction.svg",
-                ContentTemplate = new DataTemplate(() => new ViewTransactions(new ViewTransactionsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new RestDataService(), new ProductTools(new RestDataService())))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Savings",
-                Route = "ViewSavings",
-                Icon = "saving.svg",
-                ContentTemplate = new DataTemplate(() => new ViewSavings(new ViewSavingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Outgoings",
-                Route = "ViewBills",
-                Icon = "bill.svg",
-                ContentTemplate = new DataTemplate(() => new ViewBills(new ViewBillsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Envelopes",
-                Route = "ViewEnvelopes",
-                Icon = "envelope.svg",
-                ContentTemplate = new DataTemplate(() => new ViewEnvelopes(new ViewEnvelopesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Incomes",
-                Route = "ViewIncomes",
-                Icon = "income.svg",
-                ContentTemplate = new DataTemplate(() => new ViewIncomes(new ViewIncomesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
+           
         }
 
         private async Task LoadPremiumPlusTabBar()
         {
-            App.MainTabBar.Items.Add(new ShellContent()
-            {
-                Title = "Dashboard",
-                Route = "MainPage",
-                Icon = "dashboard.svg",
-                ContentTemplate = new DataTemplate(() => new MainPage(new MainPageViewModel(new RestDataService(), new ProductTools(new RestDataService())), new RestDataService(), new ProductTools(new RestDataService())))
-
-            });
-
-            App.MainTabBar.Items.Add(new ShellContent()
-            {
-                Title = "Outgoings",
-                Route = "AddBill",
-                Icon = "bill.svg",
-                ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.MainTabBar.Items.Add(new ShellContent()
-            {
-                Title = "Transaction",
-                Route = "AddTransaction",
-                Icon = "transaction.svg",
-                ContentTemplate = new DataTemplate(() => new AddTransaction(new AddTransactionViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.MainTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Income",
-                Route = "AddIncome",
-                Icon = "income.svg",
-                ContentTemplate = new DataTemplate(() => new AddIncome(new AddIncomeViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.MainTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Saving",
-                Route = "AddSaving",
-                Icon = "saving.svg",
-                ContentTemplate = new DataTemplate(() => new AddSaving(new AddSavingViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Transaction",
-                Route = "ViewTransactions",
-                Icon = "transaction.svg",
-                ContentTemplate = new DataTemplate(() => new ViewTransactions(new ViewTransactionsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new RestDataService(), new ProductTools(new RestDataService())))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Savings",
-                Route = "ViewSavings",
-                Icon = "saving.svg",
-                ContentTemplate = new DataTemplate(() => new ViewSavings(new ViewSavingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Outgoings",
-                Route = "ViewBills",
-                Icon = "bill.svg",
-                ContentTemplate = new DataTemplate(() => new ViewBills(new ViewBillsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Envelopes",
-                Route = "ViewEnvelopes",
-                Icon = "envelope.svg",
-                ContentTemplate = new DataTemplate(() => new ViewEnvelopes(new ViewEnvelopesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Incomes",
-                Route = "ViewIncomes",
-                Icon = "income.svg",
-                ContentTemplate = new DataTemplate(() => new ViewIncomes(new ViewIncomesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
+            
         }
 
         private async Task LoadBasicTabBar()
-        {
-            App.MainTabBar.Items.Add(new ShellContent()
-            {
-                Title = "Dashboard",
-                Route = "MainPage",
-                Icon = "dashboard.svg",
-                ContentTemplate = new DataTemplate(() => new MainPage(new MainPageViewModel(new RestDataService(), new ProductTools(new RestDataService())), new RestDataService(), new ProductTools(new RestDataService())))
-
-            });
-
-            App.MainTabBar.Items.Add(new ShellContent()
-            {
-                Title = "Outgoings",
-                Route = "AddBill",
-                Icon = "bill.svg",
-                ContentTemplate = new DataTemplate(() => new AddBill(new AddBillViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.MainTabBar.Items.Add(new ShellContent()
-            {
-                Title = "Transaction",
-                Route = "AddTransaction",
-                Icon = "transaction.svg",
-                ContentTemplate = new DataTemplate(() => new AddTransaction(new AddTransactionViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.MainTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Income",
-                Route = "AddIncome",
-                Icon = "income.svg",
-                ContentTemplate = new DataTemplate(() => new AddIncome(new AddIncomeViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.MainTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Saving",
-                Route = "AddSaving",
-                Icon = "saving.svg",
-                ContentTemplate = new DataTemplate(() => new AddSaving(new AddSavingViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Transaction",
-                Route = "ViewTransactions",
-                Icon = "transaction.svg",
-                ContentTemplate = new DataTemplate(() => new ViewTransactions(new ViewTransactionsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new RestDataService(), new ProductTools(new RestDataService())))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Savings",
-                Route = "ViewSavings",
-                Icon = "saving.svg",
-                ContentTemplate = new DataTemplate(() => new ViewSavings(new ViewSavingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Outgoings",
-                Route = "ViewBills",
-                Icon = "bill.svg",
-                ContentTemplate = new DataTemplate(() => new ViewBills(new ViewBillsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Envelopes",
-                Route = "ViewEnvelopes",
-                Icon = "envelope.svg",
-                ContentTemplate = new DataTemplate(() => new ViewEnvelopes(new ViewEnvelopesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
-
-            App.ViewTabBar.Items.Add(new ShellContentDI()
-            {
-                Title = "Incomes",
-                Route = "ViewIncomes",
-                Icon = "income.svg",
-                ContentTemplate = new DataTemplate(() => new ViewIncomes(new ViewIncomesViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()), new RestDataService()))
-            });
+        {            
 
         }
 
@@ -2193,6 +1958,81 @@ namespace DailyBudgetMAUIApp.DataServices
                     App.IsPremiumAccount = false;
                 }
             }
+        }
+
+        public async Task MakeSnackBar(string text, Action? action, string? actionButtonText, TimeSpan duration, string snackBarType)
+        {
+            Application.Current.Resources.TryGetValue("Success", out var Success);
+            Application.Current.Resources.TryGetValue("Warning", out var Warning);
+            Application.Current.Resources.TryGetValue("Primary", out var Primary);
+            Application.Current.Resources.TryGetValue("Danger", out var Danger);
+            Application.Current.Resources.TryGetValue("Info", out var Info);
+            Application.Current.Resources.TryGetValue("White", out var White);
+
+            var snackbarSuccessOptions = new SnackbarOptions
+            {
+                BackgroundColor = (Color)Success,
+                TextColor = (Color)White,
+                ActionButtonTextColor = (Color)White,
+                CornerRadius = new CornerRadius(2),
+                Font = Microsoft.Maui.Font.SystemFontOfSize(14),
+                ActionButtonFont = Microsoft.Maui.Font.SystemFontOfSize(22),
+                CharacterSpacing = 0.1
+            };
+
+            var snackbarInfoOptions = new SnackbarOptions
+            {
+                BackgroundColor = (Color)Info,
+                TextColor = (Color)White,
+                ActionButtonTextColor = (Color)White,
+                CornerRadius = new CornerRadius(2),
+                Font = Microsoft.Maui.Font.SystemFontOfSize(14),
+                ActionButtonFont = Microsoft.Maui.Font.SystemFontOfSize(22),
+                CharacterSpacing = 0.1
+            };
+
+            var snackbarWarningOptions = new SnackbarOptions
+            {
+                BackgroundColor = (Color)Warning,
+                TextColor = (Color)White,
+                ActionButtonTextColor = (Color)White,
+                CornerRadius = new CornerRadius(2),
+                Font = Microsoft.Maui.Font.SystemFontOfSize(14),
+                ActionButtonFont = Microsoft.Maui.Font.SystemFontOfSize(22),
+                CharacterSpacing = 0.1
+            };
+
+            var snackbarDangerOptions = new SnackbarOptions
+            {
+                BackgroundColor = (Color)Danger,
+                TextColor = (Color)White,
+                ActionButtonTextColor = (Color)White,
+                CornerRadius = new CornerRadius(2),
+                Font = Microsoft.Maui.Font.SystemFontOfSize(14),
+                ActionButtonFont = Microsoft.Maui.Font.SystemFontOfSize(22),
+                CharacterSpacing = 0.1
+            };
+
+            switch(snackBarType)
+            {
+                case "Success":
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+                    break;
+                case "Info":
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarInfoOptions).Show();
+                    break;
+                case "Warning":
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarWarningOptions).Show();
+                    break;
+                case "Danger":
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarDangerOptions).Show();
+                    break;
+                default:
+                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+                    break;
+            }
+            
+            return;
         }
     }
 }

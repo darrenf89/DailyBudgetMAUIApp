@@ -17,8 +17,8 @@
 		<ApplicationIdGuid>a9e0258c-e381-49fa-aa43-d11c44cf7b75</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.33</ApplicationDisplayVersion>
-		<ApplicationVersion>33</ApplicationVersion>
+		<ApplicationDisplayVersion>1.36</ApplicationDisplayVersion>
+		<ApplicationVersion>36</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -78,6 +78,7 @@
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.0.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="OnScreenSizeMarkup.Maui" Version="3.0.18" />
+		<PackageReference Include="Plugin.Maui.AppRating" Version="1.2.0" />
 		<PackageReference Include="Plugin.MauiMTAdmob" Version="1.5.1" />
 		<PackageReference Include="PureWeen.Maui.FixesAndWorkarounds" Version="1.5.0" />
 		<PackageReference Include="Syncfusion.Licensing" Version="26.2.9" />
@@ -123,8 +124,14 @@
 	  <Compile Update="Pages\ViewPayees.xaml.cs">
 	    <DependentUpon>ViewPayees.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\ViewSupport.xaml.cs">
+	    <DependentUpon>ViewSupport.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Platforms\iOS\Mappers\BorderEntryMapper.cs">
 	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+	  </Compile>
+	  <Compile Update="Popups\PopUpContactUs.xaml.cs">
+	    <DependentUpon>PopUpContactUs.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Popups\PopUpNoServer.xaml.cs">
 	    <DependentUpon>PopUpNoServer.xaml</DependentUpon>
@@ -246,10 +253,19 @@
 	  <MauiXaml Update="Pages\NoNetworkAccess.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\PatchNotes.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewCalendar.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewPayees.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\ViewSupport.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Popups\PopUpContactUs.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Popups\PopUpNoServer.xaml">

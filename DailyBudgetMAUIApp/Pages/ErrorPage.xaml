@@ -19,7 +19,7 @@
             FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}"
             FontFamily="OpenSansSemibold"/>
         <Label Grid.Column="0" Grid.Row="1" Margin="20,10,20,0" Grid.ColumnSpan="3" 
-            Text="Something went wrong when on our side, I'm going to blame it on the graduates."
+            Text="Something went wrong on our side, I'm going to blame it on the graduates."
             HorizontalTextAlignment="Center"
             VerticalOptions="Center" 
             HorizontalOptions="Center" 

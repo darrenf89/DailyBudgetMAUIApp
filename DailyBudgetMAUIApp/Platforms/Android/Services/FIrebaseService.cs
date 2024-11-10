@@ -4,6 +4,7 @@ using DailyBudgetMAUIApp.DataServices;
 using DailySpendWebApp.Models;
 using AndroidX.Core.App;
 using Android.Content;
+using Android.Gms.Extensions;
 
 
 namespace DailyBudgetMAUIApp.Platforms.Android.Services
@@ -18,8 +19,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
         }
 
         public async override void OnNewToken(string token)
-        {            
-
+        {     
             base.OnNewToken(token);
             bool success = true;
 
@@ -29,7 +29,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
                 success = SecureStorage.Default.Remove("FirebaseID");
             }
 
-            if(success)
+            if (success)
             {
                 RestDataService _ds = new RestDataService();
 

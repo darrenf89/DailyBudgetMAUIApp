@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 using Syncfusion.Maui.Scheduler;
 using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
-using Plugin.MauiMTAdmob.Extra;
+using Plugin.Maui.AppRating;
 using Plugin.MauiMTAdmob;
 
 
@@ -21,6 +21,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
+        private readonly IAppRating _ar;
 
         [ObservableProperty]
         private int  defaultBudgetID;
@@ -86,10 +87,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         public delegate void ReloadPageAction();
         public event ReloadPageAction ReloadPage;
 
-        public MainPageViewModel(IRestDataService ds, IProductTools pt)
+        public MainPageViewModel(IRestDataService ds, IProductTools pt, IAppRating ar)
         {
             _ds = ds;
             _pt = pt;
+            _ar = ar;
             double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             ProgressBarWidthRequest = ScreenWidth - 85;
             SignOutButtonWidth = ScreenWidth - 30;
@@ -164,7 +166,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 await Task.Delay(500);
 
-                EditAccountDetails page = new EditAccountDetails(new EditAccountDetailsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()));
+                EditAccountDetails page = new EditAccountDetails(new EditAccountDetailsViewModel(_pt, _ds), _pt, _ar);
 
                 await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
             }

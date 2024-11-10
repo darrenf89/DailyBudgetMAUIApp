@@ -93,6 +93,8 @@ namespace DailyBudgetMAUIApp.Models
         public int NumberOfBills { get; set; }
         public int NumberOfIncomeEvents { get; set; }
         public int NumberOfSavings { get; set; }
+        public bool IsSupportOpen { get; set; }
+        public int NumberUnreadMessages { get; set; }
 
     }
 

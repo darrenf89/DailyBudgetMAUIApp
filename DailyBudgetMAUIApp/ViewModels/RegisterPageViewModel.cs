@@ -110,7 +110,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         NewUser.Password = Password;
                         NewUser.IsDPAPermissions = IsDPAPermissions;
                         NewUser.IsAgreedToTerms = IsAgreedToTerms;
-                        NewUser.NickName = NickName;
+                       NewUser.NickName = NickName;
                         NewUser.ProfilePicture = "Avatar1";
                         
                         NewUser = _pt.CreateUserSecurityDetails(NewUser);

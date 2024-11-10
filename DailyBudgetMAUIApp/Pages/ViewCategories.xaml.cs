@@ -214,7 +214,7 @@ public partial class ViewCategories : BasePage
 
             if(Category.CategoryID == -1)
             {
-                AddNewCategoryBottomSheet page = new AddNewCategoryBottomSheet(_vm.Categories, new ProductTools(new RestDataService()), new RestDataService());
+                AddNewCategoryBottomSheet page = new AddNewCategoryBottomSheet(_vm.Categories, _pt, _ds);
 
                 page.Detents = new DetentsCollection()
                 {

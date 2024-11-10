@@ -1,10 +1,12 @@
-﻿using DailyBudgetMAUIApp.Handlers;
+﻿using CommunityToolkit.Maui.Alerts;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DailyBudgetMAUIApp.DataServices
 {
@@ -49,5 +51,6 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<Dictionary<string, string>> GetIcons();
         public Task<string> GetIcon(string Name);
         public Task SetSubDetails();
+        public Task MakeSnackBar(string text, Action? action, string? actionButtonText, TimeSpan duration, string snackBarType);
     }
 }

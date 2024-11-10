@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DailyBudgetMAUIApp.Converters;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
@@ -19,61 +18,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private UserDetailsModel user;
         [ObservableProperty]
-        private string currentPassword;
-        [ObservableProperty]
-        private string newEmail;
-        [ObservableProperty]
-        private string newPassword;
-        [ObservableProperty]
-        private string newNickName;
-        [ObservableProperty]
-        private string newPasswordConfirm;
-        [ObservableProperty]
-        private bool currentPasswordValid = true;
-        [ObservableProperty]
-        private bool newPasswordValid;
-        [ObservableProperty]
-        private bool newPasswordMatch = true;
-        [ObservableProperty]
-        private bool passwordRequired;
-        [ObservableProperty]
-        private bool newPasswordRequired;
-        [ObservableProperty]
-        private bool passwordConfirmRequired;
-        [ObservableProperty]
-        private bool passwordChangedMessageVisible;
-        [ObservableProperty]
-        private bool passwordNotChangedMessageVisible;
-        [ObservableProperty]
-        private bool emailChangedMessageVisible;
-        [ObservableProperty]
-        private bool emailNotChangedMessageVisible;
-        [ObservableProperty]
-        private bool emailValid;
-        [ObservableProperty]
-        private bool emailRequired;
-        [ObservableProperty]
-        private bool nicknameChangedMessageVisible;
-        [ObservableProperty]
-        private bool nicknameNotChangedMessageVisible;
-        [ObservableProperty]
-        private bool nickNameRequired;
-        [ObservableProperty]
-        private string currentBudgetName;
-        [ObservableProperty]
-        private List<Budgets> userBudgets;
-        [ObservableProperty]
         private string currentSubStatus;
         [ObservableProperty]
-        private string subscriptionRenewal;
+        private string subscriptionStatus;
         [ObservableProperty]
         private string versionNumber;
-        [ObservableProperty]
-        public BorderlessPicker switchBudgetPicker;
-        [ObservableProperty]
-        public Budgets selectedBudget;
-        [ObservableProperty]
-        public bool isDPA;
 
         public EditAccountDetailsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -86,49 +35,34 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             VersionNumber = $"V{AppInfo.Current.VersionString}";
             User = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
-            CurrentSubStatus = $"{User.SubscriptionType} expires on {User.SubscriptionExpiry.ToString("d", CultureInfo.CurrentCulture)}";
-            SubscriptionRenewal = "Monthly";
 
-            UserBudgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, "EditAccountSettings");
-
-            Application.Current.Resources.TryGetValue("White", out var White);
-            Application.Current.Resources.TryGetValue("Info", out var Info);
-            Application.Current.Resources.TryGetValue("Primary", out var Primary);
-            Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
-
-            BorderlessPicker picker = new BorderlessPicker
+            if (DateTime.Now > User.SubscriptionExpiry)
             {
-                Title = "Select a budget",
-                ItemsSource = UserBudgets,
-                TitleColor = (Color)Gray900,
-                BackgroundColor = (Color)White,
-                TextColor = (Color)Info,
-                Margin = new Thickness(20, 0, 0, 0),
-            };
-
-            picker.ItemDisplayBinding = new Binding(".", BindingMode.Default, new ChangeBudgetStringConvertor());
-
-            picker.SelectedIndexChanged += async (s, e) =>
+                SubscriptionStatus = "";
+            }
+            else
             {
-                var picker = (Picker)s;
-                var SelectedBudget = (Budgets)picker.SelectedItem;
-
-                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, SelectedBudget.BudgetID, false);
-                CurrentBudgetName = SelectedBudget.BudgetName;
-            };            
-            
-            for (int i = 0; i < UserBudgets.Count; i++)
+                SubscriptionStatus = "Monthly";
+            }
+                
+            if(SubscriptionStatus == "Cancelled" || SubscriptionStatus == "")
             {
-                if (UserBudgets[i].BudgetID == User.DefaultBudgetID)
+                if(DateTime.Now > User.SubscriptionExpiry)
                 {
-                    CurrentBudgetName = UserBudgets[i].BudgetName;
-                    picker.SelectedItem = UserBudgets[i];
+                    CurrentSubStatus = $"Click here to check out our subscription options";
+                }
+                else
+                {
+                    CurrentSubStatus = $"Sub {SubscriptionStatus}. {User.SubscriptionType} benefits lost on {User.SubscriptionExpiry.ToString("dd MMM yy", CultureInfo.CurrentCulture)}";
+
                 }
             }
+            else
+            {
+                CurrentSubStatus = $"Renews {SubscriptionStatus} on {User.SubscriptionExpiry.ToString("dd MMM yy", CultureInfo.CurrentCulture)}";
+            }
+                      
 
-            SwitchBudgetPicker = picker;
-
-            IsDPA = User.IsDPAPermissions;
         }
 
         [RelayCommand]

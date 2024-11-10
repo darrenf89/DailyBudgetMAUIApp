@@ -13,6 +13,7 @@ using DotNet.Meteor.HotReload.Plugin;
 using DailyBudgetMAUIApp.Popups;
 using Maui.FreakyEffects;
 using Plugin.MauiMTAdmob;
+using Plugin.Maui.AppRating;
 
 
 namespace DailyBudgetMAUIApp;
@@ -56,6 +57,7 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<IRestDataService, RestDataService>();
         builder.Services.AddSingleton<IProductTools, ProductTools>();
+        builder.Services.AddSingleton<IAppRating>(AppRating.Default);
 
         //Pages
         builder.Services.AddTransient<MainPage>();
@@ -88,6 +90,8 @@ public static class MauiProgram
         builder.Services.AddTransient<EditAccountDetails>();
         builder.Services.AddTransient<NoNetworkAccess>();
         builder.Services.AddTransient<NoServerAccess>();
+        builder.Services.AddTransient<PatchNotes>();
+        builder.Services.AddTransient<ViewSupport>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();
@@ -120,6 +124,8 @@ public static class MauiProgram
         builder.Services.AddTransient<EditAccountDetailsViewModel>();
         builder.Services.AddTransient<NoNetworkAccessViewModel>();
         builder.Services.AddTransient<NoServerAccessViewModel>();
+        builder.Services.AddTransient<PatchNotesViewModel>();
+        builder.Services.AddTransient<ViewSupportViewModel>();
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();

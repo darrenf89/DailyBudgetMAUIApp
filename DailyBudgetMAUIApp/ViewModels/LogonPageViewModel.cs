@@ -226,7 +226,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 {
                                                     FirebaseDeviceID = FirebaseID,
                                                     UserAccountID = userDetails.UserID,
-                                                    LoginExpiryDate = userDetails.SessionExpiry
+                                                    LoginExpiryDate = userDetails.SessionExpiry,
+                                                    FirebaseToken = SecureStorage.Default.GetAsync("FirebaseToken").Result
                                                 };
 
                                                 try

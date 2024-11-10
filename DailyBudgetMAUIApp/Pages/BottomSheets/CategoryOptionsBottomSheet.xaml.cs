@@ -43,7 +43,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
                 App.CurrentBottomSheet = null;
             }
 
-            AddNewCategoryBottomSheet page = new AddNewCategoryBottomSheet(null, new ProductTools(new RestDataService()), new RestDataService());
+            AddNewCategoryBottomSheet page = new AddNewCategoryBottomSheet(null, _pt, _ds);
 
             page.Detents = new DetentsCollection()
                 {
@@ -169,7 +169,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
             else
             {
                 int CategoryID = CatDict[SelectCategory];
-                AddSubCategoryBottomSheet page = new AddSubCategoryBottomSheet(await _ds.GetCategoryFromID(CategoryID), new ProductTools(new RestDataService()), new RestDataService());
+                AddSubCategoryBottomSheet page = new AddSubCategoryBottomSheet(await _ds.GetCategoryFromID(CategoryID), _pt, _ds);
 
                 page.Detents = new DetentsCollection()
                 {
@@ -280,7 +280,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
                 Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
                 List<Categories> CategoryDetails = _ds.GetHeaderCategoryDetailsFull(CategoryID, App.DefaultBudgetID).Result;
 
-                var Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, CategoryID, CategoryDetails, new RestDataService(), new ProductTools(new RestDataService())));
+                var Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, CategoryID, CategoryDetails, _ds, _pt));
                 var result = await Shell.Current.ShowPopupAsync(Popup);
                 if (result.ToString() == "Cancel")
                 {
