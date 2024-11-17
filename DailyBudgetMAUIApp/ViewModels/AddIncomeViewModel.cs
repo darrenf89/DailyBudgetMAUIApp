@@ -5,7 +5,6 @@ using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Diagnostics;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -29,6 +28,12 @@ namespace DailyBudgetMAUIApp.ViewModels
         private DateTime  minimumDate = DateTime.UtcNow.Date.AddDays(1);
         [ObservableProperty]
         private string  navigatedFrom;
+        [ObservableProperty]
+        private bool isMultipleAccounts;
+        [ObservableProperty]
+        private List<BankAccounts> bankAccounts;
+        [ObservableProperty]
+        private BankAccounts? selectedBankAccount;
 
         public string IncomeTypeText { get; set; } = "";
         public string IncomeActiveText { get; set; } = "";

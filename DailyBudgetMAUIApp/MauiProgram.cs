@@ -92,6 +92,9 @@ public static class MauiProgram
         builder.Services.AddTransient<NoServerAccess>();
         builder.Services.AddTransient<PatchNotes>();
         builder.Services.AddTransient<ViewSupport>();
+        builder.Services.AddTransient<ViewSupports>();
+        builder.Services.AddTransient<ViewSupports>();
+        builder.Services.AddTransient<ViewAccounts>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();
@@ -126,6 +129,8 @@ public static class MauiProgram
         builder.Services.AddTransient<NoServerAccessViewModel>();
         builder.Services.AddTransient<PatchNotesViewModel>();
         builder.Services.AddTransient<ViewSupportViewModel>();
+        builder.Services.AddTransient<ViewSupportsViewModel>();
+        builder.Services.AddTransient<ViewAccountsViewModel>();
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();
@@ -144,6 +149,7 @@ public static class MauiProgram
         builder.Services.AddTransient<LoadingPageTwo>();
         builder.Services.AddTransient<PopUpNoNetwork, PopUpNoNetworkViewModel>();
         builder.Services.AddTransient<PopUpNoServer, PopUpNoServerViewModel>();
+        builder.Services.AddTransient<PopupMoveAccountBalance, PopupMoveAccountBalanceViewModel>();
 
         //BottomSheets
         builder.Services.AddTransient<ViewTransactionFilterBottomSheet>();
@@ -157,6 +163,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EditProfilePictureBottomSheet>();
         builder.Services.AddTransient<CategoryOptionsBottomSheet>();
         builder.Services.AddTransient<PayeeOptionsBottomSheet>();
+        builder.Services.AddTransient<MultipleAccountsBottomSheet>();
 
 #if WINDOWS
         SetWindowHandlers(); 

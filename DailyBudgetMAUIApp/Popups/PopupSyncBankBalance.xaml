@@ -18,7 +18,7 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Update}" Size="24"  Color="{DynamicResource Primary}"/>
                                 </Image.Source>
                             </Image>
-                            <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Sync Bank Balance1"/>
+                            <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,20,5,0" Text="Sync Bank Balance"/>
                         </HorizontalStackLayout>
                         <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Margin="20,15,20,15" Text="Has your bank balance got out of sync. Update your app bank balance to match whats in your bank/s"/>
                         <VerticalStackLayout Margin="40,0,20,0">

@@ -17,8 +17,8 @@
 		<ApplicationIdGuid>a9e0258c-e381-49fa-aa43-d11c44cf7b75</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.36</ApplicationDisplayVersion>
-		<ApplicationVersion>36</ApplicationVersion>
+		<ApplicationDisplayVersion>1.38</ApplicationDisplayVersion>
+		<ApplicationVersion>38</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -97,6 +97,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Pages\BottomSheets\MultipleAccountsBottomSheet.xaml.cs">
+	    <DependentUpon>MultipleAccountsBottomSheet.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\BottomSheets\EditProfilePictureBottomSheet.xaml.cs">
 	    <DependentUpon>EditProfilePictureBottomSheet.xaml</DependentUpon>
 	  </Compile>
@@ -124,6 +127,12 @@
 	  <Compile Update="Pages\ViewPayees.xaml.cs">
 	    <DependentUpon>ViewPayees.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\ViewAccounts.xaml.cs">
+	    <DependentUpon>ViewAccounts.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\ViewSupports.xaml.cs">
+	    <DependentUpon>ViewSupports.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\ViewSupport.xaml.cs">
 	    <DependentUpon>ViewSupport.xaml</DependentUpon>
 	  </Compile>
@@ -132,6 +141,9 @@
 	  </Compile>
 	  <Compile Update="Popups\PopUpContactUs.xaml.cs">
 	    <DependentUpon>PopUpContactUs.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Popups\PopupMoveAccountBalance.xaml.cs">
+	    <DependentUpon>PopupMoveAccountBalance.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Popups\PopUpNoServer.xaml.cs">
 	    <DependentUpon>PopUpNoServer.xaml</DependentUpon>
@@ -229,6 +241,9 @@
 	  <MauiXaml Update="Handlers\FocusedEntry.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\BottomSheets\MultipleAccountsBottomSheet.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\BottomSheets\EditProfilePictureBottomSheet.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -262,10 +277,19 @@
 	  <MauiXaml Update="Pages\ViewPayees.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\ViewAccounts.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\ViewSupports.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewSupport.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Popups\PopUpContactUs.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Popups\PopupMoveAccountBalance.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Popups\PopUpNoServer.xaml">

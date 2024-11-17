@@ -82,6 +82,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool  categoryChartVisible = true;
         [ObservableProperty]
+        private bool isUnreadMessage;
+        [ObservableProperty]
         private ObservableCollection<SchedulerAppointment>  eventList = new ObservableCollection<SchedulerAppointment>();
 
         public delegate void ReloadPageAction();
@@ -123,6 +125,27 @@ namespace DailyBudgetMAUIApp.ViewModels
             catch (Exception ex)
             {
                 await _pt.HandleException(ex, "MainPage", "GoToAccountSettings");
+            }
+        }
+
+        [RelayCommand]
+        async Task NavigateViewSupports()
+        {
+            try
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Shell.Current.GoToAsync($"{nameof(ViewSupports)}");
+
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "ViewSupports");
             }
         }
 

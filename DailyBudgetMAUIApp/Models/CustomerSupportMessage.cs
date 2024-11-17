@@ -15,9 +15,6 @@ namespace DailyBudgetMAUIApp.Models
         public bool isRead;
         [ObservableProperty]
         public bool isCustomerReply;
-        [ObservableProperty]
-        public int? supportID;
-        [ObservableProperty]
-        public CustomerSupport? customerSupport;
+
     }  
 }

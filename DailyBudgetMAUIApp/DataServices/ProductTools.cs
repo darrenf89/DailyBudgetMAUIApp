@@ -6,13 +6,12 @@ using System.Globalization;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Converters;
 using Newtonsoft.Json;
-using Maui.FixesAndWorkarounds;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Helpers;
 using System.Reflection;
-using Plugin.Maui.AppRating;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Alerts;
+
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -478,7 +477,6 @@ namespace DailyBudgetMAUIApp.DataServices
                         if (Income.IsInstantActive ?? false)
                         {
                             DateTime PayDayAfterNext = CalculateNextDate(NextPayDay, Budget.PaydayType, Budget.PaydayValue ?? 1, Budget.PaydayDuration);
-                            DateTime NextIncomeDate = CalculateNextDate(Income.DateOfIncomeEvent, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
                             //Next Income Date happens in this Pay window so process
                             if (Income.DateOfIncomeEvent.Date < NextPayDay.Date)
                             {
@@ -487,14 +485,20 @@ namespace DailyBudgetMAUIApp.DataServices
                                 Budget.LeftToSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
                                 Budget.PlusStashSpendBalance = Budget.PlusStashSpendBalance + Income.IncomeAmount;
                                 Budget.CurrentActiveIncome += Income.IncomeAmount;
-                                while (NextIncomeDate.Date < NextPayDay.Date)
+
+                                if (Income.IsRecurringIncome)
                                 {
-                                    Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance + Income.IncomeAmount;
-                                    Budget.PlusStashSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
-                                    Budget.LeftToSpendBalance = Budget.PlusStashSpendBalance + Income.IncomeAmount;
-                                    Budget.CurrentActiveIncome += Income.IncomeAmount;
-                                    //TODO: Add a Transaction into transactions
-                                    NextIncomeDate = CalculateNextDate(NextIncomeDate, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
+                                    DateTime NextIncomeDate = CalculateNextDate(Income.DateOfIncomeEvent, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
+
+                                    while (NextIncomeDate.Date < NextPayDay.Date)
+                                    {
+                                        Budget.MoneyAvailableBalance = Budget.MoneyAvailableBalance + Income.IncomeAmount;
+                                        Budget.PlusStashSpendBalance = Budget.LeftToSpendBalance + Income.IncomeAmount;
+                                        Budget.LeftToSpendBalance = Budget.PlusStashSpendBalance + Income.IncomeAmount;
+                                        Budget.CurrentActiveIncome += Income.IncomeAmount;
+                                        //TODO: Add a Transaction into transactions
+                                        NextIncomeDate = CalculateNextDate(NextIncomeDate, Income.RecurringIncomeType, Income.RecurringIncomeValue ?? 1, Income.RecurringIncomeDuration);
+                                    } 
                                 }
                             }
                             else
@@ -905,6 +909,11 @@ namespace DailyBudgetMAUIApp.DataServices
             PayDayTransaction.IsTransacted = true;
             PayDayTransaction.IsIncome = true;
 
+            if (budget.IsMultipleAccounts) 
+            {
+                PayDayTransaction.AccountID = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault().ID;
+            }
+
             PayDayTransaction = _ds.SaveNewTransaction(PayDayTransaction, budget.BudgetID).Result;
 
             budget.BankBalance += budget.PaydayAmount;
@@ -922,7 +931,7 @@ namespace DailyBudgetMAUIApp.DataServices
             Saving.IsSavingsClosed = true;
         }
 
-        private void TransactBill(ref Bills Bill, int BudgetID)
+        private void TransactBill(ref Bills Bill, Budgets budget)
         {
             Transactions BillTransaction = new Transactions();
             BillTransaction.TransactionAmount = Bill.BillAmount;
@@ -934,7 +943,19 @@ namespace DailyBudgetMAUIApp.DataServices
             BillTransaction.Category = Bill.Category;
             BillTransaction.CategoryID = Bill.CategoryID;
 
-            BillTransaction = _ds.SaveNewTransaction(BillTransaction, BudgetID).Result;
+            if (budget.IsMultipleAccounts)
+            {
+                if(Bill.AccountID == null || Bill.AccountID == 0)
+                {
+                    BillTransaction.AccountID = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault().ID;
+                }
+                else
+                {
+                    BillTransaction.AccountID = Bill.AccountID;
+                }     
+            }
+
+            BillTransaction = _ds.SaveNewTransaction(BillTransaction, budget.BudgetID).Result;
 
             if (BillTransaction.TransactionID != 0)
             {
@@ -970,7 +991,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        private void TransactIncomeEvent(ref IncomeEvents Income, int BudgetID)
+        private void TransactIncomeEvent(ref IncomeEvents Income, Budgets budget)
         {
             Transactions IncomeTransaction = new Transactions();
             IncomeTransaction.TransactionAmount = Income.IncomeAmount;
@@ -980,7 +1001,19 @@ namespace DailyBudgetMAUIApp.DataServices
             IncomeTransaction.IsTransacted = true;
             IncomeTransaction.IsIncome = true;
 
-            IncomeTransaction = _ds.SaveNewTransaction(IncomeTransaction, BudgetID).Result;
+            if (budget.IsMultipleAccounts)
+            {
+                if (Income.AccountID == null || Income.AccountID == 0)
+                {
+                    IncomeTransaction.AccountID = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault().ID;
+                }
+                else
+                {
+                    IncomeTransaction.AccountID = Income.AccountID;
+                }
+            }
+
+            IncomeTransaction = _ds.SaveNewTransaction(IncomeTransaction, budget.BudgetID).Result;
 
             if (IncomeTransaction.TransactionID != 0)
             {
@@ -1339,7 +1372,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     if ((string)result.ToString() == "OK")
                     {
-                        TransactBill(ref Bill, budget.BudgetID);
+                        TransactBill(ref Bill, budget);
                         Stats.SpendToDate += Bill.BillAmount.GetValueOrDefault();
                         budget.BankBalance = budget.BankBalance - Bill.BillAmount;
                         budget.Bills[i] = Bill;
@@ -1355,7 +1388,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         if (Bill.BillDueDate.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
                         {
-                            TransactBill(ref Bill, budget.BudgetID);
+                            TransactBill(ref Bill, budget);
                             Stats.SpendToDate += Bill.BillAmount.GetValueOrDefault();
                             budget.BankBalance = budget.BankBalance - Bill.BillAmount;
                         }
@@ -1374,7 +1407,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     var result = await Application.Current.MainPage.ShowPopupAsync(popup);
                     if ((string)result.ToString() == "OK")
                     {
-                        TransactIncomeEvent(ref Income, budget.BudgetID);
+                        TransactIncomeEvent(ref Income, budget);
                         Stats.IncomeToDate += Income.IncomeAmount;
                         budget.BankBalance = budget.BankBalance + Income.IncomeAmount;
                         budget.IncomeEvents[i] = Income;
@@ -1390,7 +1423,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         if (Income.DateOfIncomeEvent.Date <= budget.BudgetValuesLastUpdated.Date)
                         {
-                            TransactIncomeEvent(ref Income, budget.BudgetID);
+                            TransactIncomeEvent(ref Income, budget);
                             Stats.IncomeToDate += Income.IncomeAmount;
                             budget.BankBalance = budget.BankBalance + Income.IncomeAmount;
                         }
@@ -1482,6 +1515,32 @@ namespace DailyBudgetMAUIApp.DataServices
 
             T.IsTransacted = true;
 
+            if (Budget.IsMultipleAccounts)
+            {
+                BankAccounts? Account;
+                if (T.AccountID.GetValueOrDefault() == 0)
+                {
+                    Account = Budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                }
+                else
+                {
+                    int AccountID = T.AccountID.GetValueOrDefault();
+                    Account = Budget.BankAccounts.Where(b => b.ID == AccountID).FirstOrDefault();
+                }
+
+                if (Account != null)
+                {
+                    if (T.IsIncome)
+                    {
+                        Account.AccountBankBalance += T.TransactionAmount ?? 0;
+                    }
+                    else
+                    {
+                        Account.AccountBankBalance -= T.TransactionAmount ?? 0;
+                    }
+                }
+
+            }
             return "OK";
 
         }
@@ -1589,6 +1648,33 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 T.IsTransacted = true;
 
+                if (Budget.IsMultipleAccounts)
+                {
+                    BankAccounts? Account;
+                    if (T.AccountID.GetValueOrDefault() == 0)
+                    {
+                        Account = Budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                    }
+                    else
+                    {
+                        int AccountID = T.AccountID.GetValueOrDefault();
+                        Account = Budget.BankAccounts.Where(b => b.ID == AccountID).FirstOrDefault();
+                    }
+
+                    if (Account != null)
+                    {
+                        if (T.IsIncome)
+                        {
+                            Account.AccountBankBalance += T.TransactionAmount ?? 0;
+                        }
+                        else
+                        {
+                            Account.AccountBankBalance -= T.TransactionAmount ?? 0;
+                        }
+                    }
+
+                }
+
                 return "OK";
             }
 
@@ -1684,6 +1770,11 @@ namespace DailyBudgetMAUIApp.DataServices
                 case "BudgetShared":
                     Preferences.Remove("NavigationType");
 
+                    break;
+                case "SupportReplay":
+                    Preferences.Remove("NavigationType");
+                    int SupportID = Convert.ToInt32(Preferences.Get("NavigationID", "0"));
+                    await Shell.Current.GoToAsync($"{nameof(ViewSupport)}?SupportID={SupportID}");
                     break;
                 default:
                     break;     
@@ -1969,6 +2060,9 @@ namespace DailyBudgetMAUIApp.DataServices
             Application.Current.Resources.TryGetValue("Info", out var Info);
             Application.Current.Resources.TryGetValue("White", out var White);
 
+            CancellationTokenSource source = new CancellationTokenSource();
+            CancellationToken token = source.Token;
+
             var snackbarSuccessOptions = new SnackbarOptions
             {
                 BackgroundColor = (Color)Success,
@@ -2013,25 +2107,43 @@ namespace DailyBudgetMAUIApp.DataServices
                 CharacterSpacing = 0.1
             };
 
-            switch(snackBarType)
+            if(action == null)
+            {
+                if(actionButtonText == null)
+                {
+                    actionButtonText = "Ok";
+                }
+                
+                action = () =>
+                {
+                    source.Cancel();
+                };
+            }
+
+            var Options = new SnackbarOptions();
+
+            switch (snackBarType)
             {
                 case "Success":
-                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+                    Options = snackbarSuccessOptions;
                     break;
                 case "Info":
-                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarInfoOptions).Show();
+                    Options = snackbarInfoOptions;
                     break;
                 case "Warning":
-                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarWarningOptions).Show();
+                    Options = snackbarWarningOptions;
                     break;
                 case "Danger":
-                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarDangerOptions).Show();
+                    Options = snackbarDangerOptions;
                     break;
                 default:
-                    await Snackbar.Make(text, action, actionButtonText, duration, snackbarSuccessOptions).Show();
+                    Options = snackbarSuccessOptions;
                     break;
             }
-            
+
+            var SB = Snackbar.Make(text, action, actionButtonText, duration, Options);
+            await SB.Show(token);
+
             return;
         }
     }

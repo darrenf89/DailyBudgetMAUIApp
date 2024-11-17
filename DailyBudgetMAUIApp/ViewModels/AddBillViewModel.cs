@@ -26,6 +26,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private Bills  bill;
         [ObservableProperty]
+        private decimal  billOldBalance;
+        [ObservableProperty]
         private bool  isPageValid;
         [ObservableProperty]
         private DateTime  minimumDate = DateTime.UtcNow.Date.AddDays(1);
@@ -39,6 +41,12 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string billCategory;
         [ObservableProperty]
         private string redirectTo;
+        [ObservableProperty]
+        private bool isMultipleAccounts;
+        [ObservableProperty]
+        private List<BankAccounts> bankAccounts;
+        [ObservableProperty]
+        private BankAccounts? selectedBankAccount;
 
 
         public string BillTypeText { get; set; } = "";
@@ -99,6 +107,11 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 Bill.BillBalanceAtLastPayDay = Bill.BillCurrentBalance;
             }
+            else
+            {
+                Bill.BillBalanceAtLastPayDay += (Bill.BillCurrentBalance - BillOldBalance);
+            }
+
             string SuccessCheck = _ds.UpdateBill(Bill).Result;
             if(SuccessCheck == "OK")
             {

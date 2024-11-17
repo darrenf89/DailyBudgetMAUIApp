@@ -73,6 +73,21 @@
                             <handlers:BorderlessDatePicker VerticalOptions="Center" HorizontalOptions="End" CharacterSpacing="1" x:Name="entTransactionDate" Date="{Binding Transaction.TransactionDate}" IsVisible="{Binding IsFutureDatedTransaction}"  Format="dd MMMM" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold"/>
                         </HorizontalStackLayout>
                     </Grid>
+                    <HorizontalStackLayout Margin="0,0,0,0" IsVisible="{Binding IsMultipleAccounts}">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Account_balance}" Size="25" Color="{DynamicResource Primary}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Select an account" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
+                    </HorizontalStackLayout>
+                    <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40" IsVisible="{Binding IsMultipleAccounts}">
+                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0"  IsToggled="{Binding IsAccount}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhIsAccount_Toggled" x:Name="swhIsAccount"/>
+                        <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End" HeightRequest="40">
+                            <Label VerticalOptions="Center" HorizontalOptions="End" IsVisible="{Binding IsAccount, Converter={StaticResource BoolConverter}}" Text="{Binding DefaultAccountName}" TextColor="{StaticResource Gray400}"  Grid.Column="1" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0" />
+                            <handlers:BorderlessPicker SelectedIndexChanged="entIsAccount_SelectedIndexChanged" ItemsSource="{Binding BankAccounts}" ItemDisplayBinding="{Binding BankAccountName}" SelectedItem="{Binding SelectedBankAccount}" VerticalOptions="Center" HorizontalOptions="End" CharacterSpacing="1" x:Name="entIsAccount" IsVisible="{Binding IsAccount}"  TextColor="{StaticResource Primary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold"/>
+                        </HorizontalStackLayout>
+                    </Grid>
                     <HorizontalStackLayout Margin="0,0,0,0" IsVisible="{Binding IsPremiumAccount}">
                         <Image>
                             <Image.Source>

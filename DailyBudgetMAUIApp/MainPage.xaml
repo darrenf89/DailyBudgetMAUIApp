@@ -21,48 +21,56 @@
              NavigationPage.HasNavigationBar="True"
              NavigationPage.HasBackButton="False">
     <Shell.TitleView>
-        <Grid ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,0,10,0">
+        <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" Margin="0,0,10,0">
             <Label Text="{Binding Title}" 
                    TextColor="White" 
                    VerticalOptions="Center"
-                   FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"
+                   FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}"
                    FontFamily="OpenSansSemibold" 
                    FontAttributes="Bold"
                    HorizontalOptions="Start"
                    Grid.Column="0"/>
-            <Button TextColor="White"
+            <AbsoluteLayout Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" Margin="0,2,0,0">
+                <Button TextColor="White"
                     Style="{StaticResource TitleButtons}"
                     BackgroundColor="{StaticResource Primary}"
                     Command="{Binding GoToBudgetSettingsCommand}"
-                    HorizontalOptions="End"
-                    Grid.Column="1"
                     Padding="2,0,2,0">
-                <Button.ImageSource>
-                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Settings_suggest}" Size="25" />
-                </Button.ImageSource>
-            </Button>
-            <Button TextColor="White"
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Settings_suggest}" Size="25" />
+                    </Button.ImageSource>
+                </Button>
+            </AbsoluteLayout>
+            <AbsoluteLayout Grid.Column="3" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,0,0">
+                <Button TextColor="White"
                     Style="{StaticResource TitleButtons}"
                     BackgroundColor="{StaticResource Primary}"
                     Command="{Binding GoToAccountSettingsCommand}"
-                    HorizontalOptions="End"
-                    Grid.Column="2"
                     Padding="2,0,2,0">
-                <Button.ImageSource>
-                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Manage_accounts}" Size="25" />
-                </Button.ImageSource>
-            </Button>
-            <Button TextColor="White"
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Manage_accounts}" Size="25" />
+                    </Button.ImageSource>
+                </Button>
+            </AbsoluteLayout>
+            <AbsoluteLayout Grid.Column="4" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,0,0">
+                <Button TextColor="White"
                     BackgroundColor="{StaticResource Primary}"
                     Command="{Binding GoToAccountDetailsCommand}"
-                    HorizontalOptions="End"
-                    Grid.Column="3"
                     Padding="2,0,2,0"
                     Style="{StaticResource TitleButtons}">
-                <Button.ImageSource>
-                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Admin_panel_settings}" Size="25"/>
-                </Button.ImageSource>
-            </Button>
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Admin_panel_settings}" Size="25"/>
+                    </Button.ImageSource>
+                </Button>
+            </AbsoluteLayout>
+            <AbsoluteLayout Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,0,0">
+                <Button TextColor="White" AbsoluteLayout.LayoutBounds="0, 0, AutoSize, AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional" Style="{StaticResource TitleButtons}" BackgroundColor="{StaticResource Primary}" Command="{Binding NavigateViewSupportsCommand}" Padding="2,0,2,0">
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mail}" Size="25" />
+                    </Button.ImageSource>
+                </Button>
+                <BoxView IsVisible="{Binding IsUnreadMessage}" BackgroundColor="Transparent" Color="{StaticResource Success}" WidthRequest="10" HeightRequest="10" AbsoluteLayout.LayoutBounds="1.1, 0.1, AutoSize, AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional" CornerRadius="10" />
+            </AbsoluteLayout>
         </Grid>
     </Shell.TitleView>
      <!--<HorizontalStackLayout AbsoluteLayout.LayoutBounds="15,0.94" AbsoluteLayout.LayoutFlags="YProportional" ZIndex="99">
@@ -133,11 +141,11 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
                                 </Image.Source>
                             </Image>
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
-                            </Grid.GestureRecognizers>
                         </Grid>
                     </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
+                    </Border.GestureRecognizers>
                 </Border>
                 <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
                     <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
@@ -154,11 +162,11 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
                                 </Image.Source>
                             </Image>
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="SwitchBudgetMain" Tapped="SwitchBudgetMain_Tapped"/>
-                            </Grid.GestureRecognizers>
                         </Grid>
                     </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer x:Name="SwitchBudgetMain" Tapped="SwitchBudgetMain_Tapped"/>
+                    </Border.GestureRecognizers>
                 </Border>
                 <Border Style="{DynamicResource DashboardMainContent}" Stroke="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColorLight}}" StrokeThickness="3" Padding="0" >
                     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto, Auto, *" Padding="0" Margin="0">
@@ -243,11 +251,32 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="35" Color="{DynamicResource Gray600}"/>
                                 </Image.Source>
                             </Image>
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="NoMoneyLeft" Tapped="NoMoneyLeft_Tapped"/>
-                            </Grid.GestureRecognizers>
                         </Grid>
                     </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer x:Name="NoMoneyLeft" Tapped="NoMoneyLeft_Tapped"/>
+                    </Border.GestureRecognizers>
+                </Border>
+                <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsUnreadMessage}">
+                    <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
+                        <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
+                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                            <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Unread message"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                            <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="We have replied to an inquiry click here to view." LineBreakMode="WordWrap" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
+                        </VerticalStackLayout>
+                        <Grid BackgroundColor="{DynamicResource Info}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                            <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
+                                </Image.Source>
+                            </Image>
+                        </Grid>
+                    </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateViewSupportsCommand}"/>
+                    </Border.GestureRecognizers>
                 </Border>
                 <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding IsPremiumAccount, Converter={StaticResource BoolConverter}}">
                     <adMob:MTAdView AdsId="ca-app-pub-3940256099942544/6300978111" AdSize="Smart"/>
@@ -265,11 +294,11 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Ads_click}" Size="40"  Color="{DynamicResource White}"/>
                                 </Image.Source>
                             </Image>
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="CoverOverspend" Tapped="CoverOverspend_Tapped" />
-                            </Grid.GestureRecognizers>
                         </Grid>
                     </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer x:Name="CoverOverspend" Tapped="CoverOverspend_Tapped" />
+                    </Border.GestureRecognizers>
                 </Border>
                 <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,10" >
                     <Grid ColumnDefinitions="*" RowDefinitions="Auto">
@@ -289,11 +318,11 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
                                 </Image.Source>
                             </Image>
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="VerifyBudgetShare" Tapped="VerifyBudgetShare_Tapped" />
-                            </Grid.GestureRecognizers>
                         </Grid>
                     </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer x:Name="VerifyBudgetShare" Tapped="VerifyBudgetShare_Tapped" />
+                    </Border.GestureRecognizers>
                 </Border>
                 <Border Padding="0" Style="{DynamicResource DashboardMainContent}" >
                     <Grid ColumnDefinitions="45, *, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
@@ -509,11 +538,11 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
                                 </Image.Source>
                             </Image>
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="ShareBudget" Tapped="ShareBudget_Tapped" />
-                            </Grid.GestureRecognizers>
                         </Grid>
                     </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer x:Name="ShareBudget" Tapped="ShareBudget_Tapped" />
+                    </Border.GestureRecognizers>
                 </Border>
                 <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetSharedBudgetToBool}}" >
                     <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
@@ -528,11 +557,11 @@
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
                                 </Image.Source>
                             </Image>
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="ViewShareBudget" Tapped="ViewShareBudget_Tapped" />
-                            </Grid.GestureRecognizers>
                         </Grid>
                     </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer x:Name="ViewShareBudget" Tapped="ViewShareBudget_Tapped" />
+                    </Border.GestureRecognizers>
                 </Border>
                 <AbsoluteLayout x:Name="absSaving" IsVisible="false">
                     <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">

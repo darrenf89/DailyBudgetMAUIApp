@@ -6,32 +6,107 @@
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              xmlns:local="clr-namespace:DailyBudgetMAUIApp"
              xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
-             NavigationPage.HasNavigationBar="True"
-             NavigationPage.HasBackButton="True"
+             Shell.TabBarIsVisible="False"
+             Shell.NavBarIsVisible="True"
              droid:NavigationBar.Color="{StaticResource PrimaryDark}"
-             droid:NavigationBar.Style="LightContent">
-    <Shell.TitleView>
-        <Grid ColumnDefinitions="Auto,*" Margin="0,0,10,0">
-            <Button TextColor="White"
-                BackgroundColor="{StaticResource Primary}"
-                Command="{Binding GoToMainPageCommand}"
-                HorizontalOptions="End"
-                Grid.Column="0"
-                Padding="2,0,2,0"
-                Style="{StaticResource TitleButtons}">
-                <Button.ImageSource>
-                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Home}" Size="25"/>
-                </Button.ImageSource>
+             droid:NavigationBar.Style="LightContent"
+             Title="{Binding Title}">
+    <Grid RowDefinitions="Auto,*, Auto" ColumnDefinitions="*">
+        <VerticalStackLayout Grid.Row="0">
+            <Grid Padding="20,20,20,10">
+                <Border Stroke="{StaticResource PrimaryDarkBrush}" StrokeThickness="1" BackgroundColor="{StaticResource InfoLLL}" Padding="10" Margin="0,0,0,0" HorizontalOptions="FillAndExpand" VerticalOptions="Start" StrokeShape="RoundRectangle 8">
+                    <Grid ColumnDefinitions="*,85" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                        <HorizontalStackLayout VerticalOptions="Center" Grid.Row="0" Grid.Column="0" Margin="0,0,0,10">
+                            <Label Text="{Binding Support.Type}" FontAttributes="Bold" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource PrimaryDark}" Margin="0,0,0,0"/>
+                        </HorizontalStackLayout>
+                        <Label Margin="0,0,0,20" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Support.Details}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="Black" LineBreakMode="CharacterWrap"/>
+                        <Label FontAttributes="Bold" Margin="0,15,0,5" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Support.Whenadded, StringFormat='Support Created: {0:dd MMM yy}'}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}"/>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,0" Grid.Row="2" Grid.Column="0">
+                            <Button Margin="0,0,20,0" Padding="0,5,0,5" IsEnabled="{Binding IsOpen}" IsVisible="{Binding IsFileUpload, Converter={StaticResource BoolConverter}}" Command="{Binding Upload_FileCommand}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Upload attachement" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" CornerRadius="2" Style="{StaticResource infoButton}">
+                                <Button.ImageSource >
+                                    <FontImageSource Color="{StaticResource Info}" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Upload}" Size="20"/>
+                                </Button.ImageSource>
+                            </Button>
+                            <Button Margin="0,0,20,0" Padding="0,5,0,5" IsEnabled="{Binding IsDownloaded}" IsVisible="{Binding IsFileUpload}" Command="{Binding DownloadFileCommand}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="{Binding TxtDownloadFile}" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" CornerRadius="2" Style="{StaticResource infoButton}">
+                                <Button.ImageSource >
+                                    <FontImageSource Color="{StaticResource Info}" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Download}" Size="20"/>
+                                </Button.ImageSource>
+                            </Button>
+                            <HorizontalStackLayout IsVisible="{Binding IsUploadInValid}" Margin="0,5,0,0">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="File to large please try again!" Style="{StaticResource ErrorMessage}" WidthRequest="{Binding ErrorWidth}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                        <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,2,0,0" Text="{Binding FileName}" IsVisible="{Binding IsFileUpload}"/>
+                        <HorizontalStackLayout Grid.Row="2" Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsFileUpload}">
+                            <Image Background="{DynamicResource InfoLLL}" Margin="0,0,5,0" VerticalOptions="Start">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete_sweep}" Size="22" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label VerticalOptions="Start" Margin="0,2,10,0" FontAttributes="Bold" TextColor="{StaticResource Danger}" Text="Delete" TextDecorations="Underline" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"/>
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding DeleteFileCommand}"/>
+                            </HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+                        <Border Margin="0,0,0,10" VerticalOptions="Center" Grid.Row="0" Grid.Column="1" BackgroundColor="{Binding IsOpen, Converter={StaticResource BoolToColor}}" StrokeThickness="0" StrokeShape="RoundRectangle 16">
+                            <Label Text="{Binding Status}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="White" Margin="15,2,15,2" HorizontalOptions="Center" />
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+            <Button Command="{Binding CloseSupportCommand}" Text="Close Support" Margin="0,0,20,0" IsVisible="{Binding IsOpen}" HorizontalOptions="End" TextColor="White" BackgroundColor="{StaticResource Success}" WidthRequest="140"  HeightRequest="32" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontFamily="OpenSansSemibold">
+
             </Button>
-            <Label Text="Support" 
-                   TextColor="White" 
-                   VerticalOptions="Center"
-                   FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"
-                   FontFamily="OpenSansSemibold" 
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   HorizontalTextAlignment="Center"
-                   Grid.Column="1"/>
+        </VerticalStackLayout>
+        <CollectionView x:Name="MessagesCollection" ItemsSource="{Binding Support.Replys}" BackgroundColor="White" SelectionMode="None" Grid.Row="1" Margin="15,20,15,0">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15" Padding="20" BackgroundColor="White">
+                    <Image Source="no_messages_icon.webp" WidthRequest="100" HeightRequest="100" Aspect="AspectFit" Opacity="0.7"/>
+                    <Label Text="No support messages" FontSize="24" FontAttributes="Bold" TextColor="Gray" HorizontalOptions="Center"/>
+                    <Label Text="Your support has not been responded to yet, we will get back to you asap." FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" TextColor="Gray" HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                    <Button Text="Refresh" Command="{Binding RefreshCommand}" BackgroundColor="{StaticResource Info}" TextColor="White" FontAttributes="Bold" WidthRequest="120" HeightRequest="40" CornerRadius="20"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout>
+                        <Grid Padding="0,5,0,0">
+                            <Grid HorizontalOptions="{Binding IsCustomerReply, Converter={StaticResource MessageAlignmentConverter}}">
+                                <Border Grid.Row="0" BackgroundColor="{Binding IsCustomerReply, Converter={StaticResource CustomerMessageColorConverter}}" Stroke="Transparent" StrokeShape="RoundRectangle 8" Padding="10,10,10,2" Margin="{Binding IsCustomerReply, Converter={StaticResource MessageMarginConverter}}">
+                                    <VerticalStackLayout>
+                                        <Label Text="{Binding Message}" TextColor="{StaticResource Gray700}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="WordWrap"/>
+                                        <Image HorizontalOptions="{Binding IsCustomerReply, Converter={StaticResource ReverseMessageAlignmentConverter}}" Margin="0,5,0,0" IsVisible="{Binding IsRead, Converter={StaticResource BoolConverter}}">
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Done_all}" Size="14" Color="White"/>
+                                            </Image.Source>
+                                        </Image>
+                                        <Image HorizontalOptions="{Binding IsCustomerReply, Converter={StaticResource ReverseMessageAlignmentConverter}}" Margin="0,5,0,0" IsVisible="{Binding IsRead}">
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Done_all}" Size="14" Color="{StaticResource Success}"/>
+                                            </Image.Source>
+                                        </Image>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                        <Label Padding="5,0,5,0" Text="{Binding Whenadded, StringFormat='Message {0:dd MMM yy}'}" FontSize="{Binding Source=XS, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="{Binding IsCustomerReply, Converter={StaticResource MessageAlignmentConverter}}"  Margin="{Binding IsCustomerReply, Converter={StaticResource MessageMarginConverter}}"/>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Grid Grid.Row="2" Padding="0" BackgroundColor="{StaticResource InfoLLL}" RowDefinitions="Auto,*" ColumnDefinitions="*,Auto" >
+            <BoxView HeightRequest="1" Color="{StaticResource Primary}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0">
+                <BoxView.Shadow>
+                    <Shadow Offset="0,-5" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
+                </BoxView.Shadow>
+            </BoxView>
+            <Editor HeightRequest="70" IsEnabled="{Binding IsOpen}"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" PlaceholderColor="{StaticResource Gray700}" Placeholder="Type a message..." Text="{Binding NewMessageText}" Grid.Column="0" Grid.Row="1" HorizontalOptions="FillAndExpand" Margin="5,5,0,5"/>
+            <Button IsEnabled="{Binding IsOpen}" TextColor="White" Text="Send" Command="{Binding SendMessageCommand}" Grid.Column="1" Grid.Row="1" Margin="15,5,15,5" Padding="20,0,20,0" VerticalOptions="Center"/>
         </Grid>
-    </Shell.TitleView>
+    </Grid>
 </local:BasePage>

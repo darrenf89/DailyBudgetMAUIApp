@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DailyBudgetMAUIApp.Pages.ViewAccounts"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:local="clr-namespace:DailyBudgetMAUIApp"
+             xmlns:ViewModels="clr-namespace:DailyBudgetMAUIApp.ViewModels"
+             xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
+             xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
+             Shell.TabBarIsVisible="False"
+             Shell.NavBarIsVisible="True"
+             droid:NavigationBar.Color="{StaticResource PrimaryDark}"
+             droid:NavigationBar.Style="LightContent"
+             Title="Your bank accounts">
+    <Grid ColumnDefinitions="*" RowDefinitions="Auto, *, Auto">
+        <Grid BackgroundColor="{StaticResource Primary}" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,10" x:Name="BudgetDetailsGrid" Grid.Row="0" Grid.Column="0">
+            <Label Margin="20,0,20,15" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Manage all your bank accounts and their balance. You can move balances around, delete accounts or spend directly from an account." TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+            <Label Margin="20,0,0,0" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Account balances" TextColor="White" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+            <Label Margin="20,0,0,20" Grid.Row="2" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding BankBalance}" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+            <Label Margin="20,0,0,0" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Number of accounts" TextColor="White" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+            <Label Margin="20,0,0,20" Grid.Row="2" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding AccountCount}" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" VerticalTextAlignment="End"/>
+            <BoxView HeightRequest="10" Color="{StaticResource White}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3"/>
+        </Grid>
+        <ScrollView Grid.Row="1" Grid.Column="0">
+            <StackLayout BindableLayout.ItemsSource="{Binding BankAccounts}" >
+                <BindableLayout.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Start" BackgroundColor="{StaticResource White}" Margin="20">
+                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0,0,0,10">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="35"  Color="{DynamicResource PrimaryDark}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="You don't have any accounts set up, click add account to set some up!" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray900}" />
+                    </VerticalStackLayout>
+                </BindableLayout.EmptyView>
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout Padding="20,10,20,10">
+                            <Border Style="{StaticResource brdCardViewRectange}">
+                                <Grid ColumnDefinitions="Auto, *, Auto" RowDefinitions="Auto,Auto,Auto">
+                                    <Border VerticalOptions="Start" BackgroundColor="White" Margin="5,2,15,0" Grid.Row="0" Grid.RowSpan="5" Grid.Column="0" HeightRequest="30" WidthRequest="30" StrokeShape="RoundRectangle 15" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
+                                        <Border.Shadow>
+                                            <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
+                                        </Border.Shadow>
+                                        <Image Aspect="AspectFill" WidthRequest="20" HeightRequest="20">
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Account_balance}" Color="{DynamicResource Primary}" />
+                                            </Image.Source>
+                                        </Image>
+                                    </Border>
+                                    <Label Margin="0,0,0,0" Grid.Column="1" Grid.Row="0" Padding="0" Text="{Binding BankAccountName}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" VerticalOptions="End"/>
+                                    <Label Margin="0,0,10,0" Grid.Column="2" Grid.Row="0" FontAttributes="Bold" Padding="0" Text="{Binding AccountBankBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Success}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" VerticalOptions="End"/>
+                                    <Label FontAttributes="Bold" Margin="-3,0,0,0" IsVisible="{Binding IsDefaultAccount}" Text=" Default" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="1"/>
+                                    <FlexLayout Padding="0" Wrap="Wrap" AlignItems="Start" JustifyContent="Start" Margin="0,5,0,0" Direction="Row" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2">
+                                        <VerticalStackLayout VerticalOptions="Center" Margin="-2,0,2,0" WidthRequest="40">
+                                            <Border BackgroundColor="White" Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="30" WidthRequest="30" Stroke="{StaticResource Gray900Brush}" StrokeThickness="1" StrokeShape="RoundRectangle 20">
+                                                <Border.Shadow>
+                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource PrimaryDarkBrush}" Radius="5" />
+                                                </Border.Shadow>
+                                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                                    <Image.Source>
+                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Add}" Size="18" Color="{DynamicResource Primary}"/>
+                                                    </Image.Source>
+                                                </Image>
+                                            </Border>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Spend"/>
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:ViewAccountsViewModel}}, Path=SpendFromAccountCommand}" CommandParameter="{Binding .}"/>
+                                            </VerticalStackLayout.GestureRecognizers>
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="40">
+                                            <Border BackgroundColor="White" Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="30" WidthRequest="30" Stroke="{StaticResource Gray900Brush}" StrokeThickness="1" StrokeShape="RoundRectangle 20">
+                                                <Border.Shadow>
+                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource PrimaryDarkBrush}" Radius="5" />
+                                                </Border.Shadow>
+                                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                                    <Image.Source>
+                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete_forever}" Size="18" Color="{DynamicResource Primary}"/>
+                                                    </Image.Source>
+                                                </Image>
+                                            </Border>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Delete"/>
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:ViewAccountsViewModel}}, Path=DeleteAccountCommand}" CommandParameter="{Binding .}"/>
+                                            </VerticalStackLayout.GestureRecognizers>
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="40">
+                                            <Border BackgroundColor="White" Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="30" WidthRequest="30" Stroke="{StaticResource Gray900Brush}" StrokeThickness="1" StrokeShape="RoundRectangle 20">
+                                                <Border.Shadow>
+                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource PrimaryDarkBrush}" Radius="5" />
+                                                </Border.Shadow>
+                                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                                    <Image.Source>
+                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Balance}" Size="18" Color="{DynamicResource Primary}"/>
+                                                    </Image.Source>
+                                                </Image>
+                                            </Border>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Move"/>
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:ViewAccountsViewModel}}, Path=MoveBalanceCommand}"  CommandParameter="{Binding .}"/>
+                                            </VerticalStackLayout.GestureRecognizers>
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="40">
+                                            <Border BackgroundColor="White" Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="30" WidthRequest="30" Stroke="{StaticResource Gray900Brush}" StrokeThickness="1" StrokeShape="RoundRectangle 20">
+                                                <Border.Shadow>
+                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource PrimaryDarkBrush}" Radius="5" />
+                                                </Border.Shadow>
+                                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                                    <Image.Source>
+                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="18" Color="{DynamicResource Primary}"/>
+                                                    </Image.Source>
+                                                </Image>
+                                            </Border>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Edit"/>
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:ViewAccountsViewModel}}, Path=EditAccountCommand}" CommandParameter="{Binding .}"/>
+                                            </VerticalStackLayout.GestureRecognizers>
+                                        </VerticalStackLayout>
+                                    </FlexLayout>
+                                </Grid>
+                            </Border>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </StackLayout>
+        </ScrollView>
+
+        <Grid RowDefinitions="Auto" ColumnDefinitions="*" BackgroundColor="{StaticResource Primary}" x:Name="Footer" Grid.Row="2" Grid.Column="0">
+            <Button Command="{Binding AddNewAccountCommand}" WidthRequest="{Binding SignOutButtonWidth}" Grid.Row="0" Grid.Column="0" Style="{DynamicResource buttonClicked}" Text="Add account" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,10,5,10" FontSize="18" CornerRadius="20" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
+        </Grid>
+    </Grid>
+</local:BasePage>

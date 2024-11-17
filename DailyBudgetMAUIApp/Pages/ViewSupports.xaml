@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DailyBudgetMAUIApp.Pages.ViewSupports"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:local="clr-namespace:DailyBudgetMAUIApp"
+             xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
+             xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
+             Shell.TabBarIsVisible="False"
+             Shell.NavBarIsVisible="True"
+             droid:NavigationBar.Color="{StaticResource PrimaryDark}"
+             droid:NavigationBar.Style="LightContent"
+             Title="Welcome to your inbox">
+    <Grid ColumnDefinitions="*" RowDefinitions="Auto, Auto, *, Auto">
+        <Grid BackgroundColor="{StaticResource Primary}" ColumnDefinitions="*" RowDefinitions="Auto, Auto" Grid.Row="0" Grid.Column="0" >
+            <Label Margin="20,0,0,20" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Manage all your support requests and messages we have sent." TextColor="White" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" />
+        </Grid>
+        <Grid BackgroundColor="White" ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto" Grid.Row="1" Grid.Column="0" >
+            <BoxView HeightRequest="1" Color="{StaticResource Gray400}" Grid.Row="0" Grid.Column="0"/>
+            <Grid Grid.Row="1" Grid.Column="0" RowDefinitions="*" ColumnDefinitions="Auto,Auto,Auto,*,Auto, Auto,Auto" HorizontalOptions="FillAndExpand" Margin="0,15,0,15">
+                <Label x:Name="filterOpen" Margin="20,0,5,0" Grid.Row="0" Grid.Column="0" CharacterSpacing="0" Text="OPEN" TextColor="{StaticResource Info}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="filterOpen_Tapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label Margin="0,0,0,0" Grid.Row="0" Grid.Column="1"  CharacterSpacing="0" Text=" | " TextColor="{StaticResource Info}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" />
+                <Label x:Name="filterClosed" Margin="5,0,0,0" Grid.Row="0" Grid.Column="2" CharacterSpacing="0" Text="CLOSED" TextColor="{StaticResource Info}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="filterClosed_Tapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+                <VerticalStackLayout Grid.Row="0" Grid.Column="3"></VerticalStackLayout>
+                <Label x:Name="filterRead" Margin="0,0,5,0" Grid.Row="0" Grid.Column="4" CharacterSpacing="0" Text="UNREAD" TextColor="{StaticResource Info}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="filterRead_Tapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label Margin="0,0,0,0" Grid.Row="0" Grid.Column="5"  CharacterSpacing="0" Text=" | " TextColor="{StaticResource Info}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" />
+                <Label x:Name="filterUnread" Margin="5,0,20,0" Grid.Row="0" Grid.Column="6" CharacterSpacing="0" Text="READ" TextColor="{StaticResource Info}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="filterUnread_Tapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </Grid>
+            <BoxView HeightRequest="1" Color="{StaticResource Gray400}" Grid.Row="2" Grid.Column="0"/>
+        </Grid>
+        <ScrollView Grid.Row="2" Grid.Column="0">
+            <StackLayout BindableLayout.ItemsSource="{Binding FilteredSupports}" >
+                <BindableLayout.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15" Padding="20" BackgroundColor="White">
+                        <Image Source="no_messages_icon.webp" WidthRequest="100" HeightRequest="100" Aspect="AspectFit" Opacity="0.7"/>
+                        <Label Text="No support messages" FontSize="24" FontAttributes="Bold" TextColor="Gray" HorizontalOptions="Center"/>
+                        <Label Text="Your support has not been responded to yet, we will get back to you asap." FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" TextColor="Gray" HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </BindableLayout.EmptyView>
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout touchEffects:TouchEffect.Color="{StaticResource PrimaryLightLight}" BackgroundColor="{Binding IsUnreadMessages, Converter={StaticResource BoolToColorDisabledReverse}}">
+                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="45,*,Auto" >
+                                <AbsoluteLayout Margin="15,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" VerticalOptions="Start" HorizontalOptions="Start">
+                                    <Image Aspect="AspectFill" WidthRequest="30">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mail}" Size="45"  Color="{DynamicResource Primary}" />
+                                        </Image.Source>
+                                    </Image>
+                                    <BoxView IsVisible="{Binding IsUnreadMessages}" BackgroundColor="Transparent" Color="{StaticResource Success}" WidthRequest="10" HeightRequest="10" AbsoluteLayout.LayoutBounds="1.1, 0.1, AutoSize, AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional" CornerRadius="10" />
+                                </AbsoluteLayout>
+                                <Label Text="{Binding Type}" Grid.Row="0" Grid.Column="1" Margin="20,10,0,0" FontAttributes="Bold" TextColor="{StaticResource PrimaryDark}" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}"/>
+                                <Border IsVisible="{Binding IsClosed, Converter={StaticResource BoolConverter}}" Margin="0,0,10,0" VerticalOptions="Center" Grid.Row="0" Grid.Column="2" BackgroundColor="{StaticResource Success}" StrokeThickness="0" StrokeShape="RoundRectangle 16">
+                                    <Label Text="Open" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="White" Margin="15,2,15,2" HorizontalOptions="Center" />
+                                </Border>
+                                <Border IsVisible="{Binding IsClosed}" Margin="0,0,10,0" VerticalOptions="Center" Grid.Row="0" Grid.Column="2" BackgroundColor="{StaticResource Danger}" StrokeThickness="0" StrokeShape="RoundRectangle 16">
+                                    <Label Text="Closed" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="White" Margin="15,2,15,2" HorizontalOptions="Center" />
+                                </Border>
+                                <Label Text="{Binding Details}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="20,5,20,15" FontAttributes="Bold" TextColor="{StaticResource Gray700}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="TailTruncation"/>
+                                <BoxView HeightRequest="1" Color="{StaticResource Gray400}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" />
+                            </Grid>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="NavigateViewSupport" CommandParameter="{Binding SupportID}"/>
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </StackLayout>
+        </ScrollView>
+        <Grid RowDefinitions="Auto" ColumnDefinitions="*" BackgroundColor="{StaticResource Primary}" x:Name="Footer" Grid.Row="3" Grid.Column="0">
+            <Button Command="{Binding AddNewSupportCommand}" WidthRequest="{Binding SignOutButtonWidth}" Grid.Row="0" Grid.Column="0" Style="{DynamicResource buttonClicked}" Text="Add new support" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,10,5,10" FontSize="18" CornerRadius="20" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
+        </Grid>
+    </Grid>
+</local:BasePage>

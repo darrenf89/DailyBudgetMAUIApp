@@ -53,10 +53,6 @@
         </Tab>
     </TabBar>
 
-    <ShellContent 
-        Route="ViewSupport"
-        ContentTemplate="{DataTemplate Pages:ViewSupport}" />
-
     <ShellItem Route="PatchNotes" FlyoutItemIsVisible="True">
         <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:PatchNotes}"/>
     </ShellItem>

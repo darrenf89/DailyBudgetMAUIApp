@@ -1,12 +1,6 @@
-﻿using CommunityToolkit.Maui.Alerts;
-using DailyBudgetMAUIApp.Handlers;
+﻿using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace DailyBudgetMAUIApp.DataServices
 {

@@ -69,9 +69,10 @@ public partial class AddTransaction : BasePage
                 _vm.IsPayee = false;
                 _vm.IsSpendCategory = false;
                 _vm.IsNote = false;
+                _vm.IsAccount = false;
                 _vm.RedirectTo = "";
             }
-            else if(string.Equals(_vm.NavigatedFrom, "ViewMainPage", StringComparison.OrdinalIgnoreCase) ||string.Equals(_vm.NavigatedFrom, "ViewTransactions", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewSavings", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase))
+            else if(string.Equals(_vm.NavigatedFrom, "ViewMainPage", StringComparison.OrdinalIgnoreCase) ||string.Equals(_vm.NavigatedFrom, "ViewTransactions", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewSavings", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase)|| string.Equals(_vm.NavigatedFrom, "ViewAccounts", StringComparison.OrdinalIgnoreCase))
             {
                 _vm.RedirectTo = _vm.NavigatedFrom;
             }
@@ -99,6 +100,7 @@ public partial class AddTransaction : BasePage
                     _vm.IsSpendCategory = !string.IsNullOrEmpty(_vm.Transaction.Category);
                     _vm.IsNote = !string.IsNullOrEmpty(_vm.Transaction.Notes);
                     _vm.Transaction.IsSpendFromSavings = !string.IsNullOrEmpty(_vm.Transaction.SavingName);
+                    _vm.IsAccount = _vm.Transaction.AccountID.GetValueOrDefault() != 0 && _vm.IsPremiumAccount;
 
                     if(_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
                     {
@@ -137,6 +139,7 @@ public partial class AddTransaction : BasePage
                 _vm.IsSpendCategory = !string.IsNullOrEmpty(_vm.Transaction.Category);
                 _vm.IsNote = !string.IsNullOrEmpty(_vm.Transaction.Notes);
                 _vm.Transaction.IsSpendFromSavings = !string.IsNullOrEmpty(_vm.Transaction.SavingName);
+                _vm.IsAccount = _vm.Transaction.AccountID.GetValueOrDefault() != 0 && _vm.IsPremiumAccount;
             }
 
             double TransactionAmount = (double?)_vm.Transaction.TransactionAmount ?? 0;
@@ -161,6 +164,28 @@ public partial class AddTransaction : BasePage
                 swhSavingSpend.IsEnabled = false;
                 SavingSwitch.IsVisible = false;
                 SavingHeader.IsVisible = false;
+            }
+
+            _vm.IsMultipleAccounts = App.DefaultBudget.IsMultipleAccounts && _vm.IsPremiumAccount;
+            if (_vm.IsMultipleAccounts) 
+            {
+                _vm.BankAccounts = await _ds.GetBankAccounts(_vm.BudgetID);
+                if(_vm.IsAccount)
+                {
+                    _vm.SelectedBankAccount = _vm.BankAccounts.Where(b => b.ID == _vm.Transaction.AccountID.GetValueOrDefault()).FirstOrDefault();
+                    if(_vm.SelectedBankAccount == null)
+                    {
+                        BankAccounts? B = _vm.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                        _vm.SelectedBankAccount = B;
+                        _vm.DefaultAccountName = B.BankAccountName;
+                    }
+                }
+                else
+                {
+                    BankAccounts? B = _vm.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                    _vm.SelectedBankAccount = B;
+                    _vm.DefaultAccountName = B.BankAccountName;
+                }
             }
 
             UpdateExpenseIncomeSelected();
@@ -279,6 +304,11 @@ public partial class AddTransaction : BasePage
                         Application.Current.MainPage.ShowPopup(PopUp);
                     }
 
+                    if(!_vm.IsMultipleAccounts)
+                    {
+                        _vm.Transaction.AccountID = null;
+                    }
+
                     _vm.Transaction = _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID).Result;
                     if (_vm.Transaction.TransactionID != 0)
                     {
@@ -349,6 +379,11 @@ public partial class AddTransaction : BasePage
                         Application.Current.MainPage.ShowPopup(PopUp);
                     }
 
+                    if (!_vm.IsMultipleAccounts)
+                    {
+                        _vm.Transaction.AccountID = null;
+                    }
+
                     string status = _ds.UpdateTransaction(_vm.Transaction).Result;
                     if (status == "OK")
                     {
@@ -396,7 +431,11 @@ public partial class AddTransaction : BasePage
             {
                 entTransactionAmount.CursorPosition = entTransactionAmount.Text.Length;
             }
-            _vm.Transaction.TransactionAmount = TransactionAmount;
+            if(_vm.Transaction != null)
+            {
+                _vm.Transaction.TransactionAmount = TransactionAmount;
+            }
+            
         }
         catch (Exception ex)
         {
@@ -411,7 +450,11 @@ public partial class AddTransaction : BasePage
             if (!_vm.IsFutureDatedTransaction)
             {
                 entTransactionDate.MinimumDate = new DateTime();
-                _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
+                if(_vm.Transaction != null)
+                {
+                    _vm.Transaction.TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
+                }
+                
             }
             else
             {
@@ -449,7 +492,7 @@ public partial class AddTransaction : BasePage
             }
             else
             {
-                if (_vm.Transaction.Payee is null)
+                if (_vm.Transaction != null && _vm.Transaction.Payee is null)
                 {
                     _vm.Transaction.Payee = "";
                 }
@@ -486,7 +529,7 @@ public partial class AddTransaction : BasePage
             }
             else
             {
-                if (_vm.Transaction.Category == null)
+                if (_vm.Transaction != null && _vm.Transaction.Category == null)
                 {
                     _vm.Transaction.Category = "";
                     _vm.Transaction.CategoryID = 0;
@@ -590,7 +633,16 @@ public partial class AddTransaction : BasePage
     {
         try
         {
-            int StringLength = edtNotes.Text.Length;
+            int StringLength;
+            if (!string.IsNullOrEmpty(edtNotes.Text))
+            {
+                StringLength = edtNotes.Text.Length;
+            }
+            else
+            {
+                StringLength = 0;
+            }
+            
             lblNoteCharacterLeft.Text = $"{250 - StringLength} characters remaining";
         }
         catch (Exception ex)
@@ -660,6 +712,7 @@ public partial class AddTransaction : BasePage
                     _vm.IsPayee = false;
                     _vm.IsSpendCategory = false;
                     _vm.IsNote = false;
+                    _vm.IsAccount = false;
                 }
                 else
                 {            
@@ -668,6 +721,7 @@ public partial class AddTransaction : BasePage
                     _vm.IsSpendCategory = false;
                     _vm.IsNote = false;
                     _vm.Transaction.IsSpendFromSavings = false;
+                    _vm.IsAccount = false;
                 }
 
                 double TransactionAmount = (double)0;
@@ -755,6 +809,49 @@ public partial class AddTransaction : BasePage
         catch (Exception ex)
         {
             await _pt.HandleException(ex, "AddTransaction", "ChangeSelectedSaving_Tapped");
+        }
+    }
+
+    private void swhIsAccount_Toggled(object sender, ToggledEventArgs e)
+    {
+        try
+        {
+
+            if (_vm.SelectedBankAccount != null && _vm.BankAccounts != null && _vm.Transaction != null)
+            {
+                if (!_vm.IsAccount)
+                {
+                    BankAccounts? B = _vm.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                    _vm.SelectedBankAccount = B;
+                    _vm.DefaultAccountName = B.BankAccountName;
+                    _vm.Transaction.AccountID = B.ID;
+                }
+                else
+                {
+                    entIsAccount.Focus();
+                } 
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "AddTransaction", "swhIsAccount_Toggled");
+        }
+
+    }
+
+    private void entIsAccount_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (_vm.SelectedBankAccount != null && _vm.Transaction != null)
+            {
+                _vm.Transaction.AccountID = _vm.SelectedBankAccount.ID;
+            }            
+        }
+        catch (Exception ex)
+        {
+
+            _pt.HandleException(ex, "AddTransaction", "entIsAccount_SelectedIndexChanged");
         }
     }
 }

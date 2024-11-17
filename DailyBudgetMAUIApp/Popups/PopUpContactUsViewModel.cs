@@ -45,6 +45,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         public bool isCategoryInValid;
         [ObservableProperty]
+        public bool isUploadInValid;
+        [ObservableProperty]
         public FileResult uploadFile;
 
         public PopUpContactUsViewModel(IProductTools pt, IRestDataService ds)
@@ -97,7 +99,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     Type = InquiryType,                    
                     Whenadded = DateTime.UtcNow,
                     IsClosed = false,
-                    Replys = null
+                    Replys = new List<CustomerSupportMessage>()
                 };
 
                 if(UploadFile is not null)
@@ -122,7 +124,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             catch (Exception ex)
             {
                 WeakReferenceMessenger.Default.Send(new ClosePopupMessage(false, 0));
-                await _pt.HandleException(ex, "EditProfilePictureBottomSheet", "CreateSupportRequest");
+                await _pt.HandleException(ex, "PopUpContactUs", "CreateSupportRequest");
             }
         }
 
@@ -147,13 +149,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                 }
                 else
                 {
+                    IsUploadInValid = true;
                     UploadFile = null;
                 }
             }
             catch (Exception ex)
             {
                 WeakReferenceMessenger.Default.Send(new ClosePopupMessage(false, 0));
-                await _pt.HandleException(ex, "EditProfilePictureBottomSheet", "UploadPicture_Clicked");
+                await _pt.HandleException(ex, "PopUpContactUs", "UploadPicture_Clicked");
             }
         }
 
@@ -193,6 +196,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             if(newValue is not null)
             {
                 IsFileUpload = true;
+                IsUploadInValid = false;
 
                 long sizeInBytes = UploadFile.OpenReadAsync().Result.Length;
                 string FileSize = "";

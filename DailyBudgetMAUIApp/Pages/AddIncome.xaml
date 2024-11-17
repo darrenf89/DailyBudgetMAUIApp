@@ -221,6 +221,12 @@
                                 <Label Text="Select a day some time in the ... future" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
+                        <VerticalStackLayout>
+                            <Label Text="Account" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,10,0,5" IsVisible="{Binding IsMultipleAccounts}"/>
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,60,5" HeightRequest="38" BackgroundColor="White" IsVisible="{Binding IsMultipleAccounts}">
+                                <handlers:BorderlessPicker Margin="20,0,0,0" SelectedIndexChanged="entIsAccount_SelectedIndexChanged" ItemsSource="{Binding BankAccounts}" ItemDisplayBinding="{Binding BankAccountName}" SelectedItem="{Binding SelectedBankAccount}" VerticalOptions="Center" HorizontalOptions="Start" CharacterSpacing="1" x:Name="entIsAccount" TextColor="{StaticResource Gray600}"/>
+                            </Border>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>

@@ -1,16 +1,14 @@
 ﻿using DailyBudgetMAUIApp.Models;
 using System.Text;
 using System.Text.Json;
-using Newtonsoft.Json;
 using System.Net;
 using DailySpendWebApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.ViewModels;
-using System.Net.NetworkInformation;
 using System.Diagnostics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Newtonsoft.Json;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -24,9 +22,9 @@ namespace DailyBudgetMAUIApp.DataServices
         private readonly string _url;
         private readonly JsonSerializerOptions _jsonSerialiserOptions;
 
-        private readonly int maxRetries = 4;
-        private readonly int delayMilliseconds = 5000;
-        private readonly TimeSpan timeoutMilliseconds = TimeSpan.FromMilliseconds(10000);
+        private readonly int maxRetries = 5;
+        private readonly int delayMilliseconds = 1000;
+        private readonly TimeSpan timeoutMilliseconds = TimeSpan.FromMilliseconds(20000);
         private DateTime LastServerHealthCheck;
 
         public RestDataService()
@@ -60,10 +58,10 @@ namespace DailyBudgetMAUIApp.DataServices
             else
             {
                 ErrorLog Error = new ErrorLog(ex, Page, Method);
-                if(Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+                if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
                 {
                     Error = await CreateNewErrorLog(Error);
-                }                
+                }
                 await Shell.Current.GoToAsync(nameof(ErrorPage),
                     new Dictionary<string, object>
                     {
@@ -122,7 +120,7 @@ namespace DailyBudgetMAUIApp.DataServices
             return true;
             try
             {
-                if(this.LastServerHealthCheck.AddMinutes(1) < DateTime.UtcNow)
+                if (this.LastServerHealthCheck.AddMinutes(1) < DateTime.UtcNow)
                 {
                     HttpClient pingClient = new HttpClient
                     {
@@ -257,7 +255,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {                
+            {
                 //TODO: SHOW POPUP
                 if (App.CurrentPopUp != null)
                 {
@@ -275,7 +273,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 await Task.Delay(1);
 
                 int i = 0;
-                while(Connectivity.Current.NetworkAccess != NetworkAccess.Internet && i < 30)
+                while (Connectivity.Current.NetworkAccess != NetworkAccess.Internet && i < 30)
                 {
                     await Task.Delay(1000);
                     i++;
@@ -324,13 +322,13 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
                     Console.WriteLine($"Request timed out (attempt {attempt}): {ex.Message}");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     if (!(ex.Message == "One or more errors occurred. (Canceled)" || ex.Message == "One or more errors occurred. (A task was canceled.)"))
                     {
                         throw;
-                    }                   
-                    
+                    }
+
                 }
 
                 if (attempt == 1)
@@ -403,7 +401,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 try
                 {
-                    attempt++;                    
+                    attempt++;
                     HttpResponseMessage response = _httpClient.PatchAsync(requestURL, content).Result;
                     await HideServerConnectionPopup();
                     return response;
@@ -446,7 +444,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 try
                 {
-                    attempt++;                    
+                    attempt++;
                     HttpResponseMessage response = _httpClient.PutAsync(requestURL, content).Result;
                     await HideServerConnectionPopup();
                     return response;
@@ -573,7 +571,7 @@ namespace DailyBudgetMAUIApp.DataServices
             else
             {
                 ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
-                if(error.ErrorMessage.ToLower() == "invalid email" || error.ErrorMessage.ToLower() == "email already in use")
+                if (error.ErrorMessage.ToLower() == "invalid email" || error.ErrorMessage.ToLower() == "email already in use")
                 {
                     UserModel.Error = error;
                 }
@@ -614,27 +612,27 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    User = serializer.Deserialize<UserAddDetails>(reader);
+                        User = serializer.Deserialize<UserAddDetails>(reader);
+                    }
+
+                    return User;
                 }
-
-                return User;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
-                    throw new Exception(error.ErrorMessage);
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                        throw new Exception(error.ErrorMessage);
+                    }
                 }
-            }
         }
 
         public async Task<string> DowngradeUserAccount(int UserID)
@@ -645,20 +643,20 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                return "OK";
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
-                    throw new Exception(error.ErrorMessage);
+                    return "OK";
                 }
-            }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                        throw new Exception(error.ErrorMessage);
+                    }
+                }
         }
 
         public async Task<string> PostUserAddDetails(UserAddDetails User)
@@ -693,22 +691,22 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                return "OK";
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                    return "OK";
                 }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                throw new Exception(error.ErrorMessage);
-            }                    
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<Stream> DownloadUserProfilePicture(int UserID)
@@ -737,7 +735,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<Budgets> GetBudgetDetailsAsync(int BudgetID, string Mode)
         {
             Budgets Budget = new Budgets();
-                   
+
             string ApiMethod = "";
             if (Mode == "Full")
             {
@@ -754,30 +752,30 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    Budget = serializer.Deserialize<Budgets>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        Budget = serializer.Deserialize<Budgets>(reader);
+                    }
+
+                    return Budget;
                 }
-
-                return Budget;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<DateTime> GetBudgetNextIncomePayDayAsync(int BudgetID)
@@ -803,7 +801,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<int> GetBudgetDaysBetweenPayDay(int BudgetID)
         {
             Budgets Budget = new Budgets();
-                 
+
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/daystopaydaynext/{BudgetID}");
             string content = await response.Content.ReadAsStringAsync();
 
@@ -824,8 +822,8 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<DateTime?> GetBudgetLastUpdatedAsync(int BudgetID)
         {
             Budgets Budget = new Budgets();
-             
-            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/getlastupdated/{BudgetID}"); 
+
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/getlastupdated/{BudgetID}");
             string content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
@@ -844,7 +842,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<DateTime> GetBudgetValuesLastUpdatedAsync(int BudgetID, string Page)
         {
-            Budgets Budget = new Budgets();                 
+            Budgets Budget = new Budgets();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/getbudgetvalueslastupdated/{BudgetID}");
             string content = await response.Content.ReadAsStringAsync();
@@ -882,40 +880,40 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<BudgetSettingValues> GetBudgetSettingsValues(int BudgetID)
         {
-            BudgetSettingValues BudgetSettings = new BudgetSettingValues();                  
+            BudgetSettingValues BudgetSettings = new BudgetSettingValues();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getbudgetsettingsvalues/{BudgetID}");
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    BudgetSettings = serializer.Deserialize<BudgetSettingValues>(reader);
-                }
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        BudgetSettings = serializer.Deserialize<BudgetSettingValues>(reader);
+                    }
 
-                return BudgetSettings;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                    return BudgetSettings;
+                }
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
                 }
-
-                throw new Exception(response.StatusCode.ToString() + " - " + error.ErrorMessage);
-            }
         }
 
         public async Task<Budgets> CreateNewBudget(string UserEmail, string? BudgetType = "Basic")
         {
             Budgets Budget = new Budgets();
-                
+
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/createnewbudget/{UserEmail}/{BudgetType}");
             string content = await response.Content.ReadAsStringAsync();
 
@@ -934,34 +932,34 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task<string> DeleteBudget(int BudgetID, int UserID)
         {
-                
+
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/deletebudget/{BudgetID}/{UserID}");
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    Dictionary<string, string> result = serializer.Deserialize<Dictionary<string, string>>(reader);
-                    string returnString = result["result"];
-                    return returnString;
-                }
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Dictionary<string, string> result = serializer.Deserialize<Dictionary<string, string>>(reader);
+                        string returnString = result["result"];
+                        return returnString;
+                    }
 
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                }
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
         public async Task<string> ReCalculateBudget(int BudgetID)
         {
@@ -969,27 +967,27 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    return "OK";
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        return "OK";
+                    }
                 }
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
-        
+
         public async Task<string> DeleteUserAccount(int UserID)
         {
 
@@ -997,27 +995,27 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    Dictionary<string,string> result = serializer.Deserialize<Dictionary<string, string>>(reader);
-                    string returnString = result["result"];
-                    return returnString;
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Dictionary<string, string> result = serializer.Deserialize<Dictionary<string, string>>(reader);
+                        string returnString = result["result"];
+                        return returnString;
+                    }
                 }
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
-                }
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                throw new Exception(error.ErrorMessage);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<List<lut_CurrencySymbol>> GetCurrencySymbols(string SearchQuery)
@@ -1028,28 +1026,28 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    Currencies = serializer.Deserialize<List<lut_CurrencySymbol>>(reader);
-                }
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Currencies = serializer.Deserialize<List<lut_CurrencySymbol>>(reader);
+                    }
 
-                return Currencies;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                    return Currencies;
+                }
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<List<lut_CurrencyPlacement>> GetCurrencyPlacements(string Query)
@@ -1060,29 +1058,29 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    Placements = serializer.Deserialize<List<lut_CurrencyPlacement>>(reader);
+                        Placements = serializer.Deserialize<List<lut_CurrencyPlacement>>(reader);
+                    }
+
+                    return Placements;
                 }
-
-                return Placements;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<List<lut_BudgetTimeZone>> GetBudgetTimeZones(string Query)
@@ -1093,30 +1091,30 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    TimeZones = serializer.Deserialize<List<lut_BudgetTimeZone>>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        TimeZones = serializer.Deserialize<List<lut_BudgetTimeZone>>(reader);
+                    }
+
+                    return TimeZones;
                 }
-
-                return TimeZones;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<List<lut_DateFormat>> GetDateFormatsByString(string SearchQuery)
@@ -1127,31 +1125,31 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    DateFormats = serializer.Deserialize<List<lut_DateFormat>>(reader);
-                            
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        DateFormats = serializer.Deserialize<List<lut_DateFormat>>(reader);
+
+                    }
+
+                    return DateFormats;
+
                 }
-
-                return DateFormats;
-
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<lut_DateFormat> GetDateFormatsById(int ShortDatePattern, int Seperator)
@@ -1162,29 +1160,29 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    DateFormat = serializer.Deserialize<lut_DateFormat>(reader);
-                    return DateFormat;
-                }                        
 
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
-                {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        DateFormat = serializer.Deserialize<lut_DateFormat>(reader);
+                        return DateFormat;
+                    }
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
                 }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                throw new Exception(error.ErrorMessage);
-            }
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<lut_BudgetTimeZone> GetTimeZoneById(int TimeZoneID)
@@ -1195,30 +1193,30 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    TimeZone = serializer.Deserialize<lut_BudgetTimeZone>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        TimeZone = serializer.Deserialize<lut_BudgetTimeZone>(reader);
+                    }
+
+                    return TimeZone;
                 }
-
-                return TimeZone;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<lut_NumberFormat> GetNumberFormatsById(int CurrencyDecimalDigits, int CurrencyDecimalSeparator, int CurrencyGroupSeparator)
@@ -1229,30 +1227,30 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    NumberFormat = serializer.Deserialize<lut_NumberFormat>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        NumberFormat = serializer.Deserialize<lut_NumberFormat>(reader);
+                    }
+
+                    return NumberFormat;
                 }
-
-                return NumberFormat;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<lut_ShortDatePattern> GetShortDatePatternById(int ShortDatePatternID)
@@ -1263,28 +1261,28 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    ShaortDatePattern = serializer.Deserialize<lut_ShortDatePattern>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        ShaortDatePattern = serializer.Deserialize<lut_ShortDatePattern>(reader);
+                    }
+
+                    return ShaortDatePattern;
+
                 }
-
-                return ShaortDatePattern;
-
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
-                }
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                throw new Exception(error.ErrorMessage);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<lut_DateSeperator> GetDateSeperatorById(int DateSeperatorID)
@@ -1295,28 +1293,28 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    DateSeperator = serializer.Deserialize<lut_DateSeperator>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        DateSeperator = serializer.Deserialize<lut_DateSeperator>(reader);
+                    }
+
+                    return DateSeperator;
+
                 }
-
-                return DateSeperator;
-
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
-                }
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                throw new Exception(error.ErrorMessage);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<lut_CurrencyGroupSeparator> GetCurrencyGroupSeparatorById(int CurrencyGroupSeparatorId)
@@ -1327,28 +1325,28 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    GroupSeparator = serializer.Deserialize<lut_CurrencyGroupSeparator>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        GroupSeparator = serializer.Deserialize<lut_CurrencyGroupSeparator>(reader);
+                    }
+
+                    return GroupSeparator;
+
                 }
-
-                return GroupSeparator;
-
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
-                }
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                throw new Exception(error.ErrorMessage);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<lut_CurrencyDecimalSeparator> GetCurrencyDecimalSeparatorById(int CurrencyDecimalSeparatorId)
@@ -1359,28 +1357,28 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    DecimalSeparator = serializer.Deserialize<lut_CurrencyDecimalSeparator>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        DecimalSeparator = serializer.Deserialize<lut_CurrencyDecimalSeparator>(reader);
+                    }
+
+                    return DecimalSeparator;
+
                 }
-
-                return DecimalSeparator;
-
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
-                }
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                throw new Exception(error.ErrorMessage);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<lut_CurrencyDecimalDigits> GetCurrencyDecimalDigitsById(int CurrencyDecimalDigitsId)
@@ -1391,28 +1389,28 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    DecimalDigits = serializer.Deserialize<lut_CurrencyDecimalDigits>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        DecimalDigits = serializer.Deserialize<lut_CurrencyDecimalDigits>(reader);
+                    }
+
+                    return DecimalDigits;
+
                 }
-
-                return DecimalDigits;
-
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
-                }
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                throw new Exception(error.ErrorMessage);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<List<lut_NumberFormat>> GetNumberFormats()
@@ -1423,30 +1421,30 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    NumberFormat = serializer.Deserialize<List<lut_NumberFormat>>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        NumberFormat = serializer.Deserialize<List<lut_NumberFormat>>(reader);
+                    }
+
+                    return NumberFormat;
                 }
-
-                return NumberFormat;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
         public async Task<string> UpdatePayPeriodStats(PayPeriodStats Stats)
         {
@@ -1475,30 +1473,30 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    stats = serializer.Deserialize<PayPeriodStats>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        stats = serializer.Deserialize<PayPeriodStats>(reader);
+                    }
+
+                    return stats;
                 }
-
-                return stats;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<string> PatchBudget(int BudgetID, List<PatchDoc> PatchDoc)
@@ -1566,33 +1564,33 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    Bill = serializer.Deserialize<Bills>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        Bill = serializer.Deserialize<Bills>(reader);
+                    }
+
+                    return Bill;
                 }
-
-                return Bill;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
-        public async Task<string>SaveNewBill(Bills Bill, int BudgetID)
+        public async Task<string> SaveNewBill(Bills Bill, int BudgetID)
         {
             string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Bills>(Bill, _jsonSerialiserOptions);
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -1608,10 +1606,10 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
                 throw new Exception(error.ErrorMessage);
-            }       
+            }
         }
 
-        public async Task<string>UpdateBill(Bills Bill)
+        public async Task<string> UpdateBill(Bills Bill)
         {
             string jsonRequest = System.Text.Json.JsonSerializer.Serialize<Bills>(Bill, _jsonSerialiserOptions);
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -1627,7 +1625,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
                 throw new Exception(error.ErrorMessage);
-            }       
+            }
         }
 
         public async Task<string> PatchBill(int BillID, List<PatchDoc> PatchDoc)
@@ -1655,27 +1653,27 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    return "OK";
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        return "OK";
+                    }
+
                 }
-                                                
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<List<Bills>> GetBudgetBills(int BudgetID, string page)
@@ -1685,30 +1683,30 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    Bills = serializer.Deserialize<List<Bills>>(reader);
-                }
 
-                return Bills;
-                                                
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Bills = serializer.Deserialize<List<Bills>>(reader);
+                    }
+
+                    return Bills;
+
+                }
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<Savings> GetSavingFromID(int SavingID)
@@ -1718,30 +1716,30 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    Saving = serializer.Deserialize<Savings>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        Saving = serializer.Deserialize<Savings>(reader);
+                    }
+
+                    return Saving;
                 }
-
-                return Saving;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<int> SaveNewSaving(Savings Saving, int BudgetID)
@@ -1808,27 +1806,27 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    return "OK";
-                }
 
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        return "OK";
+                    }
+
+                }
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<List<Savings>> GetAllBudgetSavings(int BudgetID)
@@ -1838,29 +1836,29 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    Savings = serializer.Deserialize<List<Savings>>(reader);
-                }
 
-                return Savings;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Savings = serializer.Deserialize<List<Savings>>(reader);
+                    }
+
+                    return Savings;
+                }
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<IncomeEvents> GetIncomeFromID(int IncomeID)
@@ -1870,32 +1868,32 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    Income = serializer.Deserialize<IncomeEvents>(reader);
+                        Income = serializer.Deserialize<IncomeEvents>(reader);
+                    }
+
+                    return Income;
                 }
-
-                return Income;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
-        public async Task<string>SaveNewIncome(IncomeEvents Income, int BudgetID)
+        public async Task<string> SaveNewIncome(IncomeEvents Income, int BudgetID)
         {
             string jsonRequest = System.Text.Json.JsonSerializer.Serialize<IncomeEvents>(Income, _jsonSerialiserOptions);
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -1914,7 +1912,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public async Task<string>UpdateIncome(IncomeEvents Income)
+        public async Task<string> UpdateIncome(IncomeEvents Income)
         {
             string jsonRequest = System.Text.Json.JsonSerializer.Serialize<IncomeEvents>(Income, _jsonSerialiserOptions);
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -1958,25 +1956,25 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    return "OK";
-                }                           
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
-                {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        return "OK";
+                    }
                 }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                throw new Exception(error.ErrorMessage);
-            }
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<List<IncomeEvents>> GetBudgetIncomes(int BudgetID, string page)
@@ -1986,28 +1984,28 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    IncomeEvents = serializer.Deserialize<List<IncomeEvents>>(reader);
-                }
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        IncomeEvents = serializer.Deserialize<List<IncomeEvents>>(reader);
+                    }
 
-                return IncomeEvents;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                    return IncomeEvents;
+                }
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
         public async Task<string> UpdateBudgetValues(int budgetID)
         {
@@ -2015,25 +2013,25 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    return "OK";
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        return "OK";
+                    }
                 }
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<Transactions> SaveNewTransaction(Transactions Transaction, int BudgetID)
@@ -2061,29 +2059,29 @@ namespace DailyBudgetMAUIApp.DataServices
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/transacttransaction/{TransactionID}");
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    Transaction = serializer.Deserialize<Transactions>(reader);
+                        Transaction = serializer.Deserialize<Transactions>(reader);
+                    }
+
+                    return Transaction;
                 }
-
-                return Transaction;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
         public async Task<string> UpdateTransaction(Transactions Transaction)
         {
@@ -2110,25 +2108,25 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    return "OK";
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        return "OK";
+                    }
                 }
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<List<string>> GetBudgetEventTypes(int BudgetID)
@@ -2138,28 +2136,28 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    EventTypes = serializer.Deserialize<List<string>>(reader);
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        EventTypes = serializer.Deserialize<List<string>>(reader);
+                    }
+                    return EventTypes;
                 }
-                return EventTypes;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<Transactions> GetTransactionFromID(int TransactionID)
@@ -2168,30 +2166,30 @@ namespace DailyBudgetMAUIApp.DataServices
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/gettransactionfromid/{TransactionID}");
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    Transaction = serializer.Deserialize<Transactions>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        Transaction = serializer.Deserialize<Transactions>(reader);
+                    }
+
+                    return Transaction;
                 }
-
-                return Transaction;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<Budgets> GetAllBudgetTransactions(int BudgetID)
@@ -2201,30 +2199,30 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    Budget = serializer.Deserialize<Budgets>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        Budget = serializer.Deserialize<Budgets>(reader);
+                    }
+
+                    return Budget;
                 }
-
-                return Budget;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<List<Transactions>> GetRecentTransactions(int BudgetID, int NumberOf, string page)
@@ -2234,31 +2232,31 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    transactions = serializer.Deserialize<List<Transactions>>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        transactions = serializer.Deserialize<List<Transactions>>(reader);
+                    }
+
+                    return transactions;
                 }
-
-                return transactions;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<List<Transactions>> GetCurrentPayPeriodTransactions(int BudgetID, string page)
@@ -2329,7 +2327,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
         }
 
-        public async Task<List<Transactions>> GetRecentTransactionsOffset(int BudgetID, int NumberOf, int Offset ,string page)
+        public async Task<List<Transactions>> GetRecentTransactionsOffset(int BudgetID, int NumberOf, int Offset, string page)
         {
             List<Transactions> transactions = new List<Transactions>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/getrecenttransactionsoffset/{BudgetID}/{NumberOf}/{Offset}");
@@ -2371,29 +2369,29 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    budget = serializer.Deserialize<Budgets>(reader);
+                        budget = serializer.Deserialize<Budgets>(reader);
+                    }
+
+                    return budget;
                 }
-
-                return budget;
-            }
-            else
-            {   
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<string> CreateNewOtpCodeShareBudget(int UserID, int ShareBudgetID)
@@ -2446,42 +2444,42 @@ namespace DailyBudgetMAUIApp.DataServices
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/otp/createnewotpcode/{UserID}/{OTPType}");
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
-            if(response.StatusCode == HttpStatusCode.NotFound)
-            {
-                return "MaxLimit";
-            }
-            else if (response.IsSuccessStatusCode)
-            {
-
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                    UserOTP = serializer.Deserialize<OTP>(reader);
+                    return "MaxLimit";
                 }
-
-                if (UserOTP.OTPID == 0)
+                else if (response.IsSuccessStatusCode)
                 {
-                    return "Error";
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        UserOTP = serializer.Deserialize<OTP>(reader);
+                    }
+
+                    if (UserOTP.OTPID == 0)
+                    {
+                        return "Error";
+                    }
+                    else
+                    {
+                        return "OK";
+                    }
+
                 }
                 else
                 {
-                    return "OK";
-                }
-                        
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
-                {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
-                }
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                throw new Exception(error.ErrorMessage);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
         public async Task<string> ValidateOTPCodeEmail(OTP UserOTP)
         {
@@ -2493,26 +2491,26 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                return "Error";
-            }
-            else if (response.IsSuccessStatusCode)
-            {
-                return "OK";
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                    return "Error";
                 }
+                else if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                throw new Exception(error.ErrorMessage);
-            }
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<int> GetUserIdFromEmail(string UserEmail)
@@ -2522,33 +2520,33 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                return 0;
-            }
-            else if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                    User = serializer.Deserialize<UserDetailsModel>(reader);
+                    return 0;
                 }
-
-                return User.UserID;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        User = serializer.Deserialize<UserDetailsModel>(reader);
+                    }
+
+                    return User.UserID;
                 }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                throw new Exception(error.ErrorMessage);
-            }
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<List<string>> GetPayeeList(int BudgetID)
@@ -2558,29 +2556,29 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    Payee = serializer.Deserialize<List<string>>(reader);
-                }
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Payee = serializer.Deserialize<List<string>>(reader);
+                    }
 
-                return Payee;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                    return Payee;
+                }
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
-                }
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                throw new Exception(error.ErrorMessage);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
-        
+
         public async Task<List<Payees>> GetPayeeListFull(int BudgetID)
         {
             List<Payees>? Payee = new List<Payees>();
@@ -2822,23 +2820,23 @@ namespace DailyBudgetMAUIApp.DataServices
 
             HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/categories/patchcategory/{CategoryID}", request);
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
-            using (StreamReader sr = new StreamReader(s))                    
+            using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                return "OK";
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                    return "OK";
                 }
-                throw new Exception(error.ErrorMessage);
-            }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<string> UpdateAllTransactionsCategoryName(int CategoryID)
@@ -3060,7 +3058,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     else
                     {
                         return "Not Saved";
-                    }                        
+                    }
                 }
                 else
                 {
@@ -3076,7 +3074,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         return "User Not Found";
                     }
-                    else if(error.ErrorMessage == "Budget Already Shared")
+                    else if (error.ErrorMessage == "Budget Already Shared")
                     {
                         return "Budget Already Shared";
                     }
@@ -3101,29 +3099,29 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    NewDevice = serializer.Deserialize<FirebaseDevices>(reader);
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        NewDevice = serializer.Deserialize<FirebaseDevices>(reader);
+                    }
+
+                    return NewDevice;
+
                 }
-
-                return NewDevice;
-
-            }  
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                throw new Exception(error.ErrorMessage);
-            }
         }
 
         public async Task<FirebaseDevices> UpdateDeviceUserDetails(FirebaseDevices NewDevice)
@@ -3171,22 +3169,22 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                return "OK";
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                    return "OK";
                 }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
                     throw new Exception(error.ErrorMessage);
-            }
+                }
         }
 
         public async Task<ShareBudgetRequest> GetShareBudgetRequestByID(int SharedBudgetRequestID)
@@ -3273,30 +3271,30 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    budgets = serializer.Deserialize<List<Budgets>>(reader);
-                }
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        budgets = serializer.Deserialize<List<Budgets>>(reader);
+                    }
 
-                return budgets;
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                    return budgets;
+                }
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
-                }
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                throw new Exception(error.ErrorMessage);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
-        public async Task<List<CustomerSupport>> GetSupports(int UserID, string page) 
+        public async Task<List<CustomerSupport>> GetSupports(int UserID, string page)
         {
             List<CustomerSupport> Support = new List<CustomerSupport>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/supports/getsupports/{UserID}");
@@ -3326,7 +3324,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     throw new Exception(error.ErrorMessage);
                 }
         }
-        public async Task<CustomerSupport> GetSupport(int SupportID, string page) 
+        public async Task<CustomerSupport> GetSupport(int SupportID, string page)
         {
             CustomerSupport Support = new CustomerSupport();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/supports/getsupport/{SupportID}");
@@ -3356,7 +3354,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     throw new Exception(error.ErrorMessage);
                 }
         }
-        public async Task<CustomerSupport> CreateSupport(int UserID, CustomerSupport Support) 
+        public async Task<CustomerSupport> CreateSupport(int UserID, CustomerSupport Support)
         {
             string jsonRequest = System.Text.Json.JsonSerializer.Serialize<CustomerSupport>(Support, _jsonSerialiserOptions);
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -3365,25 +3363,25 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = response.Content.ReadAsStreamAsync().Result)
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    Support = serializer.Deserialize<CustomerSupport>(reader);
-                }
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Support = serializer.Deserialize<CustomerSupport>(reader);
+                    }
 
-                return Support;
-            }
-            else
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                    return Support;
+                }
+                else
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
-                    throw new Exception(error.ErrorMessage);
-                }                
-            }
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
+                        throw new Exception(error.ErrorMessage);
+                    }
+                }
         }
         public async Task<CustomerSupportMessage> AddReply(int SupportID, CustomerSupportMessage Reply)
         {
@@ -3415,7 +3413,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
         }
 
-        public async Task<string> SaveSupportFile(FileResult File) 
+        public async Task<string> SaveSupportFile(FileResult File)
         {
             var content = new MultipartFormDataContent
             {
@@ -3448,7 +3446,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     throw new Exception(error.ErrorMessage);
                 }
         }
-        public async Task<Stream> DownloadFile(int SupportID) 
+        public async Task<Stream> DownloadFile(int SupportID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/supports/downloadfile/{SupportID}");
             if (response.IsSuccessStatusCode)
@@ -3460,6 +3458,212 @@ namespace DailyBudgetMAUIApp.DataServices
                 ErrorClass error = new ErrorClass();
                 using (Stream s = response.Content.ReadAsStreamAsync().Result)
                 using (StreamReader sr = new StreamReader(s))
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
+            }
+        }
+
+        public async Task<string> PatchSupport(int SupportID, List<PatchDoc> PatchDoc)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/supports/patchSupport/{SupportID}", request);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+                if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<string> DeleteSupportFile(int SupportID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/supports/deletefile/{SupportID}");
+            if (response.IsSuccessStatusCode)
+            {
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
+            }
+        }
+
+        public async Task<string> SetAllMessagesRead(int SupportID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/supports/setmessagesread/{SupportID}");
+            if (response.IsSuccessStatusCode)
+            {
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (StreamReader sr = new StreamReader(s))
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
+            }
+        }
+
+        public async Task<List<BankAccounts>> GetBankAccounts(int BudgetID)
+        {
+            List<BankAccounts> Accounts = new List<BankAccounts>();
+
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/getbankaccounts/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Accounts = serializer.Deserialize<List<BankAccounts>>(reader);
+                    }
+
+                    return Accounts;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<BankAccounts> AddBankAccounts(int BudgetID, BankAccounts Account)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<BankAccounts>(Account, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/budgets/addbankaccounts/{BudgetID}", request);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Account = serializer.Deserialize<BankAccounts>(reader);
+                    }
+
+                    return Account;
+                }
+                else
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
+                        throw new Exception(error.ErrorMessage);
+                    }
+                }
+
+        }
+        public async Task<BankAccounts> UpdateBankAccounts(int BudgetID, BankAccounts Account)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<BankAccounts>(Account, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/budgets/updatebankaccounts/{BudgetID}", request);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
+            {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    Account = serializer.Deserialize<BankAccounts>(reader);
+                }
+
+                return Account;
+            }
+            else
+            {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+        }
+
+        public async Task<string> DeleteBankAccounts(int BudgetID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/deletebankaccounts/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
+            {
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    error = serializer.Deserialize<ErrorClass>(reader);
+                }
+
+                throw new Exception(error.ErrorMessage);
+            }
+        }
+
+        public async Task<string> DeleteBankAccount(int ID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/deletebankaccount/{ID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
+            {
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = new ErrorClass();
                 using (JsonReader reader = new JsonTextReader(sr))
                 {
                     Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();

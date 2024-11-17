@@ -7,6 +7,8 @@ using System.Drawing;
 using Color = Microsoft.Maui.Graphics.Color;
 using Microsoft.Maui.Platform;
 using DailyBudgetMAUIApp.Pages;
+using DailyBudgetMAUIApp.ViewModels;
+
 
 
 
@@ -46,6 +48,7 @@ public partial class App : Application
     public NetworkAccess PreviousNetworkAccess;
 
     public static int SessionPeriod = 7;
+    public static bool IsBackgrounded;
 
     public App()
 	{
@@ -134,6 +137,74 @@ public partial class App : Application
         });
 
         //MainPage = new AppShell();
+    }
+
+    protected override async void OnStart()
+    {
+        await Task.Delay(1);
+        base.OnStart();
+        IsBackgrounded = false;
+        await CheckConnection();
+    }
+
+    protected override void OnSleep()
+    {
+        IsBackgrounded = true;
+        base.OnSleep();
+    }
+
+    protected override async void OnResume()
+    {
+        await Task.Delay(1);
+        base.OnResume();
+        IsBackgrounded = false;
+        await CheckConnection();
+    }
+
+    private async Task CheckConnection()
+    {
+        if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+        {
+
+            //TODO: SHOW POPUP
+            if (CurrentPopUp != null)
+            {
+                await CurrentPopUp.CloseAsync();
+                CurrentPopUp = null;
+            }
+
+            if (CurrentPopUp == null)
+            {
+                var PopUp = new PopUpNoNetwork(new PopUpNoNetworkViewModel());
+                CurrentPopUp = PopUp;
+                Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(1);
+
+            int i = 0;
+            while (Connectivity.Current.NetworkAccess != NetworkAccess.Internet && i < 30)
+            {
+                await Task.Delay(1000);
+                i++;
+            }
+
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+            {
+                //TODO: SHOW POPUP SAYING INTERNET RETURNED WOULD THEY LIKE TO RETURN TO THEIR BUDGETTING
+            }
+            else
+            {
+                await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
+            }
+
+            if (CurrentPopUp != null)
+            {
+                await CurrentPopUp.CloseAsync();
+                CurrentPopUp = null;
+            }
+
+        }
     }
 
     protected override Window CreateWindow(IActivationState activationState) 

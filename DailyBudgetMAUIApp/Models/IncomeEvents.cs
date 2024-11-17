@@ -28,5 +28,7 @@ namespace DailyBudgetMAUIApp.Models
         private bool?  isInstantActive;
         [ObservableProperty]
         private bool?  isIncomeAddedToBalance  = false;
+        [ObservableProperty]
+        public int? accountID;
     }
 }

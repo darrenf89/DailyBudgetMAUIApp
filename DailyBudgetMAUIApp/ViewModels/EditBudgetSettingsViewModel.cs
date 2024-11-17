@@ -4,7 +4,9 @@ using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Pages.BottomSheets;
 using System.Globalization;
+using The49.Maui.BottomSheet;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -77,6 +79,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool hasPayDayDateChanged;
         [ObservableProperty]
+        private bool hasPageLoaded;
+        [ObservableProperty]
         private bool validatorPayDay;
         [ObservableProperty]
         private bool validatorPayDayAmount;
@@ -108,6 +112,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string payDayTwoSettings;
         [ObservableProperty]
         private bool hasBorrowPayChanged;
+        [ObservableProperty]
+        private bool isMultipleAccounts;
 
 
         public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds)
@@ -168,7 +174,87 @@ namespace DailyBudgetMAUIApp.ViewModels
                 LastOfTheMonthDuration = Budget.PaydayDuration;
             }
 
+            IsMultipleAccounts = Budget.IsMultipleAccounts;
+
             UpdatePayDaySettingsValue();
+        }
+
+        async partial void OnIsMultipleAccountsChanged(bool oldValue, bool newValue)
+        {
+            try
+            {
+                if(HasPageLoaded)
+                {
+                    if (newValue)
+                    {
+
+                        List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+                        PatchDoc IsMultipleAccountsPatch = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/IsMultipleAccounts",
+                            value = true
+                        };
+
+                        BudgetUpdate.Add(IsMultipleAccountsPatch);
+                        await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+
+                        BankAccounts Account = new BankAccounts
+                        {
+                            BankAccountName = "My Default Account",
+                            AccountBankBalance = App.DefaultBudget.BankBalance,
+                            IsDefaultAccount = true
+
+                        };
+
+                        await _ds.AddBankAccounts(App.DefaultBudgetID, Account);
+
+                        MultipleAccountsBottomSheet page = new MultipleAccountsBottomSheet(_pt, _ds);
+
+                        page.Detents = new DetentsCollection()
+                        {
+                            new ContentDetent(),
+                            new FullscreenDetent()
+                        };
+
+                        page.HasBackdrop = true;
+                        page.CornerRadius = 0;
+
+                        App.CurrentBottomSheet = page;
+
+                        if (App.CurrentPopUp != null)
+                        {
+                            await App.CurrentPopUp.CloseAsync();
+                            App.CurrentPopUp = null;
+                        }
+
+                        await page.ShowAsync();
+
+                    }
+                    else
+                    {
+                        await _ds.DeleteBankAccounts(App.DefaultBudgetID);
+
+                        List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+                        PatchDoc IsMultipleAccountsPatch = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/IsMultipleAccounts",
+                            value = false
+                        };
+
+                        BudgetUpdate.Add(IsMultipleAccountsPatch);
+                        await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+                    }
+                    App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "EditBudgetSettings", "OnIsMultipleAccountsChanged");
+            }
         }
 
         partial void OnEveryNthDurationChanged(string oldValue, string newValue)

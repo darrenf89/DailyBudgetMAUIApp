@@ -325,7 +325,8 @@ public partial class EditAccountDetails : BasePage
                 int SupportID = (int)result;
                 Action action = async () =>
                 {
-                    await Shell.Current.GoToAsync($"//{nameof(ViewSupport)}?SupportID={SupportID}");
+                    await Task.Delay(500);
+                    await Shell.Current.GoToAsync($"../{nameof(ViewSupport)}?SupportID={SupportID}");
                     return;
                 };
                 await _pt.MakeSnackBar("We have received your inquiry", action, "View", new TimeSpan(0, 0, 10), "Success");

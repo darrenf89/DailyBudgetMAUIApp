@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
+
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class CustomerSupport : ObservableObject
@@ -20,6 +21,10 @@ namespace DailyBudgetMAUIApp.Models
         public DateTime whenadded;
         [ObservableProperty]
         public bool isClosed;
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [ObservableProperty]
+        public bool isUnreadMessages;
         [ObservableProperty]
         public List<CustomerSupportMessage>? replys;
     }  

@@ -143,11 +143,49 @@ public partial class AddBill : BasePage
                 _vm.BillCategory = _vm.Bill.Category;
             }
 
+            if(_vm.Bill != null)
+            { 
+                _vm.BillOldBalance = _vm.Bill.BillCurrentBalance;
+            }
+
+            _vm.IsMultipleAccounts = App.DefaultBudget.IsMultipleAccounts && _vm.IsPremiumAccount;
+            if (_vm.IsMultipleAccounts)
+            {
+                _vm.BankAccounts = await _ds.GetBankAccounts(_vm.BudgetID);
+
+                if (_vm.Bill.BillID == 0 || _vm.Bill.AccountID == 0)
+                {
+                    BankAccounts? B = _vm.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                    _vm.SelectedBankAccount = B;
+                    _vm.Bill.AccountID = B.ID;
+                }
+                else
+                {
+                    BankAccounts? B = _vm.BankAccounts.Where(b => b.ID == _vm.Bill.AccountID.GetValueOrDefault()).FirstOrDefault();
+                    if (B != null)
+                    {
+                        _vm.SelectedBankAccount = B;
+                        _vm.Bill.AccountID = B.ID;
+                    }
+                    else
+                    {
+                        B = _vm.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                        _vm.SelectedBankAccount = B;
+                        _vm.Bill.AccountID = B.ID;
+                    }
+                }
+            }
+            else
+            {
+                _vm.Bill.AccountID = null;
+            }
+
             if (App.CurrentPopUp != null)
             {
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+
         }
         catch (Exception ex)
         {
@@ -760,6 +798,19 @@ public partial class AddBill : BasePage
         catch (Exception ex)
         {
             await _pt.HandleException(ex, "AddBill", "SelectCategory_Tapped");
+        }
+    }
+
+    private void entIsAccount_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            _vm.Bill.AccountID = _vm.SelectedBankAccount.ID;
+        }
+        catch (Exception ex)
+        {
+
+            _pt.HandleException(ex, "AddBill", "entIsAccount_SelectedIndexChanged");
         }
     }
 }

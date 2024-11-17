@@ -64,7 +64,11 @@
     <converters:IsDPATextConverter x:Key="IsDPATextConverter"/>
     <converters:StringToSizeConverter x:Key="StringToSizeConverter"/>
     <converters:AmountToColor x:Key="AmountToColor"/>
-    <converters:IsFocusedConverter x:Key="IsFocusedConverter"/>    
+    <converters:MessageMarginConverter  x:Key="MessageMarginConverter"/>
+    <converters:MessageAlignmentConverter x:Key="MessageAlignmentConverter"/>
+    <converters:CustomerMessageColorConverter x:Key="CustomerMessageColorConverter"/>
+    <converters:ReverseMessageAlignmentConverter x:Key="ReverseMessageAlignmentConverter"/>
+    <converters:BoolToColorDisabledReverse x:Key="BoolToColorDisabledReverse"/>    
     
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>
@@ -457,6 +461,13 @@
                             <Setter Property="Scale" Value="0.9" />
                             <Setter Property="TranslationY" Value="0"/>
                             <Setter Property="Opacity" Value="0.8"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="TextColor" Value="{DynamicResource Gray700}"/>
+                            <Setter Property="BackgroundColor" Value="{DynamicResource Gray100}" />
+                            <Setter Property="BorderColor" Value="{DynamicResource Gray700}"/>
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>

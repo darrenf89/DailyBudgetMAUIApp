@@ -49,6 +49,7 @@ public partial class LandingPage : BasePage
                 App.DefaultBudgetID = userDetails.DefaultBudgetID;
                 await _pt.SetSubDetails();
 
+
                 if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
                 {
                     int FirebaseID = Convert.ToInt32(await SecureStorage.Default.GetAsync("FirebaseID"));
@@ -67,12 +68,9 @@ public partial class LandingPage : BasePage
                     }
                     catch (Exception ex)
                     {
-                        //Log as non fatal error
                     }
                         
                 }
-
-                //await _pt.LoadTabBars(App.UserDetails.SubscriptionType, App.UserDetails.SubscriptionExpiry, App.UserDetails.DefaultBudgetType);
 
                 await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
                 return;

@@ -8,6 +8,7 @@ using static Android.Provider.Settings;
 using AndroidApp = Android.App.Application;
 using Setting = Android.Provider.Settings;
 using Plugin.MauiMTAdmob.Extra;
+using static Microsoft.Maui.ApplicationModel.Platform;
 
 namespace DailyBudgetMAUIApp;
 
@@ -17,6 +18,7 @@ namespace DailyBudgetMAUIApp;
 public class MainActivity : MauiAppCompatActivity
 {
     internal static readonly string Channel_ID = "ShareBudget";
+    internal static readonly string Support_Channel_ID = "CustomerSupport";
     internal static readonly int NotificationID = 101;
 
     protected override void OnCreate(Bundle savedInstanceState)
@@ -71,7 +73,7 @@ public class MainActivity : MauiAppCompatActivity
 
                     Preferences.Set("NavigationType", NavigationType);
 
-                    if (NavigationType == "ShareBudget")
+                    if (NavigationType == "ShareBudget" || NavigationType == "SupportReplay")
                     {
                         string NavigationID = Intent.Extras.GetString("NavigationID");
                         if (Preferences.ContainsKey("NavigationID"))
@@ -83,9 +85,10 @@ public class MainActivity : MauiAppCompatActivity
 
                     IProductTools pt = new ProductTools(new RestDataService());
                     await pt.NavigateFromPendingIntent(Preferences.Get("NavigationType", ""));
+                    Intent.RemoveExtra(key);
                 }
             }
-        }
+        }        
 
         CreateNotificationChannel();
         CrossMauiMTAdmob.Current.OnResume();
@@ -96,8 +99,11 @@ public class MainActivity : MauiAppCompatActivity
         if(OperatingSystem.IsOSPlatformVersionAtLeast("android",26))
         {
             var channel = new NotificationChannel(Channel_ID, "Share budget notifications", NotificationImportance.Default);
+            var supportChannel = new NotificationChannel(Support_Channel_ID, "Support Inquiry notifications", NotificationImportance.High);
+
             var notificationManager = (NotificationManager)GetSystemService(Android.Content.Context.NotificationService);
-            notificationManager.CreateNotificationChannel(channel);
+            notificationManager.CreateNotificationChannel(channel);            
+            notificationManager.CreateNotificationChannel(supportChannel);
         }
     }
 }

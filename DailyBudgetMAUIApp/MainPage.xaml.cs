@@ -15,6 +15,8 @@ using Syncfusion.Maui.ProgressBar;
 using Microsoft.Maui.Controls.Shapes;
 using CommunityToolkit.Maui.Extensions;
 using Syncfusion.Maui.Scheduler;
+using CommunityToolkit.Mvvm.Messaging;
+using static DailyBudgetMAUIApp.Pages.ViewAccounts;
 
 
 namespace DailyBudgetMAUIApp;
@@ -187,6 +189,7 @@ public partial class MainPage : BasePage
             }
 
             await LoadMainDashboardContent();
+            await RegisterForWeakMessages();
 
             if (App.CurrentPopUp != null)
             {
@@ -198,17 +201,58 @@ public partial class MainPage : BasePage
         {
             await _pt.HandleException(ex, "MainPage", "OnAppearing");
         }
-    }  
+    }
+
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    {
+        WeakReferenceMessenger.Default.UnregisterAll(this);
+        base.OnNavigatedFrom(args);
+    }
+
+    private async Task RegisterForWeakMessages()
+    {
+        WeakReferenceMessenger.Default.UnregisterAll(this);
+
+        WeakReferenceMessenger.Default.Register<UpdateViewAccount>(this, async (r, m) =>
+        {
+            try
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(1);
+
+                await _ds.ReCalculateBudget(App.DefaultBudgetID);
+                App.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+                _vm.DefaultBudget = App.DefaultBudget;
+                await LoadMainDashboardContent();
+
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+            }
+            catch
+            {
+
+            }
+        });
+    }
 
     private async Task LoadMainDashboardContent()
     {
         if (_pt.GetBudgetLocalTime(DateTime.UtcNow).Hour > 12)
         {
-            _vm.Title = $"Good afternoon {App.UserDetails.NickName}!";
+            _vm.Title = $"Good Afternoon {App.UserDetails.NickName}!";
         }
         else
         {
-            _vm.Title = $"Good morning {App.UserDetails.NickName}!";
+            _vm.Title = $"Good Morning {App.UserDetails.NickName}!";
         }
 
         _vm.IsPreviousBudget = App.UserDetails.PreviousDefaultBudgetID != 0;
@@ -299,6 +343,7 @@ public partial class MainPage : BasePage
             _vm.Payees = await _ds.GetPayeeListFull(App.DefaultBudgetID);
             _vm.Payees = _vm.Payees.OrderByDescending(p => p.PayeeSpendAllTime).ToList();
             _vm.CurrentPayeeOffset = 0;
+            _vm.IsUnreadMessage = _vm.DefaultBudget.AccountInfo.NumberUnreadMessages > 0;
             await LoadPayeeChartData();
             await LoadBudgetCalendar();
         }

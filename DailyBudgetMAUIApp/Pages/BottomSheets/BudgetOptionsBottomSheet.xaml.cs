@@ -65,6 +65,34 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             VSLViewSubscription.IsVisible = true;
         }
 
+        if (App.IsPremiumAccount)
+        {
+            if(App.DefaultBudget.IsMultipleAccounts)
+            {
+                viewMultipleAccounts.IsVisible = true;
+                viewSyncBankBalance.IsVisible = false;
+
+                vslMultipleAccounts.IsVisible = false;
+                NotMultipleAccounts.IsVisible = true;
+            }
+            else
+            {
+                viewMultipleAccounts.IsVisible = false;
+                viewSyncBankBalance.IsVisible = true;
+
+                vslMultipleAccounts.IsVisible = true;
+                NotMultipleAccounts.IsVisible = false;
+            }
+
+        }
+        else
+        {
+            viewMultipleAccounts.IsVisible = false;
+            viewSyncBankBalance.IsVisible = true;
+
+            vslMultipleAccounts.IsVisible = false;
+            NotMultipleAccounts.IsVisible = false;
+        }
 
     }
 
@@ -411,9 +439,36 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
     }
 
-    private void ViewSubscription_Tapped(object sender, TappedEventArgs e)
+    private async void ViewSubscription_Tapped(object sender, TappedEventArgs e)
     {
+        try
+        {
+            // Intent to open the Google Play app's subscription page directly
+            var playStoreUri = "market://details?id=com.android.vending&url=https://play.google.com/store/account/subscriptions";
 
+            if (await Launcher.CanOpenAsync(playStoreUri))
+            {
+                await Launcher.OpenAsync(playStoreUri);
+            }
+            else
+            {
+                var subscriptionUrl = "https://play.google.com/store/account/subscriptions";
+
+                if (await Launcher.CanOpenAsync(subscriptionUrl))
+                {
+                    await Launcher.OpenAsync(subscriptionUrl);
+                }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Unable to open the subscription page.", "OK");
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "ViewSubscription_Tapped");
+        }
     }
 
     private async void ViewCalendar_Tapped(object sender, TappedEventArgs e)
@@ -449,6 +504,152 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         catch (Exception ex)
         {
             await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "MoveBalance_Tapped");
+        }
+    }
+
+    private async void MultipleAccounts_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(1);
+
+            List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+            PatchDoc IsMultipleAccountsPatch = new PatchDoc
+            {
+                op = "replace",
+                path = "/IsMultipleAccounts",
+                value = true
+            };
+
+            BudgetUpdate.Add(IsMultipleAccountsPatch);
+            await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+
+            BankAccounts Account = new BankAccounts
+            {
+                BankAccountName = "My Default Account",
+                AccountBankBalance = App.DefaultBudget.BankBalance,
+                IsDefaultAccount = true
+
+            };
+
+            await _ds.AddBankAccounts(App.DefaultBudgetID, Account);
+
+            MultipleAccountsBottomSheet page = new MultipleAccountsBottomSheet(_pt, _ds);
+
+            page.Detents = new DetentsCollection()
+            {
+                new ContentDetent(),
+                new FullscreenDetent()
+            };
+
+            page.HasBackdrop = true;
+            page.CornerRadius = 0;
+
+            App.CurrentBottomSheet = page;
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
+
+            await page.ShowAsync();
+            App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "MultipleAccounts_Tapped");
+        }
+
+
+    }
+
+    private async void viewMultipleAccountsButton_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await Shell.Current.GoToAsync($"{nameof(ViewAccounts)}");
+
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "viewMultipleAccountsButton_Tapped");
+        }
+    }
+
+    private async void DeactivateMultipleAccounts_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            var result = await Shell.Current.DisplayAlert("Careful, before you proceed!", "Are you sure you want to delete your accounts and budget with only a single balance to manage?", "Yes", "No");
+            if (result)
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.MainPage.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(1);
+
+                await _ds.DeleteBankAccounts(App.DefaultBudgetID);
+
+                List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+
+                PatchDoc IsMultipleAccountsPatch = new PatchDoc
+                {
+                    op = "replace",
+                    path = "/IsMultipleAccounts",
+                    value = false
+                };
+
+                BudgetUpdate.Add(IsMultipleAccountsPatch);
+                await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+                App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+
+                if (App.CurrentBottomSheet != null)
+                {
+                    await App.CurrentBottomSheet.DismissAsync();
+                    App.CurrentBottomSheet = null;
+                }
+
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "DeactivateMultipleAccounts_Tapped");
         }
     }
 }

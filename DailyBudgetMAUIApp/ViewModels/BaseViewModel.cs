@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Pages;
 
@@ -15,7 +16,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string  title;
         [ObservableProperty]
         private bool isPremiumAccount = App.IsPremiumAccount;
-
 
         public BaseViewModel()
         {
@@ -39,7 +39,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         private async Task HandleConnectivityChangeAsync(ConnectivityChangedEventArgs e)
         {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet && !App.IsBackgrounded)
             {
 
                 //TODO: SHOW POPUP

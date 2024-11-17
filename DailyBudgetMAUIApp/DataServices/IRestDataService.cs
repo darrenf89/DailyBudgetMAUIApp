@@ -114,5 +114,13 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<CustomerSupportMessage> AddReply(int SupportID, CustomerSupportMessage Reply);
         public Task<string> SaveSupportFile(FileResult File);
         public Task<Stream> DownloadFile(int SupportID);
+        public Task<string> PatchSupport(int SupportID, List<PatchDoc> PatchDoc);
+        public Task<string> DeleteSupportFile(int SupportID);
+        public Task<string> SetAllMessagesRead(int SupportID);
+        public Task<List<BankAccounts>> GetBankAccounts(int BudgetID);
+        public Task<BankAccounts> AddBankAccounts(int BudgetID, BankAccounts Account);
+        public Task<BankAccounts> UpdateBankAccounts(int BudgetID, BankAccounts Account);
+        public Task<string> DeleteBankAccounts(int BudgetID);        
+        public Task<string> DeleteBankAccount(int ID);
     }
 }

@@ -29,6 +29,8 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public int?  categoryID;
         [ObservableProperty]
+        public int?  accountID;
+        [ObservableProperty]
         public bool  isTransacted;
         [ObservableProperty]
         public string?  savingsSpendType;

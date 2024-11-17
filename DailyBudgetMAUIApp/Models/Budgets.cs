@@ -35,6 +35,8 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         private bool  isCreated ;
         [ObservableProperty]
+        private bool isMultipleAccounts;
+        [ObservableProperty]
         private DateTime  lastUpdated ;
         [ObservableProperty]
         private List<IncomeEvents>  incomeEvents  = new List<IncomeEvents>();
@@ -50,6 +52,8 @@ namespace DailyBudgetMAUIApp.Models
         private List<PayPeriodStats>  payPeriodStats  = new List<PayPeriodStats>();
         [ObservableProperty]
         private List<BudgetHstoryLastPeriod>  budgetHistory  = new List<BudgetHstoryLastPeriod>();
+        [ObservableProperty]
+        private List<BankAccounts>? bankAccounts;
         [ObservableProperty]
         private string?  currencyType ;
         [ObservableProperty]

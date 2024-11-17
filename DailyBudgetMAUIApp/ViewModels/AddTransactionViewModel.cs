@@ -30,6 +30,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool  isPayee;
         [ObservableProperty]
+        private bool  isAccount;
+        [ObservableProperty]
+        private bool isMultipleAccounts;
+        [ObservableProperty]
         private bool  isSpendCategory;
         [ObservableProperty]
         private bool  isNote;
@@ -37,6 +41,12 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string  navigatedFrom;
         [ObservableProperty]
         private string redirectTo;
+        [ObservableProperty]
+        private string? defaultAccountName;
+        [ObservableProperty]
+        private List<BankAccounts> bankAccounts;
+        [ObservableProperty]
+        private BankAccounts? selectedBankAccount;
 
 
 
@@ -96,6 +106,17 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
 
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
+                }
+                else if (string.Equals(RedirectTo, "ViewAccounts", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
+
+                    await Shell.Current.GoToAsync($"..");
                 }
                 else
                 {

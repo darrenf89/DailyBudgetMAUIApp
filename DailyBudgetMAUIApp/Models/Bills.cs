@@ -37,5 +37,8 @@ namespace DailyBudgetMAUIApp.Models
         public string? category = "";
         [ObservableProperty]
         public int? categoryID = 0;
+        [ObservableProperty]
+        public int? accountID;
+
     }  
 }

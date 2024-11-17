@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            x:Class="DailyBudgetMAUIApp.Handlers.PopupMoveAccountBalance"
+            xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+            xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+            xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+            xmlns:SfControls="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+            CanBeDismissedByTappingOutsideOfPopup="False"
+            Color="#80000000">
+    <ScrollView>   
+    <AbsoluteLayout x:Name="AbsLayout">
+        <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0">
+            <Border BackgroundColor="{DynamicResource White}" Margin="15,160,15,0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16"  StrokeThickness="2">
+                <VerticalStackLayout>
+                    <VerticalStackLayout x:Name="vslSavingComplete">
+                        <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label x:Name="lblTitle" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="5,10,5,0" Text="Move balance"/>
+                        </HorizontalStackLayout>
+                        <Grid ColumnDefinitions="*,4*,*" RowDefinitions="Auto,Auto,Auto">
+                            <VerticalStackLayout Margin="0,10,0,0" Grid.Row="0" Grid.Column="1">
+                                <Label FontAttributes="Bold" Text="Enter an amount to move!" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" Margin="0,0,0,6"/>
+                                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="0,0,0,0" BackgroundColor="White" >
+                                    <handlers:BorderlessEntry Margin="10,0,0,0" VerticalOptions="Center" IsVisible="True" TextColor="{DynamicResource Success}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" CharacterSpacing="2" x:Name="entAmount" TextChanged="Amount_Changed" Keyboard="Numeric" />
+                                </Border>
+                            </VerticalStackLayout>
+                            <Grid Margin="10,30,10,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ColumnDefinitions="2*,*" RowDefinitions="Auto,Auto,0,Auto,Auto">
+                                <Label Text="From" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{StaticResource Primary}" HorizontalOptions="Start" Margin="10,0,0,0"/>
+                                <SfControls:SfComboBox DropDownItemHeight="50" DropDownBackground="White" SelectedItem="{Binding FromSelectedMoveBalance}" DisplayMemberPath="Name"  ItemsSource="{Binding MoveBalances}" IsEnabled="{Binding FromEnabled}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" SelectedDropDownItemBackground="{StaticResource PrimaryLightLight}"  MaxDropDownHeight="250" DropDownIconColor="{StaticResource Info}" Stroke="{StaticResource Info}" Grid.Column="0" Grid.Row="1" HorizontalOptions="Fill" Margin="15,0,10,0" IsClearButtonVisible="false" SelectionMode="Single">
+                                    <SfControls:SfComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <ViewCell>
+                                                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto" BackgroundColor="Transparent" Padding="10,0,10,0" VerticalOptions="Center">
+                                                    <Image Grid.Row="0" Grid.Column="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,10,0">
+                                                        <Image.Source>
+                                                                <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{Binding Type, Converter={StaticResource EventTypeToGlyph}}" Size="15"  Color="{DynamicResource PrimaryDark}"/>
+                                                        </Image.Source>
+                                                    </Image>
+                                                    <Label FontAttributes="Bold" Grid.Row="0" Grid.Column="1" Text="{Binding Name}" VerticalTextAlignment="Center" Padding="0" Margin="2" FontSize="{Binding Source=Small,Converter={StaticResource StringToSizeConverter}}"/>
+                                                    <Label FontAttributes="Bold" Grid.Row="0" Grid.Column="2" Text="{Binding Balance,Converter={StaticResource DecimalToCurrencyString}}" TextColor="{Binding Balance,Converter={StaticResource AmountToColor}}" VerticalTextAlignment="Center" Padding="0" Margin="2" FontSize="{Binding Source=Small,Converter={StaticResource StringToSizeConverter}}"/>
+                                                </Grid>                                                
+                                            </ViewCell>
+                                        </DataTemplate>
+                                    </SfControls:SfComboBox.ItemTemplate>
+                                </SfControls:SfComboBox>
+                                <Border Grid.Row="1" Grid.Column="1" Style="{Binding FromBalanceStyle}" HeightRequest="34" Padding="0" Margin="10,0,20,0">
+                                    <Label Text="{Binding FromNewBalanceString}" TextColor="{Binding FromBalanceColor}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0" VerticalOptions="Center" HorizontalOptions="Center" Margin="0"/>
+                                </Border>
+                                <Label Text="To" Grid.Column="0" Grid.Row="3" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{StaticResource Primary}" HorizontalOptions="Start" Margin="10,0,0,0"/>
+                                <SfControls:SfComboBox DropDownItemHeight="50" DropDownBackground="White" SelectedItem="{Binding ToSelectedMoveBalance}" DisplayMemberPath="Name"  ItemsSource="{Binding MoveBalances}" IsEnabled="{Binding ToEnabled}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" SelectedDropDownItemBackground="{StaticResource PrimaryLightLight}"  MaxDropDownHeight="250" DropDownIconColor="{StaticResource Info}" Stroke="{StaticResource Info}" Grid.Column="0" Grid.Row="4" HorizontalOptions="Fill" Margin="15,0,10,0" IsClearButtonVisible="false" SelectionMode="Single">
+                                    <SfControls:SfComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <ViewCell>
+                                                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto" BackgroundColor="Transparent" Padding="10,0,10,0" VerticalOptions="Center">
+                                                    <Image Grid.Row="0" Grid.Column="0" HorizontalOptions="End" VerticalOptions="Center">
+                                                        <Image.Source>
+                                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding Type, Converter={StaticResource EventTypeToGlyph}}" Size="15"  Color="{DynamicResource PrimaryDark}" />
+                                                        </Image.Source>
+                                                    </Image>
+                                                    <Label FontAttributes="Bold" Grid.Row="0" Grid.Column="1" Text="{Binding Name}" VerticalTextAlignment="Center" Padding="0" Margin="2" FontSize="{Binding Source=Small,Converter={StaticResource StringToSizeConverter}}"/>
+                                                    <Label FontAttributes="Bold" Grid.Row="0" Grid.Column="2" Text="{Binding Balance,Converter={StaticResource DecimalToCurrencyString}}" TextColor="{Binding Balance,Converter={StaticResource AmountToColor}}" VerticalTextAlignment="Center" Padding="0" Margin="2" FontSize="{Binding Source=Small,Converter={StaticResource StringToSizeConverter}}"/>
+                                                </Grid>
+                                            </ViewCell>
+                                        </DataTemplate>
+                                    </SfControls:SfComboBox.ItemTemplate>
+                                </SfControls:SfComboBox>
+                                <Border Grid.Row="4" Grid.Column="1" Style="{Binding ToBalanceStyle}" HeightRequest="34" Padding="0" Margin="10,0,20,0">
+                                    <Label Text="{Binding ToNewBalanceString}" TextColor="{Binding ToBalanceColor}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0" VerticalOptions="Center" HorizontalOptions="Center" Margin="0"/>
+                                </Border>
+                            </Grid>
+                            <HorizontalStackLayout IsVisible="false" Margin="15,2,0,0" x:Name="validator" HorizontalOptions="Fill" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label x:Name="lblValidator" Text="" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                    <Grid Margin="20,25,20,20" RowDefinitions="*" ColumnDefinitions="80,*,10,*" x:Name="grdUpdateBtns" IsVisible="True">
+                        <Button FontSize="{Binding Source=Small,Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Fill"  Grid.Row="0" Grid.Column="1" Margin="0" x:Name="btnCancel" Text="Cancel" Clicked="CancelUpdate_Saving" BackgroundColor="{StaticResource Tertiary}" TextColor="White" Padding="5,0" />
+                        <Button FontSize="{Binding Source=Small,Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Fill"  Grid.Row="0" Grid.Column="3" Margin="0" x:Name="btnAccept" Text="Update Balances" Clicked="AcceptUpdate_Saving" BackgroundColor="{StaticResource Primary}" TextColor="White" Padding="5,0" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </AbsoluteLayout>
+    </ScrollView>
+</xct:Popup>

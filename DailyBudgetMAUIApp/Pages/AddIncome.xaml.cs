@@ -85,6 +85,38 @@ public partial class AddIncome : BasePage
             double IncomeAmount = (double?)_vm.Income.IncomeAmount ?? 0;
             entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
 
+            _vm.IsMultipleAccounts = App.DefaultBudget.IsMultipleAccounts && _vm.IsPremiumAccount;
+            if (_vm.IsMultipleAccounts)
+            {
+                _vm.BankAccounts = await _ds.GetBankAccounts(_vm.BudgetID);
+
+                if (_vm.Income.IncomeEventID == 0 || _vm.Income.AccountID == 0)
+                {
+                    BankAccounts? B = _vm.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                    _vm.SelectedBankAccount = B;
+                    _vm.Income.AccountID = B.ID;
+                }
+                else
+                {
+                    BankAccounts? B = _vm.BankAccounts.Where(b => b.ID == _vm.Income.AccountID.GetValueOrDefault()).FirstOrDefault();
+                    if (B != null)
+                    {
+                        _vm.SelectedBankAccount = B;
+                        _vm.Income.AccountID = B.ID;
+                    }
+                    else
+                    {
+                        B = _vm.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                        _vm.SelectedBankAccount = B;
+                        _vm.Income.AccountID = B.ID;
+                    }
+                }
+            }
+            else
+            {
+                _vm.Income.AccountID = null;
+            }
+
             base.OnAppearing();
 
             if (App.CurrentPopUp != null)
@@ -659,6 +691,19 @@ public partial class AddIncome : BasePage
         validatorIncomeName.IsVisible = false;  
 
         _vm.IsPageValid = true;
+    }
+
+    private void entIsAccount_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            _vm.Income.AccountID = _vm.SelectedBankAccount.ID;
+        }
+        catch (Exception ex)
+        {
+
+            _pt.HandleException(ex, "AddIncome", "entIsAccount_SelectedIndexChanged");
+        }
     }
 
 }

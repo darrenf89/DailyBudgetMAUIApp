@@ -23,10 +23,18 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
             base.OnNewToken(token);
             bool success = true;
 
-            if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
+            try
             {
-                success = SecureStorage.Default.Remove("FirebaseToken");
-                success = SecureStorage.Default.Remove("FirebaseID");
+                if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
+                {
+                    success = SecureStorage.Default.Remove("FirebaseToken");
+                    success = SecureStorage.Default.Remove("FirebaseID");
+                }
+
+            }
+            catch (Java.Security.GeneralSecurityException ex)
+            {                
+                SecureStorage.Default.RemoveAll();
             }
 
             if (success)
@@ -76,11 +84,16 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
         {
             var intent = new Intent(this, typeof(MainActivity));
             intent.AddFlags(ActivityFlags.ClearTop);
+            string notificationType = "";
 
             foreach(var key in data.Keys)
             {
                 string value = data[key];
                 intent.PutExtra(key, value);
+                if(key == "NavigationType")
+                {
+                    notificationType = value;
+                }
             }
 
             PendingIntent pendingIntent = null;
@@ -92,15 +105,40 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
             {
                 pendingIntent = PendingIntent.GetActivity(this, MainActivity.NotificationID, intent, PendingIntentFlags.OneShot);
             }
-            
 
-            var notificationBuilder = new NotificationCompat.Builder(this, MainActivity.Channel_ID)
-                .SetContentTitle(title)
-                .SetContentText(messageBody)
-                .SetSmallIcon(Resource.Mipmap.appicon)
-                .SetChannelId(MainActivity.Channel_ID)
-                .SetContentIntent(pendingIntent)
-                .SetPriority(1);
+            NotificationCompat.Builder notificationBuilder;
+
+            switch (notificationType)
+            {
+                case "ShareBudget":
+                    notificationBuilder = new NotificationCompat.Builder(this, MainActivity.Channel_ID)
+                        .SetContentTitle(title)
+                        .SetContentText(messageBody)
+                        .SetSmallIcon(Resource.Mipmap.appicon)
+                        .SetChannelId(MainActivity.Channel_ID)
+                        .SetContentIntent(pendingIntent)
+                        .SetPriority(1);
+                    break;
+                case "SupportReplay":
+                    notificationBuilder = new NotificationCompat.Builder(this, MainActivity.Support_Channel_ID)
+                        .SetContentTitle(title)
+                        .SetContentText(messageBody)
+                        .SetSmallIcon(Resource.Mipmap.appicon)
+                        .SetChannelId(MainActivity.Channel_ID)
+                        .SetContentIntent(pendingIntent)
+                        .SetPriority(1);
+                    break;
+                default:
+                    notificationBuilder = new NotificationCompat.Builder(this, MainActivity.Channel_ID)
+                        .SetContentTitle(title)
+                        .SetContentText(messageBody)
+                        .SetSmallIcon(Resource.Mipmap.appicon)
+                        .SetChannelId(MainActivity.Channel_ID)
+                        .SetContentIntent(pendingIntent)
+                        .SetPriority(1);
+                    break;
+
+            }
 
             var notificationManager = NotificationManagerCompat.From(this);
             notificationManager.Notify(MainActivity.NotificationID, notificationBuilder.Build());               

@@ -5,6 +5,123 @@ using OnScreenSizeMarkup.Maui.Helpers;
 
 namespace DailyBudgetMAUIApp.Converters
 {
+    public class BoolToColorDisabledReverse : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
+
+            if (value == null) return null;
+
+            bool IsTransacted = (bool)value;
+
+            if (!IsTransacted)
+            {
+                return Color.FromArgb("#FFFFFFFF");
+            }
+            else
+            {
+                return Color.FromArgb("#F2E1E1E1"); ;
+            }
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+    public class MessageMarginConverter : IValueConverter
+    {
+
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            // Check if the message is from the customer
+            bool isCustomerMessage = (bool)value;
+
+            // Return margin based on sender type
+            // Adjust the numbers as needed to position the tail correctly
+            if (isCustomerMessage)
+            {
+                // Position tail on the left side for customer messages
+                return new Thickness(40, 0, 5, 0);  // Adjust as needed
+            }
+            else
+            {
+                // Position tail on the right side for staff messages
+                return new Thickness(5, 0, 40, 0);  // Adjust as needed
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class TailMarginConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            // Check if the message is from the customer
+            bool isCustomerMessage = (bool)value;
+
+            // Return margin based on sender type
+            // Adjust the numbers as needed to position the tail correctly
+            if (isCustomerMessage)
+            {
+                // Position tail on the left side for customer messages
+                return new Thickness(10, 0, 0, -10);  // Adjust as needed
+            }
+            else
+            {
+                // Position tail on the right side for staff messages
+                return new Thickness(0, 0, 10, -10);  // Adjust as needed
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class CustomerMessageColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Application.Current.Resources.TryGetValue("TertiaryLight", out var TertiaryLight);
+            Application.Current.Resources.TryGetValue("PrimaryLightLight", out var PrimaryLightLight);
+
+            bool isCustomerMessage = (bool)value;
+            return isCustomerMessage ? TertiaryLight : PrimaryLightLight;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+    }
+
+    public class MessageAlignmentConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool isCustomerMessage = (bool)value;
+            return isCustomerMessage ? LayoutOptions.End : LayoutOptions.Start;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+    }
+    public class ReverseMessageAlignmentConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool isCustomerMessage = (bool)value;
+            return isCustomerMessage ? LayoutOptions.Start : LayoutOptions.End;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+    }
+
     public class CreateNewPayeeConverter : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -305,9 +422,16 @@ namespace DailyBudgetMAUIApp.Converters
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null) return null;
-
-            decimal Amount = (decimal)value;
+            decimal Amount;
+            if (value == null)             
+            {
+                Amount = 0;
+            }
+            else
+            {
+                Amount = (decimal)value;
+            }
+            
             if(Amount == -1)
             {
                 return "Pay day tomorrow";
@@ -1149,6 +1273,7 @@ namespace DailyBudgetMAUIApp.Converters
         }
 
     }
+
     public class IsSpendCategoryStringText : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -1653,6 +1778,9 @@ namespace DailyBudgetMAUIApp.Converters
                     break;                
                 case "XL":
                     output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(50, 42, 46, 46, 50, 60);
+                    break;                
+                case "XS":
+                    output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(8, 4, 6, 6, 8, 10);
                     break;
                 default:
                     output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(14, 10, 12, 12, 14, 16);

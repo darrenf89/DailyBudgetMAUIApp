@@ -42,7 +42,7 @@
                                 <TapGestureRecognizer x:Name="EditBudgetSettings" Tapped="EditBudgetSettings_Tapped"/>
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10">
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" x:Name="viewSyncBankBalance">
                             <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
                                 <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
                                     <Image.Source>
@@ -53,6 +53,19 @@
                             <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Sync Bank Balance" WidthRequest="100"/>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="SyncBankBalance" Tapped="SyncBankBalance_Tapped"  />
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="viewMultipleAccounts">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Account_balance}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="View Accounts" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="viewMultipleAccountsButton" Tapped="viewMultipleAccountsButton_Tapped" />
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
                         <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" x:Name="NewShareBudget">
@@ -94,8 +107,31 @@
                                 <TapGestureRecognizer x:Name="MoveBalance" Tapped="MoveBalance_Tapped" />
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
-
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="vslMultipleAccounts">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Account_balance}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Use Multiple Accounts" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="MultipleAccounts" Tapped="MultipleAccounts_Tapped" />
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="NotMultipleAccounts">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Account_balance}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Deactivate Accounts" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="DeactivateMultipleAccounts" Tapped="DeactivateMultipleAccounts_Tapped" />
+                            </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
                     </FlexLayout>
                     <BoxView Color="{StaticResource Secondary}" Margin="20,0,20,0" HeightRequest="2"/>
@@ -237,7 +273,7 @@
                                     </Image.Source>
                                 </Image>
                             </Border>
-                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="UpgradeAccount" WidthRequest="100"/>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Upgrade Account" WidthRequest="100"/>
                             <VerticalStackLayout.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="UpgradeSubscription" Tapped="UpgradeSubscription_Tapped" />
                             </VerticalStackLayout.GestureRecognizers>

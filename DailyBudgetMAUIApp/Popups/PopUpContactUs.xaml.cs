@@ -18,6 +18,7 @@ public partial class PopUpContactUs : Popup
         BindingContext = viewModel;
         _vm = viewModel;
 
+        WeakReferenceMessenger.Default.UnregisterAll(this);
         WeakReferenceMessenger.Default.Register<ClosePopupMessage>(this, (r, m) =>
         {
             try
@@ -37,6 +38,11 @@ public partial class PopUpContactUs : Popup
 
             }            
         });
+    }
+
+    ~PopUpContactUs()
+    {
+        WeakReferenceMessenger.Default.UnregisterAll(this);
     }
 
     private void ClosePopup_Clicked(object sender, EventArgs e)
