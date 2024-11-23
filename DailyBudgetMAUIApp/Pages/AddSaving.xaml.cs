@@ -706,8 +706,8 @@ public partial class AddSaving : BasePage
             {
                 if(!(_vm.NavigatedFrom == "ViewSavings" || _vm.NavigatedFrom == "ViewEnvelopes"))
                 {
-                    entCurrentBalance.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
-                    _vm.Saving.CurrentBalance = SavingValue;
+                    //entCurrentBalance.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
+                    //_vm.Saving.CurrentBalance = SavingValue;
                 }
             }
 

@@ -11,6 +11,9 @@ using DailyBudgetMAUIApp.Handlers;
 using CommunityToolkit.Maui.Views;
 using Plugin.Maui.AppRating;
 using Plugin.MauiMTAdmob;
+using System.Globalization;
+using CommunityToolkit.Mvvm.Messaging;
+using static DailyBudgetMAUIApp.Pages.ViewAccounts;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -48,6 +51,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private double  signOutButtonWidth;
         [ObservableProperty]
+        private double  screenWidth;
+        [ObservableProperty]
         private SfCarousel  savingCarousel;
         [ObservableProperty]
         private SfCarousel  billCarousel;
@@ -84,6 +89,14 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool isUnreadMessage;
         [ObservableProperty]
+        private bool isQuickTransaction;
+        [ObservableProperty]
+        private List<Budgets> quickTransactionBudgets = new List<Budgets>();
+        [ObservableProperty]
+        private Budgets selectedQuickTransactionBudget;        
+        [ObservableProperty]
+        private string quickTransactionAmount;
+        [ObservableProperty]
         private ObservableCollection<SchedulerAppointment>  eventList = new ObservableCollection<SchedulerAppointment>();
 
         public delegate void ReloadPageAction();
@@ -94,7 +107,8 @@ namespace DailyBudgetMAUIApp.ViewModels
             _ds = ds;
             _pt = pt;
             _ar = ar;
-            double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
+
+            ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             ProgressBarWidthRequest = ScreenWidth - 85;
             SignOutButtonWidth = ScreenWidth - 30;
             QuickTransactionWidth = ScreenWidth - 180;
@@ -102,6 +116,73 @@ namespace DailyBudgetMAUIApp.ViewModels
             ProgressBarCarWidthRequest = ScreenWidth - 115;
 
             ChartBrushes = App.ChartBrush;
+        }
+
+
+        [RelayCommand]
+        async Task QuickTransaction(object obj)
+        {
+            try
+            {
+                if (QuickTransactionBudgets == null || QuickTransactionBudgets.Count == 0)
+                {
+                    QuickTransactionBudgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, "MainPage");                    
+                }
+
+                SelectedQuickTransactionBudget = QuickTransactionBudgets.Where(b => b.BudgetID == App.DefaultBudgetID).FirstOrDefault();
+                QuickTransactionAmount = 0.ToString("c", CultureInfo.CurrentCulture);
+                IsQuickTransaction = !IsQuickTransaction;
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "QuickTransaction");
+            }
+        }
+
+        [RelayCommand]
+        async Task ConfirmQuickTransaction(object obj)
+        {
+            try
+            {
+                Transactions T = new Transactions
+                {
+                    IsSpendFromSavings = false,
+                    SavingID = null,
+                    SavingName = null,
+                    TransactionDate = DateTime.UtcNow,
+                    WhenAdded = DateTime.UtcNow,
+                    IsIncome = false,
+                    Category = null,
+                    Payee = null,
+                    Notes = null,
+                    CategoryID = null,
+                    IsTransacted = true,
+                    SavingsSpendType = null,
+                    EventType = "Transaction"                    
+                };
+
+                await _pt.MakeSnackBar("Processing transaction", null, null, new TimeSpan(0, 0, 10), "Success");
+                IsQuickTransaction = false;
+
+                T.TransactionAmount = (decimal)_pt.FormatCurrencyNumber(QuickTransactionAmount);
+
+                if (SelectedQuickTransactionBudget.IsMultipleAccounts) 
+                {
+                    List<BankAccounts> bankAccounts = await _ds.GetBankAccounts(SelectedQuickTransactionBudget.BudgetID);
+                    T.AccountID = bankAccounts.Where(a=>a.IsDefaultAccount).FirstOrDefault().ID;
+                }
+
+                await _ds.SaveNewTransaction(T, SelectedQuickTransactionBudget.BudgetID);
+                if(App.DefaultBudget.BudgetID == SelectedQuickTransactionBudget.BudgetID)
+                {
+                    WeakReferenceMessenger.Default.Send(new UpdateViewAccount(true, false));
+                }                
+
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "QuickTransaction");
+            }
         }
 
         [RelayCommand]

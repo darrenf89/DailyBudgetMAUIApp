@@ -17,8 +17,8 @@
 		<ApplicationIdGuid>a9e0258c-e381-49fa-aa43-d11c44cf7b75</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.38</ApplicationDisplayVersion>
-		<ApplicationVersion>38</ApplicationVersion>
+		<ApplicationDisplayVersion>1.39</ApplicationDisplayVersion>
+		<ApplicationVersion>39</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -48,11 +48,30 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Platforms\Android\Drawable\circle_green.xml" />
+	  <None Remove="Platforms\Android\Drawable\circle_red.xml" />
+	  <None Remove="Platforms\Android\Drawable\default_background.xml" />
+	  <None Remove="Platforms\Android\Drawable\edittext_background.xml" />
+	  <None Remove="Platforms\Android\Drawable\focused_background.xml" />
+	  <None Remove="Platforms\Android\Drawable\rounded_background.xml" />
+	  <None Remove="Platforms\Android\Drawable\x_icon.xml" />
 	  <None Remove="Platforms\Android\google-services.json" />
+	  <None Remove="Platforms\Android\Layout\floatview.xml" />
 	  <None Remove="Platforms\Android\Resources\xml\network_security_config.xml" />
 	  <None Remove="Resources\Fonts\manolo-mono.ttf" />
 	  <None Remove="Resources\Fonts\MaterialIcons-Regular.ttf" />
 	  <None Remove="Resources\Images\disconnectedpage.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AndroidResource Include="Platforms\Android\Drawable\circle_green.xml" />
+	  <AndroidResource Include="Platforms\Android\Drawable\circle_red.xml" />
+	  <AndroidResource Include="Platforms\Android\Drawable\default_background.xml" />
+	  <AndroidResource Include="Platforms\Android\Drawable\edittext_background.xml" />
+	  <AndroidResource Include="Platforms\Android\Drawable\focused_background.xml" />
+	  <AndroidResource Include="Platforms\Android\Drawable\rounded_background.xml" />
+	  <AndroidResource Include="Platforms\Android\Drawable\x_icon.xml" />
+	  <AndroidResource Include="Platforms\Android\Layout\floatview.xml" />
 	</ItemGroup>
 
 	<ItemGroup>

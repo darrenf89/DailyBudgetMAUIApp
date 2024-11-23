@@ -97,640 +97,670 @@
                 </Border.Shadow>
             </Border>
         </HorizontalStackLayout>-->
-    <Grid ColumnDefinitions="*" RowDefinitions="Auto,*">
-        <Border Style="{DynamicResource DashboardMainContent}" Padding="0,2,0,5" Grid.Row="0" Grid.Column="0" Margin="10,0,10,10">
-            <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto,*" HeightRequest="74">
-                <Label Grid.Row="0" Grid.Column="1" Margin="10,5,0,0" VerticalOptions="End" Text="You are budgeting in"  FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}" FontFamily="OpenSansSemibold"/>
-                <Label LineBreakMode="TailTruncation" Grid.Row="1" Grid.Column="1" Margin="10,0,0,10" Padding="0" VerticalOptions="Start" Text="{Binding DefaultBudget.BudgetName}"  FontSize="{Binding Source=MainTitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" FontAttributes="Bold" FontFamily="OpenSansSemibold"/>
-                <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,0">
-                    <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Margin="0,5,5,0" >
-                    <Button LineBreakMode="TailTruncation" IsVisible="{Binding IsPreviousBudget}" Command="{Binding SwapBudgetCommand}" HorizontalOptions="End" Text="Switch" TextColor="White" BackgroundColor="{StaticResource Tertiary}" MinimumWidthRequest="140" HeightRequest="32" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Margin="0,0,0,5" FontFamily="OpenSansSemibold">
-                        <Button.ImageSource >
-                            <FontImageSource Color="White" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Currency_exchange}" Size="18"/>
-                        </Button.ImageSource>
-                    </Button>
-                    <Button LineBreakMode="TailTruncation" IsVisible="{Binding IsPreviousBudget, Converter={StaticResource BoolConverter}}" Command="{Binding CreateNewBudgetCommand}" HorizontalOptions="End" Text="New Budget" TextColor="White" BackgroundColor="{StaticResource Tertiary}" MinimumWidthRequest="140" HeightRequest="32" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Margin="0,0,0,5" FontFamily="OpenSansSemibold">
-                        <Button.ImageSource >
-                            <FontImageSource Color="White" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.New_label}" Size="18"/>
-                        </Button.ImageSource>
-                    </Button>
-                    <Button LineBreakMode="TailTruncation" Command="{Binding RecalculateBudgetCommand}" HorizontalOptions="End" Text="Reload" TextColor="White" BackgroundColor="{StaticResource Primary}" MinimumWidthRequest="140"  HeightRequest="32" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Margin="0,0,0,0" FontFamily="OpenSansSemibold">
-                        <Button.ImageSource>
-                            <FontImageSource Color="White" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Refresh}" Size="18"/>
-                        </Button.ImageSource>
-                    </Button>
-                </VerticalStackLayout>
-            </Grid>
-        </Border>
-        <ScrollView x:Name="MainScrollView" Grid.Row="1" Grid.Column="0">
-            <VerticalStackLayout VerticalOptions="Start" >
-                <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
-                    <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
-                        <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
-                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
-                            <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Complete Set up"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
-                            <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to finalise your budget's details!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
-                        </VerticalStackLayout>
-                        <Grid BackgroundColor="{DynamicResource Tertiary}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
-                            <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
-                                </Image.Source>
-                            </Image>
-                        </Grid>
-                    </Grid>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
-                    </Border.GestureRecognizers>
-                </Border>
-                <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
-                    <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
-                        <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" x:Name="MainVSLView">
-                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
-                            <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Change selected budget"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
-                            <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="You haven't completed set up for this budget, do you want to change to another budget?" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
-                        </VerticalStackLayout>
-                        <Grid BackgroundColor="{DynamicResource Info}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
-                            <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
-                                </Image.Source>
-                            </Image>
-                        </Grid>
-                    </Grid>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer x:Name="SwitchBudgetMain" Tapped="SwitchBudgetMain_Tapped"/>
-                    </Border.GestureRecognizers>
-                </Border>
-                <Border Style="{DynamicResource DashboardMainContent}" Stroke="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColorLight}}" StrokeThickness="3" Padding="0" >
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto, Auto, *" Padding="0" Margin="0">
-                        <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Padding="20,5,0,5">
-                            <Label  Text="Left of Today's Budget" TextColor="{DynamicResource PrimaryDark}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" VerticalOptions="Center"/>
-                            <Image VerticalOptions="Center" Margin="2,0,0,0">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="20" Color="{DynamicResource PrimaryDark}"/>
-                                </Image.Source>
-                            </Image>
-                        </HorizontalStackLayout>
-                        <Label Grid.Row="1" Grid.Column="1" Padding="20,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <Span Text="Todays budget was: " TextColor="{StaticResource Gray400}" />
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
-                        <Label Grid.Row="1" Grid.Column="2" Padding="2,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <Span FontAttributes="Bold" Text="{Binding DefaultBudget.StartDayDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
-                        <Label Grid.Row="2" Grid.Column="1" Padding="20,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <Span Text="Budget to pay day:  " TextColor="{StaticResource Gray400}"/>
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
-                        <Label Grid.Row="2" Grid.Column="2" Padding="2,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <Span FontAttributes="Bold" Text="{Binding DefaultBudget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
-                        <Label Grid.Row="3" Grid.Column="1" Padding="20,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <Span Text="Est. spend from tomorrow:  " TextColor="{StaticResource Gray400}"/>
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
-                        <Label Grid.Row="3" Grid.Column="2" Padding="2,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <Span FontAttributes="Bold" Text="{Binding FutureDailySpend, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
-                        <gauge:SfRadialGauge  Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" MaximumHeightRequest="100" MaximumWidthRequest="100" Margin="5,0,0,0">
-                            <gauge:SfRadialGauge.Axes>
-                                <gauge:RadialAxis StartAngle="150" EndAngle="30" Minimum="0" Maximum="{Binding DefaultBudget.StartDayDailyAmount}" Interval="0" AnimationDuration="3000" EnableLoadingAnimation="True" RadiusFactor="0.95">
-                                    <gauge:RadialAxis.AxisLineStyle>
-                                        <gauge:RadialLineStyle Fill="{StaticResource DangerLightBrush}"/>
-                                    </gauge:RadialAxis.AxisLineStyle>
-                                    <gauge:RadialAxis.Ranges>
-                                        <gauge:RadialRange StartValue="0" EndValue="{Binding DefaultBudget.LeftToSpendDailyAmount}" Fill="{StaticResource SuccessBrush}"/>
-                                    </gauge:RadialAxis.Ranges>
-                                    <gauge:RadialAxis.Annotations>
-                                        <gauge:GaugeAnnotation x:Name="annotation" DirectionUnit="Angle" DirectionValue="90" PositionFactor="0">
-                                            <gauge:GaugeAnnotation.Content>
-                                                <Label Text="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColor}}" Padding="0,0,0,5" Margin="0"/>
-                                            </gauge:GaugeAnnotation.Content>
-                                        </gauge:GaugeAnnotation>
-                                    </gauge:RadialAxis.Annotations>
-                                </gauge:RadialAxis>
-                            </gauge:SfRadialGauge.Axes>
-                        </gauge:SfRadialGauge>
-                        <VerticalStackLayout Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendDailyAmountHideShow}}" BackgroundColor="{StaticResource InfoLLL}">
-                            <BoxView HeightRequest="2" Color="{StaticResource Info}" />
-                            <Label Padding="5,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Text="Don't worry if you've overspent today, you can still make it up!" TextColor="{DynamicResource Info}"/>
-                        </VerticalStackLayout>
-                        <Grid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendBalanceHideShow}}" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource WarningLightLight}">
-                            <BoxView HeightRequest="2" Color="{StaticResource Warning}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="5,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="No money left to spend, Fix that!" TextColor="{DynamicResource Warning}"/>
-                            <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="35" Color="{DynamicResource Gray600}"/>
-                                </Image.Source>
-                            </Image>
-                        </Grid>
-                    </Grid>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer x:Name="NoMoneyLeft" Tapped="NoMoneyLeft_Tapped"/>
-                    </Border.GestureRecognizers>
-                </Border>
-                <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsUnreadMessage}">
-                    <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
-                        <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
-                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
-                            <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Unread message"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
-                            <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="We have replied to an inquiry click here to view." LineBreakMode="WordWrap" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
-                        </VerticalStackLayout>
-                        <Grid BackgroundColor="{DynamicResource Info}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
-                            <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
-                                </Image.Source>
-                            </Image>
-                        </Grid>
-                    </Grid>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding NavigateViewSupportsCommand}"/>
-                    </Border.GestureRecognizers>
-                </Border>
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding IsPremiumAccount, Converter={StaticResource BoolConverter}}">
-                    <adMob:MTAdView AdsId="ca-app-pub-3940256099942544/6300978111" AdSize="Smart"/>
-                </Border>
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendDailyAmountHideShow}}" >
-                    <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
-                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
-                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,5,5,0">
-                            <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Cover overspend"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
-                            <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Do you want to cover todays overspend with savings?" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
-                        </VerticalStackLayout>
-                        <Grid BackgroundColor="{DynamicResource Success}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
-                            <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Ads_click}" Size="40"  Color="{DynamicResource White}"/>
-                                </Image.Source>
-                            </Image>
-                        </Grid>
-                    </Grid>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer x:Name="CoverOverspend" Tapped="CoverOverspend_Tapped" />
-                    </Border.GestureRecognizers>
-                </Border>
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,10" >
-                    <Grid ColumnDefinitions="*" RowDefinitions="Auto">
-                        <Image Source="mainpagelogo.png" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" MaximumHeightRequest="70" Margin="10,0,0,0" HorizontalOptions="Center" />
-                    </Grid>
-                </Border>
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetShareRequestToBool}}" >
-                    <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
-                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
-                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,5,5,0">
-                            <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Someone wants to Share a Budget"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
-                            <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to Verify a Budget Share Request" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
-                        </VerticalStackLayout>
-                        <Grid BackgroundColor="{DynamicResource PrimaryLight}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
-                            <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
-                                </Image.Source>
-                            </Image>
-                        </Grid>
-                    </Grid>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer x:Name="VerifyBudgetShare" Tapped="VerifyBudgetShare_Tapped" />
-                    </Border.GestureRecognizers>
-                </Border>
-                <Border Padding="0" Style="{DynamicResource DashboardMainContent}" >
-                    <Grid ColumnDefinitions="45, *, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
-                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
-                        <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
+    <AbsoluteLayout>
+        <ImageButton Command="{Binding QuickTransactionCommand}" Source="transaction.png" BackgroundColor="White" AbsoluteLayout.LayoutFlags="PositionProportional" Padding="10" AbsoluteLayout.LayoutBounds="1,1" WidthRequest="60" HeightRequest="60" CornerRadius="32" VerticalOptions="Center" Margin="20" ZIndex="999">
+            <ImageButton.Shadow>
+                <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+            </ImageButton.Shadow>
+        </ImageButton>
+        <Grid WidthRequest="{Binding ScreenWidth}" RowDefinitions="Auto" ColumnDefinitions="*" AbsoluteLayout.LayoutFlags="PositionProportional" Padding="20" Margin="0,0,0,80" AbsoluteLayout.LayoutBounds="1,1" IsVisible="{Binding IsQuickTransaction}" IsEnabled="{Binding IsQuickTransaction}" BackgroundColor="Transparent" ZIndex="99">
+            <Border Style="{DynamicResource DashboardMainContent}" StrokeShape="RoundRectangle 15" Padding="10,0,10,0" Margin="0" StrokeThickness="0" Stroke="{StaticResource BlackBrush}" HorizontalOptions="Fill" Grid.Row="0" Grid.Column="0">
+                <Border.Shadow>
+                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+                </Border.Shadow>
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                    <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Margin="0" Padding="0">
+                        <handlers:BorderlessPicker TextColor="{StaticResource PrimaryDark}" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" Grid.ColumnSpan="2" VerticalOptions="Center" HorizontalOptions="Start" SelectedItem="{Binding SelectedQuickTransactionBudget}" ItemDisplayBinding="{Binding BudgetName}" ItemsSource="{Binding QuickTransactionBudgets}"/>
+                        <Image>
                             <Image.Source>
-                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
+                                <FontImageSource Color="{StaticResource Gray600}" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Arrow_drop_down}" Size="35"/>
                             </Image.Source>
-                            <Image.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="BudgetMoreOptions" Tapped="BudgetMoreOptions_Tapped" />
-                            </Image.GestureRecognizers>
                         </Image>
-                        <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding DefaultBudget.BudgetName}" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="10,5,0,0" TextColor="{StaticResource Primary}" Margin="0"/>
-                        <HorizontalStackLayout Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" VerticalOptions="End">
-                            <Label Text="{Binding DefaultBudget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"  VerticalTextAlignment="End" VerticalOptions="End" Padding="10,0,0,0" Margin="0"/>
-                            <Label Text="{Binding MaxBankBalance, Converter={StaticResource DecimalToCurrencyString}, StringFormat='({0})'}" CharacterSpacing="0.1" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,2" VerticalTextAlignment="End" VerticalOptions="End" Margin="0"/>
-                        </HorizontalStackLayout>
-                        <Label Text="Current Bank Balance" Grid.Column="1" Grid.Row="3" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
-                        <progressBar:SfLinearProgressBar AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" ZIndex="999" Grid.Row="6" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" Background="Transparent" TrackFill="Transparent" SecondaryProgressFill="Transparent" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,5,10,5" Minimum="0" Maximum="{Binding MaxBankBalance}" Progress="{Binding DefaultBudget.LeftToSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
-                        <progressBar:SfLinearProgressBar AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" SecondaryProgressFill="{StaticResource PrimaryLight}" ProgressFill="{StaticResource Tertiary}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,5,10,5" Minimum="0" Maximum="{Binding MaxBankBalance}" Progress="{Binding DefaultBudget.PlusStashSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
-                        <Label Grid.Column="1" Grid.Row="4" Text="Money to Spend" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Success}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
-                        <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="1" Grid.Row="5" Text="{Binding DefaultBudget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
-                        <Label Grid.Column="2" Grid.Row="4" Text="Available Money" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource PrimaryDark}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
-                        <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="2" Grid.Row="5" Text="{Binding DefaultBudget.MoneyAvailableBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
-                        <Label Grid.Column="1" Grid.Row="8" Text="Balance plus Stash" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Tertiary}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
-                        <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="1" Grid.Row="9" Text="{Binding DefaultBudget.PlusStashSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
-                        <Label Grid.Column="2" Grid.Row="8" Text="Current Bank Balance" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray500}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
-                        <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="2" Grid.Row="9" Text="{Binding DefaultBudget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
-                        <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="10" Margin="10,5,10,10"/>
-                        <HorizontalStackLayout Grid.Row="11" Grid.Column="1" Margin="10,0,10,0">
-                            <Label VerticalOptions="Center" Text="Days to Pay Day | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
-                            <Label VerticalOptions="Center" Text="{Binding DefaultBudget.NextIncomePayday, Converter={StaticResource DateToNumberOfDays}}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
-                        </HorizontalStackLayout>
-                        <HorizontalStackLayout Grid.Row="12" Grid.Column="1" Margin="10,0,10,0">
-                            <Label VerticalOptions="Center" Text="Due Date | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
-                            <Label VerticalOptions="Center" Text="{Binding DefaultBudget.NextIncomePayday, StringFormat='{0:dd MMM yy}'}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
-                        </HorizontalStackLayout>
-                        <HorizontalStackLayout Grid.Row="13" Grid.Column="1" Margin="10,0,10,10">
-                            <Label VerticalOptions="Center" Text="Pay Day Amount | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
-                            <Label VerticalOptions="Center" Text="{Binding DefaultBudget.PaydayAmount, StringFormat='{0:c}'}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
-                        </HorizontalStackLayout>
-                    </Grid>
-                </Border>
-                <Border Padding="0" Style="{DynamicResource DashboardMainContent}" x:Name="brdYourTransactions">
-                    <VerticalStackLayout>
-                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="45,*,*">
-                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
-                            <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
-                                </Image.Source>
-                                <Image.GestureRecognizers>
-                                    <TapGestureRecognizer x:Name="YourTransactionsOption" Tapped="YourTransactionsOption_Tapped" />
-                                </Image.GestureRecognizers>
-                            </Image>
-                            <Label Text="Your Transactions" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="10,5,0,10" TextColor="{StaticResource Primary}" Margin="0"/>
-                            <Label Text="Transactions Today" Grid.Column="1" Grid.Row="2" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
-                            <Label Grid.Column="1" Grid.Row="1" Text="{Binding DefaultBudget.AccountInfo.NumberOfTransactionsToday}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
-                            <Label Text="Spent Today" Grid.Column="2" Grid.Row="2" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
-                            <Label Grid.Column="2" Grid.Row="1" Text="{Binding DefaultBudget.AccountInfo.TransactionValueToday, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
-                            <Label Text="Spent This Period" Grid.Column="1" Grid.Row="4" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
-                            <Label Grid.Column="1" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.TransactionValueThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
-                            <Label Text="Income This Period" Grid.Column="2" Grid.Row="4" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
-                            <Label Grid.Column="2" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.IncomeThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
-                            <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5" Margin="10,5,10,10"/>
-                            <VerticalStackLayout x:Name="vslRecentTransactions" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" IsVisible="false">
-                                <sfList:SfListView x:Name="LVTransactions" AllowSwiping="True" AutoFitMode="DynamicHeight" ItemsSource="{Binding RecentTransactions}" SelectionMode="None" ItemSpacing="10,5,10,5">
-                                    <sfList:SfListView.StartSwipeTemplate>
-                                        <DataTemplate x:Name="StartSwipeTemplate">
-                                            <Border Stroke="Transparent" StrokeThickness="0">
-                                                <Grid VerticalOptions="Center" HorizontalOptions="Center" ColumnDefinitions="50,50" RowDefinitions="*" BackgroundColor="Transparent">
-                                                    <Border Grid.Column="0" BackgroundColor="{StaticResource InfoLight}" StrokeThickness="0" Padding="10,10,10,10" Stroke="Transparent">
-                                                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0">
-                                                            <Image.Source>
-                                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="30"  Color="{DynamicResource Info}" />
-                                                            </Image.Source>
-                                                        </Image>
-                                                        <Border.GestureRecognizers>
-                                                            <TapGestureRecognizer Tapped="EditTransaction_Tapped" CommandParameter="{Binding .}"/>
-                                                        </Border.GestureRecognizers>
-                                                    </Border>
-                                                    <Border Grid.Column="1" BackgroundColor="{StaticResource DangerLight}" StrokeThickness="0" Padding="10,10,10,10" Stroke="Transparent">
-                                                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0">
-                                                            <Image.Source>
-                                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete_forever }" Size="30"  Color="{DynamicResource Danger}" />
-                                                            </Image.Source>
-                                                        </Image>
-                                                        <Border.GestureRecognizers>
-                                                            <TapGestureRecognizer Tapped="DeleteTransaction_Tapped" CommandParameter="{Binding .}"/>
-                                                        </Border.GestureRecognizers>
-                                                    </Border>
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </sfList:SfListView.StartSwipeTemplate>
-                                    <sfList:SfListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <ViewCell>
-                                                <ViewCell.View>
-                                                    <Border Style="{DynamicResource ListViewContent}">
-                                                        <Grid BackgroundColor="Transparent" RowDefinitions="60,Auto" ColumnDefinitions="*">
-                                                            <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" ColumnDefinitions="3*,*,Auto" >
-                                                                <Label Padding="10,5,0,0" Grid.Row="0" Grid.Column="0" HorizontalOptions="Start" Text="{Binding TransactionAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{Binding IsIncome, Converter={StaticResource BoolToColor}}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" CharacterSpacing="0"/>
-                                                                <Label Padding="10,0,0,5" Grid.Row="1" Grid.Column="0" HorizontalOptions="Start" Text="{Binding TransactionDate, StringFormat='{0:dd MMMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" CharacterSpacing="0"/>
-                                                                <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center" Margin="0,7,10,0">
-                                                                    <Image.Source>
-                                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding EventType, Converter={StaticResource EventTypeToGlyph}}" Size="30"  Color="{DynamicResource PrimaryDark}" />
-                                                                    </Image.Source>
-                                                                </Image>
-                                                                <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" HorizontalOptions="End" VerticalOptions="Center" Margin="0,7,10,0">
-                                                                    <Image.Source>
-                                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Double_arrow}" Size="15"  Color="{DynamicResource Gray900}" />
-                                                                    </Image.Source>
-                                                                </Image>
-                                                            </Grid>
-                                                            <Grid Grid.Row="1" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto,*">
-
-                                                            </Grid>
-                                                        </Grid>
-                                                    </Border>
-                                                </ViewCell.View>
-                                            </ViewCell>
-                                        </DataTemplate>
-                                    </sfList:SfListView.ItemTemplate>
-                                </sfList:SfListView>
+                    </HorizontalStackLayout>
+                    <Border Grid.Row="1" Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Fill" Margin="0,0,20,5" StrokeThickness="0">
+                        <Entry x:Name="entQuickTransaction" TextChanged="QuickTransaction_TextChanged" Keyboard="Numeric" Text="{Binding QuickTransactionAmount}" TextColor="{StaticResource Success}" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" CursorPosition="{Binding QuickTransactionCursorPosition}"/>
+                    </Border>                    
+                    <Button Text="Confirm" Style="{StaticResource buttonApply}" Command="{Binding ConfirmQuickTransactionCommand}" Margin="0,0,0,10" Padding="25,0,25,0" Grid.Row="1" Grid.Column="1" VerticalOptions="End" HorizontalOptions="Center"/>
+                </Grid>
+            </Border>
+        </Grid>
+        <Grid AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1" ColumnDefinitions="*" RowDefinitions="Auto,*">
+            <Border Style="{DynamicResource DashboardMainContent}" Padding="0,2,0,5" Grid.Row="0" Grid.Column="0" Margin="10,0,10,10">
+                <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto,*" HeightRequest="74">
+                    <Label Grid.Row="0" Grid.Column="1" Margin="10,5,0,0" VerticalOptions="End" Text="You are budgeting in"  FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}" FontFamily="OpenSansSemibold"/>
+                    <Label LineBreakMode="TailTruncation" Grid.Row="1" Grid.Column="1" Margin="10,0,0,10" Padding="0" VerticalOptions="Start" Text="{Binding DefaultBudget.BudgetName}"  FontSize="{Binding Source=MainTitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" FontAttributes="Bold" FontFamily="OpenSansSemibold"/>
+                    <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,0">
+                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Margin="0,5,5,0" >
+                        <Button LineBreakMode="TailTruncation" IsVisible="{Binding IsPreviousBudget}" Command="{Binding SwapBudgetCommand}" HorizontalOptions="End" Text="Switch" TextColor="White" BackgroundColor="{StaticResource Tertiary}" MinimumWidthRequest="140" HeightRequest="32" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Margin="0,0,0,5" FontFamily="OpenSansSemibold">
+                            <Button.ImageSource >
+                                <FontImageSource Color="White" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Currency_exchange}" Size="18"/>
+                            </Button.ImageSource>
+                        </Button>
+                        <Button LineBreakMode="TailTruncation" IsVisible="{Binding IsPreviousBudget, Converter={StaticResource BoolConverter}}" Command="{Binding CreateNewBudgetCommand}" HorizontalOptions="End" Text="New Budget" TextColor="White" BackgroundColor="{StaticResource Tertiary}" MinimumWidthRequest="140" HeightRequest="32" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Margin="0,0,0,5" FontFamily="OpenSansSemibold">
+                            <Button.ImageSource >
+                                <FontImageSource Color="White" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.New_label}" Size="18"/>
+                            </Button.ImageSource>
+                        </Button>
+                        <Button LineBreakMode="TailTruncation" Command="{Binding RecalculateBudgetCommand}" HorizontalOptions="End" Text="Reload" TextColor="White" BackgroundColor="{StaticResource Primary}" MinimumWidthRequest="140"  HeightRequest="32" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Margin="0,0,0,0" FontFamily="OpenSansSemibold">
+                            <Button.ImageSource>
+                                <FontImageSource Color="White" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Refresh}" Size="18"/>
+                            </Button.ImageSource>
+                        </Button>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+            <ScrollView x:Name="MainScrollView" Grid.Row="1" Grid.Column="0">
+                <VerticalStackLayout VerticalOptions="Start" >
+                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
+                        <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
+                            <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
+                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                             </VerticalStackLayout>
-                            <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="3" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource PrimaryLightLight}" Margin="0,5,0,0">
-                                <BoxView HeightRequest="2" Color="{StaticResource Primary}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Show Recent Transactions" TextColor="{DynamicResource Primary}"/>
-                                <Image VerticalOptions="Center" Margin="0,0,5,0" Grid.Row="1" Grid.Column="1" >
-                                    <Image.Source>
-                                        <FontImageSource x:Name="fisRecentTransactionHideShow" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_less}" Size="30" Color="{DynamicResource Primary}"/>
-                                    </Image.Source>
-                                </Image>
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer x:Name="SeeMoreTransactions" Tapped="SeeMoreTransactions_Tapped"/>
-                                </Grid.GestureRecognizers>
-                            </Grid>
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
-                <Border Padding="0" Style="{DynamicResource DashboardMainContent}" x:Name="brdBudgetCalendar" IsVisible="{Binding IsPremiumAccount}">
-                    <VerticalStackLayout>
-                        <Grid RowDefinitions="Auto" ColumnDefinitions="45,*,*">
-                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
-                            <scheduler:SfScheduler Margin="5,0,10,0" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" TodayHighlightBrush="{StaticResource PrimaryDark}" x:Name="Scheduler" View="Agenda" MaximumHeightRequest="230" AppointmentsSource="{Binding EventList}">
-                                <scheduler:SfScheduler.HeaderView>
-                                    <scheduler:SchedulerHeaderView Height="50" Background="White" />
-                                </scheduler:SfScheduler.HeaderView>
-                                <scheduler:SfScheduler.AgendaView>
-                                    <scheduler:SchedulerAgendaView>
-                                        <scheduler:SchedulerAgendaView.MonthHeaderSettings>
-                                            <scheduler:SchedulerMonthHeaderSettings Height="0"/>
-                                        </scheduler:SchedulerAgendaView.MonthHeaderSettings>
-                                        <scheduler:SchedulerAgendaView.DayHeaderSettings>
-                                            <scheduler:SchedulerDayHeaderSettings Background="White"/>
-                                        </scheduler:SchedulerAgendaView.DayHeaderSettings>
-                                        <scheduler:SchedulerAgendaView.WeekHeaderSettings>
-                                            <scheduler:SchedulerWeekHeaderSettings Height="0"/>
-                                        </scheduler:SchedulerAgendaView.WeekHeaderSettings>
-                                    </scheduler:SchedulerAgendaView>
-                                </scheduler:SfScheduler.AgendaView>
-                            </scheduler:SfScheduler>
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
-                <Border Padding="0" Style="{DynamicResource DashboardMainContent}" x:Name="brdYourEnvelopes">
-                    <Grid ColumnDefinitions="45, Auto, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
-                        <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
-                            <Image.Source>
-                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mail}" Size="45"  Color="{DynamicResource Primary}" />
-                            </Image.Source>
-                        </Image>
-                        <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
-                            <Image.Source>
-                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
-                            </Image.Source>
-                            <Image.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="EnvelopeSavingsMoreOptions" Tapped="EnvelopeSavingsMoreOptions_Tapped" />
-                            </Image.GestureRecognizers>
-                        </Image>
-                        <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4" Text="Your Envelopes" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0"/>
-                        <Label CharacterSpacing="0.1" FontAttributes="Bold" Grid.Column="1" Grid.Row="2" Text="{Binding EnvelopeStats.EnvelopeCurrentString}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" />
-                        <Label Text="Current Envelope Balance" Grid.Column="1" Grid.Row="3" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
-                        <progressBar:SfLinearProgressBar AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" Margin="10,0,10,5" Minimum="0" Maximum="{Binding EnvelopeStats.EnvelopeTotal}" Progress="{Binding EnvelopeStats.EnvelopeCurrent}" />
-                        <Label Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5" Text="Total Balance Put Away" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Tertiary}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
-                        <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="2" Grid.Row="6" Text="{Binding EnvelopeStats.EnvelopeTotalString}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,10,5" HorizontalTextAlignment="End"/>
-                        <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7" Margin="10,5,10,10"/>
-                        <HorizontalStackLayout Grid.Row="9" Grid.Column="1" Margin="10,0,10,0">
-                            <Label VerticalOptions="Center" Text="Days to Next Envelope Stash | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
-                            <Label VerticalOptions="Center" Text="{Binding EnvelopeStats.DaysLeftToSpend, StringFormat='{0} Days'}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
-                        </HorizontalStackLayout>
-                        <HorizontalStackLayout Grid.Row="8" Grid.Column="1" Margin="10,0,10,0">
-                            <Label VerticalOptions="Center" Text="Number of Envelopes | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
-                            <Label VerticalOptions="Center" Text="{Binding EnvelopeStats.NumberOfEnvelopes, StringFormat='{0} Envelopes'}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
-                        </HorizontalStackLayout>
-                        <HorizontalStackLayout Grid.Row="10" Grid.Column="1" Margin="10,0,10,10">
-                            <Label VerticalOptions="Center" Text="Spend Available per Day | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
-                            <Label VerticalOptions="Center" Text="{Binding EnvelopeStats.AmountPerDayString}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
-                        </HorizontalStackLayout>
-                    </Grid>
-                </Border>
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetNotSharedBudgetToBool}}" >
-                    <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
-                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
-                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
-                            <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Share Your Budget!"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
-                            <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to Share your budget with a family or friend!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
-                        </VerticalStackLayout>
-                        <Grid BackgroundColor="{DynamicResource PrimaryLight}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
-                            <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
-                                </Image.Source>
-                            </Image>
-                        </Grid>
-                    </Grid>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer x:Name="ShareBudget" Tapped="ShareBudget_Tapped" />
-                    </Border.GestureRecognizers>
-                </Border>
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetSharedBudgetToBool}}" >
-                    <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
-                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
-                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
-                            <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="View Shared Budget!"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
-                            <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to find out the details of who you shared your budget with!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
-                        </VerticalStackLayout>
-                        <Grid BackgroundColor="{DynamicResource Info}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
-                            <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
-                                </Image.Source>
-                            </Image>
-                        </Grid>
-                    </Grid>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer x:Name="ViewShareBudget" Tapped="ViewShareBudget_Tapped" />
-                    </Border.GestureRecognizers>
-                </Border>
-                <AbsoluteLayout x:Name="absSaving" IsVisible="false">
-                    <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="0,0,10,10"/>
-                        </Border.StrokeShape>
-                        <Border.Shadow>
-                            <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="15" />
-                        </Border.Shadow>
-                        <Image Source="savingicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
-                    </Border>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0"  x:Name="brdSavingCarousel" AbsoluteLayout.LayoutBounds="0,0">
-                        <VerticalStackLayout>
-                            <AbsoluteLayout>
-                                <VerticalStackLayout x:Name="SavingCarousel">
-
-                                </VerticalStackLayout>
-                                <HorizontalStackLayout x:Name="SavingCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
-
-                                </HorizontalStackLayout>
-                            </AbsoluteLayout>
-                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
-                                <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="See All Savings" TextColor="{DynamicResource Info}"/>
-                                <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="1" Grid.Column="1" >
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
-                                    </Image.Source>
-                                </Image>
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer x:Name="ExtraSavingInfo" Tapped="ExtraSavingInfo_Tapped"/>
-                                </Grid.GestureRecognizers>
-                            </Grid>
-                        </VerticalStackLayout>
-                    </Border>
-                </AbsoluteLayout>
-                <AbsoluteLayout x:Name="absBill" IsVisible="false">
-                    <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="0,0,10,10"/>
-                        </Border.StrokeShape>
-                        <Border.Shadow>
-                            <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="15" />
-                        </Border.Shadow>
-                        <Image Source="billsicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
-                    </Border>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0" x:Name="brdBillCarousel" AbsoluteLayout.LayoutBounds="0,0">
-                        <VerticalStackLayout>
-                            <AbsoluteLayout>
-                                <VerticalStackLayout x:Name="BillCarousel">
-
-                                </VerticalStackLayout>
-                                <HorizontalStackLayout x:Name="BillCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
-
-                                </HorizontalStackLayout>
-                            </AbsoluteLayout>
-                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
-                                <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="See All Outgoings" TextColor="{DynamicResource Info}"/>
-                                <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
-                                    </Image.Source>
-                                </Image>
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer x:Name="ExtraBillInfo" Tapped="ExtraBillInfo_Tapped"/>
-                                </Grid.GestureRecognizers>
-                            </Grid>
-                        </VerticalStackLayout>
-                    </Border>
-                </AbsoluteLayout>
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdCategoryDetails" IsVisible="{Binding IsPremiumAccount}">
-                    <VerticalStackLayout>
-                        <Grid RowDefinitions="Auto,200" ColumnDefinitions="45, *, *">
-                            <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Category}" Size="45"  Color="{DynamicResource Primary}" />
-                                </Image.Source>
-                            </Image>
-                            <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
-                                </Image.Source>
-                                <Image.GestureRecognizers>
-                                    <TapGestureRecognizer x:Name="CategoryOptions" Tapped="CategoryOptions_Tapped" />
-                                </Image.GestureRecognizers>
-                            </Image>
-                            <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Budget category spend" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0" VerticalOptions="Start"/>
-                            <Label Text="No transactions for these categories this period" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" HorizontalTextAlignment="Center" IsVisible="{Binding CategoryChartVisible, Converter={StaticResource BoolConverter}}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="15,0,10,20" HorizontalOptions="Center" VerticalOptions="Center"/>
-                            <chart:SfCircularChart IsVisible="{Binding CategoryChartVisible}" Margin="5,0,0,20" BackgroundColor="Transparent" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-                                <chart:DoughnutSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
-                            </chart:SfCircularChart>
-                            <ScrollView Grid.Row="1" Grid.Column="2" Margin="0,10,0,10">
-                                <VerticalStackLayout x:Name="CategoryLegend" >
-
-                                </VerticalStackLayout>
-                            </ScrollView>
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdPayeeDetails" IsVisible="{Binding IsPremiumAccount}">
-                    <VerticalStackLayout>
-                        <Grid RowDefinitions="Auto,Auto,200,Auto" ColumnDefinitions="45, *, *">
-                            <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Storefront}" Size="45"  Color="{DynamicResource Primary}" />
-                                </Image.Source>
-                            </Image>
-                            <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
-                                </Image.Source>
-                                <Image.GestureRecognizers>
-                                    <TapGestureRecognizer x:Name="PayeeOptions" Tapped="PayeeOptions_Tapped" />
-                                </Image.GestureRecognizers>
-                            </Image>
-                            <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Budget payee spend" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0" VerticalOptions="Start"/>
-                            <Label Text="No transactions for these payees this period" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" HorizontalTextAlignment="Center" IsVisible="{Binding PayeeChartVisible, Converter={StaticResource BoolConverter}}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="15,0,10,20" HorizontalOptions="Center" VerticalOptions="Center"/>
-                            <chart:SfCircularChart IsVisible="{Binding PayeeChartVisible}" Margin="5,0,0,20" BackgroundColor="Transparent" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-                                <chart:DoughnutSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding PayeesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
-                            </chart:SfCircularChart>
-                            <ScrollView Grid.Row="2" Grid.Column="2" Margin="0,5,0,5">
-                                <VerticalStackLayout x:Name="PayeeLegend">
-
-                                </VerticalStackLayout>
-                            </ScrollView>
-                            <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" RowDefinitions="Auto" ColumnDefinitions="*,*" x:Name="PreviousNextPayee" Margin="0,0,0,0" Padding="0">
-
-                            </Grid>
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
-            <AbsoluteLayout x:Name="absIncome" IsVisible="false">
-                <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="0,0,10,10"/>
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="15" />
-                    </Border.Shadow>
-                    <Image Source="incomeicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
-                </Border>
-                <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0" x:Name="brdIncomeCarousel"  AbsoluteLayout.LayoutBounds="0,0">
-                    <VerticalStackLayout>
-                        <AbsoluteLayout>
-                            <VerticalStackLayout x:Name="IncomeCarousel">
-
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                                <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Complete Set up"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to finalise your budget's details!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
                             </VerticalStackLayout>
-                            <HorizontalStackLayout x:Name="IncomeCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
-
+                            <Grid BackgroundColor="{DynamicResource Tertiary}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                                <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
+                        </Border.GestureRecognizers>
+                    </Border>
+                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
+                        <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
+                            <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" x:Name="MainVSLView">
+                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                                <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Change selected budget"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="You haven't completed set up for this budget, do you want to change to another budget?" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
+                            </VerticalStackLayout>
+                            <Grid BackgroundColor="{DynamicResource Info}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                                <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="SwitchBudgetMain" Tapped="SwitchBudgetMain_Tapped"/>
+                        </Border.GestureRecognizers>
+                    </Border>
+                    <Border Style="{DynamicResource DashboardMainContent}" Stroke="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColorLight}}" StrokeThickness="3" Padding="0" >
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto, Auto, *" Padding="0" Margin="0">
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Padding="20,5,0,5">
+                                <Label  Text="Left of Today's Budget" TextColor="{DynamicResource PrimaryDark}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" VerticalOptions="Center"/>
+                                <Image VerticalOptions="Center" Margin="2,0,0,0">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="20" Color="{DynamicResource PrimaryDark}"/>
+                                    </Image.Source>
+                                </Image>
                             </HorizontalStackLayout>
-                        </AbsoluteLayout>
-                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
-                            <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                            <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="See All Extra Income Events" TextColor="{DynamicResource Info}"/>
-                            <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="1" Grid.Column="1" >
+                            <Label Grid.Row="1" Grid.Column="1" Padding="20,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Todays budget was: " TextColor="{StaticResource Gray400}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Row="1" Grid.Column="2" Padding="2,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span FontAttributes="Bold" Text="{Binding DefaultBudget.StartDayDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Row="2" Grid.Column="1" Padding="20,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Budget to pay day:  " TextColor="{StaticResource Gray400}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Row="2" Grid.Column="2" Padding="2,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span FontAttributes="Bold" Text="{Binding DefaultBudget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Row="3" Grid.Column="1" Padding="20,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Est. spend from tomorrow:  " TextColor="{StaticResource Gray400}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Row="3" Grid.Column="2" Padding="2,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span FontAttributes="Bold" Text="{Binding FutureDailySpend, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <gauge:SfRadialGauge  Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" MaximumHeightRequest="100" MaximumWidthRequest="100" Margin="5,0,0,0">
+                                <gauge:SfRadialGauge.Axes>
+                                    <gauge:RadialAxis StartAngle="150" EndAngle="30" Minimum="0" Maximum="{Binding DefaultBudget.StartDayDailyAmount}" Interval="0" AnimationDuration="3000" EnableLoadingAnimation="True" RadiusFactor="0.95">
+                                        <gauge:RadialAxis.AxisLineStyle>
+                                            <gauge:RadialLineStyle Fill="{StaticResource DangerLightBrush}"/>
+                                        </gauge:RadialAxis.AxisLineStyle>
+                                        <gauge:RadialAxis.Ranges>
+                                            <gauge:RadialRange StartValue="0" EndValue="{Binding DefaultBudget.LeftToSpendDailyAmount}" Fill="{StaticResource SuccessBrush}"/>
+                                        </gauge:RadialAxis.Ranges>
+                                        <gauge:RadialAxis.Annotations>
+                                            <gauge:GaugeAnnotation x:Name="annotation" DirectionUnit="Angle" DirectionValue="90" PositionFactor="0">
+                                                <gauge:GaugeAnnotation.Content>
+                                                    <Label Text="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColor}}" Padding="0,0,0,5" Margin="0"/>
+                                                </gauge:GaugeAnnotation.Content>
+                                            </gauge:GaugeAnnotation>
+                                        </gauge:RadialAxis.Annotations>
+                                    </gauge:RadialAxis>
+                                </gauge:SfRadialGauge.Axes>
+                            </gauge:SfRadialGauge>
+                            <VerticalStackLayout Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendDailyAmountHideShow}}" BackgroundColor="{StaticResource InfoLLL}">
+                                <BoxView HeightRequest="2" Color="{StaticResource Info}" />
+                                <Label Padding="5,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Text="Don't worry if you've overspent today, you can still make it up!" TextColor="{DynamicResource Info}"/>
+                            </VerticalStackLayout>
+                            <Grid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendBalanceHideShow}}" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource WarningLightLight}">
+                                <BoxView HeightRequest="2" Color="{StaticResource Warning}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="5,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="No money left to spend, Fix that!" TextColor="{DynamicResource Warning}"/>
+                                <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="35" Color="{DynamicResource Gray600}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="NoMoneyLeft" Tapped="NoMoneyLeft_Tapped"/>
+                        </Border.GestureRecognizers>
+                    </Border>
+                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsUnreadMessage}">
+                        <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
+                            <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
+                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                                <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Unread message"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="We have replied to an inquiry click here to view." LineBreakMode="WordWrap" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
+                            </VerticalStackLayout>
+                            <Grid BackgroundColor="{DynamicResource Info}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                                <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="40"  Color="{DynamicResource White}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateViewSupportsCommand}"/>
+                        </Border.GestureRecognizers>
+                    </Border>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding IsPremiumAccount, Converter={StaticResource BoolConverter}}">
+                        <adMob:MTAdView AdsId="ca-app-pub-3940256099942544/6300978111" AdSize="Smart"/>
+                    </Border>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendDailyAmountHideShow}}" >
+                        <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
+                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,5,5,0">
+                                <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Cover overspend"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Do you want to cover todays overspend with savings?" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
+                            </VerticalStackLayout>
+                            <Grid BackgroundColor="{DynamicResource Success}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                                <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Ads_click}" Size="40"  Color="{DynamicResource White}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="CoverOverspend" Tapped="CoverOverspend_Tapped" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,10" >
+                        <Grid ColumnDefinitions="*" RowDefinitions="Auto">
+                            <Image Source="mainpagelogo.png" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" MaximumHeightRequest="70" Margin="10,0,0,0" HorizontalOptions="Center" />
+                        </Grid>
+                    </Border>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetShareRequestToBool}}" >
+                        <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
+                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,5,5,0">
+                                <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Someone wants to Share a Budget"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to Verify a Budget Share Request" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
+                            </VerticalStackLayout>
+                            <Grid BackgroundColor="{DynamicResource PrimaryLight}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                                <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="VerifyBudgetShare" Tapped="VerifyBudgetShare_Tapped" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" >
+                        <Grid ColumnDefinitions="45, *, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
+                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
+                            <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
                                 <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
+                                </Image.Source>
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="BudgetMoreOptions" Tapped="BudgetMoreOptions_Tapped" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                            <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding DefaultBudget.BudgetName}" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="10,5,0,0" TextColor="{StaticResource Primary}" Margin="0"/>
+                            <HorizontalStackLayout Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" VerticalOptions="End">
+                                <Label Text="{Binding DefaultBudget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"  VerticalTextAlignment="End" VerticalOptions="End" Padding="10,0,0,0" Margin="0"/>
+                                <Label Text="{Binding MaxBankBalance, Converter={StaticResource DecimalToCurrencyString}, StringFormat='({0})'}" CharacterSpacing="0.1" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,2" VerticalTextAlignment="End" VerticalOptions="End" Margin="0"/>
+                            </HorizontalStackLayout>
+                            <Label Text="Current Bank Balance" Grid.Column="1" Grid.Row="3" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
+                            <progressBar:SfLinearProgressBar AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" ZIndex="999" Grid.Row="6" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" Background="Transparent" TrackFill="Transparent" SecondaryProgressFill="Transparent" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,5,10,5" Minimum="0" Maximum="{Binding MaxBankBalance}" Progress="{Binding DefaultBudget.LeftToSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
+                            <progressBar:SfLinearProgressBar AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" SecondaryProgressFill="{StaticResource PrimaryLight}" ProgressFill="{StaticResource Tertiary}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,5,10,5" Minimum="0" Maximum="{Binding MaxBankBalance}" Progress="{Binding DefaultBudget.PlusStashSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
+                            <Label Grid.Column="1" Grid.Row="4" Text="Money to Spend" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Success}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
+                            <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="1" Grid.Row="5" Text="{Binding DefaultBudget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
+                            <Label Grid.Column="2" Grid.Row="4" Text="Available Money" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource PrimaryDark}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
+                            <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="2" Grid.Row="5" Text="{Binding DefaultBudget.MoneyAvailableBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
+                            <Label Grid.Column="1" Grid.Row="8" Text="Balance plus Stash" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Tertiary}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
+                            <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="1" Grid.Row="9" Text="{Binding DefaultBudget.PlusStashSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
+                            <Label Grid.Column="2" Grid.Row="8" Text="Current Bank Balance" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray500}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
+                            <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="2" Grid.Row="9" Text="{Binding DefaultBudget.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
+                            <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="10" Margin="10,5,10,10"/>
+                            <HorizontalStackLayout Grid.Row="11" Grid.Column="1" Margin="10,0,10,0">
+                                <Label VerticalOptions="Center" Text="Days to Pay Day | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                                <Label VerticalOptions="Center" Text="{Binding DefaultBudget.NextIncomePayday, Converter={StaticResource DateToNumberOfDays}}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="12" Grid.Column="1" Margin="10,0,10,0">
+                                <Label VerticalOptions="Center" Text="Due Date | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                                <Label VerticalOptions="Center" Text="{Binding DefaultBudget.NextIncomePayday, StringFormat='{0:dd MMM yy}'}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="13" Grid.Column="1" Margin="10,0,10,10">
+                                <Label VerticalOptions="Center" Text="Pay Day Amount | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                                <Label VerticalOptions="Center" Text="{Binding DefaultBudget.PaydayAmount, StringFormat='{0:c}'}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" x:Name="brdYourTransactions">
+                        <VerticalStackLayout>
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="45,*,*">
+                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
+                                <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer x:Name="YourTransactionsOption" Tapped="YourTransactionsOption_Tapped" />
+                                    </Image.GestureRecognizers>
+                                </Image>
+                                <Label Text="Your Transactions" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="10,5,0,10" TextColor="{StaticResource Primary}" Margin="0"/>
+                                <Label Text="Transactions Today" Grid.Column="1" Grid.Row="2" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
+                                <Label Grid.Column="1" Grid.Row="1" Text="{Binding DefaultBudget.AccountInfo.NumberOfTransactionsToday}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
+                                <Label Text="Spent Today" Grid.Column="2" Grid.Row="2" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
+                                <Label Grid.Column="2" Grid.Row="1" Text="{Binding DefaultBudget.AccountInfo.TransactionValueToday, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
+                                <Label Text="Spent This Period" Grid.Column="1" Grid.Row="4" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
+                                <Label Grid.Column="1" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.TransactionValueThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
+                                <Label Text="Income This Period" Grid.Column="2" Grid.Row="4" TextColor="{StaticResource Tertiary}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
+                                <Label Grid.Column="2" Grid.Row="3" Text="{Binding DefaultBudget.AccountInfo.IncomeThisPeriod, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0"/>
+                                <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5" Margin="10,5,10,10"/>
+                                <VerticalStackLayout x:Name="vslRecentTransactions" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" IsVisible="false">
+                                    <sfList:SfListView x:Name="LVTransactions" AllowSwiping="True" AutoFitMode="DynamicHeight" ItemsSource="{Binding RecentTransactions}" SelectionMode="None" ItemSpacing="10,5,10,5">
+                                        <sfList:SfListView.StartSwipeTemplate>
+                                            <DataTemplate x:Name="StartSwipeTemplate">
+                                                <Border Stroke="Transparent" StrokeThickness="0">
+                                                    <Grid VerticalOptions="Center" HorizontalOptions="Center" ColumnDefinitions="50,50" RowDefinitions="*" BackgroundColor="Transparent">
+                                                        <Border Grid.Column="0" BackgroundColor="{StaticResource InfoLight}" StrokeThickness="0" Padding="10,10,10,10" Stroke="Transparent">
+                                                            <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0">
+                                                                <Image.Source>
+                                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="30"  Color="{DynamicResource Info}" />
+                                                                </Image.Source>
+                                                            </Image>
+                                                            <Border.GestureRecognizers>
+                                                                <TapGestureRecognizer Tapped="EditTransaction_Tapped" CommandParameter="{Binding .}"/>
+                                                            </Border.GestureRecognizers>
+                                                        </Border>
+                                                        <Border Grid.Column="1" BackgroundColor="{StaticResource DangerLight}" StrokeThickness="0" Padding="10,10,10,10" Stroke="Transparent">
+                                                            <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0">
+                                                                <Image.Source>
+                                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete_forever }" Size="30"  Color="{DynamicResource Danger}" />
+                                                                </Image.Source>
+                                                            </Image>
+                                                            <Border.GestureRecognizers>
+                                                                <TapGestureRecognizer Tapped="DeleteTransaction_Tapped" CommandParameter="{Binding .}"/>
+                                                            </Border.GestureRecognizers>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </sfList:SfListView.StartSwipeTemplate>
+                                        <sfList:SfListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <ViewCell>
+                                                    <ViewCell.View>
+                                                        <Border Style="{DynamicResource ListViewContent}">
+                                                            <Grid BackgroundColor="Transparent" RowDefinitions="60,Auto" ColumnDefinitions="*">
+                                                                <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" ColumnDefinitions="3*,*,Auto" >
+                                                                    <Label Padding="10,5,0,0" Grid.Row="0" Grid.Column="0" HorizontalOptions="Start" Text="{Binding TransactionAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{Binding IsIncome, Converter={StaticResource BoolToColor}}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" CharacterSpacing="0"/>
+                                                                    <Label Padding="10,0,0,5" Grid.Row="1" Grid.Column="0" HorizontalOptions="Start" Text="{Binding TransactionDate, StringFormat='{0:dd MMMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" CharacterSpacing="0"/>
+                                                                    <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center" Margin="0,7,10,0">
+                                                                        <Image.Source>
+                                                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding EventType, Converter={StaticResource EventTypeToGlyph}}" Size="30"  Color="{DynamicResource PrimaryDark}" />
+                                                                        </Image.Source>
+                                                                    </Image>
+                                                                    <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" HorizontalOptions="End" VerticalOptions="Center" Margin="0,7,10,0">
+                                                                        <Image.Source>
+                                                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Double_arrow}" Size="15"  Color="{DynamicResource Gray900}" />
+                                                                        </Image.Source>
+                                                                    </Image>
+                                                                </Grid>
+                                                                <Grid Grid.Row="1" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto,*">
+
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Border>
+                                                    </ViewCell.View>
+                                                </ViewCell>
+                                            </DataTemplate>
+                                        </sfList:SfListView.ItemTemplate>
+                                    </sfList:SfListView>
+                                </VerticalStackLayout>
+                                <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="3" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource PrimaryLightLight}" Margin="0,5,0,0">
+                                    <BoxView HeightRequest="2" Color="{StaticResource Primary}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                    <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Show Recent Transactions" TextColor="{DynamicResource Primary}"/>
+                                    <Image VerticalOptions="Center" Margin="0,0,5,0" Grid.Row="1" Grid.Column="1" >
+                                        <Image.Source>
+                                            <FontImageSource x:Name="fisRecentTransactionHideShow" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_less}" Size="30" Color="{DynamicResource Primary}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer x:Name="SeeMoreTransactions" Tapped="SeeMoreTransactions_Tapped"/>
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" x:Name="brdBudgetCalendar" IsVisible="{Binding IsPremiumAccount}">
+                        <VerticalStackLayout>
+                            <Grid RowDefinitions="Auto" ColumnDefinitions="45,*,*">
+                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
+                                <scheduler:SfScheduler Margin="5,0,10,0" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" TodayHighlightBrush="{StaticResource PrimaryDark}" x:Name="Scheduler" View="Agenda" MaximumHeightRequest="230" AppointmentsSource="{Binding EventList}">
+                                    <scheduler:SfScheduler.HeaderView>
+                                        <scheduler:SchedulerHeaderView Height="50" Background="White" />
+                                    </scheduler:SfScheduler.HeaderView>
+                                    <scheduler:SfScheduler.AgendaView>
+                                        <scheduler:SchedulerAgendaView>
+                                            <scheduler:SchedulerAgendaView.MonthHeaderSettings>
+                                                <scheduler:SchedulerMonthHeaderSettings Height="0"/>
+                                            </scheduler:SchedulerAgendaView.MonthHeaderSettings>
+                                            <scheduler:SchedulerAgendaView.DayHeaderSettings>
+                                                <scheduler:SchedulerDayHeaderSettings Background="White"/>
+                                            </scheduler:SchedulerAgendaView.DayHeaderSettings>
+                                            <scheduler:SchedulerAgendaView.WeekHeaderSettings>
+                                                <scheduler:SchedulerWeekHeaderSettings Height="0"/>
+                                            </scheduler:SchedulerAgendaView.WeekHeaderSettings>
+                                        </scheduler:SchedulerAgendaView>
+                                    </scheduler:SfScheduler.AgendaView>
+                                </scheduler:SfScheduler>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" x:Name="brdYourEnvelopes">
+                        <Grid ColumnDefinitions="45, Auto, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
+                            <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mail}" Size="45"  Color="{DynamicResource Primary}" />
                                 </Image.Source>
                             </Image>
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="ExtraIncoDetails" Tapped="ExtraIncoDetails_Tapped"/>
-                            </Grid.GestureRecognizers>
+                            <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
+                                </Image.Source>
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="EnvelopeSavingsMoreOptions" Tapped="EnvelopeSavingsMoreOptions_Tapped" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                            <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4" Text="Your Envelopes" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0"/>
+                            <Label CharacterSpacing="0.1" FontAttributes="Bold" Grid.Column="1" Grid.Row="2" Text="{Binding EnvelopeStats.EnvelopeCurrentString}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" />
+                            <Label Text="Current Envelope Balance" Grid.Column="1" Grid.Row="3" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
+                            <progressBar:SfLinearProgressBar AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" Margin="10,0,10,5" Minimum="0" Maximum="{Binding EnvelopeStats.EnvelopeTotal}" Progress="{Binding EnvelopeStats.EnvelopeCurrent}" />
+                            <Label Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5" Text="Total Balance Put Away" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Tertiary}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
+                            <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="2" Grid.Row="6" Text="{Binding EnvelopeStats.EnvelopeTotalString}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,10,5" HorizontalTextAlignment="End"/>
+                            <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7" Margin="10,5,10,10"/>
+                            <HorizontalStackLayout Grid.Row="9" Grid.Column="1" Margin="10,0,10,0">
+                                <Label VerticalOptions="Center" Text="Days to Next Envelope Stash | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                                <Label VerticalOptions="Center" Text="{Binding EnvelopeStats.DaysLeftToSpend, StringFormat='{0} Days'}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="8" Grid.Column="1" Margin="10,0,10,0">
+                                <Label VerticalOptions="Center" Text="Number of Envelopes | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                                <Label VerticalOptions="Center" Text="{Binding EnvelopeStats.NumberOfEnvelopes, StringFormat='{0} Envelopes'}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="10" Grid.Column="1" Margin="10,0,10,10">
+                                <Label VerticalOptions="Center" Text="Spend Available per Day | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
+                                <Label VerticalOptions="Center" Text="{Binding EnvelopeStats.AmountPerDayString}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
+                            </HorizontalStackLayout>
                         </Grid>
-                    </VerticalStackLayout>
-                </Border>
-            </AbsoluteLayout>
-            <Button WidthRequest="{Binding SignOutButtonWidth}" Command="{Binding SignOutCommand}" Style="{DynamicResource buttonClicked}" Text="Sign Out" HeightRequest="50" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,0,5,20" FontSize="20" CornerRadius="25" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
-            </VerticalStackLayout>
-        </ScrollView>
-    </Grid>
+                    </Border>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetNotSharedBudgetToBool}}" >
+                        <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
+                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                                <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Share Your Budget!"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to Share your budget with a family or friend!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
+                            </VerticalStackLayout>
+                            <Grid BackgroundColor="{DynamicResource PrimaryLight}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                                <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="ShareBudget" Tapped="ShareBudget_Tapped" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetSharedBudgetToBool}}" >
+                        <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
+                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                                <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="View Shared Budget!"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to find out the details of who you shared your budget with!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
+                            </VerticalStackLayout>
+                            <Grid BackgroundColor="{DynamicResource Info}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                                <Image BackgroundColor="Transparent" Margin="0,5,0,5" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Share}" Size="40"  Color="{DynamicResource White}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="ViewShareBudget" Tapped="ViewShareBudget_Tapped" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                    <AbsoluteLayout x:Name="absSaving" IsVisible="false">
+                        <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="0,0,10,10"/>
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="15" />
+                            </Border.Shadow>
+                            <Image Source="savingicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0"  x:Name="brdSavingCarousel" AbsoluteLayout.LayoutBounds="0,0">
+                            <VerticalStackLayout>
+                                <AbsoluteLayout>
+                                    <VerticalStackLayout x:Name="SavingCarousel">
+
+                                    </VerticalStackLayout>
+                                    <HorizontalStackLayout x:Name="SavingCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
+
+                                    </HorizontalStackLayout>
+                                </AbsoluteLayout>
+                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
+                                    <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                    <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="See All Savings" TextColor="{DynamicResource Info}"/>
+                                    <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="1" Grid.Column="1" >
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer x:Name="ExtraSavingInfo" Tapped="ExtraSavingInfo_Tapped"/>
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </AbsoluteLayout>
+                    <AbsoluteLayout x:Name="absBill" IsVisible="false">
+                        <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="0,0,10,10"/>
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="15" />
+                            </Border.Shadow>
+                            <Image Source="billsicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0" x:Name="brdBillCarousel" AbsoluteLayout.LayoutBounds="0,0">
+                            <VerticalStackLayout>
+                                <AbsoluteLayout>
+                                    <VerticalStackLayout x:Name="BillCarousel">
+
+                                    </VerticalStackLayout>
+                                    <HorizontalStackLayout x:Name="BillCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
+
+                                    </HorizontalStackLayout>
+                                </AbsoluteLayout>
+                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
+                                    <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                    <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="See All Outgoings" TextColor="{DynamicResource Info}"/>
+                                    <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1" >
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer x:Name="ExtraBillInfo" Tapped="ExtraBillInfo_Tapped"/>
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </AbsoluteLayout>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdCategoryDetails" IsVisible="{Binding IsPremiumAccount}">
+                        <VerticalStackLayout>
+                            <Grid RowDefinitions="Auto,200" ColumnDefinitions="45, *, *">
+                                <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Category}" Size="45"  Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                </Image>
+                                <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer x:Name="CategoryOptions" Tapped="CategoryOptions_Tapped" />
+                                    </Image.GestureRecognizers>
+                                </Image>
+                                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Budget category spend" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0" VerticalOptions="Start"/>
+                                <Label Text="No transactions for these categories this period" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" HorizontalTextAlignment="Center" IsVisible="{Binding CategoryChartVisible, Converter={StaticResource BoolConverter}}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="15,0,10,20" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <chart:SfCircularChart IsVisible="{Binding CategoryChartVisible}" Margin="5,0,0,20" BackgroundColor="Transparent" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                                    <chart:DoughnutSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
+                                </chart:SfCircularChart>
+                                <ScrollView Grid.Row="1" Grid.Column="2" Margin="0,10,0,10">
+                                    <VerticalStackLayout x:Name="CategoryLegend" >
+
+                                    </VerticalStackLayout>
+                                </ScrollView>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdPayeeDetails" IsVisible="{Binding IsPremiumAccount}">
+                        <VerticalStackLayout>
+                            <Grid RowDefinitions="Auto,Auto,200,Auto" ColumnDefinitions="45, *, *">
+                                <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Storefront}" Size="45"  Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                </Image>
+                                <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
+                                    </Image.Source>
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer x:Name="PayeeOptions" Tapped="PayeeOptions_Tapped" />
+                                    </Image.GestureRecognizers>
+                                </Image>
+                                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Budget payee spend" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="8,5,0,0" TextColor="{StaticResource Primary}" Margin="0" VerticalOptions="Start"/>
+                                <Label Text="No transactions for these payees this period" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" HorizontalTextAlignment="Center" IsVisible="{Binding PayeeChartVisible, Converter={StaticResource BoolConverter}}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="15,0,10,20" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <chart:SfCircularChart IsVisible="{Binding PayeeChartVisible}" Margin="5,0,0,20" BackgroundColor="Transparent" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                                    <chart:DoughnutSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding PayeesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
+                                </chart:SfCircularChart>
+                                <ScrollView Grid.Row="2" Grid.Column="2" Margin="0,5,0,5">
+                                    <VerticalStackLayout x:Name="PayeeLegend">
+
+                                    </VerticalStackLayout>
+                                </ScrollView>
+                                <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" RowDefinitions="Auto" ColumnDefinitions="*,*" x:Name="PreviousNextPayee" Margin="0,0,0,0" Padding="0">
+
+                                </Grid>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                    <AbsoluteLayout x:Name="absIncome" IsVisible="false">
+                        <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="0,0,10,10"/>
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="15" />
+                            </Border.Shadow>
+                            <Image Source="incomeicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0" x:Name="brdIncomeCarousel"  AbsoluteLayout.LayoutBounds="0,0">
+                            <VerticalStackLayout>
+                                <AbsoluteLayout>
+                                    <VerticalStackLayout x:Name="IncomeCarousel">
+
+                                    </VerticalStackLayout>
+                                    <HorizontalStackLayout x:Name="IncomeCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
+
+                                    </HorizontalStackLayout>
+                                </AbsoluteLayout>
+                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
+                                    <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                    <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="See All Extra Income Events" TextColor="{DynamicResource Info}"/>
+                                    <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="1" Grid.Column="1" >
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer x:Name="ExtraIncoDetails" Tapped="ExtraIncoDetails_Tapped"/>
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </AbsoluteLayout>
+                    <Button WidthRequest="{Binding SignOutButtonWidth}" Command="{Binding SignOutCommand}" Style="{DynamicResource buttonClicked}" Text="Sign Out" HeightRequest="50" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,0,5,20" FontSize="20" CornerRadius="25" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+    </AbsoluteLayout>
+    
+
 </local:BasePage>

@@ -55,9 +55,11 @@ public partial class ViewAccounts : BasePage
     public class UpdateViewAccount
     {
         public bool _isSuccess;
-        public UpdateViewAccount(bool IsSuccess)
+        public bool _isBackground;
+        public UpdateViewAccount(bool IsSuccess, bool isBackground)
         {
             _isSuccess = IsSuccess;
+            _isBackground = isBackground;
         }
     }
 }

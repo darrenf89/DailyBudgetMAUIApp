@@ -9,18 +9,25 @@ using AndroidApp = Android.App.Application;
 using Setting = Android.Provider.Settings;
 using Plugin.MauiMTAdmob.Extra;
 using static Microsoft.Maui.ApplicationModel.Platform;
+using MAUISample.Platforms.Android;
+using Intent = Android.Content.Intent;
+using Android.Provider;
+using Android.Runtime;
+
 
 namespace DailyBudgetMAUIApp;
 
 
 
 [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density, ScreenOrientation = ScreenOrientation.Portrait)]
+[IntentFilter(new[] { Platform.Intent.ActionAppAction },
+              Categories = new[] { global::Android.Content.Intent.CategoryDefault })]
 public class MainActivity : MauiAppCompatActivity
 {
     internal static readonly string Channel_ID = "ShareBudget";
     internal static readonly string Support_Channel_ID = "CustomerSupport";
     internal static readonly int NotificationID = 101;
-
+    Intent intent;
     protected override void OnCreate(Bundle savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
@@ -58,6 +65,7 @@ public class MainActivity : MauiAppCompatActivity
     protected async override void OnResume()
     {
         base.OnResume();
+        Platform.OnResume(this);
 
         if (Intent.Extras != null)
         {
@@ -92,6 +100,35 @@ public class MainActivity : MauiAppCompatActivity
 
         CreateNotificationChannel();
         CrossMauiMTAdmob.Current.OnResume();
+    }
+
+    protected override void OnNewIntent(Android.Content.Intent intent)
+    {
+        base.OnNewIntent(intent);
+        Platform.OnNewIntent(intent);
+        if(intent.Action != null)
+        {
+            if(intent.Action == "ACTION_XE_APP_ACTION")
+            {
+                MoveTaskToBack(true);
+            }
+        }    
+    }
+
+    protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+    {
+        if (requestCode == 0)
+        {
+            if (!Settings.CanDrawOverlays(this))
+            {
+
+
+            }
+            else
+            {
+                StartService(new Intent(this, typeof(FloatingService)));
+            }
+        }
     }
 
     private void CreateNotificationChannel()

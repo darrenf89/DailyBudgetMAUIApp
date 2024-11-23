@@ -15,7 +15,6 @@ using Maui.FreakyEffects;
 using Plugin.MauiMTAdmob;
 using Plugin.Maui.AppRating;
 
-
 namespace DailyBudgetMAUIApp;
 
 public static class MauiProgram
@@ -39,6 +38,12 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialDesignIcons");
                 fonts.AddFont("manolo-mono.ttf", "ManoloMono");
+            })
+            .ConfigureEssentials(essentials =>
+            {
+                essentials
+                    .AddAppAction("quick_transaction", "Quick Transaction", "click here to add a quick transaction to your latest budget", "transaction")
+                    .OnAppAction(App.HandleAppAction);
             })
 #if DEBUG
             .EnableHotReload()

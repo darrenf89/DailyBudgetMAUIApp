@@ -14,7 +14,7 @@
             <Border Style="{StaticResource PictureFrame150Circle}" Margin="0,0,0,130" x:Name="brdImage" VerticalOptions="Center">
                 <Image Source="justlogoorangetwo.png" Aspect="AspectFill" VerticalOptions="Center" ></Image>
             </Border>
-            <Label Text="We are loading . . ." HeightRequest="80" HorizontalOptions="Center" Margin="0,100,0,0" FontSize="25" VerticalOptions="Center" TextColor="{StaticResource White}" FontFamily="OpenSansSemibold" CharacterSpacing="0"/>
+            <Label Text="Loading . . ." HeightRequest="80" HorizontalOptions="Center" Margin="0,100,0,0" FontSize="25" VerticalOptions="Center" TextColor="{StaticResource White}" FontFamily="OpenSansSemibold" CharacterSpacing="0"/>
             <ActivityIndicator IsVisible="True" IsRunning="True" Color="White" Margin="0,10,0,70" HeightRequest="40" Scale="1.6"/>
         </VerticalStackLayout>
     </Grid>

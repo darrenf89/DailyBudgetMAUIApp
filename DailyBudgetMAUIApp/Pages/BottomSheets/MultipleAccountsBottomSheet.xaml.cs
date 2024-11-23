@@ -454,7 +454,7 @@ public partial class MultipleAccountsBottomSheet : BottomSheet, INotifyPropertyC
 
                 try
                 {
-                    WeakReferenceMessenger.Default.Send(new UpdateViewAccount(true));
+                    WeakReferenceMessenger.Default.Send(new UpdateViewAccount(true, false));
                 }
                 catch
                 {

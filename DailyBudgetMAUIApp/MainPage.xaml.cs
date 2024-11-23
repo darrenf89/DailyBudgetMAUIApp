@@ -217,11 +217,14 @@ public partial class MainPage : BasePage
         {
             try
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                if(!m._isBackground)
+                {               
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.MainPage.ShowPopup(PopUp);
+                    }
                 }
 
                 await Task.Delay(1);
@@ -229,12 +232,19 @@ public partial class MainPage : BasePage
                 await _ds.ReCalculateBudget(App.DefaultBudgetID);
                 App.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
                 _vm.DefaultBudget = App.DefaultBudget;
-                await LoadMainDashboardContent();
 
-                if (App.CurrentPopUp != null)
+                if (!m._isBackground)
                 {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
+                    await LoadMainDashboardContent(); 
+                }
+
+                if (!m._isBackground)
+                {
+                    if (App.CurrentPopUp != null)
+                    {
+                        await App.CurrentPopUp.CloseAsync();
+                        App.CurrentPopUp = null;
+                    } 
                 }
             }
             catch
@@ -2750,6 +2760,17 @@ public partial class MainPage : BasePage
             await _pt.HandleException(ex, "MainPage", "Upload_Clicked");
         }
 
+    }
+
+    private void QuickTransaction_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        decimal AmountDue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
+        entQuickTransaction.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
+        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entQuickTransaction.CursorPosition > position)
+        {
+            entQuickTransaction.CursorPosition = entQuickTransaction.Text.Length;
+        }
     }
 }
 

@@ -8,10 +8,7 @@ using Color = Microsoft.Maui.Graphics.Color;
 using Microsoft.Maui.Platform;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.ViewModels;
-
-
-
-
+using DailyBudgetMAUIApp.DataServices;
 
 #if IOS
 using UIKit;
@@ -24,6 +21,9 @@ using Microsoft.Maui.Controls.Compatibility.Platform.Android;
 using Android.Widget;
 using DailyBudgetMAUIApp.Platforms.Android.Mappers;
 using System.Runtime.ExceptionServices;
+using Android.Content;
+using MAUISample.Platforms.Android;
+using static Microsoft.Maui.ApplicationModel.Platform;
 #endif
 
 namespace DailyBudgetMAUIApp;
@@ -139,8 +139,61 @@ public partial class App : Application
         //MainPage = new AppShell();
     }
 
+    public static void HandleAppAction(AppAction appAction)
+    {
+        App.Current.Dispatcher.Dispatch(async () =>
+        {
+            switch (appAction.Id)
+            {
+                case "quick_transaction":
+#if ANDROID
+                    Android.Content.Context context = Android.App.Application.Context;
+                    var currentActivity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
+
+                    if (!Android.Provider.Settings.CanDrawOverlays(context))
+                    {
+                        //currentActivity.StartActivityForResult(new Android.Content.Intent(Android.Provider.Settings.ActionManageOverlayPermission, Android.Net.Uri.Parse("package:" + context.PackageName)), 0);
+                        Toast.MakeText(currentActivity.ApplicationContext, "We need permissions to show quick transaction", ToastLength.Short).Show();
+                    }
+                    else
+                    {
+                        if (currentActivity != null) 
+                        {       
+                            if(App.UserDetails == null)
+                            {
+                                Toast.MakeText(currentActivity.ApplicationContext, "Please login to use quick transaction", ToastLength.Short).Show();
+                                break;
+                            }
+
+                            if (App.DefaultBudgetID == 0)
+                            {
+                                Toast.MakeText(currentActivity.ApplicationContext, "Unable to find budget for transaction", ToastLength.Short).Show();
+                                break;
+                            }
+
+                            while(App.DefaultBudget == null)
+                            {
+                                await Task.Delay(100);
+                            }
+
+                            Android.Content.Intent floatingIntent = new Android.Content.Intent(context, typeof(FloatingService));
+                            currentActivity.StartService(floatingIntent);
+
+                        } 
+                    }
+#endif
+                    break;
+
+                default:
+
+                    break;
+            }
+        });
+    }
+
     protected override async void OnStart()
     {
+
         await Task.Delay(1);
         base.OnStart();
         IsBackgrounded = false;

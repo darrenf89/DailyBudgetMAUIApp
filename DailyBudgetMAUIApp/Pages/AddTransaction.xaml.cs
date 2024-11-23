@@ -443,6 +443,7 @@ public partial class AddTransaction : BasePage
         }
     }
 
+
     private void swhTransactionDate_Toggled(object sender, ToggledEventArgs e)
     {
         try

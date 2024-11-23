@@ -119,7 +119,6 @@ namespace DailyBudgetMAUIApp.DataServices
             input = input.Replace(App.CurrentSettings.CurrencySymbol, "").Replace(App.CurrentSettings.CurrencyGroupSeparator, "").Replace(App.CurrentSettings.CurrencyDecimalSeparator, "");
             input = input.Trim();
 
-            //TODO: GET THE NUMBER OF DIGITS - CHECK THAT IT IS GREATER THAN 2
             try
             {
                 double Number = Convert.ToDouble(input);
@@ -911,7 +910,12 @@ namespace DailyBudgetMAUIApp.DataServices
 
             if (budget.IsMultipleAccounts) 
             {
-                PayDayTransaction.AccountID = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault().ID;
+                BankAccounts Account = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                if(Account != null)
+                {
+                    PayDayTransaction.AccountID = Account.ID;
+                }
+                
             }
 
             PayDayTransaction = _ds.SaveNewTransaction(PayDayTransaction, budget.BudgetID).Result;
@@ -947,7 +951,11 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 if(Bill.AccountID == null || Bill.AccountID == 0)
                 {
-                    BillTransaction.AccountID = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault().ID;
+                    BankAccounts Account = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                    if (Account != null)
+                    {
+                        BillTransaction.AccountID = Account.ID;
+                    }
                 }
                 else
                 {
@@ -1005,7 +1013,11 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 if (Income.AccountID == null || Income.AccountID == 0)
                 {
-                    IncomeTransaction.AccountID = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault().ID;
+                    BankAccounts Account = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                    if (Account != null)
+                    {
+                        IncomeTransaction.AccountID = Account.ID;
+                    }
                 }
                 else
                 {
