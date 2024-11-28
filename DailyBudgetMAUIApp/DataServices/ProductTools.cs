@@ -1304,11 +1304,21 @@ namespace DailyBudgetMAUIApp.DataServices
 
                             if (!Saving.IsRegularSaving)
                             {
-                                Stats.SavingsToDate += (Saving.PeriodSavingValue.GetValueOrDefault() - Saving.CurrentBalance.GetValueOrDefault());
+                                if (Saving.IsTopUp)
+                                {
+                                    Stats.SavingsToDate += Saving.PeriodSavingValue.GetValueOrDefault();
+                                    Saving.CurrentBalance += Saving.PeriodSavingValue;
+                                    Saving.LastUpdatedValue = Saving.PeriodSavingValue;
+                                    Saving.GoalDate = budget.NextIncomePayday;
+                                }
+                                else
+                                {
+                                    Stats.SavingsToDate += (Saving.PeriodSavingValue.GetValueOrDefault() - Saving.CurrentBalance.GetValueOrDefault());
 
-                                Saving.CurrentBalance = Saving.PeriodSavingValue;
-                                Saving.LastUpdatedValue = Saving.PeriodSavingValue;
-                                Saving.GoalDate = budget.NextIncomePayday;
+                                    Saving.CurrentBalance = Saving.PeriodSavingValue;
+                                    Saving.LastUpdatedValue = Saving.PeriodSavingValue;
+                                    Saving.GoalDate = budget.NextIncomePayday;
+                                }
 
                             }
 

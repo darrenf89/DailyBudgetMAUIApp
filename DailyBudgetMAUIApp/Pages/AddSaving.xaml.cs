@@ -599,6 +599,8 @@ public partial class AddSaving : BasePage
             _vm.Saving.IsDailySaving = false;
             _vm.Saving.DdlSavingsPeriod = "PerPayPeriod";
             VSLCalculator.IsVisible = false;
+
+            swhIsTopUp_Toggled(null, null);
         }
         else
         {

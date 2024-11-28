@@ -32,6 +32,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool  isAccount;
         [ObservableProperty]
+        private bool  isAppearing;
+        [ObservableProperty]
         private bool isMultipleAccounts;
         [ObservableProperty]
         private bool  isSpendCategory;

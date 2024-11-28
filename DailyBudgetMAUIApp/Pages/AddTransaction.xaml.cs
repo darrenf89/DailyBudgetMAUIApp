@@ -50,7 +50,7 @@ public partial class AddTransaction : BasePage
         try
         {
             base.OnAppearing();
-
+            _vm.IsAppearing = true;
             CrossMauiMTAdmob.Current.OnInterstitialClosed += async (sender, args) => {
                 UserAddDetails User = await _ds.GetUserAddDetails(App.UserDetails.UserID);
                 User.LastViewed = DateTime.Now;
@@ -69,7 +69,6 @@ public partial class AddTransaction : BasePage
                 _vm.IsPayee = false;
                 _vm.IsSpendCategory = false;
                 _vm.IsNote = false;
-                _vm.IsAccount = false;
                 _vm.RedirectTo = "";
             }
             else if(string.Equals(_vm.NavigatedFrom, "ViewMainPage", StringComparison.OrdinalIgnoreCase) ||string.Equals(_vm.NavigatedFrom, "ViewTransactions", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewSavings", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase)|| string.Equals(_vm.NavigatedFrom, "ViewAccounts", StringComparison.OrdinalIgnoreCase))
@@ -100,7 +99,6 @@ public partial class AddTransaction : BasePage
                     _vm.IsSpendCategory = !string.IsNullOrEmpty(_vm.Transaction.Category);
                     _vm.IsNote = !string.IsNullOrEmpty(_vm.Transaction.Notes);
                     _vm.Transaction.IsSpendFromSavings = !string.IsNullOrEmpty(_vm.Transaction.SavingName);
-                    _vm.IsAccount = _vm.Transaction.AccountID.GetValueOrDefault() != 0 && _vm.IsPremiumAccount;
 
                     if(_vm.Transaction.SavingsSpendType == "BuildingSaving" || _vm.Transaction.SavingsSpendType == "MaintainValues" || _vm.Transaction.SavingsSpendType == "UpdateValues")
                     {
@@ -139,7 +137,6 @@ public partial class AddTransaction : BasePage
                 _vm.IsSpendCategory = !string.IsNullOrEmpty(_vm.Transaction.Category);
                 _vm.IsNote = !string.IsNullOrEmpty(_vm.Transaction.Notes);
                 _vm.Transaction.IsSpendFromSavings = !string.IsNullOrEmpty(_vm.Transaction.SavingName);
-                _vm.IsAccount = _vm.Transaction.AccountID.GetValueOrDefault() != 0 && _vm.IsPremiumAccount;
             }
 
             double TransactionAmount = (double?)_vm.Transaction.TransactionAmount ?? 0;
@@ -170,7 +167,7 @@ public partial class AddTransaction : BasePage
             if (_vm.IsMultipleAccounts) 
             {
                 _vm.BankAccounts = await _ds.GetBankAccounts(_vm.BudgetID);
-                if(_vm.IsAccount)
+                if(_vm.Transaction.AccountID.GetValueOrDefault() != 0)
                 {
                     _vm.SelectedBankAccount = _vm.BankAccounts.Where(b => b.ID == _vm.Transaction.AccountID.GetValueOrDefault()).FirstOrDefault();
                     if(_vm.SelectedBankAccount == null)
@@ -178,6 +175,11 @@ public partial class AddTransaction : BasePage
                         BankAccounts? B = _vm.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
                         _vm.SelectedBankAccount = B;
                         _vm.DefaultAccountName = B.BankAccountName;
+                        _vm.IsAccount = false;
+                    }
+                    else
+                    {
+                        _vm.IsAccount = true;
                     }
                 }
                 else
@@ -185,10 +187,12 @@ public partial class AddTransaction : BasePage
                     BankAccounts? B = _vm.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
                     _vm.SelectedBankAccount = B;
                     _vm.DefaultAccountName = B.BankAccountName;
+                    _vm.IsAccount = false;
                 }
             }
 
             UpdateExpenseIncomeSelected();
+            _vm.IsAppearing = false;
             if (App.CurrentPopUp != null)
             {
                 await App.CurrentPopUp.CloseAsync();
@@ -463,10 +467,13 @@ public partial class AddTransaction : BasePage
                 {
                     entTransactionDate.MinimumDate = default(DateTime);
                 }
-    #if ANDROID
-                var handler = entTransactionDate.Handler as IDatePickerHandler;
-                handler.PlatformView.PerformClick();
-    #endif
+#if ANDROID
+                if(!_vm.IsAppearing)
+                {
+                    var handler = entTransactionDate.Handler as IDatePickerHandler;
+                    handler.PlatformView.PerformClick();
+                }
+#endif
             }
         }
         catch (Exception ex)
@@ -817,21 +824,24 @@ public partial class AddTransaction : BasePage
     {
         try
         {
-
-            if (_vm.SelectedBankAccount != null && _vm.BankAccounts != null && _vm.Transaction != null)
+            if(!_vm.IsAppearing)
             {
-                if (!_vm.IsAccount)
+                if (_vm.SelectedBankAccount != null && _vm.BankAccounts != null && _vm.Transaction != null)
                 {
-                    BankAccounts? B = _vm.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
-                    _vm.SelectedBankAccount = B;
-                    _vm.DefaultAccountName = B.BankAccountName;
-                    _vm.Transaction.AccountID = B.ID;
+                    if (!_vm.IsAccount)
+                    {
+                        BankAccounts? B = _vm.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
+                        _vm.SelectedBankAccount = B;
+                        _vm.DefaultAccountName = B.BankAccountName;
+                        _vm.Transaction.AccountID = B.ID;
+                    }
+                    else
+                    {
+                        entIsAccount.Focus();
+                    }
                 }
-                else
-                {
-                    entIsAccount.Focus();
-                } 
             }
+
         }
         catch (Exception ex)
         {
