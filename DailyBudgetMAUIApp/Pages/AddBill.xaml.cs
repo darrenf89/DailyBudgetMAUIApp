@@ -344,7 +344,7 @@ public partial class AddBill : BasePage
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "AddBill", "Option1Select_Tapped");
+            _pt.HandleException(ex, "CreateNewBudget", "Option1Select_Tapped");
         }
     }
 
@@ -352,14 +352,38 @@ public partial class AddBill : BasePage
     {
         try
         {
-            UpdateSelectedOption("OfEveryMonth");
+            UpdateSelectedOption("WorkingDays");
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "AddBill", "Option2Select_Tapped");
+            _pt.HandleException(ex, "CreateNewBudget", "Option2Select_Tapped");
         }
     }
 
+    private void Option3Select_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            UpdateSelectedOption("OfEveryMonth");
+
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "Option3Select_Tapped");
+        }
+    }
+
+    private void Option4Select_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            UpdateSelectedOption("LastOfTheMonth");
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "Option4Select_Tapped");
+        }
+    }
     private void UpdateSelectedOption(string option)
     {
 
@@ -374,57 +398,137 @@ public partial class AddBill : BasePage
         {
             vslOption1Select.BackgroundColor = (Color)Success;
             vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption4Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.Bold;
             lblOption2.FontAttributes = FontAttributes.None;
+            lblOption3.FontAttributes = FontAttributes.None;
+            lblOption4.FontAttributes = FontAttributes.None;
 
             lblOption1.TextColor = (Color)White;
-            lblOption2.TextColor = (Color)Gray900;;
+            lblOption2.TextColor = (Color)Gray900;
+            lblOption3.TextColor = (Color)Gray900;
+            lblOption4.TextColor = (Color)Gray900;
 
             vslOption1.IsVisible = true;
             vslOption2.IsVisible = false;
+            vslOption3.IsVisible = false;
+            vslOption4.IsVisible = false;
 
             pckrEverynthDuration.SelectedItem = _vm.Bill.BillDuration ?? "days";
             entEverynthValue.Text = _vm.Bill.BillValue.ToString() ?? "1";
-            
+
             _vm.Bill.BillType = "Everynth";
             _vm.BillTypeText = "Everynth";
+
+        }
+        else if (option == "WorkingDays")
+        {
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption2Select.BackgroundColor = (Color)Success;
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption4Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+
+            lblOption1.FontAttributes = FontAttributes.None;
+            lblOption2.FontAttributes = FontAttributes.Bold;
+            lblOption3.FontAttributes = FontAttributes.None;
+            lblOption4.FontAttributes = FontAttributes.None;
+
+            lblOption1.TextColor = (Color)Gray900;
+            lblOption2.TextColor = (Color)White;
+            lblOption3.TextColor = (Color)Gray900;
+            lblOption4.TextColor = (Color)Gray900;
+
+            vslOption1.IsVisible = false;
+            vslOption2.IsVisible = true;
+            vslOption3.IsVisible = false;
+            vslOption4.IsVisible = false;
+
+            entWorkingDaysValue.Text = _vm.Bill.BillValue.ToString() ?? "1";
+
+            _vm.Bill.BillType = "WorkingDays";
+            _vm.BillTypeText = "WorkingDays";
 
         }
         else if (option == "OfEveryMonth")
         {
             vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
-            vslOption2Select.BackgroundColor = (Color)Success;
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption3Select.BackgroundColor = (Color)Success;
+            vslOption4Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.None;
-            lblOption2.FontAttributes = FontAttributes.Bold;
+            lblOption2.FontAttributes = FontAttributes.None;
+            lblOption3.FontAttributes = FontAttributes.Bold;
+            lblOption4.FontAttributes = FontAttributes.None;
 
             lblOption1.TextColor = (Color)Gray900;
-            lblOption2.TextColor = (Color)White;
+            lblOption2.TextColor = (Color)Gray900;
+            lblOption3.TextColor = (Color)White;
+            lblOption4.TextColor = (Color)Gray900;
 
             vslOption1.IsVisible = false;
-            vslOption2.IsVisible = true;
+            vslOption2.IsVisible = false;
+            vslOption3.IsVisible = true;
+            vslOption4.IsVisible = false;
 
             entOfEveryMonthValue.Text = _vm.Bill.BillValue.ToString() ?? "1";
-            
+
             _vm.Bill.BillType = "OfEveryMonth";
             _vm.BillTypeText = "OfEveryMonth";
+        }
+        else if (option == "LastOfTheMonth")
+        {
+
+            vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption4Select.BackgroundColor = (Color)Success;
+
+            lblOption1.FontAttributes = FontAttributes.None;
+            lblOption2.FontAttributes = FontAttributes.None;
+            lblOption3.FontAttributes = FontAttributes.None;
+            lblOption4.FontAttributes = FontAttributes.Bold;
+
+            lblOption1.TextColor = (Color)Gray900;
+            lblOption2.TextColor = (Color)Gray900;
+            lblOption3.TextColor = (Color)Gray900;
+            lblOption4.TextColor = (Color)White;
+
+            vslOption1.IsVisible = false;
+            vslOption2.IsVisible = false;
+            vslOption3.IsVisible = false;
+            vslOption4.IsVisible = true;
+
+            pckrLastOfTheMonthDuration.SelectedItem = _vm.Bill.BillDuration ?? "Monday";
+
+            _vm.Bill.BillType = "LastOfTheMonth";
+            _vm.BillTypeText = "LastOfTheMonth";
         }
         else
         {
             vslOption1Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
             vslOption2Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption3Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
+            vslOption4Select.BackgroundColor = Color.FromArgb("#00FFFFFF");
 
             lblOption1.FontAttributes = FontAttributes.None;
             lblOption2.FontAttributes = FontAttributes.None;
+            lblOption3.FontAttributes = FontAttributes.None;
+            lblOption4.FontAttributes = FontAttributes.None;
 
             lblOption1.TextColor = (Color)Gray900;
             lblOption2.TextColor = (Color)Gray900;
+            lblOption3.TextColor = (Color)Gray900;
+            lblOption4.TextColor = (Color)Gray900;
 
             vslOption1.IsVisible = false;
             vslOption2.IsVisible = false;
-            
-            if(_vm.Bill != null)
+            vslOption3.IsVisible = false;
+            vslOption4.IsVisible = false;
+
+            if (_vm.Bill != null)
             {
                 _vm.Bill.BillType = null;
             }
@@ -441,39 +545,25 @@ public partial class AddBill : BasePage
             _vm.Bill.BillDuration =  pckrEverynthDuration.SelectedItem.ToString();
             _vm.Bill.BillValue =  Convert.ToInt32(entEverynthValue.Text);
         }
+        else if (_vm.Bill.BillType == "WorkingDays")
+        {
+            _vm.Bill.BillDuration = null;
+            _vm.Bill.BillValue = Convert.ToInt32(entWorkingDaysValue.Text);
+        }
         else if (_vm.Bill.BillType == "OfEveryMonth")
         {
             _vm.Bill.BillDuration = null;
             _vm.Bill.BillValue = Convert.ToInt32(entOfEveryMonthValue.Text);
         }
+        else if (_vm.Bill.BillType == "LastOfTheMonth")
+        {
+            _vm.Bill.BillDuration = pckrLastOfTheMonthDuration.SelectedItem.ToString();
+            _vm.Bill.BillValue = 0;
+        }
         else
         {
             _vm.Bill.BillDuration = null;
             _vm.Bill.BillValue = null;
-        }
-    }
-
-    void OfEveryMonthValue_Changed(object sender, TextChangedEventArgs e)
-    {
-        try
-        {
-            Regex regex = new Regex(@"^\d+$");
-
-            if (e.NewTextValue != null && e.NewTextValue != "")
-            {
-                if (!regex.IsMatch(e.NewTextValue))
-                {
-                    entOfEveryMonthValue.Text = e.OldTextValue;
-                }
-                else
-                {
-                    entOfEveryMonthValue.Text = e.NewTextValue;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            _pt.HandleException(ex, "AddBill", "OfEveryMonthValue_Changed");
         }
     }
 
@@ -494,12 +584,62 @@ public partial class AddBill : BasePage
                     entEverynthValue.Text = e.NewTextValue;
                 }
             }
+
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "AddBill", "EveryNthValue_Changed");
+            _pt.HandleException(ex, "CreateNewBudget", "EveryNthValue_Changed");
         }
     }
+
+    void WorkingDaysValue_Changed(object sender, TextChangedEventArgs e)
+    {
+        try
+        {
+
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
+            {
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entWorkingDaysValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entWorkingDaysValue.Text = e.NewTextValue;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "WorkingDaysValue_Changed");
+        }
+    }
+    void OfEveryMonthValue_Changed(object sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            Regex regex = new Regex(@"^\d+$");
+
+            if (e.NewTextValue != null && e.NewTextValue != "")
+            {
+                if (!regex.IsMatch(e.NewTextValue))
+                {
+                    entOfEveryMonthValue.Text = e.OldTextValue;
+                }
+                else
+                {
+                    entOfEveryMonthValue.Text = e.NewTextValue;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "CreateNewBudget", "OnAppearing");
+        }
+    }
+
     private async Task<string> ChangeBillName()
     {
 
@@ -709,6 +849,16 @@ public partial class AddBill : BasePage
                 validatorEveryNthDuration.IsVisible = false;
             }
 
+            if (_vm.BillTypeText == "WorkingDays" && entWorkingDaysValue.Text == "")
+            {
+                IsValid = false;
+                validatorWorkingDayDuration.IsVisible = true;
+            }
+            else
+            {
+                validatorWorkingDayDuration.IsVisible = false;
+            }
+
             if (_vm.BillTypeText == "OfEveryMonth" && entOfEveryMonthValue.Text == "")
             {
                 IsValid = false;
@@ -728,6 +878,7 @@ public partial class AddBill : BasePage
     private void ClearAllValidators()
     {
         validatorOfEveryMonthDuration.IsVisible = false;
+        validatorWorkingDayDuration.IsVisible = false;
         validatorEveryNthDuration.IsVisible = false;
         validatorBillType.IsVisible = false;
         validatorBillRecurring.IsVisible = false;

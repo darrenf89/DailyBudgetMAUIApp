@@ -842,6 +842,7 @@ namespace DailyBudgetMAUIApp.Converters
 
     }
 
+
     public class RecurringBillDetails : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -859,15 +860,15 @@ namespace DailyBudgetMAUIApp.Converters
                 else if(Bill.BillType == "OfEveryMonth")
                 {
                     string DayString;
-                    if (Bill.BillValue == 1)
+                    if (Bill.BillValue == 1 || Bill.BillValue == 21 || Bill.BillValue == 31)
                     {
                         DayString = $"{Bill.BillValue}st";
                     }
-                    else if (Bill.BillValue == 2)
+                    else if (Bill.BillValue == 2 || Bill.BillValue == 22 )
                     {
                         DayString = $"{Bill.BillValue}nd";
                     }
-                    else if (Bill.BillValue == 3)
+                    else if (Bill.BillValue == 3 || Bill.BillValue == 23)
                     {
                         DayString = $"{Bill.BillValue}rd";
                     }
@@ -877,6 +878,14 @@ namespace DailyBudgetMAUIApp.Converters
                     }
 
                     return $"{DayString} of the month";
+                }
+                else if(Bill.BillType == "WorkingDays")
+                {
+                    return Bill.BillValue == 1 ? $"{NumberToWords(Bill.BillValue.GetValueOrDefault())} working day before the end of month" : $"{NumberToWords(Bill.BillValue.GetValueOrDefault())} working days before the end of month"; ;
+                }
+                else if(Bill.BillType == "LastOfTheMonth")
+                {
+                    return $"Last {Bill.BillDuration} of the month";
                 }
                 else
                 {
@@ -896,7 +905,25 @@ namespace DailyBudgetMAUIApp.Converters
             return null;
         }
 
+        public string NumberToWords(int number)
+        {
+            if (number == 0) return "Zero";
+
+            string[] units = { "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" };
+            string[] teens = { "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen" };
+            string[] tens = { "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" };
+
+            if (number < 10) return units[number];
+            if (number < 20) return teens[number - 10];
+            if (number < 100) return tens[number / 10] + (number % 10 != 0 ? " " + units[number % 10] : "");
+
+            return "Number too large"; // Extend this for larger numbers if needed.
+        }
+
     }
+
+
+
 
     public class IncomeTypeConverter : IValueConverter
     {
@@ -1795,4 +1822,6 @@ namespace DailyBudgetMAUIApp.Converters
             throw new NotImplementedException();
         }
     }
+
 }
+

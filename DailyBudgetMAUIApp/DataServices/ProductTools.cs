@@ -764,19 +764,8 @@ namespace DailyBudgetMAUIApp.DataServices
                 int year = LastDate.Year;
                 int month = LastDate.Month;
 
-                int NextYear = new int();
-                int NextMonth = new int();
-
-                if (month != 12)
-                {
-                    NextYear = LastDate.Year;
-                    NextMonth = month + 1;
-                }
-                else
-                {
-                    NextYear = year + 1;
-                    NextMonth = 1;
-                }
+                int NextMonth = LastDate.Month == 12 ? 1 : LastDate.Month + 1;
+                int NextYear = LastDate.Month == 12 ? LastDate.Year + 1 : LastDate.Year;
 
                 DateTime NextCurrentDate = new DateTime();
                 var i = DateTime.DaysInMonth(NextYear, NextMonth);
@@ -817,7 +806,20 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             try
             {
-                NextDate = LastDate.AddMonths(1);
+                int year = LastDate.Year;
+                int month = LastDate.Month;
+
+                int NextMonth = LastDate.Month == 12 ? 1 : LastDate.Month + 1;
+                int NextYear = LastDate.Month == 12 ? LastDate.Year + 1 : LastDate.Year;
+
+                int days = DateTime.DaysInMonth(NextYear, NextMonth);
+
+                if(Value > days)
+                {
+                    Value = days;
+                }
+
+                NextDate = new DateTime(NextYear, NextMonth, Value).Date;
             }
             catch (Exception ex)
             {
@@ -834,22 +836,8 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 int dayNumber = ((int)Enum.Parse(typeof(DayOfWeek), Duration));
 
-                int year = LastDate.Year;
-                int month = LastDate.Month;
-
-                int NextYear = new int();
-                int NextMonth = new int();
-
-                if (month != 12)
-                {
-                    NextYear = LastDate.Year;
-                    NextMonth = month + 1;
-                }
-                else
-                {
-                    NextYear = year + 1;
-                    NextMonth = 1;
-                }
+                int NextMonth = LastDate.Month == 12 ? 1 : LastDate.Month + 1;
+                int NextYear = LastDate.Month == 12 ? LastDate.Year + 1 : LastDate.Year;
 
                 DateTime NewDate = new DateTime();
 

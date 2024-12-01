@@ -196,7 +196,7 @@
                         </Border.GestureRecognizers>
                     </Border>
                     <Border Style="{DynamicResource DashboardMainContent}" Stroke="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColorLight}}" StrokeThickness="3" Padding="0" >
-                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto, Auto, *" Padding="0" Margin="0">
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto, *, Auto" Padding="0" Margin="0">
                             <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Padding="20,5,0,5">
                                 <Label  Text="Left of Today's Budget" TextColor="{DynamicResource PrimaryDark}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" VerticalOptions="Center"/>
                                 <Image VerticalOptions="Center" Margin="2,0,0,0">
@@ -205,42 +205,42 @@
                                     </Image.Source>
                                 </Image>
                             </HorizontalStackLayout>
-                            <Label Grid.Row="1" Grid.Column="1" Padding="20,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                            <Label Grid.Row="1" Grid.Column="1" Padding="20,0,0,2" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0" LineBreakMode="TailTruncation">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="Todays budget was: " TextColor="{StaticResource Gray400}" />
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Grid.Row="1" Grid.Column="2" Padding="2,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                            <Label Grid.Row="1" Grid.Column="2" Padding="2,0,10,2" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span FontAttributes="Bold" Text="{Binding DefaultBudget.StartDayDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Grid.Row="2" Grid.Column="1" Padding="20,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                            <Label Grid.Row="2" Grid.Column="1" Padding="20,0,0,2" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0" LineBreakMode="TailTruncation">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="Budget to pay day:  " TextColor="{StaticResource Gray400}"/>
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Grid.Row="2" Grid.Column="2" Padding="2,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                            <Label Grid.Row="2" Grid.Column="2" Padding="2,0,10,2" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span FontAttributes="Bold" Text="{Binding DefaultBudget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Grid.Row="3" Grid.Column="1" Padding="20,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                            <Label Grid.Row="3" Grid.Column="1" Padding="20,0,0,10" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0" LineBreakMode="TailTruncation">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="Est. spend from tomorrow:  " TextColor="{StaticResource Gray400}"/>
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Grid.Row="3" Grid.Column="2" Padding="2,0,0,0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                            <Label Grid.Row="3" Grid.Column="2" Padding="2,0,10,10" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span FontAttributes="Bold" Text="{Binding FutureDailySpend, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
@@ -259,7 +259,7 @@
                                         <gauge:RadialAxis.Annotations>
                                             <gauge:GaugeAnnotation x:Name="annotation" DirectionUnit="Angle" DirectionValue="90" PositionFactor="0">
                                                 <gauge:GaugeAnnotation.Content>
-                                                    <Label Text="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColor}}" Padding="0,0,0,5" Margin="0"/>
+                                                    <Label Text="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColor}}" Padding="0,0,0,5" Margin="0"/>
                                                 </gauge:GaugeAnnotation.Content>
                                             </gauge:GaugeAnnotation>
                                         </gauge:RadialAxis.Annotations>
