@@ -727,27 +727,36 @@ namespace DailyBudgetMAUIApp.DataServices
                 if (Duration == "days")
                 {
                     IntDuration = 1;
+                    int DaysBetween = IntDuration * Value;
+                    NextDate = LastDate.AddDays(DaysBetween);
+
+                    return "OK";
                 }
                 else if (Duration == "weeks")
                 {
                     IntDuration = 7;
+                    int DaysBetween = IntDuration * Value;
+                    NextDate = LastDate.AddDays(DaysBetween);
+
+                    return "OK";
                 }
                 else if (Duration == "years")
                 {
-                    IntDuration = 365;
+                    NextDate = LastDate.AddYears(Value);
+
+                    return "OK";
                 }
                 else if (Duration == "months")
                 {
-                    IntDuration = 30;
+                    NextDate = LastDate.AddMonths(Value);
+
+                    return "OK";
                 }
                 else
                 {
                     return "Duration not valid or null";
                 }
 
-                int DaysBetween = IntDuration * Value;
-
-                NextDate = LastDate.AddDays(DaysBetween);
             }
             catch (Exception ex)
             {
