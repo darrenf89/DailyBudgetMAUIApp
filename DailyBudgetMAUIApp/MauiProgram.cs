@@ -14,6 +14,7 @@ using DailyBudgetMAUIApp.Popups;
 using Maui.FreakyEffects;
 using Plugin.MauiMTAdmob;
 using Plugin.Maui.AppRating;
+using Syncfusion.Licensing;
 
 namespace DailyBudgetMAUIApp;
 
@@ -21,6 +22,7 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzYwMzc4NUAzMjM3MmUzMDJlMzBiRndTdnBjNEpTaXR6M05uTDhmV2wrQmhZOVo2NnZ5L0ErZTJSbHBNM29NPQ==");
 
         var builder = MauiApp.CreateBuilder();
 

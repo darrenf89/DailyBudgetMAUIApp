@@ -212,7 +212,7 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Grid.Row="1" Grid.Column="2" Padding="2,0,10,2" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                            <Label Grid.Row="1" Grid.Column="2" Padding="2,0,20,2" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span FontAttributes="Bold" Text="{Binding DefaultBudget.StartDayDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
@@ -226,7 +226,7 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Grid.Row="2" Grid.Column="2" Padding="2,0,10,2" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                            <Label Grid.Row="2" Grid.Column="2" Padding="2,0,20,2" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span FontAttributes="Bold" Text="{Binding DefaultBudget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>
@@ -240,7 +240,7 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Grid.Row="3" Grid.Column="2" Padding="2,0,10,10" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0">
+                            <Label Grid.Row="3" Grid.Column="2" Padding="2,0,20,10" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Margin="0">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span FontAttributes="Bold" Text="{Binding FutureDailySpend, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}"/>

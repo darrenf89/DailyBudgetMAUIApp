@@ -1,10 +1,9 @@
 ﻿using Android.App;
-using Firebase.Messaging;
 using DailyBudgetMAUIApp.DataServices;
 using DailySpendWebApp.Models;
 using AndroidX.Core.App;
 using Android.Content;
-using Android.Gms.Extensions;
+using Firebase.Messaging;
 
 
 namespace DailyBudgetMAUIApp.Platforms.Android.Services

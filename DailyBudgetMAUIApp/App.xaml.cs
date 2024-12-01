@@ -51,8 +51,7 @@ public partial class App : Application
     public static bool IsBackgrounded;
 
     public App()
-	{
-        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWXdfdnVWQmRYVEdxXks=");
+	{       
 		
         InitializeComponent();
         LoadChartBrush();
