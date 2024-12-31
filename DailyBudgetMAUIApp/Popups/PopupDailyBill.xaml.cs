@@ -10,11 +10,39 @@ public partial class PopupDailyBill : Popup
 {
     private readonly PopupDailyBillViewModel _vm;
     private readonly IProductTools _pt;
+    private readonly bool _IsAcceptOnly;
+
+    public PopupDailyBill(Bills Bill, PopupDailyBillViewModel viewModel, IProductTools pt, bool IsAcceptOnly)
+    {
+        InitializeComponent();
+        _IsAcceptOnly = true;
+        viewModel.Bill = Bill;
+
+        BindingContext = viewModel;
+        _vm = viewModel;
+        _pt = pt;
+
+        _vm.OriginalDate = _vm.Bill.BillDueDate.GetValueOrDefault();
+        _vm.OriginalAmount = _vm.Bill.BillAmount.GetValueOrDefault();
+
+        hslBillAmount.IsVisible = true;
+        hslTargetDate.IsVisible = true;
+
+        double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
+        lblBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
+
+        string GoalDate = _vm.Bill.BillDueDate.GetValueOrDefault().ToShortDateString();
+        lblTargetDate.Text = GoalDate;
+
+        btnUpdate.Text = "No, Go Back";
+        lblTitle.Text = "Pay Bill Now!";
+
+    }
 
     public PopupDailyBill(Bills Bill, PopupDailyBillViewModel viewModel, IProductTools pt)
 	{
         InitializeComponent();
-
+        _IsAcceptOnly = false;
         viewModel.Bill = Bill;
 
         BindingContext = viewModel;
@@ -71,6 +99,11 @@ public partial class PopupDailyBill : Popup
         {
             grdFirstBtns.IsVisible = false;
             grdUpdateBtns.IsVisible = true;
+            if (_IsAcceptOnly) 
+            {
+                btnDelete.IsVisible = false;
+            }
+
             grdDeleteBtns.IsVisible = false;
 
             vslDeleteBill.IsVisible = false;
@@ -115,19 +148,31 @@ public partial class PopupDailyBill : Popup
         try
         {
 
-            grdFirstBtns.IsVisible = false;
-            grdUpdateBtns.IsVisible = true;
-            grdDeleteBtns.IsVisible = false;
+            if(_IsAcceptOnly)
+            {
+                this.Close("Cancel");
+            }
+            else
+            {
+                grdFirstBtns.IsVisible = false;
+                grdUpdateBtns.IsVisible = true;
+                if (_IsAcceptOnly)
+                {
+                    btnDelete.IsVisible = false;
+                }
+                grdDeleteBtns.IsVisible = false;
 
 
-            lblBillAmount.IsVisible = false;
-            lblTargetDate.IsVisible = false;
+                lblBillAmount.IsVisible = false;
+                lblTargetDate.IsVisible = false;
 
-            entBillAmount.IsVisible = true;
-            entTargetDate.IsVisible = true;
+                entBillAmount.IsVisible = true;
+                entTargetDate.IsVisible = true;
 
-            double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
-            entBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
+                double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
+                entBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
+            }
+
         }
         catch (Exception ex)
         {

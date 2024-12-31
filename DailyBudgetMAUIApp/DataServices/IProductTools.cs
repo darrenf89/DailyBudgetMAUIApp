@@ -46,5 +46,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> GetIcon(string Name);
         public Task SetSubDetails();
         public Task MakeSnackBar(string text, Action? action, string? actionButtonText, TimeSpan duration, string snackBarType);
+        public Task PayBillNow(Bills Bill, Budgets budget);
+        public Task PayPayDayNow(Budgets budget);
     }
 }

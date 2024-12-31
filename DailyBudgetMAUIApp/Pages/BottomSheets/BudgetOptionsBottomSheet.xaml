@@ -12,7 +12,26 @@
         <BoxView WidthRequest="60" HeightRequest="6" Color="{DynamicResource Primary}" HorizontalOptions="Center" Margin="0,10,0,10"/>
         <Label FontAutoScalingEnabled="False" Margin="0,10,0,30" HorizontalOptions="Center" VerticalOptions="Center" x:Name="lblBudgetName" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
         <ScrollView x:Name="MainScrollView" VerticalScrollBarVisibility="Default">
-            <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" x:Name="grdShareBudget" Padding="16,0,16,0">
+            <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto" x:Name="grdShareBudget" Padding="16,0,16,0">
+                <VerticalStackLayout Grid.Column="0" Grid.Row="1" Margin="0,0,0,20">
+                    <Label FontAutoScalingEnabled="False" Margin="0,0,0,40" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="2" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Text="Budget"/>
+                    <FlexLayout Wrap="Wrap" AlignItems="Start" JustifyContent="SpaceBetween" Margin="0,0,0,15">
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Payment}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Transact pay day now" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="TransactPayDay" Tapped="TransactPayDay_Tapped"/>
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                    </FlexLayout>
+                    <BoxView Color="{StaticResource Secondary}" Margin="20,0,20,0" HeightRequest="2"/>
+                </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="0" Grid.Row="0" Margin="0,0,0,20">
                     <Label FontAutoScalingEnabled="False" Margin="0,0,0,40" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="2" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Text="Edit Budget"/>
                     <FlexLayout Wrap="Wrap" AlignItems="Start" JustifyContent="SpaceBetween" Margin="0,0,0,15">
@@ -137,6 +156,83 @@
                     <BoxView Color="{StaticResource Secondary}" Margin="20,0,20,0" HeightRequest="2"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="0" Grid.Row="2" Margin="0,0,0,20">
+                    <Label FontAutoScalingEnabled="False" Margin="0,0,0,40" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="2" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Text="User Account Info"/>
+                    <FlexLayout Wrap="Wrap" AlignItems="Start" JustifyContent="SpaceBetween" Margin="0,0,0,15">
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Manage_accounts}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="User Settings" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="UserSettings" Tapped="UserSettings_Tapped" />
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.New_label}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Create New Budget" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="CreateNewBudget" Tapped="CreateNewBudget_Tapped" />
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="VSLViewSubscription">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Subscriptions}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Your Subscription" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="ViewSubscription" Tapped="ViewSubscription_Tapped" />
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="VSLUpgradeSubscription">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Upgrade}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Upgrade Account" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="UpgradeSubscription" Tapped="UpgradeSubscription_Tapped" />
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
+                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
+                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Currency_exchange}" Size="22" Color="{DynamicResource Primary}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Switch Budget" WidthRequest="100"/>
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="SwitchBudget" Tapped="SwitchBudget_Tapped" />
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
+
+                        </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
+
+                        </VerticalStackLayout>
+                    </FlexLayout>
+                    <BoxView Color="{StaticResource Secondary}" Margin="20,0,20,0" HeightRequest="2"/>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="0" Grid.Row="3" Margin="0,0,0,20">
                     <Label FontAutoScalingEnabled="False" Margin="0,0,0,40" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="1" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Text="Daily Events"/>
                     <FlexLayout Wrap="Wrap" AlignItems="Start" JustifyContent="SpaceBetween" Margin="0,0,0,15" >
                         <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10">
@@ -218,83 +314,6 @@
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
                         <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="CalendarEventReplace">
-
-                        </VerticalStackLayout>
-                    </FlexLayout>
-                    <BoxView Color="{StaticResource Secondary}" Margin="20,0,20,0" HeightRequest="2"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="0" Grid.Row="1" Margin="0,0,0,20">
-                    <Label FontAutoScalingEnabled="False" Margin="0,0,0,40" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="2" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Text="User Account Info"/>
-                    <FlexLayout Wrap="Wrap" AlignItems="Start" JustifyContent="SpaceBetween" Margin="0,0,0,15">
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10">
-                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
-                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Manage_accounts}" Size="22" Color="{DynamicResource Primary}"/>
-                                    </Image.Source>
-                                </Image>
-                            </Border>
-                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="User Settings" WidthRequest="100"/>
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="UserSettings" Tapped="UserSettings_Tapped" />
-                            </VerticalStackLayout.GestureRecognizers>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10">
-                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
-                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.New_label}" Size="22" Color="{DynamicResource Primary}"/>
-                                    </Image.Source>
-                                </Image>
-                            </Border>
-                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Create New Budget" WidthRequest="100"/>
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="CreateNewBudget" Tapped="CreateNewBudget_Tapped" />
-                            </VerticalStackLayout.GestureRecognizers>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="VSLViewSubscription">
-                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
-                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Subscriptions}" Size="22" Color="{DynamicResource Primary}"/>
-                                    </Image.Source>
-                                </Image>
-                            </Border>
-                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Your Subscription" WidthRequest="100"/>
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="ViewSubscription" Tapped="ViewSubscription_Tapped" />
-                            </VerticalStackLayout.GestureRecognizers>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="VSLUpgradeSubscription">
-                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
-                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Upgrade}" Size="22" Color="{DynamicResource Primary}"/>
-                                    </Image.Source>
-                                </Image>
-                            </Border>
-                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Upgrade Account" WidthRequest="100"/>
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="UpgradeSubscription" Tapped="UpgradeSubscription_Tapped" />
-                            </VerticalStackLayout.GestureRecognizers>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
-                            <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
-                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
-                                    <Image.Source>
-                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Currency_exchange}" Size="22" Color="{DynamicResource Primary}"/>
-                                    </Image.Source>
-                                </Image>
-                            </Border>
-                            <Label FontAutoScalingEnabled="False" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Switch Budget" WidthRequest="100"/>
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer x:Name="SwitchBudget" Tapped="SwitchBudget_Tapped" />
-                            </VerticalStackLayout.GestureRecognizers>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
-
-                        </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
 
                         </VerticalStackLayout>
                     </FlexLayout>

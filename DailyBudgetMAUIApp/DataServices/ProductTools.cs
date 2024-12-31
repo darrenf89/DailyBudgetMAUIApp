@@ -11,6 +11,9 @@ using DailyBudgetMAUIApp.Helpers;
 using System.Reflection;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.ApplicationModel;
+using CommunityToolkit.Mvvm.Messaging;
+using static DailyBudgetMAUIApp.Pages.ViewAccounts;
 
 
 
@@ -2164,6 +2167,150 @@ namespace DailyBudgetMAUIApp.DataServices
             await SB.Show(token);
 
             return;
+        }
+
+        public async Task PayBillNow(Bills Bill, Budgets budget)
+        {
+            var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), this, true);
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+            if ((string)result.ToString() == "OK")
+            {
+                Bill.BillDueDate = DateTime.UtcNow;
+                TransactBill(ref Bill, budget);
+                await _ds.UpdateBill(Bill);
+
+            }
+            else if ((string)result.ToString() == "Cancel")
+            {
+
+            }
+        }
+
+        public async Task PayPayDayNow(Budgets budget)
+        {
+            string status = "OK";
+            budget.NextIncomePayday = DateTime.UtcNow;
+            int Index = budget.PayPeriodStats.FindIndex(p => p.IsCurrentPeriod);
+            PayPeriodStats Stats = budget.PayPeriodStats[Index];
+
+            //Confirm pay amount and date!
+            var popup = new PopupDailyPayDay(budget, new PopupDailyPayDayViewModel(), this, true);
+            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+
+            if ((string)result.ToString() == "OK")
+            {
+                Stats.IsCurrentPeriod = false;
+                budget.PayPeriodStats[Index] = Stats;
+                budget.PayPeriodStats.Add(await _ds.CreateNewPayPeriodStats(budget.BudgetID));
+
+                Index = budget.PayPeriodStats.FindIndex(p => p.IsCurrentPeriod);
+                Stats = budget.PayPeriodStats[Index];
+
+                //Add next pay amount
+                TransactPayDay(ref budget);
+                Stats.IncomeToDate += budget.PaydayAmount.GetValueOrDefault();
+                //Update the next pay date
+                budget.NextIncomePayday = CalculateNextDate(budget.NextIncomePayday.GetValueOrDefault(), budget.PaydayType, budget.PaydayValue.GetValueOrDefault(), budget.PaydayDuration);
+                TimeSpan NoOfDays = budget.NextIncomePayday.GetValueOrDefault().Date - budget.BudgetValuesLastUpdated.Date;
+                budget.AproxDaysBetweenPay = (int)NoOfDays.TotalDays;
+                //Reset any envelope savings
+                for (int i = budget.Savings.Count - 1; i >= 0; i--)
+                {
+                    Savings Saving = budget.Savings[i];
+
+                    if (!Saving.IsRegularSaving)
+                    {
+                        if (Saving.IsTopUp)
+                        {
+                            Stats.SavingsToDate += Saving.PeriodSavingValue.GetValueOrDefault();
+                            Saving.CurrentBalance += Saving.PeriodSavingValue;
+                            Saving.LastUpdatedValue = Saving.PeriodSavingValue;
+                            Saving.GoalDate = budget.NextIncomePayday;
+                        }
+                        else
+                        {
+                            Stats.SavingsToDate += (Saving.PeriodSavingValue.GetValueOrDefault() - Saving.CurrentBalance.GetValueOrDefault());
+
+                            Saving.CurrentBalance = Saving.PeriodSavingValue;
+                            Saving.LastUpdatedValue = Saving.PeriodSavingValue;
+                            Saving.GoalDate = budget.NextIncomePayday;
+                        }
+
+
+                    }
+
+                    budget.Savings[i] = Saving;
+                }
+
+                for (int i = budget.Bills.Count - 1; i >= 0; i--)
+                {
+                    Bills Bill = budget.Bills[i];
+                    if (!Bill.IsClosed)
+                    {
+                        Bill.BillBalanceAtLastPayDay = Bill.BillCurrentBalance;
+                    }
+
+                    budget.Bills[i] = Bill;
+                }
+
+                budget.LeftToSpendBalance = budget.BankBalance;
+                budget.PlusStashSpendBalance = budget.BankBalance;
+                budget.MoneyAvailableBalance = budget.BankBalance;
+
+                BudgetDailyCycleBudgetValuesUpdate(ref budget);
+
+                //IF PAY DAY THEN UPDATE THE START PAY PERIOD STATS
+                Index = budget.PayPeriodStats.FindIndex(p => p.IsCurrentPeriod);
+                Stats = budget.PayPeriodStats[Index];
+
+                if (Stats.StartBBPeiordAmount == 0)
+                {
+                    Stats.StartLtSDailyAmount = budget.LeftToSpendDailyAmount;
+                    Stats.StartLtSPeiordAmount = budget.LeftToSpendBalance;
+                    Stats.StartBBPeiordAmount = budget.BankBalance;
+                    Stats.StartMaBPeiordAmount = budget.MoneyAvailableBalance;
+                }
+                Stats.EndDate = budget.NextIncomePayday.GetValueOrDefault();
+
+                budget.PayPeriodStats[Index] = Stats;
+
+                for (int i = budget.PayPeriodStats.Count - 1; i >= 0; i--)
+                {
+                   await _ds.UpdatePayPeriodStats(budget.PayPeriodStats[i]);
+                }
+
+                budget = await _ds.SaveBudgetDailyCycle(budget);
+
+                try
+                {
+                    WeakReferenceMessenger.Default.Send(new UpdateViewAccount(true, false));
+                }
+                catch
+                {
+
+                }
+
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+
+                if (App.CurrentBottomSheet != null)
+                {
+                    await App.CurrentBottomSheet.DismissAsync();
+                    App.CurrentBottomSheet = null;
+                }
+            }
+            else
+            {
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+            }
         }
     }
 }
