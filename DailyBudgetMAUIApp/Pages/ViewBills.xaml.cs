@@ -190,6 +190,30 @@ public partial class ViewBills : BasePage
         }
     }
 
+    private async void PayNow_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+
+            var Bill = (Bills)e.Parameter;
+            await _pt.PayBillNow(Bill, App.DefaultBudget);
+
+            await _ds.ReCalculateBudget(App.DefaultBudgetID);
+            App.DefaultBudget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full").Result;
+
+            if (App.CurrentPopUp != null)
+            {
+                await App.CurrentPopUp.CloseAsync();
+                App.CurrentPopUp = null;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewBills", "PayNow_Tapped");
+        }
+    }
+
     private async void UpdateAmount_Tapped(object sender, TappedEventArgs e)
     {
         try

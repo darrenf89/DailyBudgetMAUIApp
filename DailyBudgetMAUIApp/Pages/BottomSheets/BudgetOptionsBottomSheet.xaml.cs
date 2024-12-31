@@ -101,6 +101,27 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         this.DismissAsync();
     }
 
+    private async void TransactPayDay_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.MainPage.ShowPopup(PopUp);
+            }
+
+            await _pt.PayPayDayNow(App.DefaultBudget);
+
+
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "BudgetOptionsBottomSheet", "ViewTransactions_Tapped");
+        }
+    }
+
     private async void ViewTransactions_Tapped(object sender, TappedEventArgs e)
     {
         try
