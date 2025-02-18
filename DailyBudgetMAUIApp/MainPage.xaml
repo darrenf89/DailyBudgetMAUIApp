@@ -9,15 +9,14 @@
              xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
              xmlns:gauge="clr-namespace:Syncfusion.Maui.Gauges;assembly=Syncfusion.Maui.Gauges"
              xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
-             xmlns:carousel="clr-namespace:Syncfusion.Maui.Carousel;assembly=Syncfusion.Maui.Carousel"
+             xmlns:carousel="clr-namespace:Syncfusion.Maui.Toolkit.Carousel;assembly=Syncfusion.Maui.Toolkit"
              xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
              xmlns:scheduler="clr-namespace:Syncfusion.Maui.Scheduler;assembly=Syncfusion.Maui.Scheduler"
              xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
              xmlns:adMob="clr-namespace:Plugin.MauiMTAdmob.Controls;assembly=Plugin.MauiMTAdmob"
              droid:NavigationBar.Color="{StaticResource PrimaryDark}"
-             droid:NavigationBar.Style="LightContent"
-             Background="{StaticResource Primary}"
+             droid:NavigationBar.Style="LightContent"             
              NavigationPage.HasNavigationBar="True"
              NavigationPage.HasBackButton="False">
     <Shell.TitleView>
@@ -70,8 +69,8 @@
                     </Button.ImageSource>
                 </Button>
                 <BoxView IsVisible="{Binding IsUnreadMessage}" BackgroundColor="Transparent" Color="{StaticResource Success}" WidthRequest="10" HeightRequest="10" AbsoluteLayout.LayoutBounds="1.1, 0.1, AutoSize, AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional" CornerRadius="10" />
-            </AbsoluteLayout>
-        </Grid>
+            </AbsoluteLayout>            
+        </Grid>        
     </Shell.TitleView>
      <!--<HorizontalStackLayout AbsoluteLayout.LayoutBounds="15,0.94" AbsoluteLayout.LayoutFlags="YProportional" ZIndex="99">
             <Border x:Name="brdTransaction" BackgroundColor="{StaticResource White}" HeightRequest="70" WidthRequest="70" Stroke="{StaticResource TertiaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 35">
@@ -97,7 +96,7 @@
                 </Border.Shadow>
             </Border>
         </HorizontalStackLayout>-->
-    <AbsoluteLayout>
+    <AbsoluteLayout Background="{StaticResource Primary}">
         <ImageButton Command="{Binding QuickTransactionCommand}" Source="transaction.png" BackgroundColor="White" AbsoluteLayout.LayoutFlags="PositionProportional" Padding="10" AbsoluteLayout.LayoutBounds="1,1" WidthRequest="60" HeightRequest="60" CornerRadius="32" VerticalOptions="Center" Margin="20" ZIndex="999">
             <ImageButton.Shadow>
                 <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
@@ -126,11 +125,11 @@
         </Grid>
         <Grid AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1" ColumnDefinitions="*" RowDefinitions="Auto,*">
             <Border Style="{DynamicResource DashboardMainContent}" Padding="0,2,0,5" Grid.Row="0" Grid.Column="0" Margin="10,0,10,10">
-                <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto,*" HeightRequest="74">
+                <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto,*" HeightRequest="80">
                     <Label Grid.Row="0" Grid.Column="1" Margin="10,5,0,0" VerticalOptions="End" Text="You are budgeting in"  FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}" FontFamily="OpenSansSemibold"/>
                     <Label LineBreakMode="TailTruncation" Grid.Row="1" Grid.Column="1" Margin="10,0,0,10" Padding="0" VerticalOptions="Start" Text="{Binding DefaultBudget.BudgetName}"  FontSize="{Binding Source=MainTitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" FontAttributes="Bold" FontFamily="OpenSansSemibold"/>
                     <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,0">
-                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0"/>
+                        <Image Source="mainpagelogoprimary.png" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Margin="0,5,5,0" >
                         <Button LineBreakMode="TailTruncation" IsVisible="{Binding IsPreviousBudget}" Command="{Binding SwapBudgetCommand}" HorizontalOptions="End" Text="Switch" TextColor="White" BackgroundColor="{StaticResource Tertiary}" MinimumWidthRequest="140" HeightRequest="32" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Margin="0,0,0,5" FontFamily="OpenSansSemibold">
@@ -156,7 +155,7 @@
                     <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
                             <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
-                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                                <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
                                 <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Complete Set up"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
@@ -177,7 +176,7 @@
                     <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}">
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
                             <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" x:Name="MainVSLView">
-                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                                <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
                                 <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Change selected budget"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
@@ -287,7 +286,7 @@
                     <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsUnreadMessage}">
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
                             <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
-                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                                <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" Padding="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
                                 <Label Margin="0" Padding="0,0,5,2" VerticalOptions="Start" Text="Unread message"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
@@ -310,7 +309,7 @@
                     </Border>
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendDailyAmountHideShow}}" >
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
-                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
+                            <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,5,5,0">
                                 <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Cover overspend"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                                 <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Do you want to cover todays overspend with savings?" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
@@ -329,12 +328,12 @@
                     </Border>
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,10" >
                         <Grid ColumnDefinitions="*" RowDefinitions="Auto">
-                            <Image Source="mainpagelogo.png" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" MaximumHeightRequest="70" Margin="10,0,0,0" HorizontalOptions="Center" />
+                            <Image Source="mainpagelogo.png"  Grid.Row="0" Grid.Column="0" MaximumHeightRequest="70" Margin="10,0,0,0" HorizontalOptions="Center" />
                         </Grid>
                     </Border>
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetShareRequestToBool}}" >
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
-                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
+                            <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,5,5,0">
                                 <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Someone wants to Share a Budget"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                                 <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to Verify a Budget Share Request" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
@@ -353,7 +352,7 @@
                     </Border>
                     <Border Padding="0" Style="{DynamicResource DashboardMainContent}" >
                         <Grid ColumnDefinitions="45, *, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
-                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
+                            <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
                             <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
@@ -396,7 +395,7 @@
                     <Border Padding="0" Style="{DynamicResource DashboardMainContent}" x:Name="brdYourTransactions">
                         <VerticalStackLayout>
                             <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="45,*,*">
-                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
+                                <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
                                 <Image Grid.Column="2" Grid.Row="0" VerticalOptions="Start" HorizontalOptions="End" Margin="5,0,5,0">
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Drag_handle}" Size="40"  Color="{DynamicResource Primary}" />
@@ -494,7 +493,7 @@
                     <Border Padding="0" Style="{DynamicResource DashboardMainContent}" x:Name="brdBudgetCalendar" IsVisible="{Binding IsPremiumAccount}">
                         <VerticalStackLayout>
                             <Grid RowDefinitions="Auto" ColumnDefinitions="45,*,*">
-                                <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
+                                <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
                                 <scheduler:SfScheduler Margin="5,0,10,0" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" TodayHighlightBrush="{StaticResource PrimaryDark}" x:Name="Scheduler" View="Agenda" MaximumHeightRequest="230" AppointmentsSource="{Binding EventList}">
                                     <scheduler:SfScheduler.HeaderView>
                                         <scheduler:SchedulerHeaderView Height="50" Background="White" />
@@ -518,7 +517,7 @@
                     </Border>
                     <Border Padding="0" Style="{DynamicResource DashboardMainContent}" x:Name="brdYourEnvelopes">
                         <Grid ColumnDefinitions="45, Auto, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
-                            <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
+                            <Image  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
                                 <Image.Source>
                                     <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mail}" Size="45"  Color="{DynamicResource Primary}" />
                                 </Image.Source>
@@ -554,7 +553,7 @@
                     </Border>
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetNotSharedBudgetToBool}}" >
                         <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
-                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                            <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
                                 <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="Share Your Budget!"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                                 <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to Share your budget with a family or friend!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
@@ -573,7 +572,7 @@
                     </Border>
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetSharedBudgetToBool}}" >
                         <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
-                            <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                            <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
                                 <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="View Shared Budget!"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                                 <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to find out the details of who you shared your budget with!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
@@ -663,7 +662,7 @@
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdCategoryDetails" IsVisible="{Binding IsPremiumAccount}">
                         <VerticalStackLayout>
                             <Grid RowDefinitions="Auto,200" ColumnDefinitions="45, *, *">
-                                <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
+                                <Image  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Category}" Size="45"  Color="{DynamicResource Primary}" />
                                     </Image.Source>
@@ -692,7 +691,7 @@
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdPayeeDetails" IsVisible="{Binding IsPremiumAccount}">
                         <VerticalStackLayout>
                             <Grid RowDefinitions="Auto,Auto,200,Auto" ColumnDefinitions="45, *, *">
-                                <Image Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
+                                <Image  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5">
                                     <Image.Source>
                                         <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Storefront}" Size="45"  Color="{DynamicResource Primary}" />
                                     </Image.Source>

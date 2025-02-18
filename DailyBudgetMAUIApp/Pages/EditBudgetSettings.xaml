@@ -3,7 +3,6 @@
                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                 x:Class="DailyBudgetMAUIApp.Pages.EditBudgetSettings"
                 xmlns:local="clr-namespace:DailyBudgetMAUIApp"
-                xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
                 xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
                 xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
                 xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
@@ -319,7 +318,7 @@
                             <VerticalStackLayout Margin="10,5,10,0" x:Name="BudgetToggleSetting" HorizontalOptions="Fill">
                                 <Label Text="Outgoings accrual?" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
                                 <Grid ColumnDefinitions="60,*" Margin="5,0,0,10" HeightRequest="40">
-                                    <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsBorrowPay}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate"/>
+                                    <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsBorrowPay}" ToggledCommand="{Binding IsBorrowPayToggledCommand }"/>
                                     <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">
                                         <Label HorizontalOptions="Start" Text="{Binding IsBorrowPay, Converter={StaticResource IsBorrowPayTextConverter}}" TextColor="{StaticResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
                                     </HorizontalStackLayout>
@@ -328,7 +327,7 @@
                             <VerticalStackLayout Margin="10,5,10,0" x:Name="MultipleAccountsToggle" HorizontalOptions="Fill" IsVisible="{Binding IsPremiumAccount}">
                                 <Label Text="Use Multiple Accounts?" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
                                 <Grid ColumnDefinitions="60,*" Margin="5,0,0,10" HeightRequest="40">
-                                    <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsMultipleAccounts}" SwitchPanUpdate="MultipleAccountsToggle_Toggled"/>
+                                    <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsMultipleAccounts}" />
                                     <Label VerticalOptions="Center" Grid.Column="1" LineBreakMode="WordWrap" HorizontalOptions="Start" IsVisible="{Binding IsMultipleAccounts}" Text="Support multiple accounts, each with its own individual balance." TextColor="{StaticResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
                                     <Label VerticalOptions="Center" Grid.Column="1" LineBreakMode="WordWrap" HorizontalOptions="Start" IsVisible="{Binding IsMultipleAccounts, Converter={StaticResource BoolConverter}}" Text="Maintain a single value representing your bank balance." TextColor="{StaticResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
                                 </Grid>

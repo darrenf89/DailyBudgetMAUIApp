@@ -115,6 +115,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool isMultipleAccounts;
 
+        [RelayCommand]
+        public async Task IsBorrowPayToggledCommand()
+        {
+            HasBorrowPayChanged = true;
+        }
 
         public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds)
         {

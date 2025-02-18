@@ -6,7 +6,6 @@
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
              Title="Create Your Budget"
              Shell.TabBarIsVisible="False"
              BackgroundColor="{DynamicResource White}">
@@ -371,7 +370,7 @@
                                                     <ColumnDefinition Width="10"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Border Style="{StaticResource PictureFrame40}" Margin="0,5,0,0" Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" VerticalOptions="Start" HorizontalOptions="Center">
-                                                    <Image Source="billsicon.png" Aspect="AspectFill" />
+                                                    <Image Source="billsicon.png"  />
                                                 </Border>
                                                 <HorizontalStackLayout Grid.Column="1" Grid.Row="1" VerticalOptions="Center" >
                                                     <Image Background="{DynamicResource White}" IsVisible="{Binding IsRecuring}" Margin="0,0,4,0" VerticalOptions="Center">
@@ -459,7 +458,7 @@
                     <Label IsVisible="{Binding IsBorrowPay}" Text="We will only accrue the balance of your outgoings every time you are paid" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="0,5,0,0"/>
                     <Label IsVisible="{Binding IsBorrowPay, Converter={StaticResource BoolConverter}}" Text="We will accrue your outgoings each and every day!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="0,5,0,0"/>
                     <Grid ColumnDefinitions="60,*" Margin="5,5,0,10" HeightRequest="40">
-                        <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsBorrowPay}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate"/>
+                        <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsBorrowPay}" />
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">
                             <Label HorizontalOptions="Start" Text="{Binding IsBorrowPay, Converter={StaticResource IsBorrowPayTextConverter}}" TextColor="{StaticResource Primary}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
                         </HorizontalStackLayout>
@@ -529,7 +528,7 @@
                                                     <ColumnDefinition Width="10"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Border Style="{StaticResource PictureFrame40}" Margin="0,5,0,0" Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" VerticalOptions="Start" HorizontalOptions="Center">
-                                                    <Image Source="savingicon.png" Aspect="AspectFill" />
+                                                    <Image Source="savingicon.png"  />
                                                 </Border>
                                                 <HorizontalStackLayout Grid.Column="1" Grid.Row="1" VerticalOptions="Center" >
                                                     <Image Background="{DynamicResource White}" IsVisible="{Binding IsRegularSaving}" Margin="0,0,4,0" VerticalOptions="Center">
@@ -686,7 +685,7 @@
                                                     <ColumnDefinition Width="10"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Border Style="{StaticResource PictureFrame40}" Margin="0,5,0,0" Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" VerticalOptions="Start" HorizontalOptions="Center">
-                                                    <Image Source="incomeicon.png" Aspect="AspectFill" />
+                                                    <Image Source="incomeicon.png"  />
                                                 </Border>
                                                 <HorizontalStackLayout Grid.Column="1" Grid.Row="1" VerticalOptions="Center" >
                                                     <Image Background="{DynamicResource White}" IsVisible="{Binding IsRecurringIncome}" Margin="0,0,4,0" VerticalOptions="Center">

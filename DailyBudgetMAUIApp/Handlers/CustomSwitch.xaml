@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<ContentView x:Class="DailyBudgetMAUIApp.Handlers.CustomSwitch"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
+             x:DataType="handlers:CustomSwitch">
+    <switch:CustomSwitch BackgroundColor="#A6A6A6"
+                         HeightRequest="28"
+                         IsToggled="{Binding IsToggled, Source={RelativeSource AncestorType={x:Type ContentView}}}"
+                         KnobBackgroundColor="#fafafa"
+                         KnobHeight="24"
+                         KnobLimit="Boundary"
+                         KnobWidth="25"
+                         SwitchPanUpdate="CustomSwitch_SwitchPanUpdate"
+                         Toggled="CustomSwitch_Toggled"
+                         ToggledCommand="{Binding ToggledCommand, Source={RelativeSource AncestorType={x:Type ContentView}}}"
+                         VerticalOptions="Center"
+                         HorizontalOptions="Start"
+                         WidthRequest="45"
+                         Padding="0"
+                         Margin="0"
+                         HorizontalKnobMargin="2"
+                         Stroke="Transparent"
+                         KnobStroke="Transparent"
+                         StrokeThickness="0"
+                         KnobStrokeThickness="0">
+        <switch:CustomSwitch.StrokeShape>
+            <RoundRectangle CornerRadius="15" />
+        </switch:CustomSwitch.StrokeShape>
+        <switch:CustomSwitch.KnobStrokeShape>
+            <RoundRectangle CornerRadius="12" />
+        </switch:CustomSwitch.KnobStrokeShape>
+    </switch:CustomSwitch>
+</ContentView>

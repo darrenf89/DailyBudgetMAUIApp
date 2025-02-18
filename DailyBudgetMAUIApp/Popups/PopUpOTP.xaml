@@ -61,8 +61,8 @@
                         <Label WidthRequest="{Binding EntryWidth}" x:Name="lblDescriptionEmail" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray400}" Margin="10,15,10,5" LineBreakMode="CharacterWrap"/>
                         <handlers:BorderlessEntry x:Name="entEmailBox" Margin="0,0,0,0" Loaded="txtEmail_Loaded" HorizontalOptions="Center" WidthRequest="{Binding EntryWidth}" Text="{Binding UserEmail}" Keyboard="Text" Style="{StaticResource LogonEntry}" HeightRequest="50" FontSize="20" Placeholder="Enter your account's Email!">
                             <Entry.Behaviors>
-                                <xct:EmailValidationBehavior Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused,ValidateOnAttaching" IsValid="{Binding EmailValid}" />
-                                <xct:TextValidationBehavior MinimumLength="1" Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused, ValidateOnAttaching" IsValid="{Binding EmailRequired}" />
+                                <xct:EmailValidationBehavior Flags="ValidateOnUnfocused, ForceMakeValidWhenFocused,ValidateOnAttaching" IsValid="{Binding EmailValid}" BindingContext="{Binding BindingContext, Source={x:Reference AbsLayout}, x:DataType=PopUpOTPViewModel}" />
+                                <xct:TextValidationBehavior MinimumLength="1" Flags="ValidateOnUnfocused, ForceMakeValidWhenFocused, ValidateOnAttaching" IsValid="{Binding EmailRequired}" BindingContext="{Binding BindingContext, Source={x:Reference AbsLayout}, x:DataType=PopUpOTPViewModel}"  />
                             </Entry.Behaviors>
                         </handlers:BorderlessEntry>
                         <HorizontalStackLayout IsVisible="{Binding EmailRequired, Converter={StaticResource BoolConverter}}" Margin="10,0,0,0">
@@ -160,8 +160,8 @@
                                 <VerticalStackLayout>
                                     <handlers:BorderlessEntry Text="{Binding Password}" Placeholder="Please enter a password!" Keyboard="Text" IsPassword="True" Style="{StaticResource LogonEntry}" x:Name="entPassword">
                                         <Entry.Behaviors>
-                                            <xct:TextValidationBehavior MinimumLength="1" Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused,ValidateOnAttaching" IsValid="{Binding PasswordRequired}" />
-                                            <xct:TextValidationBehavior RegexPattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$" Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused,ValidateOnAttaching" IsValid="{Binding PasswordStrong}"/>
+                                            <xct:TextValidationBehavior MinimumLength="1" Flags="ValidateOnUnfocused, ForceMakeValidWhenFocused,ValidateOnAttaching" IsValid="{Binding PasswordRequired}" BindingContext="{Binding BindingContext, Source={x:Reference AbsLayout}, x:DataType=PopUpOTPViewModel}" />
+                                            <xct:TextValidationBehavior RegexPattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$" Flags="ValidateOnUnfocused, ForceMakeValidWhenFocused,ValidateOnAttaching" IsValid="{Binding PasswordStrong}" BindingContext="{Binding BindingContext, Source={x:Reference AbsLayout}, x:DataType=PopUpOTPViewModel}" />
                                         </Entry.Behaviors>
                                     </handlers:BorderlessEntry>
                                 </VerticalStackLayout>
@@ -189,7 +189,7 @@
                                 <VerticalStackLayout>
                                     <handlers:BorderlessEntry Text="{Binding PasswordConfirm}" Placeholder="Please confirm your password!" Keyboard="Text" Style="{StaticResource LogonEntry}" IsPassword="True">
                                         <Entry.Behaviors>
-                                            <xct:RequiredStringValidationBehavior RequiredString="{Binding Password}" Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused" IsValid="{Binding PasswordSameSame}" />
+                                            <xct:RequiredStringValidationBehavior RequiredString="{Binding Password}" Flags="ValidateOnUnfocused, ForceMakeValidWhenFocused" IsValid="{Binding PasswordSameSame}" BindingContext="{Binding BindingContext, Source={x:Reference AbsLayout}, x:DataType=PopUpOTPViewModel}" />
                                         </Entry.Behaviors>
                                     </handlers:BorderlessEntry>
                                 </VerticalStackLayout>

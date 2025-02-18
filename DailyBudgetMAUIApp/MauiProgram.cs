@@ -6,7 +6,7 @@ using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
 using Microsoft.Extensions.Logging;
 using IeuanWalker.Maui.Switch;
-using Syncfusion.Maui.Core.Hosting;
+using Syncfusion.Maui.Toolkit.Hosting;
 using Maui.FixesAndWorkarounds;
 using The49.Maui.BottomSheet;
 using DotNet.Meteor.HotReload.Plugin;
@@ -15,6 +15,7 @@ using Maui.FreakyEffects;
 using Plugin.MauiMTAdmob;
 using Plugin.Maui.AppRating;
 using Syncfusion.Licensing;
+using Syncfusion.Maui.Core.Hosting;
 
 namespace DailyBudgetMAUIApp;
 
@@ -22,7 +23,7 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
-        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzYwMzc4NUAzMjM3MmUzMDJlMzBiRndTdnBjNEpTaXR6M05uTDhmV2wrQmhZOVo2NnZ5L0ErZTJSbHBNM29NPQ==");
+        SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWX1fdnVQR2lfVUZwXEI=");
 
         var builder = MauiApp.CreateBuilder();
 
@@ -31,6 +32,7 @@ public static class MauiProgram
             .UseSwitch()
             .UseMauiCommunityToolkit()
             .ConfigureSyncfusionCore()
+            .ConfigureSyncfusionToolkit()
             .ConfigureMauiWorkarounds()
             .UseBottomSheet()
             .UseMauiMTAdmob()

@@ -10,7 +10,7 @@
              Shell.NavBarIsVisible = "False"
              Background="#ecdbc3">
     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" ColumnDefinitions="*,2*,*" VerticalOptions="Fill">
-        <Image Grid.Column="1" Grid.Row="2" Source="error.png" Aspect="AspectFill" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,60,0,0"/>
+        <Image Grid.Column="1" Grid.Row="2" Source="error.png"  VerticalOptions="Center" HorizontalOptions="Center" Margin="0,60,0,0"/>
         <Label Grid.Column="0" Grid.Row="0" Margin="0,60,0,10" Grid.ColumnSpan="3" 
             Text="Well That's Awkward"
             VerticalOptions="Center" 

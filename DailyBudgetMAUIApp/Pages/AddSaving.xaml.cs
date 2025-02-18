@@ -616,29 +616,6 @@ public partial class AddSaving : BasePage
         }
     }
 
-    static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
-    {
-
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
-        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
-
-        //Switch Color Animation
-        Color fromSwitchColor = e.IsToggled ? (Color)Primary : (Color)Gray400;
-        Color toSwitchColor = e.IsToggled ? (Color)Gray400 : (Color)Primary;
-
-        //BackGroundColor Animation
-        Color fromColor = e.IsToggled ? (Color)Tertiary : (Color)PrimaryLight;
-        Color toColor = e.IsToggled ? (Color)PrimaryLight : (Color)Tertiary;
-
-        double t = e.Percentage * 0.01;
-
-        customSwitch.KnobBackgroundColor = ColorAnimationUtil.ColorAnimation(fromSwitchColor, toSwitchColor, t);
-        customSwitch.BackgroundColor = ColorAnimationUtil.ColorAnimation(fromColor, toColor, t);
-
-    }
-
     void SavingTarget_Changed(object sender, TextChangedEventArgs e)
     {
         try
@@ -1147,4 +1124,5 @@ public partial class AddSaving : BasePage
         }
 
     }
+
 }

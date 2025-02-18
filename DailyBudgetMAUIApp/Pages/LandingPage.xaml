@@ -8,11 +8,11 @@
              Shell.NavBarIsVisible = "False">
     <Grid>
         <Image Source="LandingPageBackground.jpg"
-               Aspect="AspectFill" />
+                Aspect="AspectFill" />
         <VerticalStackLayout VerticalOptions="End">
             <Label Text="Welcome."  Margin="0,0,0,120" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource White}" FontFamily="OpenSansSemibold" VerticalOptions="Center" HorizontalOptions="Center" CharacterSpacing="0"/>
             <Border Style="{StaticResource PictureFrame150Circle}" Margin="0,0,0,130" x:Name="brdImage" VerticalOptions="Center">
-                <Image Source="justlogoorangetwo.png" Aspect="AspectFill" VerticalOptions="Center" ></Image>
+                <Image Source="justlogoorangetwo.png"  VerticalOptions="Center" ></Image>
             </Border>
             <Label Text="Loading . . ." HeightRequest="80" HorizontalOptions="Center" Margin="0,100,0,0" FontSize="25" VerticalOptions="Center" TextColor="{StaticResource White}" FontFamily="OpenSansSemibold" CharacterSpacing="0"/>
             <ActivityIndicator IsVisible="True" IsRunning="True" Color="White" Margin="0,10,0,70" HeightRequest="40" Scale="1.6"/>

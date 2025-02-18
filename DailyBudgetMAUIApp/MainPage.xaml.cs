@@ -9,7 +9,7 @@ using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using System.Globalization;
 using The49.Maui.BottomSheet;
-using Syncfusion.Maui.Carousel;
+using Syncfusion.Maui.Toolkit.Carousel;
 using DailyBudgetMAUIApp.Converters;
 using Syncfusion.Maui.ProgressBar;
 using Microsoft.Maui.Controls.Shapes;
@@ -1371,7 +1371,6 @@ public partial class MainPage : BasePage
                     Size = 45,
                     Color = (Color)Primary,
                 },
-                Aspect = Aspect.AspectFill,
                 WidthRequest = 28
             };
             grid.AddWithSpan(image, 0, 0, 6, 1);
@@ -1700,7 +1699,6 @@ public partial class MainPage : BasePage
                     Size = 45,
                     Color = (Color)Primary,                    
                 },
-                Aspect = Aspect.AspectFill,
                 WidthRequest = 28
             };
             grid.AddWithSpan(image,0,0,6,1);
@@ -2054,7 +2052,6 @@ public partial class MainPage : BasePage
                     Size = 45,
                     Color = (Color)Primary,
                 },
-                Aspect = Aspect.AspectFill,
                 WidthRequest = 28
             };
             grid.AddWithSpan(image, 0, 0, 6, 1);
@@ -2275,7 +2272,7 @@ public partial class MainPage : BasePage
         return sc;
     }
 
-    private async Task IncomeCarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
+    private async Task IncomeCarouselSwipeStarted(object Sender, Syncfusion.Maui.Toolkit.Carousel.SwipeStartedEventArgs Event)
     {
         try
         {
@@ -2315,7 +2312,7 @@ public partial class MainPage : BasePage
         }
     }
 
-    private async Task CarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
+    private async Task CarouselSwipeStarted(object Sender, Syncfusion.Maui.Toolkit.Carousel.SwipeStartedEventArgs Event)
     {
         try
         {
@@ -2356,7 +2353,7 @@ public partial class MainPage : BasePage
             await _pt.HandleException(ex, "MainPage", "CarouselSwipeEnded");
         }
     }
-    private async Task BillCarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
+    private async Task BillCarouselSwipeStarted(object Sender, Syncfusion.Maui.Toolkit.Carousel.SwipeStartedEventArgs Event)
     {
         try
         {

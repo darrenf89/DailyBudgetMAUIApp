@@ -59,7 +59,7 @@
                         <VerticalStackLayout touchEffects:TouchEffect.Color="{StaticResource PrimaryLightLight}" BackgroundColor="{Binding IsUnreadMessages, Converter={StaticResource BoolToColorDisabledReverse}}">
                             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="45,*,Auto" >
                                 <AbsoluteLayout Margin="15,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" VerticalOptions="Start" HorizontalOptions="Start">
-                                    <Image Aspect="AspectFill" WidthRequest="30">
+                                    <Image  WidthRequest="30">
                                         <Image.Source>
                                             <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Mail}" Size="45"  Color="{DynamicResource Primary}" />
                                         </Image.Source>

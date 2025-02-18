@@ -193,7 +193,7 @@
                 </Border>
                 <Border Style="{DynamicResource brdCardViewRectange}" IsVisible="{Binding IsBudgetVisible}">
                     <Grid ColumnDefinitions="Auto, *, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
-                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="5,5,15,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
+                        <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="5,5,15,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
                         <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding BudgetCard.BudgetName}" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,0,8" TextColor="{StaticResource Primary}" Margin="0"/>
                         <HorizontalStackLayout Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" VerticalOptions="End">
                             <Label Text="{Binding BudgetCard.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"  VerticalTextAlignment="End" VerticalOptions="End" Padding="0,0,0,0" Margin="0"/>

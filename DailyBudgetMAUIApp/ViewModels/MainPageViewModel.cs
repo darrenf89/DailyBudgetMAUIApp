@@ -4,7 +4,7 @@ using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Syncfusion.Maui.Carousel;
+using Syncfusion.Maui.Toolkit.Carousel;
 using System.Collections.ObjectModel;
 using Syncfusion.Maui.Scheduler;
 using DailyBudgetMAUIApp.Handlers;

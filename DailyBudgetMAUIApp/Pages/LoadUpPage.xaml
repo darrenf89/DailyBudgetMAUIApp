@@ -8,10 +8,10 @@
              Shell.NavBarIsVisible = "False">
     <Grid>
         <Image Source="LandingPageBackground.jpg"
-               Aspect="AspectFill" />
+                Aspect="AspectFill" />
         <VerticalStackLayout VerticalOptions="End">
             <Border Style="{StaticResource PictureFrame150Circle}" Margin="0,00,0,180" >
-                <Image Source="justlogoorangetwo.png" Aspect="AspectFill" ></Image>
+                <Image Source="justlogoorangetwo.png"  ></Image>
             </Border>
             <HorizontalStackLayout Spacing="35" HorizontalOptions="Center" HeightRequest="40" Margin="0,0,0,20">                
                 

@@ -165,7 +165,7 @@ public partial class EditAccountSettings : BasePage
         NickNameRequiredValidator.ForceValidate();
     }
 
-    static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
+    static void CustomSwitch_SwitchPanUpdate(IeuanWalker.Maui.Switch.CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
     {
         Application.Current.Resources.TryGetValue("Primary", out var Primary);
         Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);

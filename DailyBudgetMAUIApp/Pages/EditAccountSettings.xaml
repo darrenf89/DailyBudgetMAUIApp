@@ -4,7 +4,6 @@
             x:Class="DailyBudgetMAUIApp.Pages.EditAccountSettings"
              xmlns:local="clr-namespace:DailyBudgetMAUIApp"
             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-            xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
             xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
@@ -70,8 +69,8 @@
                                     <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
                                         <handlers:BorderlessEntry HeightRequest="44" Text="{Binding NewEmail}" TextColor="{DynamicResource Gray900}" CharacterSpacing="0" Margin="20,0,0,0" Keyboard="Email" Placeholder="{Binding User.Email}" PlaceholderColor="{StaticResource Gray400}">
                                             <Entry.Behaviors>
-                                                <xct:EmailValidationBehavior x:Name="EmailValidValidator" Flags="ValidateOnUnfocusing,ValidateOnValueChanged" IsValid="{Binding EmailValid}" />
-                                                <xct:TextValidationBehavior x:Name="EmailRequiredValidator" Flags="ValidateOnUnfocusing, ValidateOnValueChanged" MinimumLength="1"  IsValid="{Binding EmailRequired}" />
+                                                <xct:EmailValidationBehavior x:Name="EmailValidValidator" Flags="ValidateOnUnfocused,ValidateOnValueChanged" IsValid="{Binding EmailValid}" BindingContext="{Binding BindingContext, Source={x:Reference AllContent}, x:DataType=EditAccountSettingsViewModel}"/>
+                                                <xct:TextValidationBehavior x:Name="EmailRequiredValidator" Flags="ValidateOnUnfocused, ValidateOnValueChanged" MinimumLength="1"  IsValid="{Binding EmailRequired}" BindingContext="{Binding BindingContext, Source={x:Reference AllContent}, x:DataType=EditAccountSettingsViewModel}"/>
                                             </Entry.Behaviors>
                                         </handlers:BorderlessEntry>
                                     </Border>
@@ -104,7 +103,7 @@
                                     <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
                                         <handlers:BorderlessEntry HeightRequest="44" Text="{Binding NewNickName}" TextColor="{DynamicResource Gray900}" CharacterSpacing="0" Margin="20,0,0,0" Keyboard="Email" Placeholder="{Binding User.NickName}" PlaceholderColor="{StaticResource Gray400}">
                                             <Entry.Behaviors>
-                                                <xct:TextValidationBehavior Flags="ValidateOnUnfocusing, ValidateOnValueChanged" x:Name="NickNameRequiredValidator" MinimumLength="1" IsValid="{Binding NickNameRequired}" />
+                                                <xct:TextValidationBehavior Flags="ValidateOnUnfocused, ValidateOnValueChanged" x:Name="NickNameRequiredValidator" MinimumLength="1" IsValid="{Binding NickNameRequired}" BindingContext="{Binding BindingContext, Source={x:Reference AllContent}, x:DataType=EditAccountSettingsViewModel}"/>
                                             </Entry.Behaviors>
                                         </handlers:BorderlessEntry>
                                     </Border>
@@ -127,7 +126,7 @@
                                 <VerticalStackLayout Margin="5,15,5,0" x:Name="DPASetting" HorizontalOptions="Fill">
                                     <Label Text="Agree to be contacted by dBudget?" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="0,0,0,5"/>
                                     <Grid ColumnDefinitions="60,*" Margin="0,0,0,0" HeightRequest="40">
-                                        <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsDPA}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate"/>
+                                        <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsDPA}" />
                                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">
                                             <Label HorizontalOptions="Start" Text="{Binding IsDPA, Converter={StaticResource IsDPATextConverter}}" TextColor="{StaticResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
                                         </HorizontalStackLayout>
@@ -138,7 +137,7 @@
                                     <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
                                         <handlers:BorderlessEntry HeightRequest="44" Text="{Binding CurrentPassword}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" Placeholder="********" PlaceholderColor="{StaticResource Gray400}">
                                             <Entry.Behaviors>
-                                                <xct:TextValidationBehavior x:Name="PasswordRequiredValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding PasswordRequired}" />
+                                                <xct:TextValidationBehavior x:Name="PasswordRequiredValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding PasswordRequired}" BindingContext="{Binding BindingContext, Source={x:Reference AllContent}, x:DataType=EditAccountSettingsViewModel}"/>
                                             </Entry.Behaviors>
                                         </handlers:BorderlessEntry>
                                     </Border>
@@ -164,8 +163,8 @@
                                     <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
                                         <handlers:BorderlessEntry Focused="NewPassword_Focused" HeightRequest="44" Text="{Binding NewPassword}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" Placeholder="********" PlaceholderColor="{StaticResource Gray400}">
                                             <Entry.Behaviors>
-                                                <xct:TextValidationBehavior x:Name="NewPasswordRequiredValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding NewPasswordRequired}" />
-                                                <xct:TextValidationBehavior x:Name="NewPasswordValidValidator" RegexPattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding NewPasswordValid}"/>
+                                                <xct:TextValidationBehavior x:Name="NewPasswordRequiredValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding NewPasswordRequired}" BindingContext="{Binding BindingContext, Source={x:Reference AllContent}, x:DataType=EditAccountSettingsViewModel}"/>
+                                                <xct:TextValidationBehavior x:Name="NewPasswordValidValidator" RegexPattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding NewPasswordValid}" BindingContext="{Binding BindingContext, Source={x:Reference AllContent}, x:DataType=EditAccountSettingsViewModel}"/>
                                             </Entry.Behaviors>
                                         </handlers:BorderlessEntry>
                                     </Border>
@@ -191,7 +190,7 @@
                                     <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
                                         <handlers:BorderlessEntry Focused="PasswordConfirm_Focused" HeightRequest="44" Text="{Binding NewPasswordConfirm}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" Placeholder="********" PlaceholderColor="{StaticResource Gray400}">
                                             <Entry.Behaviors>
-                                                <xct:TextValidationBehavior x:Name="PasswordConfirmValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding PasswordConfirmRequired}" />
+                                                <xct:TextValidationBehavior x:Name="PasswordConfirmValidator" MinimumLength="1" Flags="ValidateOnValueChanged, ForceMakeValidWhenFocused" IsValid="{Binding PasswordConfirmRequired}" BindingContext="{Binding BindingContext, Source={x:Reference AllContent}, x:DataType=EditAccountSettingsViewModel}"/>
                                             </Entry.Behaviors>
                                         </handlers:BorderlessEntry>
                                     </Border>

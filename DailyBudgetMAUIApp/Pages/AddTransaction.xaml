@@ -7,7 +7,6 @@
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
              xmlns:adMob="clr-namespace:Plugin.MauiMTAdmob.Controls;assembly=Plugin.MauiMTAdmob"
              Loaded="Content_Loaded">
     <ContentPage.Resources>
@@ -67,7 +66,7 @@
                         <Label Text="Transaction Date" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40">
-                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0"  IsToggled="{Binding IsFutureDatedTransaction}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhTransactionDate_Toggled" x:Name="swhTransactionDate"/>
+                        <handlers:CustomSwitch Grid.Column="0"  IsToggled="{Binding IsFutureDatedTransaction}" Toggled="swhTransactionDate_Toggled" x:Name="swhTransactionDate"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End" HeightRequest="40">
                             <Label VerticalOptions="Center" HorizontalOptions="End" Text="{Binding IsFutureDatedTransaction, Converter={StaticResource IsFutureDatedTransactionText}}" TextColor="{StaticResource Gray400}"  Grid.Column="1" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0" />
                             <handlers:BorderlessDatePicker VerticalOptions="Center" HorizontalOptions="End" CharacterSpacing="1" x:Name="entTransactionDate" Date="{Binding Transaction.TransactionDate}" IsVisible="{Binding IsFutureDatedTransaction}"  Format="dd MMMM" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold"/>
@@ -82,7 +81,7 @@
                         <Label Text="Select an account" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40" IsVisible="{Binding IsMultipleAccounts}">
-                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0"  IsToggled="{Binding IsAccount}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhIsAccount_Toggled" x:Name="swhIsAccount"/>
+                        <handlers:CustomSwitch Grid.Column="0"  IsToggled="{Binding IsAccount}" Toggled="swhIsAccount_Toggled" x:Name="swhIsAccount"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End" HeightRequest="40">
                             <Label VerticalOptions="Center" HorizontalOptions="End" IsVisible="{Binding IsAccount, Converter={StaticResource BoolConverter}}" Text="{Binding DefaultAccountName}" TextColor="{StaticResource Gray400}"  Grid.Column="1" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0" />
                             <handlers:BorderlessPicker SelectedIndexChanged="entIsAccount_SelectedIndexChanged" ItemsSource="{Binding BankAccounts}" ItemDisplayBinding="{Binding BankAccountName}" SelectedItem="{Binding SelectedBankAccount}" VerticalOptions="Center" HorizontalOptions="End" CharacterSpacing="1" x:Name="entIsAccount" IsVisible="{Binding IsAccount}"  TextColor="{StaticResource Primary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold"/>
@@ -97,7 +96,7 @@
                         <Label Text="Payee" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40" IsVisible="{Binding IsPremiumAccount}">
-                        <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsPayee}"  SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhPayee_Toggled"/>
+                        <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsPayee}" Toggled="swhPayee_Toggled"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label IsVisible="{Binding IsPayee, Converter={StaticResource BoolConverter}}" HorizontalOptions="End" Text="{Binding IsPayee, Converter={StaticResource IsPayeeText}}" TextColor="{StaticResource Gray400}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0"/>
                             <Label IsVisible="{Binding IsPayee}" HorizontalOptions="End" Text="{Binding Transaction.Payee}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0" FontAttributes="Bold">
@@ -116,7 +115,7 @@
                         <Label Text="Category" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40" x:Name="CatSwitch" IsVisible="{Binding IsPremiumAccount}">
-                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding IsSpendCategory}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhSpendCategory_Toggled" x:Name="swhSpendCategory"/>
+                        <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsSpendCategory}" Toggled="swhSpendCategory_Toggled" x:Name="swhSpendCategory"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label HorizontalOptions="End" Text="{Binding IsSpendCategory, Converter={StaticResource IsSpendCategoryText}}" TextColor="{StaticResource Gray400}"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0"/>
                             <Label HorizontalOptions="End" IsVisible="{Binding IsSpendCategory}" Text="{Binding Transaction.Category}" TextColor="{StaticResource Primary}"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0" FontAttributes="Bold">
@@ -145,7 +144,7 @@
                         </HorizontalStackLayout>
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" RowDefinitions="40" HeightRequest="40" x:Name="SavingSwitch">
-                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding Transaction.IsSpendFromSavings}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="SavingSpend_Toggled" x:Name="swhSavingSpend"/>
+                        <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding Transaction.IsSpendFromSavings}" Toggled="SavingSpend_Toggled" x:Name="swhSavingSpend"/>
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End">
                             <Label HorizontalOptions="End" Text="{Binding Transaction.IsSpendFromSavings, Converter={StaticResource IsSpendFromSavingText}}" TextColor="{StaticResource Gray400}"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0"/>
                             <Label x:Name="lblSavingsName" IsVisible="{Binding Transaction.IsSpendFromSavings}" HorizontalOptions="End" Text="{Binding Transaction.SavingName}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,0,0" FontAttributes="Bold">
@@ -164,7 +163,7 @@
                         <Label Text="Add Note" FontFamily="OpenSansSemibold" HorizontalOptions="Start" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" VerticalOptions="Center" Padding="5,0,0,0"/>
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="60,*" RowDefinitions="*,*" Margin="0,5,0,5" >
-                        <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding IsNote}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" Toggled="swhNotes_Toggled" />
+                        <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsNote}" Toggled="swhNotes_Toggled" />
                         <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="End" HeightRequest="40">
                             <Label Text="{Binding IsNote, Converter={StaticResource IsNoteText}}" TextColor="{StaticResource Gray400}" VerticalOptions="Center" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,5,0"/>
                         </HorizontalStackLayout>

@@ -5,9 +5,8 @@
              xmlns:local="clr-namespace:DailyBudgetMAUIApp"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
-             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch">
-    <Shell.BackButtonBehavior>
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+<Shell.BackButtonBehavior>
         <BackButtonBehavior Command="{Binding BackButtonCommand}" />
     </Shell.BackButtonBehavior>
     <Shell.TitleView>
@@ -178,7 +177,7 @@
                     </HorizontalStackLayout>
                     <VerticalStackLayout x:Name="VSLCalculator" Margin="5,10,0,5">
                         <Grid ColumnDefinitions="60,*" Margin="0,5,0,5" HeightRequest="40">
-                            <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding ShowCalculator}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" x:Name="swhSpendCategory"/>
+                            <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding ShowCalculator}" x:Name="swhSpendCategory" />
                             <Label HorizontalOptions="Start" VerticalOptions="Center" Text="Calcualte daily amount" Grid.Column="1" TextColor="{StaticResource Primary}"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,0,0" IsVisible="{Binding ShowCalculator, Converter={StaticResource BoolConverter}}"/>
                         </Grid>
                         <Grid IsVisible="{Binding ShowCalculator}" ColumnDefinitions="Auto,*" RowDefinitions="Auto">
@@ -202,7 +201,7 @@
                     <VerticalStackLayout Margin="0,10,0,5" x:Name="vslIsTopUp" IsVisible="{Binding Saving.IsRegularSaving,Converter={StaticResource BoolConverter}}">
                         <Label Text="Replenish or keep topping up" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,0"/>
                         <Grid ColumnDefinitions="60, *" Margin="5,5,0,0" RowDefinitions="40,Auto">
-                            <switch:CustomSwitch Style="{DynamicResource AddTransactionSwitch}" Grid.Column="0" IsToggled="{Binding Saving.IsTopUp}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate" x:Name="swhIsTopUp" Toggled="swhIsTopUp_Toggled"/>
+                            <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding Saving.IsTopUp}" x:Name="swhIsTopUp" Toggled="swhIsTopUp_Toggled"/>
                             <Label Margin="0,0,0,0" HorizontalOptions="Start" VerticalOptions="Center" Text="{Binding IsTopUpLabelText}"  Grid.Column="1" Grid.Row="0" TextColor="{StaticResource Primary}" FontAttributes="Bold"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,0,0" />
                             <Label Margin="0,5,0,0" HorizontalOptions="Start" VerticalOptions="Center" Text="{Binding IsTopUpParaText}" Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1" TextColor="{StaticResource Gray600}"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,0,0" />
                         </Grid>
