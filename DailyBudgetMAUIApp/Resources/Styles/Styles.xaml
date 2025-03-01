@@ -104,7 +104,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource SecondaryLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -116,7 +116,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource TertiaryLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -128,7 +128,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource SuccessLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -140,7 +140,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource SuccessLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -152,7 +152,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource DangerLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -164,7 +164,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource DangerLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -176,7 +176,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource InfoLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -188,7 +188,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource WarningLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -200,7 +200,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource PrimaryLightLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -212,7 +212,7 @@
         <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource White}"/> 
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="20" Opacity="0.95" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.95" />
         </Setter>
     </Style>
 
@@ -224,7 +224,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -254,7 +254,7 @@
         <Setter Property="HeightRequest" Value="170"/>
         <Setter Property="WidthRequest" Value="170"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Gray900Brush}" Offset="0,0" Radius="20" Opacity="0.95" />
+            <Shadow Brush="{DynamicResource Gray900Brush}" Offset="0,0" Radius="5" Opacity="0.95" />
         </Setter>
     </Style>
 
@@ -265,7 +265,7 @@
         <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Gray900}" Offset="0,0" Opacity="0.95" Radius="20" />
+            <Shadow Brush="{DynamicResource Gray900}" Offset="0,0" Opacity="0.95" Radius="5" />
         </Setter>
     </Style>
     
@@ -278,7 +278,7 @@
         <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Gray900}" Offset="0,0" Radius="20" Opacity="0.95" />
+            <Shadow Brush="{DynamicResource Gray900}" Offset="0,0" Radius="5" Opacity="0.95" />
         </Setter>
     </Style>
 
@@ -290,7 +290,7 @@
         <Setter Property="StrokeThickness" Value="1.5"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Tertiary}" Offset="0,0" Radius="20" Opacity="0.95" />
+            <Shadow Brush="{DynamicResource Tertiary}" Offset="0,0" Radius="5" Opacity="0.95" />
         </Setter>
     </Style>
 

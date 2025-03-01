@@ -48,7 +48,7 @@
                                 </Border>
                                 <Border x:Name="brdFromTo" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource White}" HeightRequest="60" WidthRequest="60" Stroke="{StaticResource PrimaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 30">
                                     <Border.Shadow>
-                                        <Shadow Offset="0,0" Opacity="0.6" Brush="{DynamicResource Black}" Radius="15" />
+                                        <Shadow Offset="0,0" Opacity="0.6" Brush="{DynamicResource Black}" Radius="5" />
                                     </Border.Shadow>
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer x:Name="SwapFromTo" Tapped="SwapFromTo_Tapped"/>

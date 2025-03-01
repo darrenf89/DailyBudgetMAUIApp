@@ -75,7 +75,7 @@
      <!--<HorizontalStackLayout AbsoluteLayout.LayoutBounds="15,0.94" AbsoluteLayout.LayoutFlags="YProportional" ZIndex="99">
             <Border x:Name="brdTransaction" BackgroundColor="{StaticResource White}" HeightRequest="70" WidthRequest="70" Stroke="{StaticResource TertiaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 35">
                 <Border.Shadow>
-                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="25" />
+                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer x:Name="QuickTransaction" Tapped="QuickTransaction_Tapped"/>
@@ -92,20 +92,20 @@
                     </Button>
                 </HorizontalStackLayout>
                 <Border.Shadow>
-                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
                 </Border.Shadow>
             </Border>
         </HorizontalStackLayout>-->
     <AbsoluteLayout Background="{StaticResource Primary}">
         <ImageButton Command="{Binding QuickTransactionCommand}" Source="transaction.png" BackgroundColor="White" AbsoluteLayout.LayoutFlags="PositionProportional" Padding="10" AbsoluteLayout.LayoutBounds="1,1" WidthRequest="60" HeightRequest="60" CornerRadius="32" VerticalOptions="Center" Margin="20" ZIndex="999">
             <ImageButton.Shadow>
-                <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+                <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
             </ImageButton.Shadow>
         </ImageButton>
         <Grid WidthRequest="{Binding ScreenWidth}" RowDefinitions="Auto" ColumnDefinitions="*" AbsoluteLayout.LayoutFlags="PositionProportional" Padding="20" Margin="0,0,0,80" AbsoluteLayout.LayoutBounds="1,1" IsVisible="{Binding IsQuickTransaction}" IsEnabled="{Binding IsQuickTransaction}" BackgroundColor="Transparent" ZIndex="99">
             <Border Style="{DynamicResource DashboardMainContent}" StrokeShape="RoundRectangle 15" Padding="10,0,10,0" Margin="0" StrokeThickness="0" Stroke="{StaticResource BlackBrush}" HorizontalOptions="Fill" Grid.Row="0" Grid.Column="0">
                 <Border.Shadow>
-                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
                 </Border.Shadow>
                 <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
                     <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Margin="0" Padding="0">
@@ -595,7 +595,7 @@
                                 <RoundRectangle CornerRadius="0,0,10,10"/>
                             </Border.StrokeShape>
                             <Border.Shadow>
-                                <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="15" />
+                                <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="5" />
                             </Border.Shadow>
                             <Image Source="savingicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
                         </Border>
@@ -630,7 +630,7 @@
                                 <RoundRectangle CornerRadius="0,0,10,10"/>
                             </Border.StrokeShape>
                             <Border.Shadow>
-                                <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="15" />
+                                <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="5" />
                             </Border.Shadow>
                             <Image Source="billsicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
                         </Border>
@@ -726,7 +726,7 @@
                                 <RoundRectangle CornerRadius="0,0,10,10"/>
                             </Border.StrokeShape>
                             <Border.Shadow>
-                                <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="15" />
+                                <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="5" />
                             </Border.Shadow>
                             <Image Source="incomeicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
                         </Border>

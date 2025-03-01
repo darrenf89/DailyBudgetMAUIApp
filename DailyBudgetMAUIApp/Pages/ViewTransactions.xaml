@@ -168,7 +168,7 @@
                                         <Grid BackgroundColor="{Binding IsTransacted,Converter={StaticResource BoolToColorDisabled}}" Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,*" >
                                             <Border BackgroundColor="White" Margin="15,0,0,0" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" HeightRequest="24" WidthRequest="24" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
                                                 <Border.Shadow>
-                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
                                                 </Border.Shadow>
                                                 <Image  HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="12" Source="{Binding EventType, Converter={StaticResource TransactionTypePngConverter}}"/>
                                             </Border>

@@ -45,7 +45,7 @@
                     <Label CharacterSpacing="0" Margin="0,4,0,0" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Gray500}" Text="{Binding User.Email}"/>
                     <BoxView HeightRequest="3" Color="{DynamicResource PrimaryDark}" Margin="0,10,0,0">
                         <BoxView.Shadow>
-                            <Shadow Offset="0,14" Opacity="0.3" Brush="{DynamicResource Gray900}" Radius="10" />
+                            <Shadow Offset="0,14" Opacity="0.3" Brush="{DynamicResource Gray900}" Radius="5" />
                         </BoxView.Shadow>
                     </BoxView>
                 </VerticalStackLayout>
