@@ -38,7 +38,7 @@ public partial class FocusedEntry : ContentView
     {
         var control = (FocusedEntry)bindable;
         //control.FEEntry.Text = (string)newValue;
-        control.InvalidateLayout();
+        control.InvalidateMeasure();
     }
 
     public new static BindableProperty WidthProperty =
@@ -55,7 +55,7 @@ public partial class FocusedEntry : ContentView
         var control = (FocusedEntry)bindable;
         control.FEBorder.WidthRequest = (double)newValue;
         control.FEEntry.WidthRequest = (double)newValue - 10;
-        control.InvalidateLayout();
+        control.InvalidateMeasure();
     }
 
     public static BindableProperty IdentifierProperty =
@@ -71,7 +71,7 @@ public partial class FocusedEntry : ContentView
     {
         var control = (FocusedEntry)bindable;
         control.FEEntry.Identifier = (string)newValue;
-        control.InvalidateLayout();
+        control.InvalidateMeasure();
     }
 
     public static BindableProperty FEFontSizeProperty =
@@ -87,7 +87,7 @@ public partial class FocusedEntry : ContentView
     {
         var control = (FocusedEntry)bindable;
         control.FEEntry.FontSize = (double)newValue;
-        control.InvalidateLayout();
+        control.InvalidateMeasure();
     }
 
     public static BindableProperty TextColorProperty =
@@ -103,7 +103,7 @@ public partial class FocusedEntry : ContentView
     {
         var control = (FocusedEntry)bindable;
         control.FEEntry.TextColor = (Color)newValue;
-        control.InvalidateLayout();
+        control.InvalidateMeasure();
     }
 
     public static BindableProperty KeyboardProperty =
@@ -119,7 +119,7 @@ public partial class FocusedEntry : ContentView
     {
         var control = (FocusedEntry)bindable;
         control.FEEntry.Keyboard = (Keyboard)newValue;
-        control.InvalidateLayout();
+        control.InvalidateMeasure();
     }
 
     public static BindableProperty MaxLengthProperty =
@@ -135,7 +135,7 @@ public partial class FocusedEntry : ContentView
     {
         var control = (FocusedEntry)bindable;
         control.FEEntry.MaxLength = (int)newValue;
-        control.InvalidateLayout();
+        control.InvalidateMeasure();
     }
 
     public new static BindableProperty MarginProperty =
@@ -151,7 +151,7 @@ public partial class FocusedEntry : ContentView
     {
         var control = (FocusedEntry)bindable;
         control.FEBorder.Margin = (Thickness)newValue;
-        control.InvalidateLayout();
+        control.InvalidateMeasure();
     }
 
     public new static BindableProperty HorizontalOptionsProperty =
@@ -168,7 +168,7 @@ public partial class FocusedEntry : ContentView
         var control = (FocusedEntry)bindable;
         control.FEEntry.HorizontalOptions = (LayoutOptions)newValue;
         control.FEBorder.HorizontalOptions = (LayoutOptions)newValue;
-        control.InvalidateLayout();
+        control.InvalidateMeasure();
     }
 
     public new static BindableProperty VerticalOptionsProperty =
@@ -184,7 +184,7 @@ public partial class FocusedEntry : ContentView
     {
         var control = (FocusedEntry)bindable;
         control.FEBorder.VerticalOptions = (LayoutOptions)newValue;
-        control.InvalidateLayout();        
+        control.InvalidateMeasure();        
     }
 
     public static BindableProperty ReturnTypeProperty =
@@ -200,7 +200,7 @@ public partial class FocusedEntry : ContentView
     {
         var control = (FocusedEntry)bindable;
         control.FEEntry.ReturnType = (ReturnType)newValue;
-        control.InvalidateLayout();
+        control.InvalidateMeasure();
     }
 
     public event EventHandler<TextChangedEventArgs> TextChanged;

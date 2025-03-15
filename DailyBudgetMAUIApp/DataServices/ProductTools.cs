@@ -1,16 +1,18 @@
-﻿using DailyBudgetMAUIApp.Models;
-using System.Security.Cryptography;
-using DailyBudgetMAUIApp.Handlers;
-using CommunityToolkit.Maui.Views;
-using System.Globalization;
-using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Converters;
-using Newtonsoft.Json;
-using DailyBudgetMAUIApp.Pages;
-using DailyBudgetMAUIApp.Helpers;
-using System.Reflection;
+﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.Converters;
+using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Helpers;
+using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Pages;
+using DailyBudgetMAUIApp.ViewModels;
+using Newtonsoft.Json;
+using Plugin.LocalNotification;
+using Plugin.LocalNotification.AndroidOption;
+using System.Globalization;
+using System.Reflection;
+using System.Security.Cryptography;
 
 
 
@@ -110,7 +112,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public void ShowPopup(PopUpPage popup)
         {
-            Page page = Application.Current.MainPage ?? throw new NullReferenceException();
+            Page page = Application.Current.Windows[0].Page ?? throw new NullReferenceException();
             page.ShowPopup(popup);
         }
 
@@ -1052,6 +1054,7 @@ namespace DailyBudgetMAUIApp.DataServices
             for (int i = Budget.Savings.Count - 1; i >= 0; i--)
             {
                 Savings Saving = Budget.Savings[i];
+
                 if (!Saving.IsSavingsClosed)
                 {
                     if (Saving.IsRegularSaving)
@@ -1082,7 +1085,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 Bills Bill = Budget.Bills[i];
 
-                if(!(Bill.BillCurrentBalance >= Bill.BillAmount))
+                if (!(Bill.BillCurrentBalance >= Bill.BillAmount))
                 {
                     Bill.BillCurrentBalance += Bill.RegularBillValue.GetValueOrDefault();
                     Stats.BillsToDate += Bill.RegularBillValue.GetValueOrDefault();
@@ -1177,7 +1180,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     if (Transaction.TransactionDate.GetValueOrDefault().Date == GetBudgetLocalTime(DateTime.UtcNow).Date)
                     {
                         var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), this);
-                        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                        var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                         if ((string)result.ToString() == "OK")
                         {
                             Transaction.IsTransacted = true;
@@ -1212,11 +1215,69 @@ namespace DailyBudgetMAUIApp.DataServices
             int Index = budget.PayPeriodStats.FindIndex(p => p.IsCurrentPeriod);
             PayPeriodStats Stats = budget.PayPeriodStats[Index];
 
+            int notificationID = int.Parse($"1{budget.BudgetID}");
+            LocalNotificationCenter.Current.Cancel(notificationID);
+
+            if (budget.NextIncomePayday > DateTime.UtcNow && budget.NextIncomePayday <= DateTime.Today.AddDays(7))
+            {
+                var notification = new NotificationRequest
+                {
+                    NotificationId = notificationID,
+                    Title = $"It's payday for budget {budget.BudgetName}!",
+                    Description = $"You just got paid {budget.PaydayAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} log into the app to confirm and get budgeting the money!",
+                    Schedule =
+                    {
+                        NotifyTime = budget.NextIncomePayday.GetValueOrDefault().Date.AddHours(8)
+                    },
+                    Android =
+                    {
+                        ChannelId = "EventSchedule",
+                        IconSmallName =
+                        {
+                              ResourceName = "appicon",
+                        },
+                        PendingIntentFlags = AndroidPendingIntentFlags.OneShot,
+                        Priority = AndroidPriority.High,
+                    }
+                };
+
+                await LocalNotificationCenter.Current.Show(notification);
+
+                if (DateTime.Today < budget.NextIncomePayday.GetValueOrDefault().Date.AddDays(-2))
+                {
+                    notificationID = int.Parse($"10{budget.BudgetID}");
+                    LocalNotificationCenter.Current.Cancel(notificationID);
+
+                    notification = new NotificationRequest
+                    {
+                        NotificationId = notificationID,
+                        Title = $"Get prepared, {budget.BudgetName}'s payday is tomorrow!",
+                        Description = $"You are going to get paid {budget.PaydayAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} tomorrow, log into the app now if you need to make any changes!",
+                        Schedule =
+                        {
+                            NotifyTime = budget.NextIncomePayday.GetValueOrDefault().Date.AddDays(-1).AddHours(8)
+                        },
+                        Android =
+                        {
+                            ChannelId = "EventSchedule",
+                            IconSmallName =
+                            {
+                                  ResourceName = "appicon",
+                            },
+                            PendingIntentFlags = AndroidPendingIntentFlags.OneShot,
+                            Priority = AndroidPriority.High,
+                        }
+                    };
+
+                    await LocalNotificationCenter.Current.Show(notification);
+                }
+            }
+
             if (budget.NextIncomePayday.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
             {
                 //Confirm pay amount and date!
                 var popup = new PopupDailyPayDay(budget, new PopupDailyPayDayViewModel(), this);
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if ((string)result.ToString() == "OK")
                 {
@@ -1342,6 +1403,36 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (Saving.SavingsType == "TargetAmount" || Saving.SavingsType == "TargetDate")
                 {
+                    notificationID = int.Parse($"2{Saving.SavingID}");
+                    LocalNotificationCenter.Current.Cancel(notificationID);
+
+                    if (Saving.GoalDate.GetValueOrDefault() > DateTime.UtcNow && Saving.GoalDate.GetValueOrDefault() <= DateTime.Today.AddDays(7))
+                    {
+
+                        var notification = new NotificationRequest
+                        {
+                            NotificationId = notificationID,
+                            Title = $"Congrats you have reached your {Saving.SavingsName} saving goal!",
+                            Description = $"You have reached a saving goal of {Saving.SavingsGoal.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} for budget, {budget.BudgetName}. Enjoying spending the money GUILT FREE!",
+                            Schedule =
+                            {
+                                NotifyTime = Saving.GoalDate.GetValueOrDefault().Date.AddHours(8)
+                            },
+                            Android =
+                            {
+                                ChannelId = "EventSchedule",
+                                IconSmallName =
+                                {
+                                      ResourceName = "appicon",
+                                },
+                                PendingIntentFlags = AndroidPendingIntentFlags.OneShot,
+                                Priority = AndroidPriority.High,
+                            }
+                        };
+
+                        await LocalNotificationCenter.Current.Show(notification);
+                    }
+
                     if (Saving.GoalDate.GetValueOrDefault().Date == budget.BudgetValuesLastUpdated.Date)
                     {
                         if (Saving.IsAutoComplete)
@@ -1352,7 +1443,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         else
                         {
                             var popup = new PopupDailySaving(Saving, new PopupDailySavingViewModel(), this);
-                            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                             if ((string)result.ToString() == "OK")
                             {
@@ -1384,10 +1475,40 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 Bills Bill = budget.Bills[i];
 
+                notificationID = int.Parse($"3{Bill.BillID}");
+                LocalNotificationCenter.Current.Cancel(notificationID);
+
+                if (Bill.BillDueDate.GetValueOrDefault() > DateTime.UtcNow && Bill.BillDueDate.GetValueOrDefault() <= DateTime.Today.AddDays(7))
+                {
+
+                    var notification = new NotificationRequest
+                    {
+                        NotificationId = notificationID,
+                        Title = $"Your bill {Bill.BillName} is due today!",
+                        Description = $"You are due to pay a bill today of {Bill.BillAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} for budget, {budget.BudgetName}. Log into the app to finalise the bill.",
+                        Schedule =
+                        {
+                            NotifyTime = Bill.BillDueDate.GetValueOrDefault().Date.AddHours(8)
+                        },
+                        Android =
+                        {
+                            ChannelId = "EventSchedule",
+                            IconSmallName =
+                            {
+                                  ResourceName = "appicon",
+                            },
+                            PendingIntentFlags = AndroidPendingIntentFlags.OneShot,
+                            Priority = AndroidPriority.High,
+                        }
+                    };
+
+                    await LocalNotificationCenter.Current.Show(notification);
+                }
+
                 if (Bill.BillDueDate.GetValueOrDefault().Date == budget.BudgetValuesLastUpdated.Date)
                 {
                     var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), this);
-                    var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                     if ((string)result.ToString() == "OK")
                     {
@@ -1420,10 +1541,39 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 IncomeEvents Income = budget.IncomeEvents[i];
 
+                notificationID = int.Parse($"4{Income.IncomeEventID}");
+                LocalNotificationCenter.Current.Cancel(notificationID);
+
+                if (Income.DateOfIncomeEvent > DateTime.UtcNow && Income.DateOfIncomeEvent <= DateTime.Today.AddDays(7))
+                {
+                    var notification = new NotificationRequest
+                    {
+                        NotificationId = notificationID,
+                        Title = $"Your are about to get paid for {Income.IncomeName}!",
+                        Description = $"You are due an income of {Income.IncomeAmount.ToString("c", CultureInfo.CurrentCulture)} for budget, {budget.BudgetName}. Log into the app to confirm you have recieved the money.",
+                        Schedule =
+                        {
+                            NotifyTime = Income.DateOfIncomeEvent.Date.AddHours(8)
+                        },
+                        Android =
+                        {
+                            ChannelId = "EventSchedule",
+                            IconSmallName =
+                            {
+                                  ResourceName = "appicon",
+                            },
+                            PendingIntentFlags = AndroidPendingIntentFlags.OneShot,
+                            Priority = AndroidPriority.High,
+                        }
+                    };
+
+                    await LocalNotificationCenter.Current.Show(notification);
+                }
+
                 if (Income.DateOfIncomeEvent.Date == budget.BudgetValuesLastUpdated.Date)
                 {
                     var popup = new PopupDailyIncome(Income, new PopupDailyIncomeViewModel(), this);
-                    var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                     if ((string)result.ToString() == "OK")
                     {
                         TransactIncomeEvent(ref Income, budget);
@@ -1457,12 +1607,41 @@ namespace DailyBudgetMAUIApp.DataServices
                 Transactions Transaction = budget.Transactions[i];
                 if (!Transaction.IsTransacted)
                 {
+                    notificationID = int.Parse($"5{Transaction.TransactionID}");
+                    LocalNotificationCenter.Current.Cancel(notificationID);
+
+                    if (Transaction.TransactionDate > DateTime.UtcNow && Transaction.TransactionDate <= DateTime.Today.AddDays(7))
+                    {
+                        var notification = new NotificationRequest
+                        {
+                            NotificationId = notificationID,
+                            Title = $"You a due to make a payment of {Transaction.TransactionAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} today!",
+                            Description = $"Log into the app and confirm the payment of {Transaction.TransactionAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} for budget, {budget.BudgetName}.",
+                            Schedule =
+                            {
+                                NotifyTime = Transaction.TransactionDate.GetValueOrDefault().Date.AddHours(8)
+                            },
+                            Android =
+                            {
+                                ChannelId = "EventSchedule",
+                                IconSmallName =
+                                {
+                                      ResourceName = "appicon",
+                                },
+                                PendingIntentFlags = AndroidPendingIntentFlags.OneShot,
+                                Priority = AndroidPriority.High,
+                            }
+                        };
+
+                        await LocalNotificationCenter.Current.Show(notification);
+                    }
+
                     if (Transaction.TransactionDate.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
                     {
                         if (Transaction.TransactionDate.GetValueOrDefault().Date < GetBudgetLocalTime(DateTime.UtcNow).Date)
                         {
                             var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), this);
-                            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                             if ((string)result.ToString() == "OK")
                             {
                                 Transaction.IsTransacted = true;
@@ -1771,13 +1950,13 @@ namespace DailyBudgetMAUIApp.DataServices
                     Preferences.Remove("NavigationID");
 
                     var popup = new PopUpOTP(ShareBudgetRequestID, new PopUpOTPViewModel(_ds, this), "ShareBudget", this, _ds);
-                    var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                     if ((string)result.ToString() != "User Closed")
                     {
                         ShareBudgetRequest BudgetRequest = (ShareBudgetRequest)result;
 
-                        bool DefaultBudgetYesNo = await Application.Current.MainPage.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
+                        bool DefaultBudgetYesNo = await Application.Current.Windows[0].Page.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
 
                         if (DefaultBudgetYesNo)
                         {
@@ -1797,6 +1976,32 @@ namespace DailyBudgetMAUIApp.DataServices
                     break;
                 default:
                     break;     
+            }
+        }
+
+        public async Task UpdateNotificationPermission()
+        {
+            var modalStack = Application.Current.Windows[0].Navigation.ModalStack;
+
+            if (modalStack is not null && modalStack.Count > 0)
+            {
+                var currentModalPage = modalStack[modalStack.Count - 1];
+                if (currentModalPage != null)
+                {
+                    string modalPageName = currentModalPage.GetType().Name;
+                    if (modalPageName == "EditAccountSettings")
+                    {
+                        EditAccountSettingsViewModel bindingContext = (EditAccountSettingsViewModel)currentModalPage.BindingContext;
+
+                        if (bindingContext != null)
+                        {
+                            bindingContext.IsChanging = true;
+                            bindingContext.IsPushNotificationsEnabled = await LocalNotificationCenter.Current.AreNotificationsEnabled();
+                            bindingContext.IsChanging = false;
+                        }
+
+                    }
+                }
             }
         }
 
@@ -1898,7 +2103,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
 
                     await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
                 }
@@ -2060,7 +2265,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         };
 
                         var popup = new PopupInfo("Subscription expired!", SubTitle, Info);
-                        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                        var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                     }
                 }
                 else

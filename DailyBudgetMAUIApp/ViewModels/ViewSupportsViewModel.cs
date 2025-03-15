@@ -112,7 +112,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             try
             {
                 var popup = new PopUpContactUs(new PopUpContactUsViewModel(_pt, _ds));
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                 if (result is int)
                 {
 

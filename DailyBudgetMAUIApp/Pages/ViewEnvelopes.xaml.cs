@@ -75,7 +75,7 @@ public partial class ViewEnvelopes : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
@@ -100,7 +100,7 @@ public partial class ViewEnvelopes : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}//{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=ViewEnvelopes");
@@ -125,7 +125,7 @@ public partial class ViewEnvelopes : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 string SpendType = "EnvelopeSaving";
@@ -183,7 +183,7 @@ public partial class ViewEnvelopes : BasePage
             var Saving = (Savings)e.Parameter;
             var popup = new PopupMoveBalance(App.DefaultBudget, "Saving", Saving.SavingID, false, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
             await Task.Delay(100);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             if (result.ToString() == "OK")
             {
                 List<Savings> S = _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID).Result;
@@ -222,7 +222,7 @@ public partial class ViewEnvelopes : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}//{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewEnvelopes");

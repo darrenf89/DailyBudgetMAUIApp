@@ -258,7 +258,7 @@
                                         <gauge:RadialAxis.Annotations>
                                             <gauge:GaugeAnnotation x:Name="annotation" DirectionUnit="Angle" DirectionValue="90" PositionFactor="0">
                                                 <gauge:GaugeAnnotation.Content>
-                                                    <Label Text="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColor}}" Padding="0,0,0,5" Margin="0"/>
+                                                    <Label Text="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColor}}" Padding="0,0,0,5" Margin="0" VerticalOptions="Center"/>
                                                 </gauge:GaugeAnnotation.Content>
                                             </gauge:GaugeAnnotation>
                                         </gauge:RadialAxis.Annotations>

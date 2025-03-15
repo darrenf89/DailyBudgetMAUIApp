@@ -16,6 +16,7 @@ using Plugin.MauiMTAdmob;
 using Plugin.Maui.AppRating;
 using Syncfusion.Licensing;
 using Syncfusion.Maui.Core.Hosting;
+using Plugin.LocalNotification;
 
 namespace DailyBudgetMAUIApp;
 
@@ -29,6 +30,7 @@ public static class MauiProgram
 
         builder
             .UseMauiApp<App>()
+            .UseLocalNotification()
             .UseSwitch()
             .UseMauiCommunityToolkit()
             .ConfigureSyncfusionCore()
@@ -67,6 +69,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IRestDataService, RestDataService>();
         builder.Services.AddSingleton<IProductTools, ProductTools>();
         builder.Services.AddSingleton<IAppRating>(AppRating.Default);
+        builder.Services.AddSingleton<INotificationPermissions, NotificationPermissionsImplementation>();
 
         //Pages
         builder.Services.AddTransient<MainPage>();

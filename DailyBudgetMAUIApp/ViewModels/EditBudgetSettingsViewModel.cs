@@ -545,7 +545,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 string Description = "Every budget needs a name, let us know how you'd like your budget to be known so we can use this to identify it for you in the future.";
                 string DescriptionSub = "Call it something useful or call it something silly up to you really!";
                 var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", Budget.BudgetName, new PopUpPageSingleInputViewModel());
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if (result != null || (string)result != "")
                 {
@@ -622,7 +622,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(500);
@@ -656,14 +656,14 @@ namespace DailyBudgetMAUIApp.ViewModels
             try
             {
 
-                bool EditBudget = await Application.Current.MainPage.DisplayAlert($"Update settings?", $"Are you sure you want to update your budgets settings?", "Yes", "No");
+                bool EditBudget = await Application.Current.Windows[0].Page.DisplayAlert($"Update settings?", $"Are you sure you want to update your budgets settings?", "Yes", "No");
                 if (EditBudget)
                 {
                     if (App.CurrentPopUp == null)
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     await Task.Delay(100);
@@ -921,7 +921,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                var BudgetName = await Application.Current.MainPage.DisplayPromptAsync($"Are you sure you want to delete {App.DefaultBudget.BudgetName} budget?", $"Deleting the budget is permanent, enter the budget name to delete the budget", "Ok", "Cancel");
+                var BudgetName = await Application.Current.Windows[0].Page.DisplayPromptAsync($"Are you sure you want to delete {App.DefaultBudget.BudgetName} budget?", $"Deleting the budget is permanent, enter the budget name to delete the budget", "Ok", "Cancel");
                 if (BudgetName != null)
                 {
                     if (string.Equals(BudgetName, App.DefaultBudget.BudgetName, StringComparison.OrdinalIgnoreCase))
@@ -931,12 +931,12 @@ namespace DailyBudgetMAUIApp.ViewModels
                         string result = await _ds.DeleteBudget(App.DefaultBudgetID, App.UserDetails.UserID);
                         if (result == "LastBudget")
                         {
-                            await Application.Current.MainPage.DisplayAlert($"You can't delete this!", $"You can't delete this budget as it is your last budget and you must have at least one budget on the app", "Ok");
+                            await Application.Current.Windows[0].Page.DisplayAlert($"You can't delete this!", $"You can't delete this budget as it is your last budget and you must have at least one budget on the app", "Ok");
 
                         }
                         else if (result == "SharedBudget")
                         {
-                            await Application.Current.MainPage.DisplayAlert($"This is a shared budget!", $"You can't delete a budget that you didn't create, someone kindly shared it with you so don't try and delete it", "Ok");
+                            await Application.Current.Windows[0].Page.DisplayAlert($"This is a shared budget!", $"You can't delete a budget that you didn't create, someone kindly shared it with you so don't try and delete it", "Ok");
 
                         }
                         else

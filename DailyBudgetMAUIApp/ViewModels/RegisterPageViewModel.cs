@@ -98,7 +98,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 }
 
                 var page = new LoadingPage();
-                await Application.Current.MainPage.Navigation.PushModalAsync(page);
+                await Application.Current.Windows[0].Navigation.PushModalAsync(page);
 
                 if (IsAgreedToTerms && String.Equals(Password, PasswordConfirm))
                 {
@@ -119,14 +119,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         if(ReturnUser.Error == null)
                         {
-                            await Application.Current.MainPage.Navigation.PopModalAsync();
+                            await Application.Current.Windows[0].Navigation.PopModalAsync();
                             string status = await _ds.CreateNewOtpCode(ReturnUser.UserID, "ValidateEmail");
                             if (status == "OK")
                             {
                                 RegisterSuccess = true;
 
                                 var popup = new PopUpOTP(ReturnUser.UserID, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
-                                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                                 if((string)result.ToString() == "OK")
                                 {                                    
@@ -151,7 +151,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     App.HasVisitedCreatePage = false;
                                     await _pt.SetSubDetails();
 
-                                    await Application.Current.MainPage.Navigation.PopModalAsync();
+                                    await Application.Current.Windows[0].Navigation.PopModalAsync();
                                     await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
                                 }
                                 else
@@ -166,35 +166,35 @@ namespace DailyBudgetMAUIApp.ViewModels
                             }
                             else
                             {
-                                await Application.Current.MainPage.Navigation.PopModalAsync();
-                                await Application.Current.MainPage.DisplayAlert("Opps", "There was an error sending you an OTP code to verify you email! Please click the link to create a new one so you can continue your daily budgeting journey", "OK");
+                                await Application.Current.Windows[0].Navigation.PopModalAsync();
+                                await Application.Current.Windows[0].Page.DisplayAlert("Opps", "There was an error sending you an OTP code to verify you email! Please click the link to create a new one so you can continue your daily budgeting journey", "OK");
 
                             }
                         }
                         else
                         {
-                            await Application.Current.MainPage.Navigation.PopModalAsync();
-                            await Application.Current.MainPage.DisplayAlert("Opps", "There was an error creating your User account, please try again!", "OK");
+                            await Application.Current.Windows[0].Navigation.PopModalAsync();
+                            await Application.Current.Windows[0].Page.DisplayAlert("Opps", "There was an error creating your User account, please try again!", "OK");
                         }
 
                     }
                     else
                     {
-                        await Application.Current.MainPage.Navigation.PopModalAsync();
-                        await Application.Current.MainPage.DisplayAlert("Opps", "This Email is already taken, reset your password or try a different Email", "OK");
+                        await Application.Current.Windows[0].Navigation.PopModalAsync();
+                        await Application.Current.Windows[0].Page.DisplayAlert("Opps", "This Email is already taken, reset your password or try a different Email", "OK");
                     }
                 }
                 else
                 {
                     if(IsAgreedToTerms)
                     {
-                        await Application.Current.MainPage.Navigation.PopModalAsync();
-                        await Application.Current.MainPage.DisplayAlert("Opps", "Your Passwords don't match ...", "OK");
+                        await Application.Current.Windows[0].Navigation.PopModalAsync();
+                        await Application.Current.Windows[0].Page.DisplayAlert("Opps", "Your Passwords don't match ...", "OK");
                     }
                     else
                     {
-                        await Application.Current.MainPage.Navigation.PopModalAsync();
-                        await Application.Current.MainPage.DisplayAlert("Opps", "You have to agree to our Terms of Service", "OK");
+                        await Application.Current.Windows[0].Navigation.PopModalAsync();
+                        await Application.Current.Windows[0].Page.DisplayAlert("Opps", "You have to agree to our Terms of Service", "OK");
                     }
                 }
             }

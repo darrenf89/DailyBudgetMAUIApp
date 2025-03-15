@@ -4,6 +4,7 @@ using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Popups;
 using DailyBudgetMAUIApp.ViewModels;
 using Microsoft.Maui.Layouts;
+using Plugin.LocalNotification;
 using Plugin.Maui.AppRating;
 using Syncfusion.Maui.Core;
 
@@ -146,7 +147,7 @@ public partial class EditAccountDetails : BasePage
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Unable to open the subscription page.", "OK");
+                    await Application.Current.Windows[0].Page.DisplayAlert("Error", "Unable to open the subscription page.", "OK");
                 }
             }
 
@@ -169,7 +170,7 @@ public partial class EditAccountDetails : BasePage
             }
             else
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
+                await Application.Current.Windows[0].Page.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
             }
         }
         catch (Exception ex)
@@ -192,7 +193,7 @@ public partial class EditAccountDetails : BasePage
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
+                    await Application.Current.Windows[0].Page.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
                 }
             }
             catch (Exception ex)
@@ -286,7 +287,7 @@ public partial class EditAccountDetails : BasePage
         try
         {
             var page = new LoadingPage();
-            await Application.Current.MainPage.Navigation.PushModalAsync(page);
+            await Application.Current.Windows[0].Navigation.PushModalAsync(page);
 
             if (Preferences.ContainsKey(nameof(App.UserDetails)))
             {
@@ -302,8 +303,8 @@ public partial class EditAccountDetails : BasePage
             App.DefaultBudget = null;
 
             Application.Current!.MainPage = new AppShell();
-
-            await Application.Current.MainPage.Navigation.PopModalAsync();
+            LocalNotificationCenter.Current.CancelAll();
+            await Application.Current.Windows[0].Navigation.PopModalAsync();
             await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
         }
         catch (Exception ex)
@@ -318,7 +319,7 @@ public partial class EditAccountDetails : BasePage
         {
 
             var popup = new PopUpContactUs(new PopUpContactUsViewModel(_pt, new RestDataService()));            
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             if (result is int)
             {
 
@@ -358,7 +359,7 @@ public partial class EditAccountDetails : BasePage
             }
             else
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
+                await Application.Current.Windows[0].Page.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
             }
         }
         catch (Exception ex)

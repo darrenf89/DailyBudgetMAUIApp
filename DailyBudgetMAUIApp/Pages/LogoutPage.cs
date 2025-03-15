@@ -1,5 +1,7 @@
 namespace DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Popups;
+using Plugin.LocalNotification;
+
 public class LogoutPage : ContentPage
 {
 	public LogoutPage()
@@ -18,6 +20,9 @@ public class LogoutPage : ContentPage
         {
             Preferences.Remove(nameof(App.DefaultBudgetID));
         }
+
+        Application.Current!.MainPage = new AppShell();
+        LocalNotificationCenter.Current.CancelAll();
 
         await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
     }

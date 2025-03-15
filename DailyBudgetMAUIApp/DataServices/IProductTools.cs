@@ -39,6 +39,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public string TransactTransaction(ref Transactions T, ref Budgets Budget);
         public DateTime GetBudgetLocalTime(DateTime UtcDate);
         public Task NavigateFromPendingIntent(string NavigationID);
+        public Task UpdateNotificationPermission();
         public Task<Picker> SwitchBudget(string page);
         public Task ChangeDefaultBudget(int UserID, int BudgetID, bool Navigate);
         public Task LoadTabBars(string UserSub, DateTime SubExpiry, string BudgetType);

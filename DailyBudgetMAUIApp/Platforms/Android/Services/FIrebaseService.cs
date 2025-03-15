@@ -123,7 +123,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
                         .SetContentTitle(title)
                         .SetContentText(messageBody)
                         .SetSmallIcon(Resource.Mipmap.appicon)
-                        .SetChannelId(MainActivity.Channel_ID)
+                        .SetChannelId(MainActivity.Support_Channel_ID)
                         .SetContentIntent(pendingIntent)
                         .SetPriority(1);
                     break;

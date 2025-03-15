@@ -233,7 +233,7 @@ public partial class ViewPayees : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
@@ -332,12 +332,12 @@ public partial class ViewPayees : BasePage
         {
             Payees payee = (Payees)e.Parameter;
 
-            bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete payee?", $"Are you sure you want to Delete {payee.Payee}?", "Yes", "No!");
+            bool Delete = await Application.Current.Windows[0].Page.DisplayAlert($"Delete payee?", $"Are you sure you want to Delete {payee.Payee}?", "Yes", "No!");
             if (Delete)
             {
                 List<string> Payees = await _ds.GetPayeeList(App.DefaultBudgetID);
                 string[] PayeeList = Payees.ToArray();
-                var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
+                var reassign = await Application.Current.Windows[0].Page.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
                 if(reassign == "Cancel")
                 {
 
@@ -444,7 +444,7 @@ public partial class ViewPayees : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
 
                 await Task.Delay(1000);
 

@@ -64,7 +64,7 @@ public partial class ViewIncomes : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
@@ -89,7 +89,7 @@ public partial class ViewIncomes : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}/{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=ViewIncomes");
@@ -139,7 +139,7 @@ public partial class ViewIncomes : BasePage
             string Description = "Update extra income due date!";
             string DescriptionSub = "extra income not due when you expected? You can update the due date to any date in the future!";
             var popup = new PopUpPageVariableInput("Income due date", Description, DescriptionSub, "", Income.DateOfIncomeEvent, "DateTime", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if(!string.IsNullOrEmpty(result.ToString()))
             {
@@ -174,7 +174,7 @@ public partial class ViewIncomes : BasePage
             string Description = "Update income amount!";
             string DescriptionSub = "Income not as much as you expected, you can update the income amount and we will do the rest!";
             var popup = new PopUpPageVariableInput("Outgoing amount", Description, DescriptionSub, "", Income.IncomeAmount, "Currency", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if (!string.IsNullOrEmpty(result.ToString()))
             {
@@ -212,7 +212,7 @@ public partial class ViewIncomes : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}//{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewIncomes");

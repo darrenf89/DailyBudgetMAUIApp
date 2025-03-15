@@ -91,7 +91,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
             Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
             string[] CategoryList = Categories.Keys.ToArray();
 
-            var DeleteSubCategory = await Application.Current.MainPage.DisplayActionSheet($"What Category do you want to delete?", "Cancel", null, CategoryList);
+            var DeleteSubCategory = await Application.Current.Windows[0].Page.DisplayActionSheet($"What Category do you want to delete?", "Cancel", null, CategoryList);
             if(DeleteSubCategory == "Cancel")
             {
 
@@ -101,7 +101,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
                 int DeleteSubCat = Categories[DeleteSubCategory];
                 Categories.Remove(DeleteSubCategory);
                 CategoryList = Categories.Keys.ToArray();
-                var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this categories transactions?", "Cancel", "No", CategoryList);
+                var reassign = await Application.Current.Windows[0].Page.DisplayActionSheet($"Do you want to reassign this categories transactions?", "Cancel", "No", CategoryList);
                 if (reassign == "Cancel")
                 {
 
@@ -116,7 +116,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
                         App.CurrentBottomSheet = null;
                     }
 
-                    await Application.Current.MainPage.DisplayAlert($"Category Deleted",$"Congrats you have deleted {DeleteSubCategory}, hopefully you meant to!","Ok");
+                    await Application.Current.Windows[0].Page.DisplayAlert($"Category Deleted",$"Congrats you have deleted {DeleteSubCategory}, hopefully you meant to!","Ok");
 
                 }
                 else
@@ -130,7 +130,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
                         App.CurrentBottomSheet = null;
                     }
 
-                    await Application.Current.MainPage.DisplayAlert($"Category Deleted", $"Congrats you have deleted {DeleteSubCategory} and reassigned its transactions to {reassign}, hopefully you meant to!", "Ok");
+                    await Application.Current.Windows[0].Page.DisplayAlert($"Category Deleted", $"Congrats you have deleted {DeleteSubCategory} and reassigned its transactions to {reassign}, hopefully you meant to!", "Ok");
                 }
             }
         }
@@ -161,7 +161,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
             }
 
             string[] CategoryList = CatDict.Keys.ToArray();
-            var SelectCategory = await Application.Current.MainPage.DisplayActionSheet($"Select a category group you'd like to add a category to!", "Cancel", null, CategoryList);
+            var SelectCategory = await Application.Current.Windows[0].Page.DisplayActionSheet($"Select a category group you'd like to add a category to!", "Cancel", null, CategoryList);
             if (SelectCategory == "Cancel")
             {
 
@@ -206,7 +206,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
             }
 
             string[] CategoryList = CatDict.Keys.ToArray();
-            var SelectCategory = await Application.Current.MainPage.DisplayActionSheet($"What Category would you like to view", "Cancel", null, CategoryList);
+            var SelectCategory = await Application.Current.Windows[0].Page.DisplayActionSheet($"What Category would you like to view", "Cancel", null, CategoryList);
             if (SelectCategory == "Cancel")
             {
 
@@ -219,7 +219,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 if (App.CurrentBottomSheet != null)
@@ -242,7 +242,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
         {
             var PopUp = new PopUpPage();
             App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
         }
 
         if (App.CurrentBottomSheet != null)
@@ -268,7 +268,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
             }
 
             string[] CategoryList = CatDict.Keys.ToArray();
-            var SelectCategory = await Application.Current.MainPage.DisplayActionSheet($"What Category would you like to delete", "Cancel", null, CategoryList);
+            var SelectCategory = await Application.Current.Windows[0].Page.DisplayActionSheet($"What Category would you like to delete", "Cancel", null, CategoryList);
             if (SelectCategory == "Cancel")
             {
 
@@ -296,7 +296,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
                         App.CurrentBottomSheet = null;
                     }
 
-                    await Application.Current.MainPage.DisplayAlert($"Category Deleted", $"Congrats you have deleted {SelectCategory}, hopefully you meant to!", "Ok");
+                    await Application.Current.Windows[0].Page.DisplayAlert($"Category Deleted", $"Congrats you have deleted {SelectCategory}, hopefully you meant to!", "Ok");
 
                 }
             }

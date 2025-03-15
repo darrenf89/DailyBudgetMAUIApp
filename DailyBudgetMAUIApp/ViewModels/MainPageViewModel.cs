@@ -194,14 +194,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(500);
 
-                EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()));
+                EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService(), new NotificationPermissionsImplementation()), new ProductTools(new RestDataService()));
 
-                await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+                await Application.Current.Windows[0].Navigation.PushModalAsync(page, true);
             }
             catch (Exception ex)
             {
@@ -218,7 +218,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"{nameof(ViewSupports)}");
@@ -239,14 +239,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(500);
 
                 EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()));
 
-                await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+                await Application.Current.Windows[0].Navigation.PushModalAsync(page, true);
             }
             catch (Exception ex)
             {
@@ -265,14 +265,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(500);
 
                 EditAccountDetails page = new EditAccountDetails(new EditAccountDetailsViewModel(_pt, _ds), _pt, _ar);
 
-                await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+                await Application.Current.Windows[0].Navigation.PushModalAsync(page, true);
             }
             catch (Exception ex)
             {
@@ -339,9 +339,9 @@ namespace DailyBudgetMAUIApp.ViewModels
             try
             {
                 var page = new LoadingPage();
-                await Application.Current.MainPage.Navigation.PushModalAsync(page);
+                await Application.Current.Windows[0].Navigation.PushModalAsync(page);
 
-                await Application.Current.MainPage.Navigation.PopModalAsync();
+                await Application.Current.Windows[0].Navigation.PopModalAsync();
                 await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
             }
             catch (Exception ex)
@@ -357,7 +357,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             try
             {
                 var page = new LoadingPage();
-                await Application.Current.MainPage.Navigation.PushModalAsync(page);
+                await Application.Current.Windows[0].Navigation.PushModalAsync(page);
 
                 if (Preferences.ContainsKey(nameof(App.UserDetails)))
                 {
@@ -374,7 +374,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 Application.Current!.MainPage = new AppShell();
 
-                await Application.Current.MainPage.Navigation.PopModalAsync();
+                await Application.Current.Windows[0].Navigation.PopModalAsync();
                 await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
             }
             catch (Exception ex)
@@ -429,7 +429,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(500);

@@ -1,21 +1,23 @@
-﻿using DailyBudgetMAUIApp.DataServices;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Extensions;
+using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.Messaging;
+using DailyBudgetMAUIApp.Converters;
+using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
-using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Handlers;
-using CommunityToolkit.Maui.Views;
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Controls.Shapes;
+using Plugin.LocalNotification;
+using Plugin.LocalNotification.AndroidOption;
+using Syncfusion.Maui.ProgressBar;
+using Syncfusion.Maui.Scheduler;
+using Syncfusion.Maui.Toolkit.Carousel;
 using System.Globalization;
 using The49.Maui.BottomSheet;
-using Syncfusion.Maui.Toolkit.Carousel;
-using DailyBudgetMAUIApp.Converters;
-using Syncfusion.Maui.ProgressBar;
-using Microsoft.Maui.Controls.Shapes;
-using CommunityToolkit.Maui.Extensions;
-using Syncfusion.Maui.Scheduler;
-using CommunityToolkit.Mvvm.Messaging;
 using static DailyBudgetMAUIApp.Pages.ViewAccounts;
 
 
@@ -43,6 +45,21 @@ public partial class MainPage : BasePage
     {
         base.OnNavigatedTo(args);
         _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+
+        DateTime PermissionRequestExpiry = new();
+        if (Preferences.ContainsKey(nameof(PermissionRequestExpiry)))
+        {
+            PermissionRequestExpiry = Preferences.Get(nameof(PermissionRequestExpiry), new DateTime());
+        }
+
+        if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false && DateTime.UtcNow > PermissionRequestExpiry)
+        {
+            bool IsNotificationEnabled = await LocalNotificationCenter.Current.RequestNotificationPermission();
+            if (!IsNotificationEnabled)
+            {
+                Preferences.Set(nameof(PermissionRequestExpiry), DateTime.UtcNow.AddDays(60));
+            }
+        }
 
         if (App.CurrentPopUp != null)
         {
@@ -95,8 +112,9 @@ public partial class MainPage : BasePage
     protected async override void OnAppearing()
     {        
         try
-        {            
+        {
             base.OnAppearing();
+
             ProcessSnackBar();
 
             _vm.DefaultBudget = null;
@@ -196,6 +214,7 @@ public partial class MainPage : BasePage
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+
         }
         catch (Exception ex)
         {
@@ -207,6 +226,7 @@ public partial class MainPage : BasePage
     {
         WeakReferenceMessenger.Default.UnregisterAll(this);
         base.OnNavigatedFrom(args);
+        
     }
 
     private async Task RegisterForWeakMessages()
@@ -223,7 +243,7 @@ public partial class MainPage : BasePage
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
                 }
 
@@ -579,7 +599,7 @@ public partial class MainPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 await Task.Delay(1000);
                 FilterModel Filters = new FilterModel
                 {
@@ -804,7 +824,7 @@ public partial class MainPage : BasePage
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                         await Task.Delay(1000);
                         FilterModel Filters = new FilterModel
                         {
@@ -1102,7 +1122,7 @@ public partial class MainPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
@@ -1172,13 +1192,13 @@ public partial class MainPage : BasePage
         try
         {
             var popup = new PopUpOTP(_vm.DefaultBudget.AccountInfo.BudgetShareRequestID, new PopUpOTPViewModel(_ds, _pt), "ShareBudget", _pt, _ds);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if ((string)result.ToString() != "User Closed")
             {
                 ShareBudgetRequest BudgetRequest = (ShareBudgetRequest)result;
 
-                bool DefaultBudgetYesNo = await Application.Current.MainPage.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
+                bool DefaultBudgetYesNo = await Application.Current.Windows[0].Page.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
 
                 if (DefaultBudgetYesNo)
                 {
@@ -2430,7 +2450,7 @@ public partial class MainPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             if (App.CurrentBottomSheet != null)
@@ -2454,7 +2474,7 @@ public partial class MainPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewBills)}");
@@ -2474,7 +2494,7 @@ public partial class MainPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
@@ -2523,7 +2543,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
+            bool EditTransaction = await Application.Current.Windows[0].Page.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
             if (EditTransaction)
             {
                 Transactions T = (Transactions)e.Parameter;
@@ -2544,7 +2564,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
+            bool DeleteTransaction = await Application.Current.Windows[0].Page.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
             if (DeleteTransaction)
             {
                 Transactions transaction = (Transactions)e.Parameter;
@@ -2655,7 +2675,7 @@ public partial class MainPage : BasePage
         try
         {
             var popup = new PopupMoveBalance(App.DefaultBudget, "Budget", 0, true, new PopupMoveBalanceViewModel(), _pt, _ds);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             await Task.Delay(100);
             if (result.ToString() == "OK")
             {

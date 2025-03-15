@@ -88,7 +88,7 @@ public partial class CreateNewBudget : BasePage
                 string Description = "Every budget needs a name, let us know how you'd like your budget to be known so we can use this to identify it for you in the future.";
                 string DescriptionSub = "Call it something useful or call it something silly up to you really!";
                 var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", _vm.Budget.BudgetName, new PopUpPageSingleInputViewModel());
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if (result != null || (string)result != "")
                 {
@@ -711,13 +711,13 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             if (ValidateFinaliseBudget())
             {
                 var page = new LoadingPage();
-                await Application.Current.MainPage.Navigation.PushModalAsync(page);
+                await Application.Current.Windows[0].Navigation.PushModalAsync(page);
 
                 await _vm.SaveStage("Finalise Budget");
                 await _vm.SaveStage("Create Budget");
@@ -902,7 +902,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}&NavigatedFrom=CreateNewBudget");
@@ -921,7 +921,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}&NavigatedFrom=CreateNewBudget");
@@ -940,7 +940,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={0}&NavigatedFrom=CreateNewBudget");
@@ -968,7 +968,7 @@ public partial class CreateNewBudget : BasePage
             };
 
             var popup = new PopupInfo("Bank Balance", SubTitle, Info);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
         }
         catch (Exception ex)
         {
@@ -1028,7 +1028,7 @@ public partial class CreateNewBudget : BasePage
             };
 
             var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
         }
         catch (Exception ex)
         {
@@ -1053,7 +1053,7 @@ public partial class CreateNewBudget : BasePage
             };
 
             var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
         }
         catch (Exception ex)
         {
@@ -1603,7 +1603,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             var Bill = (Bills)e.Parameter;
@@ -1658,7 +1658,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             var Saving = (Savings)e.Parameter;
@@ -1818,7 +1818,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             var Income = (IncomeEvents)e.Parameter;

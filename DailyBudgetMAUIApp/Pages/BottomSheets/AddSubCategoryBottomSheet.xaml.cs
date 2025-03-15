@@ -101,7 +101,7 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Task.Delay(500);

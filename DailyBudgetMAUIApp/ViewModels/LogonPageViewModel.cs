@@ -89,7 +89,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 await ResetSuccessFailureMessage();
 
                 var popup = new PopUpOTP(0, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ResetPassword", new ProductTools(new RestDataService()), new RestDataService());
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if((string)result.ToString() == "OK")
                 {
@@ -122,7 +122,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 if (!string.IsNullOrEmpty(Email))
@@ -142,7 +142,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                             case "User not found":
                                 await App.CurrentPopUp.CloseAsync();
                                 App.CurrentPopUp = null;
-                                await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
+                                await Application.Current.Windows[0].Page.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 break;
                             case not "":
 
@@ -152,7 +152,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                 {
                                     await App.CurrentPopUp.CloseAsync();
                                     App.CurrentPopUp = null;
-                                    await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
+                                    await Application.Current.Windows[0].Page.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 }
                                 else
                                 {
@@ -161,7 +161,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     {
                                         await App.CurrentPopUp.CloseAsync();
                                         App.CurrentPopUp = null;
-                                        await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
+                                        await Application.Current.Windows[0].Page.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                     }
                                     else
                                     {
@@ -169,14 +169,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                                         {
                                             await App.CurrentPopUp.CloseAsync();
                                             App.CurrentPopUp = null;
-                                            bool ValidateEmail = await Application.Current.MainPage.DisplayAlert("Mmmm, can't be doing that!", "You haven't verified your email! Would you like to now so you can log in?", "Verify email","Not now");
+                                            bool ValidateEmail = await Application.Current.Windows[0].Page.DisplayAlert("Mmmm, can't be doing that!", "You haven't verified your email! Would you like to now so you can log in?", "Verify email","Not now");
                                             if(ValidateEmail)
                                             {
                                                 string status = await _ds.CreateNewOtpCode(userDetails.UserID, "ValidateEmail");
                                                 if (status == "OK" || status == "MaxLimit")
                                                 {
                                                     var popup = new PopUpOTP(userDetails.UserID, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
-                                                    var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                                                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                                                     if ((string)result.ToString() == "OK")
                                                     {
@@ -255,7 +255,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         await App.CurrentPopUp.CloseAsync();
                         App.CurrentPopUp = null;
-                        await Application.Current.MainPage.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
+                        await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                     }
                 }
                 else 
@@ -263,7 +263,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     IsButtonBusy = false;
                     await App.CurrentPopUp.CloseAsync();
                     App.CurrentPopUp = null;
-                    await Application.Current.MainPage.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
+                    await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                 }
             }
             catch (Exception ex)

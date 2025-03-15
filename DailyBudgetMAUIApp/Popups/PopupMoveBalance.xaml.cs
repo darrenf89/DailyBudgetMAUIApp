@@ -216,7 +216,7 @@ public partial class PopupMoveBalance : Popup
         {
             if (ValidatePage())
             {
-                bool MoveBalance = await Application.Current.MainPage.DisplayAlert($"Move money around?", $"Are you sure you want to move {entAmount.Text} from {_vm.FromSelectedMoveBalance.Name} to {_vm.ToSelectedMoveBalance.Name}", "Yes", "No");
+                bool MoveBalance = await Application.Current.Windows[0].Page.DisplayAlert($"Move money around?", $"Are you sure you want to move {entAmount.Text} from {_vm.FromSelectedMoveBalance.Name} to {_vm.ToSelectedMoveBalance.Name}", "Yes", "No");
                 if (MoveBalance)
                 {
                     decimal FromAmount = _vm.FromSelectedMoveBalance.Balance - _vm.Amount;

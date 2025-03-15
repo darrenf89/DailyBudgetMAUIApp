@@ -149,7 +149,7 @@ namespace DailyBudgetMAUIApp.DataServices
                             {
                                 var PopUp = new PopUpNoServer(new PopUpNoServerViewModel());
                                 App.CurrentPopUp = PopUp;
-                                Application.Current.MainPage.ShowPopup(PopUp);
+                                Application.Current.Windows[0].Page.ShowPopup(PopUp);
                             }
 
                             int i = 0;
@@ -213,7 +213,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 //            {
                 //                var PopUp = new PopUpNoNetwork(new PopUpNoNetworkViewModel());
                 //                App.CurrentPopUp = PopUp;
-                //                Application.Current.MainPage.ShowPopup(PopUp);
+                //                Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 //            }                        
 
                 //            int i = 0;
@@ -267,7 +267,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
                     var PopUp = new PopUpNoNetwork(new PopUpNoNetworkViewModel());
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(1);
@@ -492,7 +492,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 var PopUp = new PopUpNoServer(new PopUpNoServerViewModel());
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
         }
         public async Task HideServerConnectionPopup()

@@ -93,7 +93,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     Transactions T = new Transactions
@@ -168,7 +168,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 BankAccounts Account = (BankAccounts)parameter;
                 var popup = new PopupMoveAccountBalance(Account, this.BankAccounts, new PopupMoveAccountBalanceViewModel(), _pt, _ds);
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                 await Task.Delay(100);
                 if (result.ToString() == "OK")
                 {

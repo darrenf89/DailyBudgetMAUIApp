@@ -40,7 +40,7 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
             List<string> Payees = await _ds.GetPayeeList(App.DefaultBudgetID);
             string[] PayeeList = Payees.ToArray();
 
-            var DeletePayee = await Application.Current.MainPage.DisplayActionSheet($"What Payee do you want to delete?", "Cancel", null, PayeeList);
+            var DeletePayee = await Application.Current.Windows[0].Page.DisplayActionSheet($"What Payee do you want to delete?", "Cancel", null, PayeeList);
             if (DeletePayee == "Cancel")
             {
 
@@ -49,7 +49,7 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
             {
                 Payees.Remove(DeletePayee);
                 PayeeList = Payees.ToArray();
-                var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
+                var reassign = await Application.Current.Windows[0].Page.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
                 if (reassign == "Cancel")
                 {
 
@@ -64,7 +64,7 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
                         App.CurrentBottomSheet = null;
                     }
 
-                    await Application.Current.MainPage.DisplayAlert($"Payee Deleted", $"Congrats you have deleted {DeletePayee}, hopefully you meant to!", "Ok");
+                    await Application.Current.Windows[0].Page.DisplayAlert($"Payee Deleted", $"Congrats you have deleted {DeletePayee}, hopefully you meant to!", "Ok");
                 }
                 else
                 {
@@ -76,7 +76,7 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
                         App.CurrentBottomSheet = null;
                     }
 
-                    await Application.Current.MainPage.DisplayAlert($"Category Deleted", $"Congrats you have deleted {DeletePayee} and reassigned its transactions to {reassign}, hopefully you meant to!", "Ok");
+                    await Application.Current.Windows[0].Page.DisplayAlert($"Category Deleted", $"Congrats you have deleted {DeletePayee} and reassigned its transactions to {reassign}, hopefully you meant to!", "Ok");
                 }
             }
         }
@@ -113,7 +113,7 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             if (App.CurrentBottomSheet != null)

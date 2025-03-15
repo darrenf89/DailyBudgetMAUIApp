@@ -646,7 +646,7 @@ public partial class AddBill : BasePage
         string Description = "Every outgoing needs a name, we will refer to it by the name you give it and will make it easier to identify!";
         string DescriptionSub = "Call it something useful or call it something silly up to you really!";
         var popup = new PopUpPageSingleInput("Outgoing Name", Description, DescriptionSub, "Enter an outgoing name!", _vm.Bill.BillName, new PopUpPageSingleInputViewModel());
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
         if (result != null || (string)result != "")
         {

@@ -80,7 +80,7 @@ public partial class SelectCategoryPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Task.Delay(10);
@@ -949,7 +949,7 @@ public partial class SelectCategoryPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Task.Delay(10);
@@ -1031,7 +1031,7 @@ public partial class SelectCategoryPage : BasePage
         try
         {
             var LoadingPage = new LoadingPageTwo();
-            await Application.Current.MainPage.Navigation.PushModalAsync(LoadingPage, true);
+            await Application.Current.Windows[0].Navigation.PushModalAsync(LoadingPage, true);
 
             Application.Current.Resources.TryGetValue("buttonUnclicked", out var buttonUnclicked);
 
@@ -1057,7 +1057,7 @@ public partial class SelectCategoryPage : BasePage
             LoadCategoryList();
             LoadCategoryFilter();
 
-            await Application.Current.MainPage.Navigation.PopModalAsync();
+            await Application.Current.Windows[0].Navigation.PopModalAsync();
         }
         catch (Exception ex)
         {

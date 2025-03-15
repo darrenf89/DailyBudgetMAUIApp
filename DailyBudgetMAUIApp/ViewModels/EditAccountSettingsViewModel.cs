@@ -6,7 +6,7 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
-using Microsoft.Maui.Primitives;
+using Plugin.LocalNotification;
 using System.Globalization;
 using The49.Maui.BottomSheet;
 
@@ -16,6 +16,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
+        private readonly INotificationPermissions _notificationPermissions;
 
         [ObservableProperty]
         private UserDetailsModel user;
@@ -75,17 +76,24 @@ namespace DailyBudgetMAUIApp.ViewModels
         public Budgets selectedBudget;        
         [ObservableProperty]
         public bool isDPA;
+        [ObservableProperty]
+        public bool isPushNotificationsEnabled;
+        [ObservableProperty]
+        public bool isChanging;
+        [ObservableProperty]
+        public string isPushNotificationsEnabledLabelText;
 
 
-        public EditAccountSettingsViewModel(IProductTools pt, IRestDataService ds)
+        public EditAccountSettingsViewModel(IProductTools pt, IRestDataService ds, INotificationPermissions notificationPermissions)
         {
             _pt = pt;
             _ds = ds;
-        }      
-        
+            _notificationPermissions = notificationPermissions;
+        }
+
         public async Task OnLoad()
         {
-
+            IsChanging = true;
             VersionNumber = $"V{AppInfo.Current.VersionString}";
             User = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
             CurrentSubStatus = $"{User.SubscriptionType} expires on {User.SubscriptionExpiry.ToString("d", CultureInfo.CurrentCulture)}";
@@ -131,6 +139,16 @@ namespace DailyBudgetMAUIApp.ViewModels
             SwitchBudgetPicker = picker;
 
             IsDPA = User.IsDPAPermissions;
+            IsPushNotificationsEnabled = LocalNotificationCenter.Current.AreNotificationsEnabled().Result;
+            if(IsPushNotificationsEnabled)
+            {
+                IsPushNotificationsEnabledLabelText = "Push Notifications Enabled";
+            }
+            else
+            {
+                IsPushNotificationsEnabledLabelText = "Push Notifications Disabled";
+            }
+            IsChanging = false;
         }
 
         [RelayCommand]
@@ -142,7 +160,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(500);
@@ -160,7 +178,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                var Email = await Application.Current.MainPage.DisplayPromptAsync($"Are you sure you want to delete your account?", $"Enter the accounts email address to delete the account", "Ok", "Cancel");
+                var Email = await Application.Current.Windows[0].Page.DisplayPromptAsync($"Are you sure you want to delete your account?", $"Enter the accounts email address to delete the account", "Ok", "Cancel");
                 if (Email != null)
                 {
                     if(string.Equals(Email, App.UserDetails.Email, StringComparison.OrdinalIgnoreCase))
@@ -171,18 +189,18 @@ namespace DailyBudgetMAUIApp.ViewModels
                             AppShell Shell = new AppShell();
                             await Shell.Logout();
 
-                            await Application.Current.MainPage.DisplayAlert($"Account Deleted", $"Your account has been permanently deleted and there is no way to recover it now. If you want to start budgeting again create a new account", "Ok");
+                            await Application.Current.Windows[0].Page.DisplayAlert($"Account Deleted", $"Your account has been permanently deleted and there is no way to recover it now. If you want to start budgeting again create a new account", "Ok");
 
                         }
                         else
                         {
-                            await Application.Current.MainPage.DisplayAlert($"Opps something went wrong", $"There was an issue deleting your account, please try again and if the issue persists please contact us so can help", "Ok");
+                            await Application.Current.Windows[0].Page.DisplayAlert($"Opps something went wrong", $"There was an issue deleting your account, please try again and if the issue persists please contact us so can help", "Ok");
 
                         }
                     }
                     else
                     {
-                        await Application.Current.MainPage.DisplayAlert("That is not the correct email", "Your account has not been deleted please try again." ,"OK");
+                        await Application.Current.Windows[0].Page.DisplayAlert("That is not the correct email", "Your account has not been deleted please try again." ,"OK");
                     }
                 }
             }
@@ -201,14 +219,14 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 if (NewPasswordRequired & PasswordRequired & PasswordConfirmRequired & NewPasswordValid)
                 {
-                    bool UpdatePassword = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to update your password?", $"Forgot your current password and you can reset it from the logon screen using your email", "Yes", "No");
+                    bool UpdatePassword = await Application.Current.Windows[0].Page.DisplayAlert($"Are you sure you want to update your password?", $"Forgot your current password and you can reset it from the logon screen using your email", "Yes", "No");
                     if (UpdatePassword)
                     {
                         if (App.CurrentPopUp == null)
                         {
                             var PopUp = new PopUpPage();
                             App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
+                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
                         }
 
                         await Task.Delay(1);
@@ -322,7 +340,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 if (NickNameRequired)
                 {
-                    bool UpdateNickName = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to update your nickname?", $"Are you sure you want to update your nickaname to {NewNickName}?", "Yes", "No");
+                    bool UpdateNickName = await Application.Current.Windows[0].Page.DisplayAlert($"Are you sure you want to update your nickname?", $"Are you sure you want to update your nickaname to {NewNickName}?", "Yes", "No");
                     if (UpdateNickName)
                     {
                         List<PatchDoc> UserUpdate = new List<PatchDoc>();
@@ -375,7 +393,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 if (EmailRequired & EmailValid)
                 {
-                    bool UpdateEmail = await Application.Current.MainPage.DisplayAlert($"Are you sure you want to update your email?", $"Are you sure you want to update your email to {NewEmail}? Make sure you have access to this email or you might have some issues!", "Yes", "No");
+                    bool UpdateEmail = await Application.Current.Windows[0].Page.DisplayAlert($"Are you sure you want to update your email?", $"Are you sure you want to update your email to {NewEmail}? Make sure you have access to this email or you might have some issues!", "Yes", "No");
                     if (UpdateEmail)
                     {
                         UserDetailsModel UserDetails = await _ds.GetUserDetailsAsync(NewEmail);
@@ -416,7 +434,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         }
                         else
                         {
-                            await Application.Current.MainPage.DisplayAlert("Opps", "An account already exists with this email. Please use a different email or recover the account if this is your email", "OK");
+                            await Application.Current.Windows[0].Page.DisplayAlert("Opps", "An account already exists with this email. Please use a different email or recover the account if this is your email", "OK");
                         }
 
 
@@ -508,26 +526,62 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        partial void OnIsDPAChanged(bool oldValue, bool newValue)
+        async partial void OnIsDPAChanged(bool oldValue, bool newValue)
         {
             try
             {
-                List<PatchDoc> UserUpdate = new List<PatchDoc>();
-
-                PatchDoc IsDPAPermissions = new PatchDoc
+                if(!IsChanging)
                 {
-                    op = "replace",
-                    path = "/isDPAPermissions",
-                    value = IsDPA
-                };
+                    IsChanging = true;
+                    List<PatchDoc> UserUpdate = new List<PatchDoc>();
 
-                UserUpdate.Add(IsDPAPermissions);
+                    PatchDoc IsDPAPermissions = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/isDPAPermissions",
+                        value = IsDPA
+                    };
 
-                _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                    UserUpdate.Add(IsDPAPermissions);
+
+                    await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                    IsChanging = false;
+                }
+
             }
             catch (Exception ex)
             {
-                _pt.HandleException(ex, "EditAccountSettings", "OnIsDPAChanged");
+                await _pt.HandleException(ex, "EditAccountSettings", "OnIsDPAChanged");
+            }
+        }
+
+        async partial void OnIsPushNotificationsEnabledChanged(bool oldValue, bool newValue)
+        {
+            try
+            {
+                if(!IsChanging)
+                {
+                    IsChanging = true;
+
+                    await _notificationPermissions.OpenNotificationSettingsAsync();
+
+                    if (IsPushNotificationsEnabled)
+                    {
+                        IsPushNotificationsEnabledLabelText = "Push Notifications Enabled";
+                    }
+                    else
+                    {
+
+                        IsPushNotificationsEnabledLabelText = "Push Notifications Disabled";
+                    }
+                    IsChanging = false;
+                }
+                
+
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "EditAccountSettings", "OnIsPushNotificationsEnabledChanged");
             }
         }
 

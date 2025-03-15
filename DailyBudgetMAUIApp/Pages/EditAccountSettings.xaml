@@ -45,7 +45,7 @@
                     <Label CharacterSpacing="0" Margin="0,4,0,0" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Gray500}" Text="{Binding User.Email}"/>
                     <BoxView HeightRequest="3" Color="{DynamicResource PrimaryDark}" Margin="0,10,0,0">
                         <BoxView.Shadow>
-                            <Shadow Offset="0,14" Opacity="0.3" Brush="{DynamicResource Gray900}" Radius="5" />
+                            <Shadow Offset="0,5" Opacity="0.3" Brush="{DynamicResource Gray900}" Radius="5" />
                         </BoxView.Shadow>
                     </BoxView>
                 </VerticalStackLayout>
@@ -123,16 +123,7 @@
                                         <Label Text="Something went wrong, your email wasn't updated!" HorizontalTextAlignment="Center" VerticalOptions="Center" HorizontalOptions="Center" TextColor="{DynamicResource Danger}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
                                     </Border>
                                 </Grid>
-                                <VerticalStackLayout Margin="5,15,5,0" x:Name="DPASetting" HorizontalOptions="Fill">
-                                    <Label Text="Agree to be contacted by dBudget?" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="0,0,0,5"/>
-                                    <Grid ColumnDefinitions="60,*" Margin="0,0,0,0" HeightRequest="40">
-                                        <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsDPA}" />
-                                        <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">
-                                            <Label HorizontalOptions="Start" Text="{Binding IsDPA, Converter={StaticResource IsDPATextConverter}}" TextColor="{StaticResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
-                                        </HorizontalStackLayout>
-                                    </Grid>
-                                </VerticalStackLayout>
-                                <VerticalStackLayout Margin="0,0,0,0">
+                                <VerticalStackLayout Margin="0,10,0,0">
                                     <Label Text="Current Password" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,10,0,4"/>
                                     <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}" Margin="5,0,5,0">
                                         <handlers:BorderlessEntry HeightRequest="44" Text="{Binding CurrentPassword}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" Keyboard="Text" IsPassword="True" Placeholder="********" PlaceholderColor="{StaticResource Gray400}">
@@ -220,6 +211,30 @@
                                     </Border>
                                     <Button Clicked="UpdatePassword_Clicked" Command="{Binding UpdatePasswordCommand}" Padding="0,0,0,0" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Update Password" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Info}" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
                                 </VerticalStackLayout>
+                                <VerticalStackLayout Margin="5,15,5,0" x:Name="DPASetting" HorizontalOptions="Fill">
+                                    <Label Text="Agree to be contacted by dBudget?" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="0,0,0,5"/>
+                                    <Grid ColumnDefinitions="60,*" Margin="0,0,0,0" HeightRequest="40">
+                                        <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsDPA}" />
+                                        <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">
+                                            <Label HorizontalOptions="Start" Text="{Binding IsDPA, Converter={StaticResource IsDPATextConverter}}" TextColor="{StaticResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*" RowDefinitions="*" HorizontalOptions="Fill">
+                                        <handlers:ReadMoreAccordion Grid.Row="0" Grid.Column="0" Margin="0,5,0,0" HorizontalOptions="Start" TextBody="From time to time, DBuget may reach out to you with offers, information, or statistics about your spending habits, or for other important updates. Rest assured, we will only contact you when it’s truly valuable and will never send unsolicited messages. We will also never share your details with third parties for marketing purposes. If you prefer not to receive these communications, you can opt out here."/>
+                                    </Grid>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Margin="5,15,5,0" HorizontalOptions="Fill">
+                                    <Label Text="Allow push notifications?" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="0,0,0,5"/>
+                                    <Grid ColumnDefinitions="60,*" Margin="0,0,0,0" HeightRequest="40">
+                                        <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsPushNotificationsEnabled}" />
+                                        <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">
+                                            <Label HorizontalOptions="Start" Text="{Binding IsPushNotificationsEnabledLabelText}" TextColor="{StaticResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*" RowDefinitions="*" HorizontalOptions="Fill">
+                                        <handlers:ReadMoreAccordion Grid.Row="0" Grid.Column="0" Margin="0,5,0,0" HorizontalOptions="Start" TextBody="dBudget sends notifications to keep you informed about updates to your account or if we’ve reached out regarding a support request. We also notify you about scheduled events, such as upcoming bill due dates or when a savings goal is achieved. To receive these notifications on your phone, enable push notifications for the app. Rest assured, we won’t overwhelm you with unnecessary alerts."/>
+                                    </Grid>
+                                </VerticalStackLayout>                                
                             </VerticalStackLayout>
                         </VerticalStackLayout>
                         <BoxView HeightRequest="1" Grid.Row="1" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>

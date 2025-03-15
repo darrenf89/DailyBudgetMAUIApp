@@ -191,7 +191,7 @@ public partial class ViewCategories : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
@@ -208,7 +208,7 @@ public partial class ViewCategories : BasePage
         {
             var PopUp = new PopUpPage();
             App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
 
             Categories Category = (Categories)e.Parameter;
 

@@ -1,7 +1,5 @@
 using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.ViewModels;
-using IeuanWalker.Maui.Switch;
 using IeuanWalker.Maui.Switch.Events;
 using IeuanWalker.Maui.Switch.Helpers;
 using Microsoft.Maui.Layouts;
@@ -126,6 +124,11 @@ public partial class EditAccountSettings : BasePage
     protected override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
         base.OnNavigatingFrom(args);
+    }
+
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
     }
 
     private void NewPassword_Focused(object sender, FocusEventArgs e)

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Popups;
+using Plugin.LocalNotification;
 
 namespace DailyBudgetMAUIApp;
 
@@ -58,6 +59,7 @@ public partial class AppShell : Shell
         }
 
         Application.Current!.MainPage = new AppShell();
+        LocalNotificationCenter.Current.CancelAll();
 
         await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
     }

@@ -109,7 +109,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             if (App.CurrentBottomSheet != null)
@@ -133,7 +133,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             if (App.CurrentBottomSheet != null)
@@ -158,7 +158,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             if (App.CurrentBottomSheet != null)
@@ -182,7 +182,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             if (App.CurrentBottomSheet != null)
@@ -203,7 +203,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         try
         {
             var popup = new PopupEditNextPayInfo(App.DefaultBudget, new PopupEditNextPayInfoViewModel(), _pt, _ds);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             if(result is Budgets)
             {
                 App.DefaultBudget = (Budgets)result;
@@ -229,14 +229,14 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Task.Delay(500);
 
             EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(_pt, _ds), _pt);
 
-            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+            await Application.Current.Windows[0].Navigation.PushModalAsync(page, true);
         }
         catch (Exception ex)
         {
@@ -249,7 +249,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         try
         {
             var popup = new PopupSyncBankBalance(App.DefaultBudget, new PopupSyncBankBalanceViewModel(), _pt, _ds);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             if (result is Budgets)
             {
                 App.DefaultBudget = (Budgets)result;
@@ -276,14 +276,14 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Task.Delay(500);
 
-            EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(_pt, _ds), _pt);
+            EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(_pt, _ds, new NotificationPermissionsImplementation()), _pt);
 
-            await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+            await Application.Current.Windows[0].Navigation.PushModalAsync(page, true);
         }
         catch (Exception ex)
         {
@@ -417,7 +417,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             if (App.CurrentBottomSheet != null)
@@ -460,7 +460,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Unable to open the subscription page.", "OK");
+                    await Application.Current.Windows[0].Page.DisplayAlert("Error", "Unable to open the subscription page.", "OK");
                 }
             }
 
@@ -477,7 +477,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         {
             var PopUp = new PopUpPage();
             App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
         }
 
         if (App.CurrentBottomSheet != null)
@@ -494,7 +494,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         try
         {
             var popup = new PopupMoveBalance(App.DefaultBudget, "Budget",0, false, new PopupMoveBalanceViewModel(), _pt, _ds);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             await Task.Delay(100);
             if (result.ToString() == "OK")
             {
@@ -521,7 +521,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Task.Delay(1);
@@ -586,7 +586,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"{nameof(ViewAccounts)}");
@@ -614,7 +614,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(1);

@@ -77,7 +77,7 @@ public partial class ViewBills : BasePage
         {
             var PopUp = new PopUpPage();
             App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
         }
 
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
@@ -97,7 +97,7 @@ public partial class ViewBills : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewBills)}/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=ViewBills");
@@ -146,7 +146,7 @@ public partial class ViewBills : BasePage
             string Description = "Update the outgoing due date!";
             string DescriptionSub = "Outoing not when you expected, you can update the outgoing due date to any date in the future. We will do the rest!";
             var popup = new PopUpPageVariableInput("Outgoing due date", Description, DescriptionSub, "", Bill.BillDueDate, "DateTime", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if(!string.IsNullOrEmpty(result.ToString()))
             {
@@ -206,7 +206,7 @@ public partial class ViewBills : BasePage
             string Description = "Update the outgoing amount!";
             string DescriptionSub = "Outoing not as much as you expected, you can update the outgoing amount and we will do the rest!";
             var popup = new PopUpPageVariableInput("Outgoing amount", Description, DescriptionSub, "", Bill.BillAmount, "Currency", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if (!string.IsNullOrEmpty(result.ToString()))
             {
@@ -269,7 +269,7 @@ public partial class ViewBills : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewBills)}/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewBills");
