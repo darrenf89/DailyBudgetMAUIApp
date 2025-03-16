@@ -91,10 +91,10 @@
 		<PackageReference Include="DotNetMeteor.HotReload.Plugin" Version="3.3.0" />
 		<PackageReference Include="FreakyEffects" Version="0.1.2" />
 		<PackageReference Include="IeuanWalker.Maui.Switch" Version="1.2.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.50" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.50" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.30" />		
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.3" />
-		<PackageReference Include="CommunityToolkit.Maui" Version="11.1.0" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="10.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="OnScreenSizeMarkup.Maui" Version="3.0.18" />
 		<PackageReference Include="Plugin.LocalNotification" Version="11.1.4" />
@@ -273,9 +273,6 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Handlers\CustomSwitch.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Handlers\ButtonControlActivityIndicator.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Handlers\ReadMoreAccordion.xaml">

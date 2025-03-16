@@ -22,8 +22,6 @@
     <converters:GreaterLessZeroColor x:Key="GreaterLessZeroColor" />
     <converters:LeftToSpendDailyAmountHideShow x:Key="LeftToSpendDailyAmountHideShow" />
     <converters:LeftToSpendBalanceHideShow x:Key="LeftToSpendBalanceHideShow" />
-    <converters:SavingProgressBarMax x:Key="SavingProgressBarMax" />
-    <converters:SavingProgressBarMaxString x:Key="SavingProgressBarMaxString" />
     <converters:SavingTypeConverter x:Key="SavingTypeConverter" />
     <converters:DateToNumberOfDays x:Key="DateToNumberOfDays" />
     <converters:BoolToColor x:Key="BoolToColor" />
@@ -39,10 +37,6 @@
     <converters:EventTypeToString x:Key="EventTypeToString" />
     <converters:PayeeText x:Key="PayeeText" />
     <converters:SavingsTypeToText x:Key="SavingsTypeToText"/>
-    <converters:IsSavingsBuilder x:Key="IsSavingsBuilder"/>
-    <converters:IsSavingsTargetAmount x:Key="IsSavingsTargetAmount"/>
-    <converters:IsSavingsTargetDate x:Key="IsSavingsTargetDate"/>
-    <converters:SavingToGlyph x:Key="SavingToGlyph"/>
     <converters:RecurringBillDetails x:Key="RecurringBillDetails"/>
     <converters:BillDueDate x:Key="BillDueDate"/>
     <converters:BillTypeConverter x:Key="BillTypeConverter"/>

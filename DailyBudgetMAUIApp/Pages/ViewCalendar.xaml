@@ -50,13 +50,13 @@
                             <Border.Shadow>
                                 <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
                             </Border.Shadow>
-                            <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="{Binding Saving, Converter={StaticResource SavingToGlyph}}"/>
+                            <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="{Binding Saving.SavingToGlyph}"/>
                         </Border>
                         <Label Margin="0,0,0,0" Padding="0" VerticalOptions="Start" Text="{Binding Saving.SavingsName}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
                         <Label Margin="0,0,0,10" FontAttributes="Bold" Padding="0" Text="{Binding Saving.SavingsType, Converter={StaticResource SavingsTypeToText}}" TextColor="{StaticResource Tertiary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="1" IsVisible="{Binding IsSavingsClosed, Converter={StaticResource BoolConverter}}"/>
                         <Label Margin="0,0,0,10" Text="Goal completed" FontAttributes="Bold" TextColor="{StaticResource Tertiary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="1" IsVisible="{Binding Saving.IsSavingsClosed}"/>
                         <VerticalStackLayout IsVisible="{Binding Saving.IsSavingsClosed, Converter={StaticResource BoolConverter}}" Grid.Row="2" Grid.Column="1">
-                            <Grid  ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" IsVisible="{Binding Saving, Converter={StaticResource IsSavingsTargetAmount}}">
+                            <Grid  ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" IsVisible="{Binding Saving.IsSavingsTargetAmount}">
                                 <HorizontalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
                                     <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" Text="Saving goal |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
                                     <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.SavingsGoal, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
@@ -74,7 +74,7 @@
                                     <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.GoalDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
                                 </HorizontalStackLayout>
                             </Grid>
-                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" IsVisible="{Binding Saving, Converter={StaticResource IsSavingsTargetDate}}">
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" IsVisible="{Binding Saving.IsSavingsTargetDate}">
                                 <HorizontalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
                                     <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" Text="Saving goal |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
                                     <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.SavingsGoal, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
@@ -92,7 +92,7 @@
                                     <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.GoalDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
                                 </HorizontalStackLayout>
                             </Grid>
-                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" IsVisible="{Binding Saving, Converter={StaticResource IsSavingsBuilder}}">
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" IsVisible="{Binding Saving.IsSavingsBuilder}">
                                 <HorizontalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
                                     <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" Text="Current saved |" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>
                                     <Label Margin="3,0,0,0" FontAttributes="Bold" Text="{Binding Saving.CurrentBalance, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalOptions="Start" VerticalOptions="Center" HorizontalTextAlignment="Start"/>

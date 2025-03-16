@@ -225,7 +225,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
 
                 break;
-            case "Budget Details":
+            case "Budget SavingsMauiDetails":
 
                 bool UpdateBudgetFlag = false;
 

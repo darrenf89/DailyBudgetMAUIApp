@@ -1453,7 +1453,7 @@ public partial class MainPage : BasePage
                 Margin = new Thickness(10, 0, 10, 5),
                 Minimum = 0
             };
-            ProgressBar.SetBinding(SfLinearProgressBar.MaximumProperty, ".", BindingMode.Default, new SavingProgressBarMax());
+            ProgressBar.SetBinding(SfLinearProgressBar.MaximumProperty, "SavingProgressBarMax");
             ProgressBar.SetBinding(SfLinearProgressBar.ProgressProperty, "CurrentBalance");
             grid.AddWithSpan(ProgressBar, 4, 1, 1, 2);
 
@@ -1477,7 +1477,7 @@ public partial class MainPage : BasePage
                 FontAttributes = FontAttributes.Bold,
                 HorizontalTextAlignment = TextAlignment.End
             };
-            SavingProgressBarMaxString.SetBinding(Label.TextProperty, ".", BindingMode.Default, new SavingProgressBarMaxString());
+            SavingProgressBarMaxString.SetBinding(Label.TextProperty, "SavingProgressBarMaxString");
             grid.Add(SavingProgressBarMaxString, 2, 6);
 
             BoxView bv = new BoxView
@@ -1512,7 +1512,7 @@ public partial class MainPage : BasePage
                 FontAttributes = FontAttributes.Bold,
 
             };
-            labelTwo.SetBinding(Label.TextProperty, ".", BindingMode.Default, new RegularSavingValueString());
+            labelTwo.SetBinding(Label.TextProperty, "RegularSavingValueString");
 
             hsl1.Children.Add(labelTwo);
             grid.AddWithSpan(hsl1, 8, 1, 1, 2);
@@ -1540,7 +1540,7 @@ public partial class MainPage : BasePage
                 CharacterSpacing = 0,
                 FontAttributes = FontAttributes.Bold,
             };
-            labelFour.SetBinding(Label.TextProperty, ".", BindingMode.Default, new SavingGoalDateString());
+            labelFour.SetBinding(Label.TextProperty, "SavingGoalDateString");
 
             hsl2.Children.Add(labelFour);
             grid.AddWithSpan(hsl2, 9, 1, 1, 2);
@@ -1881,7 +1881,7 @@ public partial class MainPage : BasePage
 
             Label labelFive= new Label
             {
-                Text = "Recurring Details | ",
+                Text = "Recurring SavingsMauiDetails | ",
                 TextColor = (Color)Info,
                 FontSize = 12,
                 VerticalOptions = LayoutOptions.Center,
@@ -2195,7 +2195,7 @@ public partial class MainPage : BasePage
 
             Label labelFive = new Label
             {
-                Text = "Recurring Details | ",
+                Text = "Recurring SavingsMauiDetails | ",
                 TextColor = (Color)Info,
                 FontSize = 12,
                 VerticalOptions = LayoutOptions.Center,

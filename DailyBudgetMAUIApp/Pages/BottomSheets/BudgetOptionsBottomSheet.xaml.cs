@@ -31,7 +31,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
         Budget = InputBudget;
 
-        lblBudgetName.Text = $"{Budget.BudgetName} Budget Details";
+        lblBudgetName.Text = $"{Budget.BudgetName} Budget SavingsMauiDetails";
         MainScrollView.MaximumHeightRequest = ScreenHeight - 280;
         _pt = pt;
         _ds = ds;
