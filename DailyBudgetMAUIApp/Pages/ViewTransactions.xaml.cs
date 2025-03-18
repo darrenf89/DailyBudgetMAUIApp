@@ -415,7 +415,7 @@ public partial class ViewTransactions : BasePage
     {
         try
         {
-            ViewTransactionFilterBottomSheet page = new ViewTransactionFilterBottomSheet(Filters, new ProductTools(new RestDataService()));
+            ViewTransactionFilterBottomSheet page = new ViewTransactionFilterBottomSheet(Filters, IPlatformApplication.Current.Services.GetService<IProductTools>());
 
             page.Detents = new DetentsCollection()
             {            

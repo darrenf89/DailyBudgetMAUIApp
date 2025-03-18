@@ -13,8 +13,8 @@ public partial class PopUpPageVariableInput : Popup
 
     public PopUpPageVariableInput(string Title, string Description, string DescriptionSub, string Placeholder, object Input, string Type, PopUpPageVariableInputViewModel viewModel)
     {
-        _pt = new ProductTools(new RestDataService());
-        _ds = new RestDataService();
+        _pt = IPlatformApplication.Current.Services.GetService<IProductTools>();
+        _ds = IPlatformApplication.Current.Services.GetService<IRestDataService>();
 
         InitializeComponent();
 

@@ -181,7 +181,7 @@ public partial class ViewEnvelopes : BasePage
         try
         {
             var Saving = (Savings)e.Parameter;
-            var popup = new PopupMoveBalance(App.DefaultBudget, "Saving", Saving.SavingID, false, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+            var popup = new PopupMoveBalance(App.DefaultBudget, "Saving", Saving.SavingID, false, new PopupMoveBalanceViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
             await Task.Delay(100);
             var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             if (result.ToString() == "OK")

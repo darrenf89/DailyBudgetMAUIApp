@@ -468,7 +468,7 @@ public partial class ViewCategory : BasePage
     {
         try
         {
-            AddSubCategoryBottomSheet page = new AddSubCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), new ProductTools(new RestDataService()), new RestDataService());
+            AddSubCategoryBottomSheet page = new(await _ds.GetCategoryFromID(_vm.HeaderCatId), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
 
             page.Detents = new DetentsCollection()
             {
@@ -499,7 +499,7 @@ public partial class ViewCategory : BasePage
     {
         try
         {
-            EditCategoryBottomSheet page = new EditCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), new ProductTools(new RestDataService()), new RestDataService());
+            EditCategoryBottomSheet page = new EditCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
 
             page.Detents = new DetentsCollection()
             {
@@ -536,7 +536,7 @@ public partial class ViewCategory : BasePage
                 Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
                 string[] CategoryList = Categories.Keys.ToArray();
 
-                var Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, _vm.HeaderCatId, _vm.Categories.ToList(), new RestDataService(), new ProductTools(new RestDataService())));
+                var Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, _vm.HeaderCatId, _vm.Categories.ToList(), IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()));
                 var result = await Shell.Current.ShowPopupAsync(Popup);
                 if (result.ToString() == "Cancel")
                 {

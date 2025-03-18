@@ -453,7 +453,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                EditProfilePictureBottomSheet page = new EditProfilePictureBottomSheet( new ProductTools(new RestDataService()), new RestDataService());
+                EditProfilePictureBottomSheet page = new EditProfilePictureBottomSheet( IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
 
                 page.Detents = new DetentsCollection()
                 {

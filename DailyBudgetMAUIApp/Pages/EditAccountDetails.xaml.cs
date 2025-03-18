@@ -318,7 +318,7 @@ public partial class EditAccountDetails : BasePage
         try
         {
 
-            var popup = new PopUpContactUs(new PopUpContactUsViewModel(_pt, new RestDataService()));            
+            var popup = new PopUpContactUs(new PopUpContactUsViewModel(_pt, IPlatformApplication.Current.Services.GetService<IRestDataService>()));            
             var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             if (result is int)
             {

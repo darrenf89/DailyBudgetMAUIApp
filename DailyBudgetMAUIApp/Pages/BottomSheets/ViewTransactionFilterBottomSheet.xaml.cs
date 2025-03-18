@@ -138,7 +138,7 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
     private void LoadFilters()
     {
-        IRestDataService ds = new RestDataService();
+        IRestDataService ds = IPlatformApplication.Current.Services.GetService<IRestDataService>();
 
         TotalFilters = 2;
         SelectedFilters = 2;

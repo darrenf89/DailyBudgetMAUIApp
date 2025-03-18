@@ -38,7 +38,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
 
             if (success)
             {
-                RestDataService _ds = new RestDataService();
+                IRestDataService _ds = IPlatformApplication.Current.Services.GetService<IRestDataService>();
 
                 FirebaseDevices NewDevice = new FirebaseDevices
                 {

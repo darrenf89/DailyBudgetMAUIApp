@@ -199,7 +199,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 await Task.Delay(500);
 
-                EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService(), new NotificationPermissionsImplementation()), new ProductTools(new RestDataService()));
+                EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<INotificationPermissions>()), IPlatformApplication.Current.Services.GetService<IProductTools>());
 
                 await Application.Current.Windows[0].Navigation.PushModalAsync(page, true);
             }
@@ -244,7 +244,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 await Task.Delay(500);
 
-                EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()));
+                EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>()), IPlatformApplication.Current.Services.GetService<IProductTools>());
 
                 await Application.Current.Windows[0].Navigation.PushModalAsync(page, true);
             }
@@ -372,9 +372,13 @@ namespace DailyBudgetMAUIApp.ViewModels
                 App.DefaultBudgetID = 0;
                 App.DefaultBudget = null;
 
+                if (Application.Current.Windows[0].Navigation.ModalStack.Any())
+                {
+                    await Application.Current.Windows[0].Navigation.PopModalAsync();
+                }
+
                 Application.Current!.MainPage = new AppShell();
 
-                await Application.Current.Windows[0].Navigation.PopModalAsync();
                 await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
             }
             catch (Exception ex)

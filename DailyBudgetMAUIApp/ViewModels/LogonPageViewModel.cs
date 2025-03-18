@@ -88,7 +88,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 await ResetSuccessFailureMessage();
 
-                var popup = new PopUpOTP(0, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ResetPassword", new ProductTools(new RestDataService()), new RestDataService());
+                var popup = new PopUpOTP(0, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ResetPassword", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
                 var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if((string)result.ToString() == "OK")
@@ -175,7 +175,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 string status = await _ds.CreateNewOtpCode(userDetails.UserID, "ValidateEmail");
                                                 if (status == "OK" || status == "MaxLimit")
                                                 {
-                                                    var popup = new PopUpOTP(userDetails.UserID, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
+                                                    var popup = new PopUpOTP(userDetails.UserID, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ValidateEmail", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
                                                     var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                                                     if ((string)result.ToString() == "OK")
