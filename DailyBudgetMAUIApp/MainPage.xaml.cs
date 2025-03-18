@@ -1897,7 +1897,7 @@ public partial class MainPage : BasePage
                 CharacterSpacing = 0,
                 FontAttributes = FontAttributes.Bold,
             };
-            labelSix.SetBinding(Label.TextProperty, ".", BindingMode.Default, new RecurringBillDetails());
+            labelSix.SetBinding(Label.TextProperty, "RecurringBillDetails", BindingMode.Default);
 
             hsl3.Children.Add(labelSix);
             grid.AddWithSpan(hsl3, 8, 1, 1, 2);
@@ -2095,7 +2095,7 @@ public partial class MainPage : BasePage
                 Margin = new Thickness(0),
                 CharacterSpacing = 0
             };
-            lblSavingType.SetBinding(Label.TextProperty, ".", BindingMode.Default, new IncomeTypeConverter());
+            lblSavingType.SetBinding(Label.TextProperty, "IncomeTypeConverter", BindingMode.Default);
             grid.AddWithSpan(lblSavingType, 1, 1, 1, 2);
 
             Label lblCurrentBalance = new Label
@@ -2211,7 +2211,7 @@ public partial class MainPage : BasePage
                 CharacterSpacing = 0,
                 FontAttributes = FontAttributes.Bold,
             };
-            labelSix.SetBinding(Label.TextProperty, ".", BindingMode.Default, new RecurringIncomeDetails());
+            labelSix.SetBinding(Label.TextProperty, "RecurringIncomeDetails", BindingMode.Default);
 
             hsl3.Children.Add(labelSix);
             grid.AddWithSpan(hsl3, 7, 1, 1, 2);
@@ -2781,13 +2781,15 @@ public partial class MainPage : BasePage
 
     private void QuickTransaction_TextChanged(object sender, TextChangedEventArgs e)
     {
-        decimal AmountDue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entQuickTransaction.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entQuickTransaction.CursorPosition > position)
+        try
         {
-            entQuickTransaction.CursorPosition = entQuickTransaction.Text.Length;
+            _pt.FormatEntryNumber(sender, e, entQuickTransaction);
         }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "MainPage", "QuickTransaction_TextChanged");
+        }
+
     }
 }
 

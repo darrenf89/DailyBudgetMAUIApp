@@ -979,12 +979,44 @@ namespace DailyBudgetMAUIApp.ViewModels
                         }
                     
                     }
+                    else
+                    {
+                         await Application.Current.Windows[0].Page.DisplayAlert($"Incorrect Budget Name", "Please check the budget name that was entered and confirm it is correct!", "Ok, thanks");
+                    }
 
                 }
             }
             catch (Exception ex)
             {
                 await _pt.HandleException(ex, "EditBudgetSettings", "DeleteBudget");
+            }
+        }
+
+        [RelayCommand]
+        private async Task GoToBorrowPayVideos()
+        {
+            try
+            {
+                List<string> SubTitle = new List<string>{
+                    "",
+                    "",
+                    "",
+                    "",
+                };
+
+                List<string> Info = new List<string>{
+                    "Effectively managing your bill payments is essential for maintaining financial stability. dBudget offers two distinct methods for handling bill payments, each designed to accommodate different budgeting preferences and financial situations.",
+                    "\"Cover Bills When Paid\" method aligns with the common practice of paying bills as income is received. When you get paid, dBudget allocates funds to cover bills up to that payday and any bills due within the current budget cycle. Bills due outside the budget cycle accrue their balance daily from your bank balance, but the funds don't transfer until the next payday. This approach mirrors real-life bill payment habits and helps prevent your daily spending allowance from appearing negative. However, careful if the next pay day doesn't come on time you might not have the money in your account to cover all your bills.",
+                    "\"Cover Bills From Balance Every Day\" method involves allocating funds to fully cover each bill for the upcoming period upon receiving your paycheck. Daily, the allocated amounts are deducted from your available balance and transferred into the bill balance THEN AND THERE! This strategy ensures that bills are entirely covered before their due dates, providing clarity on financial obligations. However, it necessitates having sufficient funds available upfront, which may not be feasible for everyone. Additionally, this approach can make your daily spending allowance appear lower than it actually is, potentially affecting budgeting flexibility.",
+                    "If accumulating the necessary funds to cover bills upfront is challenging, it's advisable to use the \"Cover Bills When Paid\" option. This method aligns with typical financial practices and provides a more accurate reflection of your daily spending capacity. As you work towards building savings, you might consider transitioning to the \"Cover Bills From Balance Every Day\" method for enhanced financial predictability.",
+                };
+
+                var popup = new PopupInfo("Bill accrual", SubTitle, Info);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "CreateNewBudget", "GoToBorrowPayVideos");
             }
         }
 
@@ -1012,5 +1044,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                 IsBorrowPay = true;
             }
         }
+
     }
 }

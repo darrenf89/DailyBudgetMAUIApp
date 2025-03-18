@@ -14,14 +14,10 @@
     <xct:IsStringNotNullOrWhiteSpaceConverter x:Key="IsStringNotNullOrWhiteSpaceConverter" />
     <xct:IsStringNullOrWhiteSpaceConverter x:Key="IsStringNullOrWhiteSpaceConverter" />
     <xct:SelectedItemEventArgsConverter x:Key="SelectedItemEventArgsConverter" />
-    <converters:IsBudgetSharedBudgetToBool x:Key="IsBudgetSharedBudgetToBool" />
-    <converters:IsBudgetNotSharedBudgetToBool x:Key="IsBudgetNotSharedBudgetToBool" />
     <converters:IsBudgetShareRequestToBool x:Key="IsBudgetShareRequestToBool" />
     <converters:DecimalToCurrencyString x:Key="DecimalToCurrencyString" />
     <converters:GreaterLessZeroColorLight x:Key="GreaterLessZeroColorLight" />
     <converters:GreaterLessZeroColor x:Key="GreaterLessZeroColor" />
-    <converters:LeftToSpendDailyAmountHideShow x:Key="LeftToSpendDailyAmountHideShow" />
-    <converters:LeftToSpendBalanceHideShow x:Key="LeftToSpendBalanceHideShow" />
     <converters:SavingTypeConverter x:Key="SavingTypeConverter" />
     <converters:DateToNumberOfDays x:Key="DateToNumberOfDays" />
     <converters:BoolToColor x:Key="BoolToColor" />
@@ -37,13 +33,9 @@
     <converters:EventTypeToString x:Key="EventTypeToString" />
     <converters:PayeeText x:Key="PayeeText" />
     <converters:SavingsTypeToText x:Key="SavingsTypeToText"/>
-    <converters:RecurringBillDetails x:Key="RecurringBillDetails"/>
     <converters:BillDueDate x:Key="BillDueDate"/>
     <converters:BillTypeConverter x:Key="BillTypeConverter"/>
-    <converters:BillToGlyph x:Key="BillToGlyph"/>
     <converters:IsBorrowPayTextConverter x:Key="IsBorrowPayTextConverter"/>
-    <converters:IncomeTypeConverter x:Key="IncomeTypeConverter"/>
-    <converters:RecurringIncomeDetails x:Key="RecurringIncomeDetails"/>
     <converters:IconNameConverter x:Key="IconNameConverter"/>
     <converters:CategoryIDToBool x:Key="CategoryIDToBool"/>
     <converters:CategoryIDToColor x:Key="CategoryIDToColor"/>
@@ -1108,8 +1100,6 @@
         <Setter Property="BorderColor" Value="Transparent"/>
         <Setter Property="BorderWidth" Value="0"/>
         <Setter Property="CornerRadius" Value="0"/>
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">

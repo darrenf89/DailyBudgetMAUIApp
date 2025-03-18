@@ -69,13 +69,7 @@ public partial class PopupMoveAccountBalance : Popup
 
     void Amount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entAmount.CursorPosition > position)
-        {
-            entAmount.CursorPosition = entAmount.Text.Length;
-        }  
+        decimal PayDayAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entAmount);
         _vm.Amount = PayDayAmount;
     }
 

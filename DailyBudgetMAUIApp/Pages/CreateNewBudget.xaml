@@ -181,7 +181,7 @@
                     <Label Text="How do you get paid?" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                     <ImageButton Clicked="PayDetailsInfo" WidthRequest="14" HeightRequest="14" CornerRadius="5" VerticalOptions="Center" Margin="5,0,0,0">
                         <ImageButton.Source>
-                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Info}" Color="{DynamicResource Info}"/>
+                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Info}" Color="{DynamicResource Info}" />
                         </ImageButton.Source>
                     </ImageButton>
                 </HorizontalStackLayout>
@@ -467,7 +467,7 @@
                         <Label.FormattedText Padding="0,5,0,0" >
                             <FormattedString>
                                 <Span Text="To find out how changing this setting will affect how we calculate your budget " TextColor="{StaticResource Gray700}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"/>
-                                <Span Text="check out our cool videos and documentation here!" TextColor="{StaticResource Info}"  TextDecorations="Underline" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold">
+                                <Span Text="read more here" TextColor="{StaticResource Info}"  TextDecorations="Underline" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold">
                                     <Span.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding GoToBorrowPayVideosCommand}"/>
                                     </Span.GestureRecognizers>

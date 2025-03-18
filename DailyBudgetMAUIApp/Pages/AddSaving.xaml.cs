@@ -620,13 +620,8 @@ public partial class AddSaving : BasePage
     {
         try
         {
-            decimal SavingTarget = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingTarget.CursorPosition > position)
-            {
-                entSavingTarget.CursorPosition = entSavingTarget.Text.Length;
-            }
+            decimal SavingTarget = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entSavingTarget);
+
             _vm.Saving.SavingsGoal = SavingTarget;
 
             RecalculateValues("entSavingTarget");
@@ -640,13 +635,8 @@ public partial class AddSaving : BasePage
     {
         try
         {
-            decimal CurrentBalance = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entCurrentBalance.Text = CurrentBalance.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrentBalance.CursorPosition > position)
-            {
-                entCurrentBalance.CursorPosition = entCurrentBalance.Text.Length;
-            }
+            decimal CurrentBalance = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entCurrentBalance);
+
             _vm.Saving.CurrentBalance = CurrentBalance;
 
             RecalculateValues("entCurrentBalance");
@@ -673,13 +663,7 @@ public partial class AddSaving : BasePage
     {
         try
         {
-            decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entSavingAmount.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingAmount.CursorPosition > position)
-            {
-                entSavingAmount.CursorPosition = entSavingAmount.Text.Length;
-            }
+            decimal SavingValue = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entSavingAmount);
 
             if (!_vm.Saving.IsRegularSaving)
             {
@@ -712,17 +696,7 @@ public partial class AddSaving : BasePage
     {
         try
         {
-            decimal CalculateAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entCalculateAmount.Text = CalculateAmount.ToString("c", CultureInfo.CurrentCulture);
-            if(_vm.ShowCalculator)
-            {
-                int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-                if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCalculateAmount.CursorPosition > position)
-                {
-                    entCalculateAmount.CursorPosition = entCalculateAmount.Text.Length;
-                }
-            }
-        
+            decimal CalculateAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entCalculateAmount);        
 
             string SelectedDuration = (string)pckrEverynthDuration.SelectedItem ?? "Week";
             decimal DailyAmount = 0;

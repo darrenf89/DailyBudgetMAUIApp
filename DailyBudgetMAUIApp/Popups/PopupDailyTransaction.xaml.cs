@@ -37,13 +37,7 @@ public partial class PopupDailyTransaction : Popup
 
     void TransactionAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal TransactionAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entTransactionAmount.CursorPosition > position)
-        {
-            entTransactionAmount.CursorPosition = entTransactionAmount.Text.Length;
-        }
+        decimal TransactionAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entTransactionAmount);
 
         _vm.Transaction.TransactionAmount = TransactionAmount;
     }

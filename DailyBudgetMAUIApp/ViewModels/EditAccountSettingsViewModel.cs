@@ -116,7 +116,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 Margin = new Thickness(20, 0, 0, 0),
             };
 
-            picker.ItemDisplayBinding = new Binding(".", BindingMode.Default, new ChangeBudgetStringConvertor());
+            picker.ItemDisplayBinding = new Binding("ChangeBudgetStringConvertor", BindingMode.Default);
 
             picker.SelectedIndexChanged += async (s, e) =>
             {

@@ -10,7 +10,7 @@
                    x:DataType="the49:BottomSheet">
     <VerticalStackLayout x:Name="MainVSL">
         <BoxView WidthRequest="60" HeightRequest="6" Color="{DynamicResource Primary}" HorizontalOptions="Center" Margin="0,10,0,10"/>
-        <Label FontAutoScalingEnabled="False" Margin="0,10,0,30" HorizontalOptions="Center" VerticalOptions="Center" x:Name="lblBudgetName" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
+        <Label FontAutoScalingEnabled="False" Margin="0,10,0,30" HorizontalOptions="Center" VerticalOptions="Center" HorizontalTextAlignment="Center" x:Name="lblBudgetName" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
         <ScrollView x:Name="MainScrollView" VerticalScrollBarVisibility="Default">
             <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" x:Name="grdShareBudget" Padding="16,0,16,0">
                 <VerticalStackLayout Grid.Column="0" Grid.Row="0" Margin="0,0,0,20">

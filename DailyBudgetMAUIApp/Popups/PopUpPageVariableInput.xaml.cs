@@ -107,13 +107,8 @@ public partial class PopUpPageVariableInput : Popup
 
     private void txtCurrencyInput_TextChanged(object sender, TextChangedEventArgs e)
     {       
-        decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entCurrencyInput.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrencyInput.CursorPosition > position)
-        {
-            entCurrencyInput.CursorPosition = entCurrencyInput.Text.Length;
-        }
+        decimal Amount = (decimal)_pt.FormatEntryNumber(sender, e, entCurrencyInput);
+
         _vm.DecimalInput = Amount;
     }
 }

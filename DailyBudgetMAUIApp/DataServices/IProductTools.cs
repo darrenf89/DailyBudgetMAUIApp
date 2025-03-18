@@ -13,6 +13,8 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task HandleException(Exception ex, string page, string Method);
         public DateTime? GetBudgetLastUpdated(int BudgetID);
         public void ShowPopup(PopUpPage popup);
+        public double FormatBorderlessEntryNumber(object sender, TextChangedEventArgs e, BorderlessEntry entry);
+        public double FormatEntryNumber(object sender, TextChangedEventArgs e, Entry entry);
         public double FormatCurrencyNumber(string input);
         public int FindCurrencyCursorPosition(string input);
         public int GetNumberOfDaysLastWorkingDay(int? NumberOfDaysBefore);

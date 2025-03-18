@@ -31,7 +31,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
         Budget = InputBudget;
 
-        lblBudgetName.Text = $"{Budget.BudgetName} Budget SavingsMauiDetails";
+        lblBudgetName.Text = $"{Budget.BudgetName} Budget Details";
         MainScrollView.MaximumHeightRequest = ScreenHeight - 280;
         _pt = pt;
         _ds = ds;
@@ -304,6 +304,15 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
                     App.CurrentBottomSheet = null;
                 }
 
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(1000);
+
                 Budgets NewBudget = new Budgets();
 
                 if (!string.IsNullOrEmpty(result)) 
@@ -339,6 +348,10 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
                 await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=Budget Settings");
 
+            }
+            else
+            {
+                await Application.Current.Windows[0].Page.DisplayAlert($"Please enter a budget name", "You need to enter a budget name to set up a new budget", "Ok, thanks");
             }
         }
         catch (Exception ex)

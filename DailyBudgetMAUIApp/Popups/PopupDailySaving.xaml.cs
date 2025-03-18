@@ -51,26 +51,14 @@ public partial class PopupDailySaving : Popup
 
     void SavingTarget_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal SavingTarget = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingTarget.CursorPosition > position)
-        {
-            entSavingTarget.CursorPosition = entSavingTarget.Text.Length;
-        }
+        decimal SavingTarget = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entSavingTarget);
 
         _vm.Saving.SavingsGoal = SavingTarget;
     }
 
     void SavingAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entSavingAmount.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingAmount.CursorPosition > position)
-        {
-            entSavingAmount.CursorPosition = entSavingAmount.Text.Length;
-        }
+        decimal SavingValue = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entSavingAmount);
 
         _vm.Saving.RegularSavingValue = SavingValue;
     }

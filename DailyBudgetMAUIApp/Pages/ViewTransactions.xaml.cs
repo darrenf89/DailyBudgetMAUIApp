@@ -300,13 +300,7 @@ public partial class ViewTransactions : BasePage
     {
         try
         {
-            decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entSearchAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSearchAmount.CursorPosition > position)
-            {
-                entSearchAmount.CursorPosition = entSearchAmount.Text.Length;
-            }
+            decimal Amount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entSearchAmount);
 
             if (listView.DataSource != null)
             {

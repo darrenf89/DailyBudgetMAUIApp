@@ -282,13 +282,8 @@ public partial class AddBill : BasePage
         {
             ClearAllValidators();
 
-            decimal AmountDue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entAmountDue.CursorPosition > position)
-            {
-                entAmountDue.CursorPosition = entAmountDue.Text.Length;
-            }
+            decimal AmountDue = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entAmountDue);
+
             _vm.Bill.BillAmount = AmountDue;
 
             lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
@@ -305,13 +300,8 @@ public partial class AddBill : BasePage
         {
             ClearAllValidators();
 
-            decimal CurrentSaved = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrentSaved.CursorPosition > position)
-            {
-                entCurrentSaved.CursorPosition = entCurrentSaved.Text.Length;
-            }
+            decimal CurrentSaved = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entCurrentSaved);
+
             _vm.Bill.BillCurrentBalance = CurrentSaved;
 
             lblRegularBillValue.Text = _vm.CalculateRegularBillValue();

@@ -496,13 +496,8 @@ public partial class AddIncome : BasePage
     {
         try
         {
-            decimal IncomeAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entIncomeAmount.CursorPosition > position)
-            {
-                entIncomeAmount.CursorPosition = entIncomeAmount.Text.Length;
-            }
+            decimal IncomeAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entIncomeAmount);
+
             _vm.Income.IncomeAmount = IncomeAmount;
         }
         catch (Exception ex)

@@ -980,13 +980,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            double BankBalance = _pt.FormatCurrencyNumber(e.NewTextValue);
-            entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entBankBalance.CursorPosition > position)
-            {
-                entBankBalance.CursorPosition = entBankBalance.Text.Length;
-            }
+            _pt.FormatBorderlessEntryNumber(sender, e, entBankBalance);
         }
         catch (Exception ex)
         {
@@ -998,13 +992,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            double PayAmount = _pt.FormatCurrencyNumber(e.NewTextValue);
-            entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entPayAmount.CursorPosition > position)
-            {
-                entPayAmount.CursorPosition = entPayAmount.Text.Length;
-            }
+            _pt.FormatBorderlessEntryNumber(sender, e, entPayAmount);
         }
         catch (Exception ex)
         {
@@ -1022,12 +1010,10 @@ public partial class CreateNewBudget : BasePage
             };
 
             List<string> Info = new List<string>{
-                "",
-                "",
-                ""
+                "The \"When is Pay Day?\" field in our app is essential for establishing your financial starting point. By entering the exact date of your next payday—whether it's tomorrow, next week, or next month—you enable the app to accurately calculate your initial budget values. This initial input, combined with your other budget details, sets the foundation for a personalized budgeting experience. Subsequently, the app uses the pay frequency information you've provided to determine future pay dates, ensuring that your budget aligns seamlessly with your income schedule from that point onward."
             };
 
-            var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
+            var popup = new PopupInfo("When is Pay day?", SubTitle, Info);
             var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
         }
         catch (Exception ex)
@@ -1042,17 +1028,26 @@ public partial class CreateNewBudget : BasePage
         {
             List<string> SubTitle = new List<string>{
                 "",
+                "Option 1: \"Every Nth\"",
+                "Option 2: \"Nth Last Working Day of the Month\"",
+                "Option 3: \"Same Day Every Month\"",
+                "Option 4: \"Last Weekday of the Month\"",
+                "Understanding Budget Cycles and Daily Values:",
                 "",
                 ""
             };
 
             List<string> Info = new List<string>{
-                "",
-                "",
-                ""
+                "The \"How do you get paid?\" section in our app offers four customizable options to align your budgeting cycle with your income frequency. This flexibility ensures that your budget accurately reflects your financial situation, enhancing your ability to manage expenses effectively.",
+                "The \"Every Nth\" option allows you to define your pay frequency by specifying the exact number of days, weeks, or months between each payday. For example, if you select \"every 2 weeks,\" your budget cycle will span 14 days, and the app will calculate your subsequent paydays by adding 14 days to the previous one. This setting ensures that your budgeting aligns precisely with your unique income schedule, providing accurate daily budget calculations based on your specified cycle.",
+                "The \"Nth Last Working Day of the Month\" option allows you to set your payday to fall on a specific weekday occurrence before the month's end. For example, selecting '2' as the number means your payday will be calculated as the second-to-last working day of the next month, considering weekends and holidays. This approach ensures that your payday aligns with your preferences while accounting for variations in month lengths and non-working days",
+                "The \"Same Day Every Month\" option allows you to set your payday to occur on the same day each month, such as the 28th. This consistency simplifies budgeting by providing predictable income intervals. However, it's important to note that months vary in length, so the 28th may not always be the same day of the week. Additionally, some months have more than 28 days, so the app adjusts your payday accordingly, ensuring it falls on the specified day each month.",
+                "The \"Last Weekday of the Month\" option allows you to set your payday to occur on the final weekday of each month, ensuring consistency in your budgeting cycle. For example, selecting \"Last Thursday\" means your payday will always fall on the last Thursday of every month. This feature is particularly useful for individuals whose pay schedules align with specific weekdays near the end of the month.",
+                "In our app, the budget cycle directly influences how daily budget values are calculated. For instance, if you select a bi-weekly pay schedule, the app divides your total income by 14 to determine your daily budget. This method ensures that your spending limits are proportionate to your income distribution, promoting balanced and realistic budgeting.",
+                "By customizing your pay frequency and budget cycle, you gain greater control over your financial planning, allowing for a budgeting experience that truly reflects your income dynamics.",
             };
 
-            var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
+            var popup = new PopupInfo("How do you get paid?", SubTitle, Info);
             var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
         }
         catch (Exception ex)

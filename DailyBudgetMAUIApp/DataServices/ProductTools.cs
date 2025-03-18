@@ -116,6 +116,64 @@ namespace DailyBudgetMAUIApp.DataServices
             page.ShowPopup(popup);
         }
 
+        public double FormatBorderlessEntryNumber(object sender, TextChangedEventArgs e, BorderlessEntry entry)
+        {
+
+#if ANDROID
+            var handler = entry.Handler as Microsoft.Maui.Handlers.EntryHandler;
+            var editText = handler?.PlatformView as AndroidX.AppCompat.Widget.AppCompatEditText;
+            if (editText != null)
+            {
+                editText.EmojiCompatEnabled = false;
+                editText.SetTextKeepState(entry.Text);
+            }
+#endif
+
+            double Number = FormatCurrencyNumber(e.NewTextValue);
+            string NumberString = Number.ToString("c", CultureInfo.CurrentCulture);
+            entry.Text = NumberString;
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entry.CursorPosition > position)
+            {
+                entry.CursorPosition = entry.Text.Length;
+            }
+            else if(!string.IsNullOrEmpty(e.OldTextValue) && ((NumberString.Length - e.OldTextValue.Length) == 2))
+            {
+                entry.CursorPosition = entry.CursorPosition + 1;
+            }
+
+            return Number;
+        }
+        
+        public double FormatEntryNumber(object sender, TextChangedEventArgs e, Entry entry)
+        {
+
+#if ANDROID
+            var handler = entry.Handler as Microsoft.Maui.Handlers.EntryHandler;
+            var editText = handler?.PlatformView as AndroidX.AppCompat.Widget.AppCompatEditText;
+            if (editText != null)
+            {
+                editText.EmojiCompatEnabled = false;
+                editText.SetTextKeepState(entry.Text);
+            }
+#endif
+
+            double Number = FormatCurrencyNumber(e.NewTextValue);
+            string NumberString = Number.ToString("c", CultureInfo.CurrentCulture);
+            entry.Text = NumberString;
+            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
+            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entry.CursorPosition > position)
+            {
+                entry.CursorPosition = entry.Text.Length;
+            }
+            else if(!string.IsNullOrEmpty(e.OldTextValue) && ((NumberString.Length - e.OldTextValue.Length) == 2))
+            {
+                entry.CursorPosition = entry.CursorPosition + 1;
+            }
+
+            return Number;
+        }
+        
         public double FormatCurrencyNumber(string input)
         {
             input = input.Replace(App.CurrentSettings.CurrencySymbol, "").Replace(App.CurrentSettings.CurrencyGroupSeparator, "").Replace(App.CurrentSettings.CurrencyDecimalSeparator, "");
@@ -2022,7 +2080,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 TextColor = (Color)Gray400
             };
 
-            picker.ItemDisplayBinding = new Binding(".", BindingMode.Default, new ChangeBudgetStringConvertor());
+            picker.ItemDisplayBinding = new Binding("ChangeBudgetStringConvertor", BindingMode.Default);
 
             picker.SelectedIndexChanged += async (s, e) =>
             {

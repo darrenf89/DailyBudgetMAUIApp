@@ -428,17 +428,9 @@ public partial class AddTransaction : BasePage
         {
             ClearAllValidators();
 
-            decimal TransactionAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entTransactionAmount.CursorPosition > position)
-            {
-                entTransactionAmount.CursorPosition = entTransactionAmount.Text.Length;
-            }
-            if(_vm.Transaction != null)
-            {
-                _vm.Transaction.TransactionAmount = TransactionAmount;
-            }
+            decimal TransactionAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entTransactionAmount);
+
+            _vm.Transaction.TransactionAmount = TransactionAmount;
             
         }
         catch (Exception ex)
