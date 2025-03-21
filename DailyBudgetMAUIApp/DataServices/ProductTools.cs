@@ -80,13 +80,15 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             if (ex.Message == "Connectivity")
             {
-                //TODO: TAKE THEM TO THE NO INTERNET PAGE
                 await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
             }
             else if (ex.Message == "Server Connectivity")
             {
-                //TODO: TAKE THEM TO THE NO INTERNET PAGE
                 await Shell.Current.GoToAsync($"{nameof(NoServerAccess)}");
+            }
+            else if (ex.Message == "Invalid_Session")
+            {
+                await Shell.Current.GoToAsync($"{nameof(LogoutPage)}");
             }
             else
             {

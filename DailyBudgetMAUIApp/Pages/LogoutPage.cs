@@ -21,6 +21,14 @@ public class LogoutPage : ContentPage
             Preferences.Remove(nameof(App.DefaultBudgetID));
         }
 
+        if (await SecureStorage.Default.GetAsync("Session") != null)
+        {
+            SecureStorage.Default.Remove("Session");
+        }
+
+        App.DefaultBudgetID = 0;
+        App.DefaultBudget = null;
+
         Application.Current!.MainPage = new AppShell();
         LocalNotificationCenter.Current.CancelAll();
 

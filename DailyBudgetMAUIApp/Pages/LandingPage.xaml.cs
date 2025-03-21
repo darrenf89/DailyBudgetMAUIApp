@@ -49,6 +49,21 @@ public partial class LandingPage : BasePage
                 App.DefaultBudgetID = userDetails.DefaultBudgetID;
                 await _pt.SetSubDetails();
 
+                if (await SecureStorage.Default.GetAsync("Session") == null)
+                {
+                    AuthDetails Auth = new()
+                    {
+                        ClientID = DeviceInfo.Current.Name,
+                        ClientSecret = userDetails.Password,
+                        UserID = userDetails.UserID
+                    };
+
+                    SessionDetails Session = await _ds.CreateSession(Auth);
+                    string SessionString = JsonConvert.SerializeObject(Session);
+                    await SecureStorage.Default.SetAsync("Session", SessionString);
+
+                }
+
 
                 if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
                 {
@@ -87,11 +102,21 @@ public partial class LandingPage : BasePage
                     Preferences.Remove(nameof(App.DefaultBudgetID));
                 }
 
+                if (await SecureStorage.Default.GetAsync("Session") != null)
+                {
+                    SecureStorage.Default.Remove("Session");
+                }
+
                 await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
             }
         }
         else
         {
+            if (await SecureStorage.Default.GetAsync("Session") != null)
+            {
+                SecureStorage.Default.Remove("Session");
+            }
+
             await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
         }
     }

@@ -1,14 +1,15 @@
-﻿using DailyBudgetMAUIApp.Models;
-using System.Text;
-using System.Text.Json;
-using System.Net;
-using DailySpendWebApp.Models;
-using DailyBudgetMAUIApp.Pages;
+﻿using Android.Accounts;
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.ViewModels;
-using System.Diagnostics;
+using DailySpendWebApp.Models;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Net;
+using System.Text;
+using System.Text.Json;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -33,6 +34,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 Timeout = timeoutMilliseconds
             };
+            //_baseAddress = "https://localhost:7141/";
             _baseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "https://dailybudgetwebapi.azurewebsites.net/" : "https://dailybudgetwebapi.azurewebsites.net/";
             _url = $"{_baseAddress}api/v1";
 
@@ -41,33 +43,6 @@ namespace DailyBudgetMAUIApp.DataServices
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
 
-        }
-
-        private async Task HandleError(Exception ex, string Page, string Method)
-        {
-            if (ex.Message == "Connectivity")
-            {
-                //TODO: TAKE THEM TO THE NO INTERNET PAGE
-                await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
-            }
-            else if (ex.Message == "Server Connectivity")
-            {
-                //TODO: TAKE THEM TO THE NO INTERNET PAGE
-                await Shell.Current.GoToAsync($"{nameof(NoServerAccess)}");
-            }
-            else
-            {
-                ErrorLog Error = new ErrorLog(ex, Page, Method);
-                if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
-                {
-                    Error = await CreateNewErrorLog(Error);
-                }
-                await Shell.Current.GoToAsync(nameof(ErrorPage),
-                    new Dictionary<string, object>
-                    {
-                        ["Error"] = Error
-                    });
-            }
         }
 
         public async Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog)
@@ -256,7 +231,6 @@ namespace DailyBudgetMAUIApp.DataServices
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
-                //TODO: SHOW POPUP
                 if (App.CurrentPopUp != null)
                 {
                     await App.CurrentPopUp.CloseAsync();
@@ -304,6 +278,64 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
+        private async Task CheckAndUpdateSession()
+        {
+            string SessionString = SecureStorage.Default.GetAsync("Session").Result;
+            if (string.IsNullOrEmpty(SessionString))
+            {
+                if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionToken"))
+                    _httpClient.DefaultRequestHeaders.Remove("X-Custom-SessionToken");
+
+                if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionClient"))
+                    _httpClient.DefaultRequestHeaders.Remove("X-Custom-SessionClient");
+
+                if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionUser"))
+                    _httpClient.DefaultRequestHeaders.Remove("X-Custom-SessionUser");
+
+                return;
+            }
+
+            SessionDetails Sessions = JsonConvert.DeserializeObject<SessionDetails>(SessionString);
+
+            if (Sessions.SessionExpiry.AddMinutes(-1) < DateTime.UtcNow)
+            {
+                //TODO: REFRESH TOKEN
+
+                if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionToken"))
+                    _httpClient.DefaultRequestHeaders.Remove("X-Custom-SessionToken");
+
+                if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionClient"))
+                    _httpClient.DefaultRequestHeaders.Remove("X-Custom-SessionClient");
+
+                if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionUser"))
+                    _httpClient.DefaultRequestHeaders.Remove("X-Custom-SessionUser");
+
+                Sessions = await RefreshSession(Sessions);
+                SessionString = JsonConvert.SerializeObject(Sessions);
+                await SecureStorage.Default.SetAsync("Session", SessionString);
+
+                _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionToken", Sessions.SessionToken);
+                _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionClient", Sessions.SessionUser);
+                _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionUser", Sessions.UserID.ToString());
+            }
+
+            if(!_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionToken") ||!_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionClient") ||!_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionUser"))
+            {
+                if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionToken"))
+                    _httpClient.DefaultRequestHeaders.Remove("X-Custom-SessionToken");
+
+                if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionClient"))
+                    _httpClient.DefaultRequestHeaders.Remove("X-Custom-SessionClient");
+
+                if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionUser"))
+                    _httpClient.DefaultRequestHeaders.Remove("X-Custom-SessionUser");
+
+                _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionToken", Sessions.SessionToken);
+                _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionClient", Sessions.SessionUser);
+                _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionUser", Sessions.UserID.ToString());
+            }
+        }
+
         private async Task<HttpResponseMessage> GetHttpRequestAsync(string requestURL)
         {
             int attempt = 0;
@@ -314,8 +346,15 @@ namespace DailyBudgetMAUIApp.DataServices
                 try
                 {
                     attempt++;
+                    await CheckAndUpdateSession();
                     HttpResponseMessage response = _httpClient.GetAsync(requestURL).Result;
                     await HideServerConnectionPopup();
+
+                    if(response.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        throw new Exception("Invalid_Session");                        
+                    }
+
                     return response;
                 }
                 catch (TaskCanceledException ex)
@@ -359,8 +398,15 @@ namespace DailyBudgetMAUIApp.DataServices
                 try
                 {
                     attempt++;
+                    await CheckAndUpdateSession();
                     HttpResponseMessage response = _httpClient.PostAsync(requestURL, content).Result;
                     await HideServerConnectionPopup();
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        throw new Exception("Invalid_Session");
+                    }
+
                     return response;
                 }
                 catch (TaskCanceledException ex)
@@ -402,8 +448,15 @@ namespace DailyBudgetMAUIApp.DataServices
                 try
                 {
                     attempt++;
+                    await CheckAndUpdateSession();
                     HttpResponseMessage response = _httpClient.PatchAsync(requestURL, content).Result;
                     await HideServerConnectionPopup();
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        throw new Exception("Invalid_Session");
+                    }
+
                     return response;
                 }
                 catch (TaskCanceledException ex)
@@ -445,8 +498,15 @@ namespace DailyBudgetMAUIApp.DataServices
                 try
                 {
                     attempt++;
+                    await CheckAndUpdateSession();
                     HttpResponseMessage response = _httpClient.PutAsync(requestURL, content).Result;
                     await HideServerConnectionPopup();
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        throw new Exception("Invalid_Session");
+                    }
+
                     return response;
                 }
                 catch (TaskCanceledException ex)
@@ -3671,6 +3731,68 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
 
                 throw new Exception(error.ErrorMessage);
+            }
+        }
+
+        public async Task<SessionDetails> RefreshSession(SessionDetails Details)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<SessionDetails>(Details, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/auth/RefreshSession", request);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
+            {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    Details = serializer.Deserialize<SessionDetails>(reader);
+                }
+
+                return Details;
+            }
+            else
+            {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
+        }
+
+        public async Task<SessionDetails> CreateSession(AuthDetails Details)
+        {
+            SessionDetails Session = new();
+
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<AuthDetails>(Details, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/auth/CreateSession", request);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+            if (response.IsSuccessStatusCode)
+            {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    Session = serializer.Deserialize<SessionDetails>(reader);
+                }
+
+                return Session;
+            }
+            else
+            {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
+                    throw new Exception(error.ErrorMessage);
+                }
             }
         }
     }

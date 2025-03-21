@@ -122,5 +122,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<BankAccounts> UpdateBankAccounts(int BudgetID, BankAccounts Account);
         public Task<string> DeleteBankAccounts(int BudgetID);        
         public Task<string> DeleteBankAccount(int ID);
+        public Task<SessionDetails> RefreshSession(SessionDetails Details);
+        public Task<SessionDetails> CreateSession(AuthDetails Details);
     }
 }

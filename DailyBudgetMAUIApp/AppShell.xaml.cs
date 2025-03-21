@@ -41,6 +41,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute($"{nameof(ViewSupport)}", typeof(ViewSupport));
         Routing.RegisterRoute($"{nameof(ViewSupports)}", typeof(ViewSupports));
         Routing.RegisterRoute($"{nameof(ViewAccounts)}", typeof(ViewAccounts));
+        Routing.RegisterRoute($"{nameof(LogoutPage)}", typeof(LogoutPage));
 
         this.BindingContext = this;
     }
@@ -57,6 +58,14 @@ public partial class AppShell : Shell
         {
             Preferences.Remove(nameof(App.DefaultBudgetID));
         }
+
+        if (await SecureStorage.Default.GetAsync("Session") != null)
+        {
+            SecureStorage.Default.Remove("Session");
+        }
+
+        App.DefaultBudgetID = 0;
+        App.DefaultBudget = null;
 
         Application.Current!.MainPage = new AppShell();
         LocalNotificationCenter.Current.CancelAll();

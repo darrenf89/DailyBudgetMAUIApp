@@ -218,6 +218,22 @@ namespace DailyBudgetMAUIApp.ViewModels
                                             App.HasVisitedCreatePage = false;
                                             await _pt.SetSubDetails();
 
+                                            if (await SecureStorage.Default.GetAsync("Session") != null)
+                                            {
+                                                SecureStorage.Default.Remove("Session");
+                                            }
+
+                                            AuthDetails Auth = new()
+                                            {
+                                                ClientID = DeviceInfo.Current.Name,
+                                                ClientSecret = userDetails.Password,
+                                                UserID = userDetails.UserID
+                                            };
+
+                                            SessionDetails Session = await _ds.CreateSession(Auth);
+                                            string SessionString = JsonConvert.SerializeObject(Session);
+                                            await SecureStorage.Default.SetAsync("Session", SessionString);
+
                                             if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
                                             {
                                                 int FirebaseID = Convert.ToInt32(await SecureStorage.Default.GetAsync("FirebaseID"));
@@ -238,7 +254,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 {
                                                     //Log as non fatal error
                                                 }
-                                            }
+                                            }                                        
 
                                             //await _pt.LoadTabBars(App.UserDetails.SubscriptionType, App.UserDetails.SubscriptionExpiry, App.UserDetails.DefaultBudgetType);
                                             await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
