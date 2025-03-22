@@ -32,6 +32,18 @@ public class LogoutPage : ContentPage
         Application.Current!.MainPage = new AppShell();
         LocalNotificationCenter.Current.CancelAll();
 
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
+
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
+        }
+
         await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
     }
 }

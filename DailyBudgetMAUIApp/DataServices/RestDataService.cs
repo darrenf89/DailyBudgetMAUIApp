@@ -28,6 +28,8 @@ namespace DailyBudgetMAUIApp.DataServices
         private readonly TimeSpan timeoutMilliseconds = TimeSpan.FromMilliseconds(20000);
         private DateTime LastServerHealthCheck;
 
+        private bool IsRefreshingToken = false;
+
         public RestDataService()
         {
             _httpClient = new HttpClient
@@ -280,6 +282,11 @@ namespace DailyBudgetMAUIApp.DataServices
 
         private async Task CheckAndUpdateSession()
         {
+            if (IsRefreshingToken)
+            {
+                return;
+            }
+
             string SessionString = SecureStorage.Default.GetAsync("Session").Result;
             if (string.IsNullOrEmpty(SessionString))
             {
@@ -299,7 +306,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             if (Sessions.SessionExpiry.AddMinutes(-1) < DateTime.UtcNow)
             {
-                //TODO: REFRESH TOKEN
+                IsRefreshingToken = true;
 
                 if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionToken"))
                     _httpClient.DefaultRequestHeaders.Remove("X-Custom-SessionToken");
@@ -317,6 +324,8 @@ namespace DailyBudgetMAUIApp.DataServices
                 _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionToken", Sessions.SessionToken);
                 _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionClient", Sessions.SessionUser);
                 _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionUser", Sessions.UserID.ToString());
+
+                IsRefreshingToken = false;
             }
 
             if(!_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionToken") ||!_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionClient") ||!_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionUser"))

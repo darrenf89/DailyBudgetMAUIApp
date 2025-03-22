@@ -415,7 +415,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                int PreviousBudgetID = _ds.GetUserDetailsAsync(App.UserDetails.Email).Result.PreviousDefaultBudgetID;
+                var UserDetails = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
+                int PreviousBudgetID = UserDetails.PreviousDefaultBudgetID;
                 await _pt.ChangeDefaultBudget(App.UserDetails.UserID, PreviousBudgetID, true);
             }
             catch (Exception ex)
