@@ -12,10 +12,9 @@ using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.ViewModels;
 using Microsoft.Maui.Controls.Shapes;
 using Plugin.LocalNotification;
-using Plugin.LocalNotification.AndroidOption;
+using Syncfusion.Maui.Carousel;
 using Syncfusion.Maui.ProgressBar;
 using Syncfusion.Maui.Scheduler;
-using Syncfusion.Maui.Toolkit.Carousel;
 using System.Globalization;
 using The49.Maui.BottomSheet;
 using static DailyBudgetMAUIApp.Pages.ViewAccounts;
@@ -496,7 +495,7 @@ public partial class MainPage : BasePage
 
                 _vm.EventList.Add(BillEvent);
 
-                if (bill.IsRecuring)
+                if (bill.IsRecuring.GetValueOrDefault())
                 {
                     BillDate = _pt.CalculateNextDate(BillDate, bill.BillType, bill.BillValue.GetValueOrDefault(), bill.BillDuration);
                 }
@@ -1453,7 +1452,7 @@ public partial class MainPage : BasePage
                 Margin = new Thickness(10, 0, 10, 5),
                 Minimum = 0
             };
-            ProgressBar.SetBinding(SfLinearProgressBar.MaximumProperty, "SavingProgressBarMax");
+            ProgressBar.SetBinding(SfLinearProgressBar.MaximumProperty, ".", BindingMode.Default, new SavingProgressBarMax());
             ProgressBar.SetBinding(SfLinearProgressBar.ProgressProperty, "CurrentBalance");
             grid.AddWithSpan(ProgressBar, 4, 1, 1, 2);
 
@@ -1477,7 +1476,7 @@ public partial class MainPage : BasePage
                 FontAttributes = FontAttributes.Bold,
                 HorizontalTextAlignment = TextAlignment.End
             };
-            SavingProgressBarMaxString.SetBinding(Label.TextProperty, "SavingProgressBarMaxString");
+            SavingProgressBarMaxString.SetBinding(Label.TextProperty, ".", BindingMode.Default, new SavingProgressBarMaxString());
             grid.Add(SavingProgressBarMaxString, 2, 6);
 
             BoxView bv = new BoxView
@@ -1512,7 +1511,7 @@ public partial class MainPage : BasePage
                 FontAttributes = FontAttributes.Bold,
 
             };
-            labelTwo.SetBinding(Label.TextProperty, "RegularSavingValueString");
+            labelTwo.SetBinding(Label.TextProperty, ".", BindingMode.Default, new RegularSavingValueString());
 
             hsl1.Children.Add(labelTwo);
             grid.AddWithSpan(hsl1, 8, 1, 1, 2);
@@ -1540,7 +1539,7 @@ public partial class MainPage : BasePage
                 CharacterSpacing = 0,
                 FontAttributes = FontAttributes.Bold,
             };
-            labelFour.SetBinding(Label.TextProperty, "SavingGoalDateString");
+            labelFour.SetBinding(Label.TextProperty, ".", BindingMode.Default, new SavingGoalDateString());
 
             hsl2.Children.Add(labelFour);
             grid.AddWithSpan(hsl2, 9, 1, 1, 2);
@@ -1881,7 +1880,7 @@ public partial class MainPage : BasePage
 
             Label labelFive= new Label
             {
-                Text = "Recurring SavingsMauiDetails | ",
+                Text = "Recurring Savings | ",
                 TextColor = (Color)Info,
                 FontSize = 12,
                 VerticalOptions = LayoutOptions.Center,
@@ -1897,7 +1896,7 @@ public partial class MainPage : BasePage
                 CharacterSpacing = 0,
                 FontAttributes = FontAttributes.Bold,
             };
-            labelSix.SetBinding(Label.TextProperty, "RecurringBillDetails", BindingMode.Default);
+            labelSix.SetBinding(Label.TextProperty, ".", BindingMode.Default, new RecurringBillDetails());
 
             hsl3.Children.Add(labelSix);
             grid.AddWithSpan(hsl3, 8, 1, 1, 2);
@@ -2095,7 +2094,7 @@ public partial class MainPage : BasePage
                 Margin = new Thickness(0),
                 CharacterSpacing = 0
             };
-            lblSavingType.SetBinding(Label.TextProperty, "IncomeTypeConverter", BindingMode.Default);
+            lblSavingType.SetBinding(Label.TextProperty, ".", BindingMode.Default, new IncomeTypeConverter());
             grid.AddWithSpan(lblSavingType, 1, 1, 1, 2);
 
             Label lblCurrentBalance = new Label
@@ -2195,7 +2194,7 @@ public partial class MainPage : BasePage
 
             Label labelFive = new Label
             {
-                Text = "Recurring SavingsMauiDetails | ",
+                Text = "Recurring Savings | ",
                 TextColor = (Color)Info,
                 FontSize = 12,
                 VerticalOptions = LayoutOptions.Center,
@@ -2211,7 +2210,7 @@ public partial class MainPage : BasePage
                 CharacterSpacing = 0,
                 FontAttributes = FontAttributes.Bold,
             };
-            labelSix.SetBinding(Label.TextProperty, "RecurringIncomeDetails", BindingMode.Default);
+            labelSix.SetBinding(Label.TextProperty, ".", BindingMode.Default, new RecurringIncomeDetails());
 
             hsl3.Children.Add(labelSix);
             grid.AddWithSpan(hsl3, 7, 1, 1, 2);
@@ -2292,7 +2291,7 @@ public partial class MainPage : BasePage
         return sc;
     }
 
-    private async Task IncomeCarouselSwipeStarted(object Sender, Syncfusion.Maui.Toolkit.Carousel.SwipeStartedEventArgs Event)
+    private async Task IncomeCarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
     {
         try
         {
@@ -2332,7 +2331,7 @@ public partial class MainPage : BasePage
         }
     }
 
-    private async Task CarouselSwipeStarted(object Sender, Syncfusion.Maui.Toolkit.Carousel.SwipeStartedEventArgs Event)
+    private async Task CarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
     {
         try
         {
@@ -2373,7 +2372,7 @@ public partial class MainPage : BasePage
             await _pt.HandleException(ex, "MainPage", "CarouselSwipeEnded");
         }
     }
-    private async Task BillCarouselSwipeStarted(object Sender, Syncfusion.Maui.Toolkit.Carousel.SwipeStartedEventArgs Event)
+    private async Task BillCarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
     {
         try
         {

@@ -126,6 +126,7 @@ public partial class LandingPage : BasePage
         try
         {
             base.OnAppearing();
+            await Task.Delay(10);
             await CheckUserLoginDetails();
         }
         catch (Exception ex)

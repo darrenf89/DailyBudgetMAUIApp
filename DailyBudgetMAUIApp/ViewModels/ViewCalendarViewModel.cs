@@ -273,7 +273,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     Events.Add(BillEvent);
 
-                    if (bill.IsRecuring)
+                    if (bill.IsRecuring.GetValueOrDefault())
                     {
                         bill.BillDueDate = _pt.CalculateNextDate(bill.BillDueDate.GetValueOrDefault(), bill.BillType, bill.BillValue.GetValueOrDefault(), bill.BillDuration);
                     }

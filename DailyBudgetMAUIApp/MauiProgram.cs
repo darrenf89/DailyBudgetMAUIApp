@@ -6,7 +6,6 @@ using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
 using Microsoft.Extensions.Logging;
 using IeuanWalker.Maui.Switch;
-using Syncfusion.Maui.Toolkit.Hosting;
 using Maui.FixesAndWorkarounds;
 using The49.Maui.BottomSheet;
 using DotNet.Meteor.HotReload.Plugin;
@@ -34,7 +33,6 @@ public static class MauiProgram
             .UseSwitch()
             .UseMauiCommunityToolkit()
             .ConfigureSyncfusionCore()
-            .ConfigureSyncfusionToolkit()
             .ConfigureMauiWorkarounds()
             .UseBottomSheet()
             .UseMauiMTAdmob()

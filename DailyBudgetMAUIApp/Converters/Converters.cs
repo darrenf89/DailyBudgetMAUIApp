@@ -5,6 +5,251 @@ using OnScreenSizeMarkup.Maui.Helpers;
 
 namespace DailyBudgetMAUIApp.Converters
 {
+    public class IsSavingsBuilder : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            if (value is Savings saving)
+            {
+                if (saving.SavingsType == "SavingsBuilder")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class IsSavingsTargetAmount : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            if (value is Savings saving)
+            {
+                if (saving.SavingsType == "TargetAmount")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class IsSavingsTargetDate : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            if (value is Savings saving)
+            {
+                if (saving.SavingsType == "TargetDate")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class SavingToGlyph : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            if (value is Savings saving)
+            {
+                if (saving.SavingsType == "TargetDate")
+                {
+                    return "date.svg";
+                }
+                else if (saving.SavingsType == "SavingsBuilder")
+                {
+                    return "builder.svg";
+                }
+                else if (saving.SavingsType == "TargetAmount")
+                {
+                    return "dollar.svg";
+                }
+                else
+                {
+                    return "income.svg";
+                }
+            }
+
+            return "";
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class RegularSavingValueString : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if(value is Savings saving)
+            {
+                if (saving.IsSavingsClosed)
+                {
+                    return "Saving Closed";
+                }
+                else
+                {
+                    return saving.RegularSavingValue.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+                }
+            }
+
+            return "";
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class SavingGoalDateString : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if (value is Savings saving)
+            {
+                if (saving.IsSavingsClosed)
+                {
+                    return "Saving Closed";
+                }
+                else
+                {
+                    if (saving.SavingsType == "SavingsBuilder")
+                    {
+                        return "Continuous Saving";
+                    }
+                    else
+                    {
+                        return saving.GoalDate.GetValueOrDefault().ToString("dd MMM yy");
+                    }
+
+                }
+            }
+
+            return "";
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class SavingProgressBarMax : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if (value is Savings saving)
+            {
+                if (saving.SavingsType == "SavingsBuilder")
+                {
+                    return saving.CurrentBalance;
+                }
+                else
+                {
+
+                    return saving.SavingsGoal;
+                }
+            }
+
+
+            return "";
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class SavingProgressBarMaxString : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if (value is Savings saving)
+            {
+                if (saving.SavingsType == "SavingsBuilder")
+                {
+                    return saving.CurrentBalance.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+                }
+                else
+                {
+                    return saving.SavingsGoal.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture);
+                }
+            }
+
+            return "";
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+
+
+
     public class BoolToColorDisabledReverse : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -31,6 +276,7 @@ namespace DailyBudgetMAUIApp.Converters
         }
 
     }
+
     public class MessageMarginConverter : IValueConverter
     {
 
@@ -187,7 +433,7 @@ namespace DailyBudgetMAUIApp.Converters
         {
             return null;
         }
-        
+
     }
 
     public class IsFutureDatedTransactionText : IValueConverter
@@ -333,22 +579,89 @@ namespace DailyBudgetMAUIApp.Converters
 
     }
 
+    public class IsBudgetNotSharedBudgetToBool : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if (value is Budgets budget)
+            {
+                if (budget.IsSharedValidated && budget.SharedUserID != 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (App.IsPremiumAccount)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                }
+            }
+
+            return false;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+    public class IsBudgetSharedBudgetToBool : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if (value is Budgets budget)
+            {
+                if (budget.IsSharedValidated && budget.SharedUserID != 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
     public class IsBudgetShareRequestToBool : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null) return null;
 
-            int BudgetShareRequestID = (int)value;
-
-            if (BudgetShareRequestID != 0)
+            if (value is Budgets budget)
             {
-                return true;
-            } 
-            else
-            {
-                return false;
+                if (budget.AccountInfo.BudgetShareRequestID != 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
+
+            return false;
 
         }
 
@@ -364,7 +677,7 @@ namespace DailyBudgetMAUIApp.Converters
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             decimal Amount;
-            if (value == null)             
+            if (value == null)
             {
                 Amount = 0;
             }
@@ -372,7 +685,7 @@ namespace DailyBudgetMAUIApp.Converters
             {
                 Amount = (decimal)value;
             }
-            
+
             if(Amount == -1)
             {
                 return "Pay day tomorrow";
@@ -516,6 +829,93 @@ namespace DailyBudgetMAUIApp.Converters
 
     }
 
+    public class LeftToSpendDailyAmountHideShow : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if (value is Budgets budget)
+            {
+                if (budget.LeftToSpendDailyAmount <= 0 && budget.LeftToSpendBalance > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class LeftToSpendBalanceHideShow : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if (value is Budgets budget)
+            {
+                if (budget.LeftToSpendBalance <= 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class ChangeBudgetStringConvertor : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            string result = "";
+
+            if (value is Budgets budget)
+            {
+                if (App.UserDetails.UserID == budget.SharedUserID)
+                {
+                    result = $"[Shared]{budget.BudgetName} ({budget.LastUpdated.ToString("dd MMM yy")})";
+                }
+                else
+                {
+                    result = $"{budget.BudgetName} ({budget.LastUpdated.ToString("dd MMM yy")})";
+                }                
+            }
+
+            return result;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
     public class SavingTypeConverter : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -528,11 +928,11 @@ namespace DailyBudgetMAUIApp.Converters
             {
                 return "Building savings every day";
             }
-            else if(SavingType == "TargetAmount")
+            else if (SavingType == "TargetAmount")
             {
                 return "Saving set amount every day";
             }
-            else if(SavingType == "TargetDate")
+            else if (SavingType == "TargetDate")
             {
                 return "Saving for a target date";
             }
@@ -593,6 +993,128 @@ namespace DailyBudgetMAUIApp.Converters
 
     }
 
+
+    public class RecurringBillDetails : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if(value is Bills Bill)
+            {
+                if (Bill.IsRecuring.GetValueOrDefault())
+                {
+                    if (Bill.BillType == "Everynth")
+                    {
+                        return Bill.BillValue == 1 ? $"Every {Bill.BillDuration.Replace("s", "")}" : $"Every {Bill.BillValue} {Bill.BillDuration}";
+                    }
+                    else if (Bill.BillType == "OfEveryMonth")
+                    {
+                        string DayString;
+                        if (Bill.BillValue == 1 || Bill.BillValue == 21 || Bill.BillValue == 31)
+                        {
+                            DayString = $"{Bill.BillValue}st";
+                        }
+                        else if (Bill.BillValue == 2 || Bill.BillValue == 22)
+                        {
+                            DayString = $"{Bill.BillValue}nd";
+                        }
+                        else if (Bill.BillValue == 3 || Bill.BillValue == 23)
+                        {
+                            DayString = $"{Bill.BillValue}rd";
+                        }
+                        else
+                        {
+                            DayString = $"{Bill.BillValue}th";
+                        }
+
+                        return $"{DayString} of the month";
+                    }
+                    else if (Bill.BillType == "WorkingDays")
+                    {
+                        return Bill.BillValue == 1 ? $"{NumberToWords(Bill.BillValue.GetValueOrDefault())} working day before the end of month" : $"{NumberToWords(Bill.BillValue.GetValueOrDefault())} working days before the end of month"; ;
+                    }
+                    else if (Bill.BillType == "LastOfTheMonth")
+                    {
+                        return $"Last {Bill.BillDuration} of the month";
+                    }
+                    else
+                    {
+                        return "";
+                    }
+
+                }
+                else
+                {
+                    return "";
+                }
+            }
+
+            return "";
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+        public string NumberToWords(int number)
+        {
+            if (number == 0) return "Zero";
+
+            string[] units = { "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" };
+            string[] teens = { "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen" };
+            string[] tens = { "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" };
+
+            if (number < 10) return units[number];
+            if (number < 20) return teens[number - 10];
+            if (number < 100) return tens[number / 10] + (number % 10 != 0 ? " " + units[number % 10] : "");
+
+            return "Number too large"; // Extend this for larger numbers if needed.
+        }
+
+    }
+
+    public class IncomeTypeConverter : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            string ReturnValue = "";
+
+            if (value is IncomeEvents Income)
+            {               
+                if (Income.IsRecurringIncome)
+                {
+                    ReturnValue = "Recurring ";
+                }
+                else
+                {
+                    ReturnValue = "One-off ";
+                }
+
+                if (Income.IsInstantActive ?? false)
+                {
+                    ReturnValue = ReturnValue + "| Instant Active ";
+                }
+                else
+                {
+                    ReturnValue = ReturnValue + "| On Received";
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
     public class DateToNumberOfDays : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -604,6 +1126,65 @@ namespace DailyBudgetMAUIApp.Converters
             string ReturnValue = $"{(int)Math.Ceiling((Date.Date - DateTime.Today.Date).TotalDays)} Days";
 
             return ReturnValue;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class RecurringIncomeDetails : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if(value is IncomeEvents Income)
+            {
+
+                if (Income.IsRecurringIncome)
+                {
+                    if (Income.RecurringIncomeType == "Everynth")
+                    {
+                        return Income.RecurringIncomeValue == 1 ? $"Every {Income.RecurringIncomeDuration.Replace("s", "")}" : $"Every {Income.RecurringIncomeValue} {Income.RecurringIncomeDuration}";
+                    }
+                    else if (Income.RecurringIncomeType == "OfEveryMonth")
+                    {
+                        string DayString;
+                        if (Income.RecurringIncomeValue == 1)
+                        {
+                            DayString = $"{Income.RecurringIncomeValue}st";
+                        }
+                        else if (Income.RecurringIncomeValue == 2)
+                        {
+                            DayString = $"{Income.RecurringIncomeValue}nd";
+                        }
+                        else if (Income.RecurringIncomeValue == 3)
+                        {
+                            DayString = $"{Income.RecurringIncomeValue}rd";
+                        }
+                        else
+                        {
+                            DayString = $"{Income.RecurringIncomeValue}th";
+                        }
+
+                        return $"{DayString} of the month";
+                    }
+                    else
+                    {
+                        return "";
+                    }
+
+                }
+                else
+                {
+                    return "";
+                }
+            }
+
+            return "";
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -625,7 +1206,7 @@ namespace DailyBudgetMAUIApp.Converters
 
             if (EventType == "IncomeEvent")
             {
-                ReturnGlyph = "\ue8e5"; 
+                ReturnGlyph = "\ue8e5";
             }
             else if (EventType == "Bill")
             {
@@ -642,7 +1223,7 @@ namespace DailyBudgetMAUIApp.Converters
             else if (EventType == "Saving")
             {
                 ReturnGlyph = "\ue2eb";
-            }            
+            }
             else if (EventType == "Budget")
             {
                 ReturnGlyph = "\ue84f";
@@ -724,7 +1305,7 @@ namespace DailyBudgetMAUIApp.Converters
             }
 
             return TString;
-            
+
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -752,7 +1333,7 @@ namespace DailyBudgetMAUIApp.Converters
                 }
             }
 
-            return "";            
+            return "";
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -841,7 +1422,7 @@ namespace DailyBudgetMAUIApp.Converters
                     {
                         return "Made a transaction";
                     }
-                }                
+                }
             }
 
             return "";
@@ -871,7 +1452,7 @@ namespace DailyBudgetMAUIApp.Converters
             }
             else
             {
-                return Color.FromArgb("#F2E1E1E1");;
+                return Color.FromArgb("#F2E1E1E1");
             }
         }
 
@@ -982,6 +1563,36 @@ namespace DailyBudgetMAUIApp.Converters
         }
     }
 
+
+    public class BillToGlyph : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            if(value is Bills bill)
+            {
+                if (bill.IsRecuring.GetValueOrDefault())
+                {
+                    return "recurring.svg";
+                }
+                else
+                {
+                    return "one.svg";
+                }
+            }
+
+            return "";
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
     public class IsBorrowPayTextConverter : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -1005,8 +1616,8 @@ namespace DailyBudgetMAUIApp.Converters
         {
             return null;
         }
-    }    
-    
+    }
+
     public class IsDPATextConverter : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -1168,7 +1779,7 @@ namespace DailyBudgetMAUIApp.Converters
             bool IsPlaying = (bool)value;
 
             if (IsPlaying)
-            {   
+            {
                 return "\ue034";
             }
             else
@@ -1200,7 +1811,7 @@ namespace DailyBudgetMAUIApp.Converters
             else
             {
                 ReturnColor = (Color)Gray400;
-            }            
+            }
 
             return ReturnColor;
 
@@ -1221,10 +1832,10 @@ namespace DailyBudgetMAUIApp.Converters
             double output;
 
             switch(value.ToString())
-            {                  
+            {
                 case "Caption":
                     output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(12,8,10, 10, 12,14);
-                    break;                
+                    break;
                 case "Subtitle":
                     output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(16,12,14, 14, 16,20);
                     break;
@@ -1251,10 +1862,10 @@ namespace DailyBudgetMAUIApp.Converters
                     break;
                 case "Micro":
                     output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(10, 6, 8, 8, 10, 12);
-                    break;                
+                    break;
                 case "XL":
                     output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(50, 42, 46, 46, 50, 60);
-                    break;                
+                    break;
                 case "XS":
                     output = OnScreenSizeHelpers.Instance.GetScreenSizeValue(8, 4, 6, 6, 8, 10);
                     break;
@@ -1263,7 +1874,7 @@ namespace DailyBudgetMAUIApp.Converters
                     break;
             }
 
-            return output; 
+            return output;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -1273,4 +1884,3 @@ namespace DailyBudgetMAUIApp.Converters
     }
 
 }
-

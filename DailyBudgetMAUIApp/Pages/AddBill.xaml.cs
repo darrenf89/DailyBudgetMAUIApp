@@ -196,7 +196,7 @@ public partial class AddBill : BasePage
     private void LoadExistingBill()
     {
         SelectBillType.IsVisible = false;
-        if (_vm.Bill.IsRecuring)
+        if (_vm.Bill.IsRecuring.GetValueOrDefault())
         {
             BillTypeSelected.IsVisible = true;
             lblSelectedBillTitle.Text = "You are adding a recurring outgoing";

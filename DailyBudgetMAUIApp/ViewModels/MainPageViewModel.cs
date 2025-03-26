@@ -4,7 +4,6 @@ using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Syncfusion.Maui.Toolkit.Carousel;
 using System.Collections.ObjectModel;
 using Syncfusion.Maui.Scheduler;
 using DailyBudgetMAUIApp.Handlers;
@@ -14,6 +13,7 @@ using Plugin.MauiMTAdmob;
 using System.Globalization;
 using CommunityToolkit.Mvvm.Messaging;
 using static DailyBudgetMAUIApp.Pages.ViewAccounts;
+using Syncfusion.Maui.Carousel;
 
 
 namespace DailyBudgetMAUIApp.ViewModels

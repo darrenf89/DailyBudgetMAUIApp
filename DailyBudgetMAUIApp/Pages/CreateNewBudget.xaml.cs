@@ -202,21 +202,21 @@ public partial class CreateNewBudget : BasePage
         Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
         Application.Current.Resources.TryGetValue("Info", out var Info);
 
-        bvStage1.Color = (_vm.Stage == "Budget Settings" || _vm.Stage == "Budget SavingsMauiDetails" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
-        bvStage2.Color = (_vm.Stage == "Budget SavingsMauiDetails" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
+        bvStage1.Color = (_vm.Stage == "Budget Settings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
+        bvStage2.Color = (_vm.Stage == "Budget Savings" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
         bvStage3.Color = (_vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
         bvStage4.Color = (_vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
         bvStage5.Color = (_vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
 
         SettingsDetails.IsVisible = (_vm.Stage == "Budget Settings");
-        BudgetDetails.IsVisible = (_vm.Stage == "Budget SavingsMauiDetails");
+        BudgetDetails.IsVisible = (_vm.Stage == "Budget Savings");
         BillDetails.IsVisible = (_vm.Stage == "Budget Outgoings");
         SavingsDetails.IsVisible = (_vm.Stage == "Budget Savings");
         IncomeDetails.IsVisible = (_vm.Stage == "Budget Extra Income");
         FinalBudgetDetails.IsVisible = (_vm.Stage == "Finalise Budget");
 
         lblSettingsHeader.TextColor = (_vm.Stage == "Budget Settings") ? (Color)Primary : (Color)Tertiary;
-        lblBudgetHeader.TextColor = (_vm.Stage == "Budget SavingsMauiDetails") ? (Color)Primary : (Color)Tertiary;
+        lblBudgetHeader.TextColor = (_vm.Stage == "Budget Savings") ? (Color)Primary : (Color)Tertiary;
         lblBillsHeader.TextColor = (_vm.Stage == "Budget Outgoings") ? (Color)Primary : (Color)Tertiary;
         lblSavingsHeader.TextColor = (_vm.Stage == "Budget Savings") ? (Color)Primary : (Color)Tertiary;
         lblIncomesHeader.TextColor = (_vm.Stage == "Budget Extra Income") ? (Color)Primary : (Color)Tertiary;
@@ -230,7 +230,7 @@ public partial class CreateNewBudget : BasePage
             }
             await MainScrollView.ScrollToAsync(0, 95, true);
         }
-        else if (_vm.Stage == "Budget SavingsMauiDetails")
+        else if (_vm.Stage == "Budget Savings")
         {
             if(_vm.Budget.Stage < 2)
             {
@@ -372,7 +372,7 @@ public partial class CreateNewBudget : BasePage
             double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
             entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
 
-            _vm.Stage = "Budget SavingsMauiDetails";
+            _vm.Stage = "Budget Savings";
             UpdateStageDisplay();
             //await MainScrollView.ScrollToAsync(0, 155, true);
         }
@@ -452,7 +452,7 @@ public partial class CreateNewBudget : BasePage
 
             dtpckPayDay.Date = _vm.Budget.NextIncomePayday ?? default;
 
-            _vm.Stage = "Budget SavingsMauiDetails";
+            _vm.Stage = "Budget Savings";
             UpdateStageDisplay();
 
             await _vm.SaveStage("Budget Settings");
@@ -512,7 +512,7 @@ public partial class CreateNewBudget : BasePage
 
                 UpdateStageDisplay();
 
-                await _vm.SaveStage("Budget SavingsMauiDetails");
+                await _vm.SaveStage("Budget Details");
 
                 entBankBalance.IsEnabled = false;
                 entBankBalance.IsEnabled = true;
@@ -597,7 +597,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            _vm.Stage = "Budget SavingsMauiDetails";
+            _vm.Stage = "Budget Savings";
             UpdateStageDisplay();
 
             //await MainScrollView.ScrollToAsync(0, 155, true);
@@ -654,7 +654,7 @@ public partial class CreateNewBudget : BasePage
                 _vm.Stage = "Budget Extra Income";
                 UpdateStageDisplay();
 
-                await _vm.SaveStage("Budget Outgoings");
+                await _vm.SaveStage("Budget Savings");
 
                 //await MainScrollView.ScrollToAsync(0, 275, true);
             }
@@ -858,7 +858,7 @@ public partial class CreateNewBudget : BasePage
 
             if(!ValidateBudgetDetails())
             {
-                _vm.Stage = "Budget SavingsMauiDetails";
+                _vm.Stage = "Budget Savings";
                 IsValid = false;
             }
 

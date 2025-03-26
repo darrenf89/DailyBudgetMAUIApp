@@ -19,7 +19,7 @@
 
     <TabBar x:Name="MainTabBar">
         <Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
-            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate local:MainPage}" />
         </Tab>
         <Tab Title="Bill" Route="AddBill" Icon="bill.svg">
             <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddBill}"/>
@@ -37,19 +37,19 @@
 
     <TabBar x:Name="ViewTabBar">
         <Tab Route="ViewTransactions" Title="Transaction" Icon="transaction.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewTransactions}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewTransactions}"/>
         </Tab>
         <Tab Route="ViewSavings" Title="Savings" Icon="saving.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewSavings}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewSavings}"/>
         </Tab>
         <Tab Route="ViewBills" Title="Outgoings" Icon="bill.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewBills}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewBills}"/>
         </Tab>
         <Tab Route="ViewEnvelopes" Title="Envelopes" Icon="envelope.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewEnvelopes}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewEnvelopes}"/>
         </Tab>
         <Tab Route="ViewIncomes" Title="Incomes" Icon="income.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewIncomes}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewIncomes}"/>
         </Tab>
     </TabBar>
 

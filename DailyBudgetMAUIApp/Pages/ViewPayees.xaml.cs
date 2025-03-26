@@ -93,7 +93,7 @@ public partial class ViewPayees : BasePage
         List<Payees> PayeeList = await _ds.GetPayeeListFull( App.DefaultBudgetID);
         PayeeList = PayeeList.OrderByDescending(p => p.PayeeSpendPayPeriod).ToList();
 
-        _vm.Title = $"Payee SavingsMauiDetails";
+        _vm.Title = $"Payee Savings";
 
         foreach (Payees payee in PayeeList)
         {

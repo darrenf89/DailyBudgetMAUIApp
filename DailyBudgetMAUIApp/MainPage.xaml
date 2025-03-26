@@ -9,7 +9,6 @@
              xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
              xmlns:gauge="clr-namespace:Syncfusion.Maui.Gauges;assembly=Syncfusion.Maui.Gauges"
              xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
-             xmlns:carousel="clr-namespace:Syncfusion.Maui.Toolkit.Carousel;assembly=Syncfusion.Maui.Toolkit"
              xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
              xmlns:scheduler="clr-namespace:Syncfusion.Maui.Scheduler;assembly=Syncfusion.Maui.Scheduler"
@@ -265,11 +264,11 @@
                                     </gauge:RadialAxis>
                                 </gauge:SfRadialGauge.Axes>
                             </gauge:SfRadialGauge>
-                            <VerticalStackLayout Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" IsVisible="{Binding DefaultBudget.LeftToSpendDailyAmountHideShow}" BackgroundColor="{StaticResource InfoLLL}">
+                            <VerticalStackLayout Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendDailyAmountHideShow}}"  BackgroundColor="{StaticResource InfoLLL}">
                                 <BoxView HeightRequest="2" Color="{StaticResource Info}" />
                                 <Label Padding="5,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Text="Don't worry if you've overspent today, you can still make it up!" TextColor="{DynamicResource Info}"/>
                             </VerticalStackLayout>
-                            <Grid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" IsVisible="{Binding DefaultBudget.LeftToSpendDailyAmountHideShow}" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource WarningLightLight}">
+                            <Grid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendBalanceHideShow}}" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource WarningLightLight}">
                                 <BoxView HeightRequest="2" Color="{StaticResource Warning}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
                                 <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="5,5,5,5" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="No money left to spend, Fix that!" TextColor="{DynamicResource Warning}"/>
                                 <Image VerticalOptions="Center" Margin="0" Grid.Row="1" Grid.Column="1">
@@ -307,7 +306,7 @@
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding IsPremiumAccount, Converter={StaticResource BoolConverter}}">
                         <adMob:MTAdView AdsId="ca-app-pub-3940256099942544/6300978111" AdSize="Smart"/>
                     </Border>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget.LeftToSpendDailyAmountHideShow}" >
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendDailyAmountHideShow}}" >
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
                             <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,5,5,0">
@@ -331,7 +330,7 @@
                             <Image Source="mainpagelogo.png"  Grid.Row="0" Grid.Column="0" MaximumHeightRequest="70" Margin="10,0,0,0" HorizontalOptions="Center" />
                         </Grid>
                     </Border>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget.AccountInfo.BudgetShareRequestID, Converter={StaticResource IsBudgetShareRequestToBool}}" >
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetShareRequestToBool}}" >
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
                             <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,5,5,0">
@@ -551,7 +550,7 @@
                             </HorizontalStackLayout>
                         </Grid>
                     </Border>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget.IsBudgetNotSharedBudgetToBool}" >
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetNotSharedBudgetToBool}}" >
                         <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
                             <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
@@ -570,7 +569,7 @@
                             <TapGestureRecognizer x:Name="ShareBudget" Tapped="ShareBudget_Tapped" />
                         </Border.GestureRecognizers>
                     </Border>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget.IsBudgetSharedBudgetToBool}" >
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetSharedBudgetToBool}}" >
                         <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
                             <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">

@@ -17,8 +17,8 @@
 		<ApplicationIdGuid>a9e0258c-e381-49fa-aa43-d11c44cf7b75</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.49</ApplicationDisplayVersion>
-		<ApplicationVersion>49</ApplicationVersion>
+		<ApplicationDisplayVersion>1.50</ApplicationDisplayVersion>
+		<ApplicationVersion>50</ApplicationVersion>
 		<MonoLinkerEnabled>false</MonoLinkerEnabled>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -27,6 +27,10 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 	  <PublishTrimmed>False</PublishTrimmed>
+	  <RunAOTCompilation>False</RunAOTCompilation>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <RunAOTCompilation>False</RunAOTCompilation>
 	</PropertyGroup>
 
@@ -118,7 +122,6 @@
 		<PackageReference Include="Syncfusion.Maui.Picker" Version="28.2.11" />
 		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="28.2.11" />
 		<PackageReference Include="Syncfusion.Maui.Scheduler" Version="28.2.11" />
-		<PackageReference Include="Syncfusion.Maui.Toolkit" Version="1.0.4" />
 		<PackageReference Include="System.ObjectModel" Version="4.3.0" />
 		<PackageReference Include="System.Private.Uri" Version="4.3.2" />
 	</ItemGroup>

@@ -649,7 +649,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     DailyBillOutgoing += Bill.RegularBillValue ?? 0;
                     //Check if Due Date is before Pay Dat
                     int DaysToBill = (int)Math.Ceiling((Bill.BillDueDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
-                    if (Bill.IsRecuring)
+                    if (Bill.IsRecuring.GetValueOrDefault())
                     {
                         if (DaysToBill < DaysToPayDay)
                         {
@@ -707,7 +707,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     int DaysToBill = (int)Math.Ceiling((Bill.BillDueDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
                     if (DaysToBill < DaysToPayDay)
                     {
-                        if (Bill.IsRecuring)
+                        if (Bill.IsRecuring.GetValueOrDefault())
                         {
                             DateTime BillDueAfterNext = Bill.BillDueDate.GetValueOrDefault().Date;
                             while(BillDueAfterNext < Budget.NextIncomePayday.GetValueOrDefault().Date)
@@ -1030,7 +1030,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 Bill.BillBalanceAtLastPayDay = 0;
             }
 
-            if (Bill.IsRecuring)
+            if (Bill.IsRecuring.GetValueOrDefault())
             {
 
                 Bill.BillDueDate = CalculateNextDate(Bill.BillDueDate.GetValueOrDefault(), Bill.BillType, Bill.BillValue.GetValueOrDefault(), Bill.BillDuration);
@@ -2082,7 +2082,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 TextColor = (Color)Gray400
             };
 
-            picker.ItemDisplayBinding = new Binding("ChangeBudgetStringConvertor", BindingMode.Default);
+            picker.ItemDisplayBinding = new Binding(".", BindingMode.Default, new ChangeBudgetStringConvertor());
 
             picker.SelectedIndexChanged += async (s, e) =>
             {

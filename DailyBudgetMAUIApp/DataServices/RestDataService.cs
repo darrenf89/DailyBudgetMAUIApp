@@ -1,8 +1,6 @@
-﻿using Android.Accounts;
-using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.ViewModels;
 using DailySpendWebApp.Models;
 using Newtonsoft.Json;
@@ -24,8 +22,8 @@ namespace DailyBudgetMAUIApp.DataServices
         private readonly JsonSerializerOptions _jsonSerialiserOptions;
 
         private readonly int maxRetries = 5;
-        private readonly int delayMilliseconds = 1000;
-        private readonly TimeSpan timeoutMilliseconds = TimeSpan.FromMilliseconds(20000);
+        private readonly int delayMilliseconds = 500;
+        private readonly TimeSpan timeoutMilliseconds = TimeSpan.FromMilliseconds(3000);
         private DateTime LastServerHealthCheck;
 
         private bool IsRefreshingToken = false;
@@ -366,21 +364,21 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     return response;
                 }
-                catch (TaskCanceledException ex)
-                {
-                    Console.WriteLine($"Request timed out (attempt {attempt}): {ex.Message}");
-                }
                 catch (Exception ex)
                 {
-                    if (!(ex.Message == "One or more errors occurred. (Canceled)" || ex.Message == "One or more errors occurred. (A task was canceled.)"))
+                    if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
+                    {
+                        Console.WriteLine("The request timed out.");
+                    }
+                    else
                     {
                         throw;
                     }
-
                 }
 
                 if (attempt == 1)
                 {
+                    await Task.Delay(10);
                     await ShowServerConnectionPopup();
                 }
 
@@ -418,13 +416,13 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     return response;
                 }
-                catch (TaskCanceledException ex)
-                {
-                    Console.WriteLine($"Request timed out (attempt {attempt}): {ex.Message}");
-                }
                 catch (Exception ex)
                 {
-                    if (!(ex.Message == "One or more errors occurred. (Canceled)" || ex.Message == "One or more errors occurred. (A task was canceled.)"))
+                    if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
+                    {
+                        Console.WriteLine("The request timed out.");
+                    }
+                    else
                     {
                         throw;
                     }
@@ -432,6 +430,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (attempt == 1)
                 {
+                    await Task.Delay(10);
                     await ShowServerConnectionPopup();
                 }
 
@@ -468,13 +467,13 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     return response;
                 }
-                catch (TaskCanceledException ex)
-                {
-                    Console.WriteLine($"Request timed out (attempt {attempt}): {ex.Message}");
-                }
                 catch (Exception ex)
                 {
-                    if (!(ex.Message == "One or more errors occurred. (Canceled)" || ex.Message == "One or more errors occurred. (A task was canceled.)"))
+                    if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
+                    {
+                        Console.WriteLine("The request timed out.");
+                    }
+                    else
                     {
                         throw;
                     }
@@ -482,6 +481,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (attempt == 1)
                 {
+                    await Task.Delay(10);
                     await ShowServerConnectionPopup();
                 }
 
@@ -518,13 +518,13 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     return response;
                 }
-                catch (TaskCanceledException ex)
-                {
-                    Console.WriteLine($"Request timed out (attempt {attempt}): {ex.Message}");
-                }
                 catch (Exception ex)
                 {
-                    if (!(ex.Message == "One or more errors occurred. (Canceled)" || ex.Message == "One or more errors occurred. (A task was canceled.)"))
+                    if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
+                    {
+                        Console.WriteLine("The request timed out.");
+                    }
+                    else
                     {
                         throw;
                     }
@@ -532,6 +532,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (attempt == 1)
                 {
+                    await Task.Delay(10);
                     await ShowServerConnectionPopup();
                 }
 
@@ -549,7 +550,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task ShowServerConnectionPopup()
         {
-            await Task.Delay(1);
+            await Task.Delay(10);
 
             if (App.CurrentPopUp != null)
             {
@@ -561,7 +562,10 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 var PopUp = new PopUpNoServer(new PopUpNoServerViewModel());
                 App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                if (Application.Current.Windows[0].Page != null)
+                {
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
             }
         }
         public async Task HideServerConnectionPopup()
