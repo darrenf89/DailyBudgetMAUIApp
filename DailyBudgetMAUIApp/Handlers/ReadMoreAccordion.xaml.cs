@@ -1,7 +1,3 @@
-
-using Maui.FixesAndWorkarounds;
-using Microsoft.Maui.Controls;
-
 namespace DailyBudgetMAUIApp.Handlers;
 
 public partial class ReadMoreAccordion : ContentView

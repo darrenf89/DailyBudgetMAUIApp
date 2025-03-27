@@ -6,9 +6,8 @@
     xmlns:local="clr-namespace:DailyBudgetMAUIApp"
     xmlns:Pages="clr-namespace:DailyBudgetMAUIApp.Pages"
     Shell.FlyoutBehavior="Disabled"
-    Shell.TabBarIsVisible="True"
-    xmlns:ContentDI="clr-namespace:Maui.FixesAndWorkarounds;assembly=PureWeen.Maui.FixesAndWorkarounds">
-    
+    Shell.TabBarIsVisible="True">
+
     <ShellItem Route="LandingPage" FlyoutItemIsVisible="False">
         <ShellContent ContentTemplate="{DataTemplate Pages:LandingPage}"/>
     </ShellItem>

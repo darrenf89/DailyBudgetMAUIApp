@@ -214,6 +214,9 @@ public partial class MainPage : BasePage
                 App.CurrentPopUp = null;
             }
 
+            var popup = new PopUpOTP(70, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ShareBudget", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+
         }
         catch (Exception ex)
         {

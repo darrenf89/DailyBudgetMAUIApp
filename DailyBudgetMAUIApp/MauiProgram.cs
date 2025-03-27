@@ -1,21 +1,21 @@
 ﻿using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
-using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Handlers;
-using Microsoft.Extensions.Logging;
-using IeuanWalker.Maui.Switch;
-using Maui.FixesAndWorkarounds;
-using The49.Maui.BottomSheet;
-using DotNet.Meteor.HotReload.Plugin;
 using DailyBudgetMAUIApp.Popups;
+using DailyBudgetMAUIApp.ViewModels;
+using DotNet.Meteor.HotReload.Plugin;
+using IeuanWalker.Maui.Switch;
 using Maui.FreakyEffects;
-using Plugin.MauiMTAdmob;
+using Microsoft.Extensions.Logging;
+using Plugin.LocalNotification;
 using Plugin.Maui.AppRating;
+using Plugin.MauiMTAdmob;
 using Syncfusion.Licensing;
 using Syncfusion.Maui.Core.Hosting;
-using Plugin.LocalNotification;
+using The49.Maui.BottomSheet;
+using YourAppNamespace.Droid;
 
 namespace DailyBudgetMAUIApp;
 
@@ -33,7 +33,6 @@ public static class MauiProgram
             .UseSwitch()
             .UseMauiCommunityToolkit()
             .ConfigureSyncfusionCore()
-            .ConfigureMauiWorkarounds()
             .UseBottomSheet()
             .UseMauiMTAdmob()
             .ConfigureFonts(fonts =>
@@ -68,6 +67,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IProductTools, ProductTools>();
         builder.Services.AddSingleton<IAppRating>(AppRating.Default);
         builder.Services.AddSingleton<INotificationPermissions, NotificationPermissionsImplementation>();
+        builder.Services.AddSingleton<IKeyboardService, KeyboardService>();
 
         //Pages
         builder.Services.AddTransient<MainPage>();

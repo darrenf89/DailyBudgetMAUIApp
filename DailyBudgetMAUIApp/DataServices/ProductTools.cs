@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.Messaging;
 using DailyBudgetMAUIApp.Converters;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Helpers;
@@ -13,6 +14,7 @@ using Plugin.LocalNotification.AndroidOption;
 using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography;
+using static DailyBudgetMAUIApp.Pages.ViewAccounts;
 
 
 
@@ -1239,7 +1241,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
                     if (Transaction.TransactionDate.GetValueOrDefault().Date == GetBudgetLocalTime(DateTime.UtcNow).Date)
                     {
-                        var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), this);
+                        var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
                         var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                         if ((string)result.ToString() == "OK")
                         {
@@ -1336,7 +1338,7 @@ namespace DailyBudgetMAUIApp.DataServices
             if (budget.NextIncomePayday.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
             {
                 //Confirm pay amount and date!
-                var popup = new PopupDailyPayDay(budget, new PopupDailyPayDayViewModel(), this);
+                var popup = new PopupDailyPayDay(budget, new PopupDailyPayDayViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
                 var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if ((string)result.ToString() == "OK")
@@ -1500,7 +1502,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         }
                         else
                         {
-                            var popup = new PopupDailySaving(Saving, new PopupDailySavingViewModel(), this);
+                            var popup = new PopupDailySaving(Saving, new PopupDailySavingViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
                             var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                             if ((string)result.ToString() == "OK")
@@ -1565,7 +1567,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (Bill.BillDueDate.GetValueOrDefault().Date == budget.BudgetValuesLastUpdated.Date)
                 {
-                    var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), this);
+                    var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
                     var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                     if ((string)result.ToString() == "OK")
@@ -1630,7 +1632,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (Income.DateOfIncomeEvent.Date == budget.BudgetValuesLastUpdated.Date)
                 {
-                    var popup = new PopupDailyIncome(Income, new PopupDailyIncomeViewModel(), this);
+                    var popup = new PopupDailyIncome(Income, new PopupDailyIncomeViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
                     var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                     if ((string)result.ToString() == "OK")
                     {
@@ -1698,7 +1700,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         if (Transaction.TransactionDate.GetValueOrDefault().Date < GetBudgetLocalTime(DateTime.UtcNow).Date)
                         {
-                            var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), this);
+                            var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
                             var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                             if ((string)result.ToString() == "OK")
                             {
@@ -2007,7 +2009,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     Preferences.Remove("NavigationType");
                     Preferences.Remove("NavigationID");
 
-                    var popup = new PopUpOTP(ShareBudgetRequestID, new PopUpOTPViewModel(_ds, this), "ShareBudget", this, _ds);
+                    var popup = new PopUpOTP(ShareBudgetRequestID, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ShareBudget", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
                     var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                     if ((string)result.ToString() != "User Closed")
@@ -2431,7 +2433,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task PayBillNow(Bills Bill, Budgets budget)
         {
-            var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), this, true);
+            var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), true);
             var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
             if ((string)result.ToString() == "OK")
@@ -2455,7 +2457,7 @@ namespace DailyBudgetMAUIApp.DataServices
             PayPeriodStats Stats = budget.PayPeriodStats[Index];
 
             //Confirm pay amount and date!
-            var popup = new PopupDailyPayDay(budget, new PopupDailyPayDayViewModel(), this, true);
+            var popup = new PopupDailyPayDay(budget, new PopupDailyPayDayViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), true);
             var result = await Application.Current.MainPage.ShowPopupAsync(popup);
 
             if ((string)result.ToString() == "OK")

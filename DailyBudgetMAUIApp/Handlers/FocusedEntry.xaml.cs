@@ -1,13 +1,13 @@
 
-using Maui.FixesAndWorkarounds;
+using DailyBudgetMAUIApp.DataServices;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
 public partial class FocusedEntry : ContentView
 {
-	public FocusedEntry()
+    public FocusedEntry()
 	{
-		InitializeComponent();
+        InitializeComponent();
 
         FEEntry.TextChanged += (sender, args) =>
         {
@@ -215,7 +215,8 @@ public partial class FocusedEntry : ContentView
     {
         EventHandler<FocusEventArgs> handler = Focused;
         handler?.Invoke(this, e);
-        FEEntry.ShowKeyboard();        
+        var keyboardService = IPlatformApplication.Current.Services.GetService<IKeyboardService>();
+        keyboardService.ShowKeyboard();
     }   
     
     public new event EventHandler<FocusEventArgs> Unfocused;
@@ -223,7 +224,8 @@ public partial class FocusedEntry : ContentView
     {
         EventHandler<FocusEventArgs> handler = Unfocused;
         handler?.Invoke(this, e);
-        FEEntry.HideKeyboard();        
+        var keyboardService = IPlatformApplication.Current.Services.GetService<IKeyboardService>();
+        keyboardService.HideKeyboard();
     }
 
     private void FEEntry_Focused(object sender, FocusEventArgs e)
