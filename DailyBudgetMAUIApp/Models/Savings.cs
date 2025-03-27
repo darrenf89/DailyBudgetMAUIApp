@@ -22,6 +22,8 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         private bool isSavingsClosed = false;
         [ObservableProperty]
+        private bool isSavingsPaused = false;
+        [ObservableProperty]
         private decimal? savingsGoal = 0;
         [ObservableProperty]
         private bool canExceedGoal;

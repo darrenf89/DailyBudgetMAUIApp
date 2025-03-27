@@ -10,28 +10,28 @@
     xmlns:ContentDI="clr-namespace:Maui.FixesAndWorkarounds;assembly=PureWeen.Maui.FixesAndWorkarounds">
     
     <ShellItem Route="LandingPage" FlyoutItemIsVisible="False">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:LandingPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:LandingPage}"/>
     </ShellItem>
 
     <ShellItem Route="LoadUpPage" FlyoutItemIsVisible="False">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:LoadUpPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:LoadUpPage}"/>
     </ShellItem>
 
     <TabBar x:Name="MainTabBar">
         <Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate local:MainPage}" />
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
         </Tab>
         <Tab Title="Bill" Route="AddBill" Icon="bill.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddBill}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>
         </Tab>
         <Tab Route="AddTransaction" Title="Transaction" Icon="transaction.svg">
             <ShellContent ContentTemplate="{DataTemplate Pages:AddTransaction}"/>
         </Tab>
         <Tab Route="AddIncome" Title="Income" Icon="income.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddIncome}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddIncome}"/>
         </Tab>
         <Tab Route="AddSaving" Title="Saving" Icon="saving.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddSaving}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddSaving}"/>
         </Tab>
     </TabBar>
 
@@ -54,7 +54,7 @@
     </TabBar>
 
     <ShellItem Route="PatchNotes" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:PatchNotes}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:PatchNotes}"/>
     </ShellItem>
 
     <ShellItem Route="ViewCalendar" FlyoutItemIsVisible="False">
@@ -62,15 +62,15 @@
     </ShellItem>
 
     <ShellItem Route="ViewCategories" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
     </ShellItem>
 
     <ShellItem Route="ViewCategory" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewCategory}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:ViewCategory}"/>
     </ShellItem>
 
     <ShellItem Route="ViewPayees" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewPayees}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:ViewPayees}"/>
     </ShellItem>
 
 </Shell>

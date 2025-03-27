@@ -595,7 +595,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             foreach (Savings Saving in Budget.Savings)
             {
-                if (!Saving.IsSavingsClosed)
+                if (!Saving.IsSavingsClosed && !Saving.IsSavingsPaused)
                 {
                     if (Saving.IsRegularSaving & Saving.SavingsType == "SavingsBuilder")
                     {
@@ -1115,7 +1115,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 Savings Saving = Budget.Savings[i];
 
-                if (!Saving.IsSavingsClosed)
+                if (!Saving.IsSavingsClosed && !Saving.IsSavingsPaused)
                 {
                     if (Saving.IsRegularSaving)
                     {
@@ -1377,8 +1377,6 @@ namespace DailyBudgetMAUIApp.DataServices
                                 Saving.LastUpdatedValue = Saving.PeriodSavingValue;
                                 Saving.GoalDate = budget.NextIncomePayday;
                             }
-
-
                         }
 
                         budget.Savings[i] = Saving;
