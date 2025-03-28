@@ -108,6 +108,13 @@ public class MainActivity : MauiAppCompatActivity
         CrossMauiMTAdmob.Current.OnResume();
     }
 
+    protected override void OnPause()
+    {
+        var _pt = IPlatformApplication.Current.Services.GetService<ILogService>();
+        _pt.CopyLogFileToExternalAsync();
+        base.OnPause();
+    }
+
     protected override void OnNewIntent(Android.Content.Intent intent)
     {
         base.OnNewIntent(intent);

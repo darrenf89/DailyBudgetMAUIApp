@@ -68,6 +68,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IAppRating>(AppRating.Default);
         builder.Services.AddSingleton<INotificationPermissions, NotificationPermissionsImplementation>();
         builder.Services.AddSingleton<IKeyboardService, KeyboardService>();
+        builder.Services.AddSingleton<ILogService, LogService>();
 
         //Pages
         builder.Services.AddTransient<MainPage>();

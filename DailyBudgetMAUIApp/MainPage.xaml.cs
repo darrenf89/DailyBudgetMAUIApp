@@ -214,9 +214,6 @@ public partial class MainPage : BasePage
                 App.CurrentPopUp = null;
             }
 
-            var popup = new PopUpOTP(70, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ShareBudget", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-
         }
         catch (Exception ex)
         {
@@ -378,6 +375,32 @@ public partial class MainPage : BasePage
             _vm.IsUnreadMessage = _vm.DefaultBudget.AccountInfo.NumberUnreadMessages > 0;
             await LoadPayeeChartData();
             await LoadBudgetCalendar();
+
+            Application.Current.Resources.TryGetValue("Success", out var Success);
+            Application.Current.Resources.TryGetValue("Danger", out var Danger);
+
+            Color LabelColor;
+            if (_vm.DefaultBudget.LeftToSpendDailyAmount > 0)
+            {
+                LabelColor = (Color)Success;
+            }
+            else
+            {
+                LabelColor = (Color)Danger;
+            }
+
+            Label label = new Label
+            {
+                Text = _vm.DefaultBudget.LeftToSpendDailyAmount.ToString("c", CultureInfo.CurrentCulture),
+                Padding = new Thickness(0, 0, 0, 5),
+                TextColor = LabelColor,
+                VerticalOptions = LayoutOptions.Center,
+                Margin = new Thickness(0),
+                FontSize = 16,
+                FontAttributes = FontAttributes.Bold
+            };
+
+            MainSFGaugeAnnotation.Content = label;
         }
     }
 

@@ -597,38 +597,41 @@ namespace DailyBudgetMAUIApp.DataServices
 
             foreach (Savings Saving in Budget.Savings)
             {
-                if (!Saving.IsSavingsClosed && !Saving.IsSavingsPaused)
+                if (!Saving.IsSavingsClosed)
                 {
-                    if (Saving.IsRegularSaving & Saving.SavingsType == "SavingsBuilder")
+                    if(!Saving.IsSavingsPaused)
                     {
-                        DailySavingOutgoing += Saving.RegularSavingValue ?? 0;
-                        PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToPayDay);
-                    }
-                    else if (Saving.IsRegularSaving)
-                    {
-                        DailySavingOutgoing += Saving.RegularSavingValue ?? 0;
-                        //check if goal date is before pay day
-                        int DaysToSaving = (int)Math.Ceiling((Saving.GoalDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
-                        if (DaysToSaving < DaysToPayDay)
+                        if (Saving.IsRegularSaving & Saving.SavingsType == "SavingsBuilder")
                         {
-                            PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToSaving);
+                            DailySavingOutgoing += Saving.RegularSavingValue ?? 0;
+                            PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToPayDay);
+                        }
+                        else if (Saving.IsRegularSaving)
+                        {
+                            DailySavingOutgoing += Saving.RegularSavingValue ?? 0;
+                            //check if goal date is before pay day
+                            int DaysToSaving = (int)Math.Ceiling((Saving.GoalDate.GetValueOrDefault().Date - Budget.BudgetValuesLastUpdated.Date).TotalDays);
+                            if (DaysToSaving < DaysToPayDay)
+                            {
+                                PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToSaving);
+                            }
+                            else
+                            {
+                                PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToPayDay);
+                            }
+
                         }
                         else
                         {
-                            PeriodTotalSavingOutgoing += ((Saving.RegularSavingValue ?? 0) * DaysToPayDay);
+                            PeriodEnvelopeBalance += Saving.CurrentBalance ?? 0;
                         }
-
-                    }
-                    else
-                    {
-                        PeriodEnvelopeBalance += Saving.CurrentBalance ?? 0;
                     }
                 }
 
                 if (Saving.CurrentBalance >= 0)
                 {
                     PeriodTotalSavingOutgoing += Saving.CurrentBalance ?? 0;
-                }                
+                }
             }
 
             Budget.DailySavingOutgoing = DailySavingOutgoing;

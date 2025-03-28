@@ -245,7 +245,7 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <gauge:SfRadialGauge  Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" MaximumHeightRequest="100" MaximumWidthRequest="100" Margin="5,0,0,0">
+                            <gauge:SfRadialGauge x:Name="MainSFGauge"  Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" MaximumHeightRequest="100" MaximumWidthRequest="100" Margin="5,0,0,0">
                                 <gauge:SfRadialGauge.Axes>
                                     <gauge:RadialAxis StartAngle="150" EndAngle="30" Minimum="0" Maximum="{Binding DefaultBudget.StartDayDailyAmount}" Interval="0" AnimationDuration="3000" EnableLoadingAnimation="True" RadiusFactor="0.95">
                                         <gauge:RadialAxis.AxisLineStyle>
@@ -255,7 +255,7 @@
                                             <gauge:RadialRange StartValue="0" EndValue="{Binding DefaultBudget.LeftToSpendDailyAmount}" Fill="{StaticResource SuccessBrush}"/>
                                         </gauge:RadialAxis.Ranges>
                                         <gauge:RadialAxis.Annotations>
-                                            <gauge:GaugeAnnotation x:Name="annotation" DirectionUnit="Angle" DirectionValue="90" PositionFactor="0">
+                                            <gauge:GaugeAnnotation x:Name="MainSFGaugeAnnotation" DirectionUnit="Angle" DirectionValue="90" PositionFactor="0">
                                                 <gauge:GaugeAnnotation.Content>
                                                     <Label Text="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColor}}" Padding="0,0,0,5" Margin="0" VerticalOptions="Center"/>
                                                 </gauge:GaugeAnnotation.Content>

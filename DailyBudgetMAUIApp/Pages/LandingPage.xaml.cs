@@ -49,7 +49,7 @@ public partial class LandingPage : BasePage
                 App.DefaultBudgetID = userDetails.DefaultBudgetID;
                 await _pt.SetSubDetails();
 
-                if (await SecureStorage.Default.GetAsync("Session") == null)
+                if (SecureStorage.Default.GetAsync("Session").Result == null)
                 {
                     AuthDetails Auth = new()
                     {
@@ -102,7 +102,7 @@ public partial class LandingPage : BasePage
                     Preferences.Remove(nameof(App.DefaultBudgetID));
                 }
 
-                if (await SecureStorage.Default.GetAsync("Session") != null)
+                if (SecureStorage.Default.GetAsync("Session").Result != null)
                 {
                     SecureStorage.Default.Remove("Session");
                 }
@@ -112,7 +112,7 @@ public partial class LandingPage : BasePage
         }
         else
         {
-            if (await SecureStorage.Default.GetAsync("Session") != null)
+            if (SecureStorage.Default.GetAsync("Session").Result != null)
             {
                 SecureStorage.Default.Remove("Session");
             }

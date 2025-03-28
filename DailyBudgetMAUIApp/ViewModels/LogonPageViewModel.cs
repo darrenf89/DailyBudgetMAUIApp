@@ -218,7 +218,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                             App.HasVisitedCreatePage = false;
                                             await _pt.SetSubDetails();
 
-                                            if (await SecureStorage.Default.GetAsync("Session") != null)
+                                            if (SecureStorage.Default.GetAsync("Session").Result != null)
                                             {
                                                 SecureStorage.Default.Remove("Session");
                                             }

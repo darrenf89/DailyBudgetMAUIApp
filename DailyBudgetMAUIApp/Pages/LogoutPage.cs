@@ -21,7 +21,7 @@ public class LogoutPage : ContentPage
             Preferences.Remove(nameof(App.DefaultBudgetID));
         }
 
-        if (await SecureStorage.Default.GetAsync("Session") != null)
+        if (SecureStorage.Default.GetAsync("Session").Result != null)
         {
             SecureStorage.Default.Remove("Session");
         }

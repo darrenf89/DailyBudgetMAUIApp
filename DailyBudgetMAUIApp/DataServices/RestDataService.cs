@@ -22,13 +22,15 @@ namespace DailyBudgetMAUIApp.DataServices
         private readonly JsonSerializerOptions _jsonSerialiserOptions;
 
         private readonly int maxRetries = 5;
-        private readonly int delayMilliseconds = 500;
-        private readonly TimeSpan timeoutMilliseconds = TimeSpan.FromMilliseconds(3000);
+        private readonly int delayMilliseconds = 200;
+        private readonly TimeSpan timeoutMilliseconds = TimeSpan.FromMilliseconds(8000);
         private DateTime LastServerHealthCheck;
 
         private bool IsRefreshingToken = false;
 
-        public RestDataService()
+        private readonly ILogService _ls;
+
+        public RestDataService(ILogService ls)
         {
             _httpClient = new HttpClient
             {
@@ -42,7 +44,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-
+            _ls = ls;
         }
 
         public async Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog)
@@ -317,7 +319,12 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 Sessions = await RefreshSession(Sessions);
                 SessionString = JsonConvert.SerializeObject(Sessions);
-                await SecureStorage.Default.SetAsync("Session", SessionString);
+
+                if (SecureStorage.Default.GetAsync("Session").Result != null)
+                {
+                    SecureStorage.Default.Remove("Session");
+                }
+                SecureStorage.Default.SetAsync("Session", SessionString);
 
                 _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionToken", Sessions.SessionToken);
                 _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionClient", Sessions.SessionUser);
@@ -352,7 +359,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 try
                 {
-                    attempt++;
+                    attempt++;                  
                     await CheckAndUpdateSession();
                     HttpResponseMessage response = _httpClient.GetAsync(requestURL).Result;
                     await HideServerConnectionPopup();
@@ -364,14 +371,20 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     return response;
                 }
+                catch (TaskCanceledException ex)
+                {
+                    await _ls.LogErrorAsync($"GET REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
+                }
                 catch (Exception ex)
                 {
                     if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
                     {
-                        Console.WriteLine("The request timed out.");
+                        await _ls.LogErrorAsync($"GET REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
                     }
                     else
                     {
+                        await _ls.LogErrorAsync($"GET REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
+
                         throw;
                     }
                 }
@@ -416,14 +429,21 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     return response;
                 }
+                catch (TaskCanceledException ex)
+                {
+                    await _ls.LogErrorAsync($"POST REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
+
+                }
                 catch (Exception ex)
                 {
                     if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
                     {
-                        Console.WriteLine("The request timed out.");
+                        await _ls.LogErrorAsync($"POST REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
+
                     }
                     else
                     {
+                        await _ls.LogErrorAsync($"POST REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
                         throw;
                     }
                 }
@@ -455,6 +475,7 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 try
                 {
+
                     attempt++;
                     await CheckAndUpdateSession();
                     HttpResponseMessage response = _httpClient.PatchAsync(requestURL, content).Result;
@@ -467,14 +488,20 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     return response;
                 }
+                catch (TaskCanceledException ex)
+                {
+                    await _ls.LogErrorAsync($"PATCH REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
+
+                }
                 catch (Exception ex)
                 {
                     if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
                     {
-                        Console.WriteLine("The request timed out.");
+                        await _ls.LogErrorAsync($"PATCH REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
                     }
                     else
                     {
+                        await _ls.LogErrorAsync($"PATCH REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
                         throw;
                     }
                 }
@@ -518,14 +545,20 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     return response;
                 }
+                catch (TaskCanceledException ex)
+                {
+                    await _ls.LogErrorAsync($"PUT REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
+
+                }
                 catch (Exception ex)
                 {
                     if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
                     {
-                        Console.WriteLine("The request timed out.");
+                        await _ls.LogErrorAsync($"PUT REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
                     }
                     else
                     {
+                        await _ls.LogErrorAsync($"PATCH REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
                         throw;
                     }
                 }
