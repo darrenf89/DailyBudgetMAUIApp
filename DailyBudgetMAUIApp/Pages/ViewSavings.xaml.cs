@@ -28,26 +28,7 @@ public partial class ViewSavings : BasePage
         try
         {
             base.OnAppearing();
-
-            _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-            List<Savings> S = _ds.GetBudgetRegularSaving(App.DefaultBudgetID).Result;
-
-            _vm.TotalSavings = 0;
-            _vm.Budget.DailySavingOutgoing = 0;
-            _vm.Savings.Clear();
-        
-            foreach (Savings saving in S)
-            {
-                _vm.TotalSavings += saving.CurrentBalance.GetValueOrDefault();
-                _vm.Budget.DailySavingOutgoing += saving.RegularSavingValue.GetValueOrDefault();
-                _vm.Savings.Add(saving);
-            }
-
-            double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
-            _vm.SignOutButtonWidth = ScreenWidth - 60;
-
-            int DaysToPayDay = (int)Math.Ceiling((_vm.Budget.NextIncomePayday.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
-            _vm.PayDaySavings = _vm.Budget.DailySavingOutgoing * DaysToPayDay;
+            await LoadPageData();
 
             if (App.CurrentPopUp != null)
             {
@@ -59,6 +40,33 @@ public partial class ViewSavings : BasePage
         {
             await _pt.HandleException(ex, "ViewSavings", "OnAppearing");
         }
+    }
+
+    private async Task LoadPageData()
+    {
+        _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
+        List<Savings> S = _ds.GetBudgetRegularSaving(App.DefaultBudgetID).Result;
+
+        _vm.TotalSavings = 0;
+        _vm.Budget.DailySavingOutgoing = 0;
+        _vm.Savings.Clear();
+
+        foreach (Savings saving in S)
+        {
+            _vm.TotalSavings += saving.CurrentBalance.GetValueOrDefault();
+            if (!saving.IsSavingsPaused)
+            {
+                _vm.Budget.DailySavingOutgoing += saving.RegularSavingValue.GetValueOrDefault();
+            }
+            _vm.Savings.Add(saving);
+        }
+
+        double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
+        _vm.SignOutButtonWidth = ScreenWidth - 60;
+
+        int DaysToPayDay = (int)Math.Ceiling((_vm.Budget.NextIncomePayday.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
+        _vm.PayDaySavings = _vm.Budget.DailySavingOutgoing * DaysToPayDay;
+
     }
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
@@ -172,6 +180,89 @@ public partial class ViewSavings : BasePage
         }
     }
 
+    private async void UnPause_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            var Saving = (Savings)e.Parameter;
+            bool result = await Shell.Current.DisplayAlert($"Pause {Saving.SavingsName}?", $"Are you sure you want to pause the saving {Saving.SavingsName}, we will recalculate your budget and stop putting money into this saving everyday!", "Yes", "Cancel");
+
+            if (result)
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(1);
+
+                result = await _ds.UnPauseSaving(Saving.SavingID,App.DefaultBudgetID) == "OK" ? true : false;
+                if (result)
+                {
+                    await _ds.ReCalculateBudget(App.DefaultBudgetID);
+                    App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                    App.IsBudgetUpdated = true;
+                }
+
+                await LoadPageData();
+
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+
+
+            }         
+
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewSavings", "UnPause_Tapped");
+        }
+    }
+    private async void Pause_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            var Saving = (Savings)e.Parameter;
+            bool result = await Shell.Current.DisplayAlert($"Restart Saving {Saving.SavingsName}?", $"Are you sure you want to restart saving for {Saving.SavingsName}, we will recalculate your budget and start putting money into this saving everyday!", "Yes", "Cancel");
+
+            if (result)
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(1);
+
+                result = await _ds.PauseSaving(Saving.SavingID, App.DefaultBudgetID) == "OK" ? true : false;
+                if (result)
+                {
+                    await _ds.ReCalculateBudget(App.DefaultBudgetID);
+                    App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                    App.IsBudgetUpdated = true;
+                }
+
+                await LoadPageData();
+
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "ViewSavings", "Pause_Tapped");
+        }
+    }
     private async void MoveBalance_Tapped(object sender, TappedEventArgs e)
     {
         try
@@ -182,20 +273,7 @@ public partial class ViewSavings : BasePage
             var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             if (result.ToString() == "OK")
             {
-                List<Savings> S = _ds.GetBudgetRegularSaving(App.DefaultBudgetID).Result;
-
-                _vm.TotalSavings = 0;
-                _vm.Budget.DailySavingOutgoing = 0;
-                _vm.Savings.Clear();
-
-                foreach (Savings saving in S)
-                {
-                    _vm.TotalSavings += saving.CurrentBalance.GetValueOrDefault();
-                    _vm.Budget.DailySavingOutgoing += saving.RegularSavingValue.GetValueOrDefault();
-                    _vm.Savings.Add(saving);
-                }
-
-                App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                await LoadPageData();
 
             }
         }

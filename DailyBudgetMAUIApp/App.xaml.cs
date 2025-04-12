@@ -33,6 +33,7 @@ public partial class App : Application
 	public static UserDetailsModel UserDetails;	
 	public static bool IsPremiumAccount;	
 	public static int DefaultBudgetID;
+	public static bool IsBudgetUpdated;
     public static Budgets DefaultBudget;
     public static DateTime SessionLastUpdate;
     public static bool HasVisitedCreatePage;

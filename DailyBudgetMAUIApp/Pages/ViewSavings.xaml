@@ -58,7 +58,7 @@
                                         </Border.Shadow>
                                         <Image HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="18" Source="{Binding ., Converter={StaticResource SavingToGlyph}}"/>
                                     </Border>
-                                    <Label Margin="0,0,0,0" Padding="0" VerticalOptions="Start" Text="{Binding SavingsName}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
+                                    <Label Margin="0,0,0,0" Padding="0" VerticalOptions="Start" Text="{Binding .,Converter={StaticResource SavingsNameToText}}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
                                     <Label Margin="0,0,0,10" FontAttributes="Bold" Padding="0" Text="{Binding SavingsType, Converter={StaticResource SavingsTypeToText}}" TextColor="{StaticResource Tertiary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="1" IsVisible="{Binding IsSavingsClosed, Converter={StaticResource BoolConverter}}"/>
                                     <Label Margin="0,0,0,10" Text="Goal completed" FontAttributes="Bold" TextColor="{StaticResource Tertiary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="1" IsVisible="{Binding IsSavingsClosed}"/>
                                     <VerticalStackLayout IsVisible="{Binding IsSavingsClosed, Converter={StaticResource BoolConverter}}" Grid.Row="2" Grid.Column="1">
@@ -180,7 +180,7 @@
                                                 <TapGestureRecognizer Tapped="MoveBalance_Tapped" CommandParameter="{Binding .}"/>
                                             </VerticalStackLayout.GestureRecognizers>
                                         </VerticalStackLayout>
-                                        <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="50" IsVisible="{Binding ., Converter={StaticResource IsSavingsBuilder}}">
+                                        <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="50" IsVisible="{Binding IsSavingsPaused, Converter={StaticResource BoolConverter}}">
                                             <Border BackgroundColor="White" Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource Gray900Brush}" StrokeThickness="1" StrokeShape="RoundRectangle 20">
                                                 <Border.Shadow>
                                                     <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource PrimaryDarkBrush}" Radius="5" />
@@ -193,7 +193,23 @@
                                             </Border>
                                             <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Pause"/>
                                             <VerticalStackLayout.GestureRecognizers>
-                                                <TapGestureRecognizer Tapped="MoveBalance_Tapped" CommandParameter="{Binding .}"/>
+                                                <TapGestureRecognizer Tapped="Pause_Tapped" CommandParameter="{Binding .}"/>
+                                            </VerticalStackLayout.GestureRecognizers>
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout VerticalOptions="Center" Margin="2,0,2,0" WidthRequest="50" IsVisible="{Binding IsSavingsPaused}">
+                                            <Border BackgroundColor="White" Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource Gray900Brush}" StrokeThickness="1" StrokeShape="RoundRectangle 20">
+                                                <Border.Shadow>
+                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource PrimaryDarkBrush}" Radius="5" />
+                                                </Border.Shadow>
+                                                <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                                    <Image.Source>
+                                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Pause}" Size="22" Color="{DynamicResource Primary}"/>
+                                                    </Image.Source>
+                                                </Image>
+                                            </Border>
+                                            <Label HorizontalTextAlignment="Center" LineBreakMode="WordWrap" TextColor="{StaticResource Info}" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" Text="Restart"/>
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="UnPause_Tapped" CommandParameter="{Binding .}"/>
                                             </VerticalStackLayout.GestureRecognizers>
                                         </VerticalStackLayout>
                                     </FlexLayout>

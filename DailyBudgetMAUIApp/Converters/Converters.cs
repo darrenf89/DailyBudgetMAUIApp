@@ -1530,6 +1530,34 @@ namespace DailyBudgetMAUIApp.Converters
 
     }
 
+    public class SavingsNameToText : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return "";
+
+            if (value is Savings saving)
+            {
+                if(saving.IsSavingsPaused)
+                {
+                    return $"{saving.SavingsName} (Paused)";
+                }
+                else
+                {
+                    return saving.SavingsName;
+                }
+            }
+
+            return "";
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
     public class SavingsTypeToText : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)

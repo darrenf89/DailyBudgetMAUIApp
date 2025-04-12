@@ -1935,6 +1935,64 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
         }
 
+        public async Task<string> UnPauseSaving(int SavingID, int BudgetID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/unpausesaving/{SavingID}/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        return "OK";
+                    }
+
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<string> PauseSaving(int SavingID, int BudgetID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/pausesaving/{SavingID}/{BudgetID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        return "OK";
+                    }
+
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
         public async Task<List<Savings>> GetAllBudgetSavings(int BudgetID)
         {
             List<Savings> Savings = new List<Savings>();

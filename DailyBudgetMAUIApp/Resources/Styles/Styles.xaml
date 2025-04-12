@@ -47,6 +47,7 @@
     <converters:EventTypeToString x:Key="EventTypeToString" />
     <converters:PayeeText x:Key="PayeeText" />
     <converters:SavingsTypeToText x:Key="SavingsTypeToText"/>
+    <converters:SavingsNameToText x:Key="SavingsNameToText"/>
     <converters:BillDueDate x:Key="BillDueDate"/>
     <converters:BillTypeConverter x:Key="BillTypeConverter"/>
     <converters:IsBorrowPayTextConverter x:Key="IsBorrowPayTextConverter"/>

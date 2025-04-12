@@ -126,7 +126,7 @@ namespace DailyBudgetMAUIApp.Models
         {
             foreach(Savings Saving in Savings)
             {
-                if(!Saving.IsRegularSaving)
+                if(!Saving.IsRegularSaving && !Saving.IsSavingsClosed)
                 {
                     this.DaysLeftToSpend = (int)Math.Ceiling((Saving.GoalDate.GetValueOrDefault().Date - DateTime.Now.Date).TotalDays);
 

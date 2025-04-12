@@ -43,7 +43,7 @@ public partial class MainPage : BasePage
     protected async override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+        _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;  
 
         DateTime PermissionRequestExpiry = new();
         if (Preferences.ContainsKey(nameof(PermissionRequestExpiry)))
@@ -112,6 +112,12 @@ public partial class MainPage : BasePage
     {        
         try
         {
+            if (App.IsBudgetUpdated)
+            {
+                _vm.DefaultBudget = App.DefaultBudget;
+                App.IsBudgetUpdated = false;
+            }
+
             base.OnAppearing();
 
             ProcessSnackBar();
@@ -1428,7 +1434,7 @@ public partial class MainPage : BasePage
                 TextColor = (Color)Primary,
                 Margin = new Thickness(0)
             };
-            lblTitle.SetBinding(Label.TextProperty, "SavingsName");
+            lblTitle.SetBinding(Label.TextProperty, ".", BindingMode.Default, new SavingsNameToText());
             grid.AddWithSpan(lblTitle, 0, 1, 1, 2);
 
             Label lblSavingType = new Label

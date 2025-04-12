@@ -538,7 +538,7 @@
                             <BoxView Color="{StaticResource Gray100}" HeightRequest="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7" Margin="10,5,10,10"/>
                             <HorizontalStackLayout Grid.Row="9" Grid.Column="1" Margin="10,0,10,0">
                                 <Label VerticalOptions="Center" Text="Days to Next Envelope Stash | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
-                                <Label VerticalOptions="Center" Text="{Binding EnvelopeStats.DaysLeftToSpend, StringFormat='{0} Days'}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
+                                <Label VerticalOptions="Center" Text="{Binding DefaultBudget.NextIncomePayday, Converter={StaticResource DateToNumberOfDays}}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
                             </HorizontalStackLayout>
                             <HorizontalStackLayout Grid.Row="8" Grid.Column="1" Margin="10,0,10,0">
                                 <Label VerticalOptions="Center" Text="Number of Envelopes | " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Info}" CharacterSpacing="0"/>
