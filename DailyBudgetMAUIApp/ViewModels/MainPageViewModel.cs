@@ -338,11 +338,15 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                var page = new LoadingPage();
-                await Application.Current.Windows[0].Navigation.PushModalAsync(page);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
 
-                await Application.Current.Windows[0].Navigation.PopModalAsync();
-                await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
+                await Task.Delay(1);
+                await Shell.Current.GoToAsync($"/{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
             }
             catch (Exception ex)
             {
@@ -356,8 +360,14 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                var page = new LoadingPage();
-                await Application.Current.Windows[0].Navigation.PushModalAsync(page);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(1);
 
                 if (Preferences.ContainsKey(nameof(App.UserDetails)))
                 {
@@ -372,13 +382,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 App.DefaultBudgetID = 0;
                 App.DefaultBudget = null;
 
-                if (Application.Current.Windows[0].Navigation.ModalStack.Any())
-                {
-                    await Application.Current.Windows[0].Navigation.PopModalAsync();
-                }
-
                 Application.Current!.MainPage = new AppShell();
-
                 await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
             }
             catch (Exception ex)

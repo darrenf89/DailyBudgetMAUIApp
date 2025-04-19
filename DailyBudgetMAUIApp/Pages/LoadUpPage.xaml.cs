@@ -1,3 +1,4 @@
+using AndroidX.Core.View;
 using DailyBudgetMAUIApp.ViewModels;
 
 
@@ -11,6 +12,18 @@ public partial class LoadUpPage : BasePage
 		this.BindingContext = viewModel;
 
     }
+
+    protected async override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
+    }
+
 
 
 }

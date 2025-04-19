@@ -286,8 +286,14 @@ public partial class EditAccountDetails : BasePage
     {
         try
         {
-            var page = new LoadingPage();
-            await Application.Current.Windows[0].Navigation.PushModalAsync(page);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(1);
 
             if (Preferences.ContainsKey(nameof(App.UserDetails)))
             {
@@ -309,7 +315,6 @@ public partial class EditAccountDetails : BasePage
 
             Application.Current!.MainPage = new AppShell();
             LocalNotificationCenter.Current.CancelAll();
-            await Application.Current.Windows[0].Navigation.PopModalAsync();
             await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
         }
         catch (Exception ex)

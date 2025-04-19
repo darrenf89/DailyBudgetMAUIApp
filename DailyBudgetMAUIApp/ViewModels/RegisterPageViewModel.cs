@@ -97,11 +97,17 @@ namespace DailyBudgetMAUIApp.ViewModels
                     return;
                 }
 
-                var page = new LoadingPage();
-                await Application.Current.Windows[0].Navigation.PushModalAsync(page);
-
                 if (IsAgreedToTerms && String.Equals(Password, PasswordConfirm))
                 {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+
+                    await Task.Delay(1);
+
                     UserDetailsModel UserDetails = await _ds.GetUserDetailsAsync(Email);
                     if(UserDetails.Error != null)
                     {
@@ -110,7 +116,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         NewUser.Password = Password;
                         NewUser.IsDPAPermissions = IsDPAPermissions;
                         NewUser.IsAgreedToTerms = IsAgreedToTerms;
-                       NewUser.NickName = NickName;
+                        NewUser.NickName = NickName;
                         NewUser.ProfilePicture = "Avatar1";
                         
                         NewUser = _pt.CreateUserSecurityDetails(NewUser);
@@ -119,7 +125,12 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         if(ReturnUser.Error == null)
                         {
-                            await Application.Current.Windows[0].Navigation.PopModalAsync();
+                            if (App.CurrentPopUp != null)
+                            {
+                                await App.CurrentPopUp.CloseAsync();
+                                App.CurrentPopUp = null;
+                            }
+
                             string status = await _ds.CreateNewOtpCode(ReturnUser.UserID, "ValidateEmail");
                             if (status == "OK")
                             {
@@ -151,7 +162,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     App.HasVisitedCreatePage = false;
                                     await _pt.SetSubDetails();
 
-                                    await Application.Current.Windows[0].Navigation.PopModalAsync();
                                     await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
                                 }
                                 else
@@ -166,21 +176,30 @@ namespace DailyBudgetMAUIApp.ViewModels
                             }
                             else
                             {
-                                await Application.Current.Windows[0].Navigation.PopModalAsync();
+                                if (App.CurrentPopUp != null)
+                                {
+                                    await App.CurrentPopUp.CloseAsync();
+                                    App.CurrentPopUp = null;
+                                }
+
                                 await Application.Current.Windows[0].Page.DisplayAlert("Opps", "There was an error sending you an OTP code to verify you email! Please click the link to create a new one so you can continue your daily budgeting journey", "OK");
 
                             }
                         }
                         else
                         {
-                            await Application.Current.Windows[0].Navigation.PopModalAsync();
                             await Application.Current.Windows[0].Page.DisplayAlert("Opps", "There was an error creating your User account, please try again!", "OK");
                         }
 
                     }
                     else
                     {
-                        await Application.Current.Windows[0].Navigation.PopModalAsync();
+                        if (App.CurrentPopUp != null)
+                        {
+                            await App.CurrentPopUp.CloseAsync();
+                            App.CurrentPopUp = null;
+                        }
+
                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "This Email is already taken, reset your password or try a different Email", "OK");
                     }
                 }
@@ -188,12 +207,22 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     if(IsAgreedToTerms)
                     {
-                        await Application.Current.Windows[0].Navigation.PopModalAsync();
+                        if (App.CurrentPopUp != null)
+                        {
+                            await App.CurrentPopUp.CloseAsync();
+                            App.CurrentPopUp = null;
+                        }
+
                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "Your Passwords don't match ...", "OK");
                     }
                     else
                     {
-                        await Application.Current.Windows[0].Navigation.PopModalAsync();
+                        if (App.CurrentPopUp != null)
+                        {
+                            await App.CurrentPopUp.CloseAsync();
+                            App.CurrentPopUp = null;
+                        }
+
                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "You have to agree to our Terms of Service", "OK");
                     }
                 }

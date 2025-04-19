@@ -716,8 +716,6 @@ public partial class CreateNewBudget : BasePage
 
             if (ValidateFinaliseBudget())
             {
-                var page = new LoadingPage();
-                await Application.Current.Windows[0].Navigation.PushModalAsync(page);
 
                 await _vm.SaveStage("Finalise Budget");
                 await _vm.SaveStage("Create Budget");
@@ -740,7 +738,6 @@ public partial class CreateNewBudget : BasePage
 
             }
 
-            //popup.Close();
         }
         catch (Exception ex)
         {
