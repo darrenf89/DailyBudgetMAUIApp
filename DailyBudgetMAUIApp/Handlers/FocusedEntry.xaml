@@ -12,7 +12,7 @@
                     <On Platform="iOS" Value="5,4,5,4"/>
                 </OnPlatform>
             </Border.Padding>
-            <handlers:BorderlessEntry x:Name="FEEntry" VerticalOptions="Center" HorizontalOptions="Center" Focused="FEEntry_Focused" Unfocused="FEEntry_Unfocused" Text="{Binding Source={x:Reference CustomFocusedEntry}, Path=Text}"/>
+            <handlers:BorderlessEntry x:Name="FEEntry" VerticalOptions="Center" HorizontalOptions="Center" Focused="FEEntry_Focused" Unfocused="FEEntry_Unfocused" Text="{Binding Source={x:Reference CustomFocusedEntry}, Path=Text}" BackgroundColor="{StaticResource White}"/>
         </Border>
     </Grid>
 </ContentView>

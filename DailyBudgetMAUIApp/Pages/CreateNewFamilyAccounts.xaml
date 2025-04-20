@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DailyBudgetMAUIApp"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="DailyBudgetMAUIApp.Pages.CreateNewFamilyAccounts"
+             xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
+             xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             Shell.TabBarIsVisible="False"
+             Shell.NavBarIsVisible="True"
+             droid:NavigationBar.Color="{StaticResource PrimaryDark}"
+             droid:NavigationBar.Style="LightContent"
+             Title="{Binding Title}">
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*" x:Name="TitleView">
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
+        </Grid>
+    </Shell.TitleView>
+    <ScrollView>
+        <Grid ColumnDefinitions="*" RowDefinitions="*">
+            <Grid Grid.Row="0" Grid.Column="0" BackgroundColor="#80000000" ColumnDefinitions="*,Auto,*" RowDefinitions="*,Auto,2*" IsVisible="{Binding IsShowInfo}" HorizontalOptions="Fill" ZIndex="99">
+                <Border Grid.Row="1" Grid.Column="1" Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 20">
+                    <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto">
+                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding InfoTitle}" FontAttributes="Bold" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Center" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource PrimaryDark}" Margin="0,10,0,20" Padding="10,0,10,0"/>
+                        <Label Grid.Row="1" Grid.Column="0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="10,0,10,20" Text="{Binding InfoText}"/>
+                        <Button Grid.Row="2" Grid.Column="0" Command="{Binding CloseInfoBoxCommand}" Padding="20,10,20,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Ok" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource PrimaryDark}" CornerRadius="8" Style="{StaticResource TitleButtons}" TextColor="White" Margin="80,20,80,10"/>
+                    </Grid>
+                </Border>
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto,*" ColumnDefinitions="*">
+                <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                    <HorizontalStackLayout Margin="10,5,0,5">
+                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}" Text="Create a Budget: " Padding="0"/>
+                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" Padding="0" Text="{Binding Stage}"/>
+                        <ImageButton Command="{Binding ShowInfoBoxCommand}" WidthRequest="20" HeightRequest="20" CornerRadius="5" VerticalOptions="Center" Margin="5,0,0,0">
+                            <ImageButton.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Info}" Color="{DynamicResource Info}"/>
+                            </ImageButton.Source>
+                        </ImageButton>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Margin="0" Padding="0">
+                        <BoxView HeightRequest="5"  Margin="10,0,3,0" WidthRequest="{Binding StageWidth}" Color="{Binding BvStage1}"/>
+                        <BoxView HeightRequest="5"  Margin="0,0,3,0" WidthRequest="{Binding StageWidth}" Color="{Binding BvStage2}"/>
+                        <BoxView HeightRequest="5"  Margin="0,0,3,0" WidthRequest="{Binding StageWidth}" Color="{Binding BvStage3}"/>
+                        <BoxView HeightRequest="5"  Margin="0,0,3,0" WidthRequest="{Binding StageWidth}" Color="{Binding BvStage4}"/>
+                        <BoxView HeightRequest="5"  Margin="0,0,3,0" WidthRequest="{Binding StageWidth}" Color="{Binding BvStage5}"/>
+                        <BoxView HeightRequest="5"  Margin="0,0,3,0" WidthRequest="{Binding StageWidth}" Color="{Binding BvStage6}"/>
+                        <BoxView HeightRequest="5"  Margin="0,0,3,0" WidthRequest="{Binding StageWidth}" Color="{Binding BvStage7}"/>
+                        <BoxView HeightRequest="5"  Margin="0,0,3,0" WidthRequest="{Binding StageWidth}" Color="{Binding BvStage8}"/>
+                        <BoxView HeightRequest="5"  Margin="0" WidthRequest="{Binding StageWidth}" Color="{Binding BvStage9}"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                    <VerticalStackLayout x:Name="VSLStage1" IsVisible="{Binding IsStageVisible1}" Padding="20,20,20,0">
+                        <Label Text="Account Email" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
+                        <Label Text="Enter the email you want to be associated with the family account, this has to be valid and not already in use for a family account." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,20" HeightRequest="44" IsEnabled="{Binding IsEmailEnabled}">
+                            <handlers:BorderlessEntry Margin="20,0,0,0" Text="{Binding AccountEmail}" IsEnabled="{Binding IsEmailEnabled}" HeightRequest="44"/>
+                        </Border>
+                        <Border Style="{StaticResource brdDanger}" Margin="5,10,0,10" VerticalOptions="Center" HorizontalOptions="Center" IsVisible="{Binding IsEmailExistsVisible, Converter={StaticResource BoolConverter}}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+                            <Label Text="{Binding IsEmailExistsText}" HorizontalTextAlignment="Center" VerticalOptions="Center" HorizontalOptions="Center" TextColor="{DynamicResource Danger}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
+                        </Border>
+                        <HorizontalStackLayout IsVisible="{Binding IsEmailValid, Converter={StaticResource BoolConverter}}"  Margin="10,0,10,0">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="{Binding IsEmailValidText}" Style="{StaticResource ErrorMessage}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="Account Name" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
+                        <Label Text="Enter a nick name which the family account will be know by to help you identify it and us communicate with it." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,20" HeightRequest="44">
+                            <handlers:BorderlessEntry Margin="20,0,0,0" TextColor="{DynamicResource Gray900}" Text="{Binding AccountName}" HeightRequest="44"/>
+                        </Border>
+                        <HorizontalStackLayout IsVisible="{Binding IsNameValid, Converter={StaticResource BoolConverter}}"  Margin="10,0,0,0">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="{Binding IsNameValidText}" Style="{StaticResource ErrorMessage}"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="VSLStage2" IsVisible="{Binding IsStageVisible2}" Padding="20,20,20,0">
+
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="VSLStage3" IsVisible="{Binding IsStageVisible3}" Padding="20,20,20,0">
+
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="VSLStage4" IsVisible="{Binding IsStageVisible4}" Padding="20,20,20,0">
+                        <Label Text="Currency Symbol" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
+                        <Label Text="Select your local or preferred currency, we will try and show all figures using your preferred currency symbol. If you want to change your choice click on your selection below" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                        <VerticalStackLayout x:Name="CurrencySearchBarLayout" IsVisible="{Binding SearchVisible}">
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,0" Stroke="{StaticResource Info}">
+                                <SearchBar x:Name="CurrencySearch" TextColor="{DynamicResource Gray900}" Margin="0" VerticalOptions="Center" HeightRequest="38" Text="{Binding CurrencySearchText}">
+                                </SearchBar>
+                            </Border>
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0"  Stroke="{StaticResource Info}" Margin="5,20,0,20">
+                                <CollectionView ItemsSource="{Binding CurrencySearchResults}" SelectionMode="Single" SelectedItem="{Binding SelectedCurrencySymbol}" HeightRequest="200" Margin="10">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Padding="5" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*">
+                                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding CurrencySymbol}" TextColor="{DynamicResource PrimaryDark}" Margin="0,0,0,2"/>
+                                                <Label Grid.Row="1" Grid.Column="0" Text="{Binding Code}" TextColor="{DynamicResource Gray900}" Margin="0,0,0,2"/>
+                                                <BoxView HeightRequest="1" Grid.Row="3" Grid.Column="0" Color="{StaticResource Gray100}"></BoxView>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Border>
+                        </VerticalStackLayout>
+                        <Border x:Name="CurrencySearchResultLayout" Style="{StaticResource StandardInputBorder}" IsVisible="{Binding SearchVisible, Converter={StaticResource BoolConverter}}" Margin="5,0,40,20" Stroke="{StaticResource Info}">
+                            <Label x:Name="lblSelectedCurrency" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}">
+                                <MultiBinding StringFormat="{}{2}">
+                                    <Binding Path="SelectedCurrencySymbol.CurrencySymbol"/>
+                                    <Binding Path="SelectedCurrencySymbol.Name"/>
+                                    <Binding Path="SelectedCurrencySymbol.Code"/>
+                                </MultiBinding>
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="ChangeSelectedCurrency_Tapped"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+                        <Label Text="Symbol Placement" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
+                        <Label Text="Select how you would like your choosen currency symbol to be palced." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrSymbolPlacement" Title="Select your currency symbol placement" ItemsSource="{Binding CurrencyPlacements}" ItemDisplayBinding="{Binding CurrencyPlacement}" SelectedItem="{Binding SelectedCurrencyPlacement}"/>
+                        </Border>
+                        <Label Text="Date Format" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
+                        <Label Text="Select your preferred date format, when presenting a date in numbers we will use this format." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrDateFormat" Title="Select your preferred Date Format" ItemsSource="{Binding DateFormats}" ItemDisplayBinding="{Binding DateFormat}" SelectedItem="{Binding SelectedDateFormats}"/>
+                        </Border>
+                        <Label Text="Number Format" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
+                        <Label Text="Select your preferred number format. Number of decimals, decimal symbol and number group seperator. " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrNumberFormat" Title="Select your preferred number format" ItemsSource="{Binding NumberFormats}" ItemDisplayBinding="{Binding NumberFormat}" SelectedItem="{Binding SelectedNumberFormats}"/>
+                        </Border>
+                        <Label Text="Budget Time Zone " FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
+                        <Label Text="Select the time zone for your budget. This will dictate when the daily budgetting happens so choose carefully!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrTimeZone" Title="Select your Time Zone" ItemsSource="{Binding TimeZones}" ItemDisplayBinding="{Binding TimeZoneDisplayName}" SelectedItem="{Binding SelectedTimeZone}"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="VSLStage5" IsVisible="{Binding IsStageVisible5}" Padding="20,20,20,0">
+
+
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="VSLStage6" IsVisible="{Binding IsStageVisible6}" Padding="20,20,20,0">
+
+
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="VSLStage7" IsVisible="{Binding IsStageVisible7}" Padding="20,20,20,0">
+
+
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="VSLStage8" IsVisible="{Binding IsStageVisible8}" Padding="20,20,20,0">
+
+
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="VSLStage9" IsVisible="{Binding IsStageVisible9}" Padding="20,20,20,0">
+
+
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+                <HorizontalStackLayout Grid.Row="2" Grid.Column="0" VerticalOptions="End" HorizontalOptions="End" Margin="0,10,20,20">
+                    <Border Style="{StaticResource ClearInfoBorder}" HeightRequest="44"  IsVisible="{Binding IsBackButtonVisible}" Stroke="{StaticResource Info}">
+                        <Button Margin="0" Padding="0" WidthRequest="80" Text="Back"  HorizontalOptions="Start" Style="{StaticResource ClearInfoButton}" Command="{Binding GoBackStageCommand}" IsEnabled="{Binding IsBackEnabled}"/>
+                    </Border>
+                    <Button Margin="20,0,0,0" WidthRequest="100" Text="Continue" HeightRequest="44" HorizontalOptions="Start" Style="{StaticResource SuccessButton}" Command="{Binding SaveStageCommand}" IsEnabled="{Binding IsContinueEnabled}"/>
+                </HorizontalStackLayout>
+            </Grid>
+        </Grid>
+    </ScrollView>
+</local:BasePage>

@@ -51,7 +51,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
                 {
                     if (App.UserDetails.UserID != 0)
                     {
-                        NewDevice.UserAccountID = App.UserDetails.UserID;
+                        NewDevice.UserAccountID = App.UserDetails.UniqueUserID;
                         NewDevice.LoginExpiryDate = App.UserDetails.SessionExpiry;
                     };
                 }

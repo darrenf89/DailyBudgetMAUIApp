@@ -1,4 +1,6 @@
+using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.ViewModels;
 using IeuanWalker.Maui.Switch.Events;
 using IeuanWalker.Maui.Switch.Helpers;
@@ -142,6 +144,31 @@ public partial class EditAccountSettings : BasePage
         _vm.NewPasswordMatch = true;
     }
 
+    private async void ViewFamilyAccount_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
+            }
+
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ManageFamilyAccounts)}");
+
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "EditAccountSettings", "ViewFamilyAccount_Clicked");
+        }
+    }
     private void UpdatePassword_Clicked(object sender, EventArgs e)
     {
         PasswordConfirmValidator.ForceValidate();

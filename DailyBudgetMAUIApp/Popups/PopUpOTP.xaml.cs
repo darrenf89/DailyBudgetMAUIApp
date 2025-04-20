@@ -177,6 +177,7 @@ public partial class PopUpOTP : Popup
                         {
                             _vm.OTPValidated = true;
                             CloseKeyBoard();
+                            App.CurrentPopUp = null;
                             this.Close("OK");
                         }
                         else
@@ -251,6 +252,7 @@ public partial class PopUpOTP : Popup
                         if(status == "OK")
                         {
                             CloseKeyBoard();
+                            App.CurrentPopUp = null;
                             this.Close("OK");
                         }
                         else
@@ -301,6 +303,7 @@ public partial class PopUpOTP : Popup
                         _vm.ShareBudgetRequest.IsVerified = true;
                         _vm.OTPValidated = true;
                         CloseKeyBoard();
+                        App.CurrentPopUp = null;
                         this.Close(_vm.ShareBudgetRequest);
                     }
                     else if(status == "Error")
@@ -355,7 +358,8 @@ public partial class PopUpOTP : Popup
     }
 
     private void Close_Window(object sender, EventArgs e)
-    { 
+    {
+        App.CurrentPopUp = null;
         this.Close("User Closed");
     }
 

@@ -42,6 +42,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute($"{nameof(ViewSupports)}", typeof(ViewSupports));
         Routing.RegisterRoute($"{nameof(ViewAccounts)}", typeof(ViewAccounts));
         Routing.RegisterRoute($"{nameof(LogoutPage)}", typeof(LogoutPage));
+        Routing.RegisterRoute($"{nameof(CreateNewFamilyAccounts)}", typeof(CreateNewFamilyAccounts));
 
         this.BindingContext = this;
     }

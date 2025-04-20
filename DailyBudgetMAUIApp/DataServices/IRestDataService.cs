@@ -84,6 +84,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> CreateNewOtpCode(int UserID, string OTPType);
         public Task<string> CreateNewOtpCodeShareBudget(int UserID, int ShareBudgetID);
         public Task<string> ValidateOTPCodeEmail(OTP UserOTP);
+        public Task<string> ValidateOTPCodeFamilyAccount(OTP UserOTP);
         public Task<int> GetUserIdFromEmail(string UserEmail);
         public Task<List<string>> GetPayeeList(int BudgetID);
         public Task<List<Payees>> GetPayeeListFull(int BudgetID);
@@ -126,5 +127,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> DeleteBankAccount(int ID);
         public Task<SessionDetails> RefreshSession(SessionDetails Details);
         public Task<SessionDetails> CreateSession(AuthDetails Details);
+        public Task<string?> FamilyAccountEmailValid(string Email, int UserID);
+        public Task<FamilyUserAccount> SetUpNewFamilyAccount(FamilyUserAccount User);
     }
 }

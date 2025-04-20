@@ -59,23 +59,21 @@
                                 <Label Text="Currency Symbol" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,10"/>
                                 <VerticalStackLayout x:Name="CurrencySearchBarLayout" IsVisible="{Binding SearchVisible}">
                                     <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,0" Stroke="{StaticResource Info}">
-                                        <SearchBar x:Name="CurrencySearch" TextColor="{DynamicResource Gray900}" Margin="0" VerticalOptions="Center" HeightRequest="38">
-                                            <SearchBar.Behaviors>
-                                                <xct:EventToCommandBehavior Command="{Binding CurrencySearchCommand}" EventName="TextChanged" CommandParameter="{Binding Text, Source={x:Reference CurrencySearch}}"/>
-                                            </SearchBar.Behaviors>
+                                        <SearchBar x:Name="CurrencySearch" TextColor="{DynamicResource Gray900}" Margin="0" VerticalOptions="Center" HeightRequest="38" Text="{Binding CurrencySearchText}">
                                         </SearchBar>
                                     </Border>
                                     <Border Style="{StaticResource StandardInputBorder}" Padding="0"  Stroke="{StaticResource Info}" Margin="5,20,0,20">
-                                        <ListView ItemsSource="{Binding CurrencySearchResults}" SelectionMode="Single" SelectedItem="{Binding SelectedCurrencySymbol}" HeightRequest="200"  SeparatorColor="{DynamicResource Info}" Margin="10,10,10,10">
-                                            <ListView.ItemTemplate>
+                                        <CollectionView ItemsSource="{Binding CurrencySearchResults}" SelectionMode="Single" SelectedItem="{Binding SelectedCurrencySymbol}" HeightRequest="200" Margin="10">
+                                            <CollectionView.ItemTemplate>
                                                 <DataTemplate>
-                                                    <TextCell Text="{Binding CurrencySymbol}" Detail="{Binding Code}" DetailColor="{DynamicResource Gray900}" TextColor="{DynamicResource PrimaryDark}"/>
+                                                    <Grid Padding="5" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*">
+                                                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding CurrencySymbol}" TextColor="{DynamicResource PrimaryDark}" Margin="0,0,0,2"/>
+                                                        <Label Grid.Row="1" Grid.Column="0" Text="{Binding Code}" TextColor="{DynamicResource Gray900}" Margin="0,0,0,2"/>
+                                                        <BoxView HeightRequest="1" Grid.Row="3" Grid.Column="0" Color="{StaticResource Gray100}"></BoxView>
+                                                    </Grid>
                                                 </DataTemplate>
-                                            </ListView.ItemTemplate>
-                                            <ListView.Behaviors>
-                                                <xct:EventToCommandBehavior EventName="ItemSelected" Command="{Binding CurrencySymbolSelectedCommand}" EventArgsConverter="{StaticResource SelectedItemEventArgsConverter}"/>
-                                            </ListView.Behaviors>
-                                        </ListView>
+                                            </CollectionView.ItemTemplate>
+                                        </CollectionView>
                                     </Border>
                                 </VerticalStackLayout>
                                 <Border x:Name="CurrencySearchResultLayout" Style="{StaticResource StandardInputBorder}" IsVisible="{Binding SearchVisible, Converter={StaticResource BoolConverter}}" Margin="5,0,0,20" Stroke="{StaticResource Info}">

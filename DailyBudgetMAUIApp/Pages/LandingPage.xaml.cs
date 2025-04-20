@@ -55,7 +55,7 @@ public partial class LandingPage : BasePage
                     {
                         ClientID = DeviceInfo.Current.Name,
                         ClientSecret = userDetails.Password,
-                        UserID = userDetails.UserID
+                        UserID = userDetails.UniqueUserID
                     };
 
                     SessionDetails Session = await _ds.CreateSession(Auth);
@@ -72,7 +72,7 @@ public partial class LandingPage : BasePage
                     FirebaseDevices UserDevice = new FirebaseDevices
                     {
                         FirebaseDeviceID = FirebaseID,
-                        UserAccountID = userDetails.UserID,
+                        UserAccountID = userDetails.UniqueUserID,
                         LoginExpiryDate = userDetails.SessionExpiry,
                         FirebaseToken = SecureStorage.Default.GetAsync("FirebaseToken").Result
                     };

@@ -137,6 +137,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                 RegisterSuccess = true;
 
                                 var popup = new PopUpOTP(ReturnUser.UserID, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ValidateEmail", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
+                                App.CurrentPopUp = popup;
                                 var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                                 if((string)result.ToString() == "OK")

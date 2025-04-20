@@ -54,6 +54,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private lut_BudgetTimeZone selectedTimeZone;
         [ObservableProperty]
         private bool isBorrowPay;
+        [ObservableProperty]
+        private string currencySearchText;
 
         public string PayDayTypeText { get; set; }
         public string PayAmountText { get; set; }
@@ -108,16 +110,15 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        [RelayCommand]
-        async void CurrencySearch(string query)
+        async partial void OnCurrencySearchTextChanged(string value)
         {
             try
-            {            
-                CurrencySearchResults = _ds.GetCurrencySymbols(query).Result;
+            {
+                CurrencySearchResults = _ds.GetCurrencySymbols(value).Result;
             }
             catch (Exception ex)
             {
-                if(ex.Message == "One or more errors occurred. (No currencies found)")
+                if (ex.Message == "One or more errors occurred. (No currencies found)")
                 {
                     lut_CurrencySymbol cs = new lut_CurrencySymbol();
                     cs.Code = "No results please, try again!";
@@ -126,7 +127,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 }
                 else
                 {
-                    await _pt.HandleException(ex, "CreateNewBudget", "CurrencySearch");
+                    await _pt.HandleException(ex, "CreateNewFamilyAccounts", "CurrencySearch");
                 }
             }
         }
@@ -159,12 +160,17 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        [RelayCommand]
-        private void CurrencySymbolSelected(lut_CurrencySymbol item)
+        async partial void OnSelectedCurrencySymbolChanged(lut_CurrencySymbol oldValue, lut_CurrencySymbol newValue)
         {
-            SelectedCurrencySymbol = item;
-            SearchVisible = false;
-            CurrencySearchResults = null;
+            try
+            {
+                SearchVisible = false;
+                CurrencySearchResults = null;
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "CreateNewFamilyAccounts", "CurrencySymbolSelected");
+            }
         }
 
         [RelayCommand]
@@ -229,6 +235,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                 BudgetSettings.TimeZone = SelectedTimeZone.TimeZoneID;
 
                 await _ds.UpdateBudgetSettings(BudgetID, BudgetSettings);
+
+
 
                 App.CurrentSettings.IsUpdatedFlag = true;
 

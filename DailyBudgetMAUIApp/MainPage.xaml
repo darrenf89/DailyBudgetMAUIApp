@@ -658,6 +658,60 @@
                             </VerticalStackLayout>
                         </Border>
                     </AbsoluteLayout>
+                    <AbsoluteLayout x:Name="absIncome" IsVisible="false">
+                        <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="0,0,10,10"/>
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="5" />
+                            </Border.Shadow>
+                            <Image Source="incomeicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0" x:Name="brdIncomeCarousel"  AbsoluteLayout.LayoutBounds="0,0">
+                            <VerticalStackLayout>
+                                <AbsoluteLayout>
+                                    <VerticalStackLayout x:Name="IncomeCarousel">
+
+                                    </VerticalStackLayout>
+                                    <HorizontalStackLayout x:Name="IncomeCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
+
+                                    </HorizontalStackLayout>
+                                </AbsoluteLayout>
+                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
+                                    <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                    <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="See All Extra Income Events" TextColor="{DynamicResource Info}"/>
+                                    <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="1" Grid.Column="1" >
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer x:Name="ExtraIncoDetails" Tapped="ExtraIncoDetails_Tapped"/>
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </AbsoluteLayout>
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding IsPremiumAccount}">
+                        <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
+                            <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
+                                <Label Margin="0" Padding="0,0,5,0" VerticalOptions="Start" Text="View Family Accounts"  FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                                <Label Margin="0" Padding="0,0,5,5" VerticalOptions="End" Text="Click here to manage your familty accounts!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray600}"/>
+                            </VerticalStackLayout>
+                            <Grid BackgroundColor="{DynamicResource Tertiary}" Grid.Column="2" Grid.Row="0" Padding="10,0,10,0" ColumnDefinitions="*" RowDefinitions="*">
+                                <Image BackgroundColor="Transparent" Margin="0,10,0,10" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Family_restroom}" Size="40"  Color="{DynamicResource White}"/>
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="ViewManageFamilyAccounts" Tapped="ViewManageFamilyAccounts_Tapped" />
+                        </Border.GestureRecognizers>
+                    </Border>
                     <Border Style="{DynamicResource DashboardMainContent}" Padding="0,0,0,0" x:Name="brdCategoryDetails" IsVisible="{Binding IsPremiumAccount}">
                         <VerticalStackLayout>
                             <Grid RowDefinitions="Auto,200" ColumnDefinitions="45, *, *">
@@ -719,41 +773,6 @@
                             </Grid>
                         </VerticalStackLayout>
                     </Border>
-                    <AbsoluteLayout x:Name="absIncome" IsVisible="false">
-                        <Border HeightRequest="75" WidthRequest="75" BackgroundColor="{StaticResource White}" Stroke="{StaticResource Primary}" StrokeThickness="2" AbsoluteLayout.LayoutBounds="0.9,-3,75,75" AbsoluteLayout.LayoutFlags="XProportional" ZIndex="99">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="0,0,10,10"/>
-                            </Border.StrokeShape>
-                            <Border.Shadow>
-                                <Shadow Offset="0,15" Opacity="0.3" Brush="{DynamicResource Black}" Radius="5" />
-                            </Border.Shadow>
-                            <Image Source="incomeicon.png" WidthRequest="40" HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
-                        <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0" x:Name="brdIncomeCarousel"  AbsoluteLayout.LayoutBounds="0,0">
-                            <VerticalStackLayout>
-                                <AbsoluteLayout>
-                                    <VerticalStackLayout x:Name="IncomeCarousel">
-
-                                    </VerticalStackLayout>
-                                    <HorizontalStackLayout x:Name="IncomeCarouselIdent" AbsoluteLayout.LayoutBounds="0.5,1" HeightRequest="30" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" VerticalOptions="Center">
-
-                                    </HorizontalStackLayout>
-                                </AbsoluteLayout>
-                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
-                                    <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                                    <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="See All Extra Income Events" TextColor="{DynamicResource Info}"/>
-                                    <Image VerticalOptions="Center" Margin="0,0,10,0" Grid.Row="1" Grid.Column="1" >
-                                        <Image.Source>
-                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Chevron_right}" Size="30" Color="{DynamicResource Info}"/>
-                                        </Image.Source>
-                                    </Image>
-                                    <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer x:Name="ExtraIncoDetails" Tapped="ExtraIncoDetails_Tapped"/>
-                                    </Grid.GestureRecognizers>
-                                </Grid>
-                            </VerticalStackLayout>
-                        </Border>
-                    </AbsoluteLayout>
                     <Button WidthRequest="{Binding SignOutButtonWidth}" Command="{Binding SignOutCommand}" Style="{DynamicResource buttonClicked}" Text="Sign Out" HeightRequest="50" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,0,5,20" FontSize="20" CornerRadius="25" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
                 </VerticalStackLayout>
             </ScrollView>

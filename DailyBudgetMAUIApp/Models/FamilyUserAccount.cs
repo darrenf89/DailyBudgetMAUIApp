@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.Models
 {
-    public partial class UserDetailsModel : ObservableObject
+    public partial class FamilyUserAccount : ObservableObject
     {
         [ObservableProperty]
         public int userID;
@@ -16,28 +16,38 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public string password;
         [ObservableProperty]
+        public string salt;
+        [ObservableProperty]
         public bool isEmailVerified;
         [ObservableProperty]
         public DateTime sessionExpiry;
         [ObservableProperty]
-        public int defaultBudgetID;
-        [ObservableProperty]
-        public int previousDefaultBudgetID;
-        [ObservableProperty]
-        public string? defaultBudgetType;
-        public ErrorClass? Error { get; set; } = null;
+        public int budgetID;
         [ObservableProperty]
         public bool isDPAPermissions;
         [ObservableProperty]
         public bool isAgreedToTerms;
         [ObservableProperty]
-        public string? subscriptionType;
-        [ObservableProperty]
-        public DateTime subscriptionExpiry;
-        [ObservableProperty]
         public string? profilePicture;
         [ObservableProperty]
-        public bool hasFamiltyAccounts;
+        public bool isActive;
+        [ObservableProperty]
+        public bool isConfirmed;
+        [ObservableProperty]
+        public int parentUserID;
+        [ObservableProperty]
+        public int? assignedBudgetID;
+        [ObservableProperty]
+        public DateTime accountCreated;
+        [ObservableProperty]
+        public DateTime lastLoggedOn;
 
     }
+
+    public class FamilyUserAccountValidEmailObject
+    {
+        public bool? IsValid { get; set; }
+        public string? InvalidReason { get; set; }
+    }
+
 }

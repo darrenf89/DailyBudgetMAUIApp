@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DailyBudgetMAUIApp"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="DailyBudgetMAUIApp.Pages.ManageFamilyAccounts"
+             xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
+             xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
+             Shell.TabBarIsVisible="True"
+             Shell.NavBarIsVisible="True"
+             droid:NavigationBar.Color="{StaticResource PrimaryDark}"
+             droid:NavigationBar.Style="LightContent"
+             Title="{Binding Title}">
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="25,*" x:Name="TitleView">
+            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" x:Name="HomeButton" Command="{Binding BackButtonCommand}" HorizontalOptions="Center" Grid.Column="0" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Home}" Size="35" />
+                </Button.ImageSource>
+            </Button>
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
+        </Grid>
+    </Shell.TitleView>
+    <Grid ColumnDefinitions="*" RowDefinitions="Auto, *, Auto">
+        <Grid BackgroundColor="{StaticResource Primary}" ColumnDefinitions="*" RowDefinitions="Auto, Auto" Grid.Row="0" Grid.Column="0" >
+            <Label Margin="20,0,0,20" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Manage all your family’s accounts in one place! Stay organized, track spending, and keep everyone on the same page because budgeting is better when you do it together." TextColor="White" FontSize="{Binding Source=Header, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" Padding="0,0,5,0"/>
+        </Grid>
+        <ScrollView Grid.Row="1" Grid.Column="0">
+            <StackLayout BindableLayout.ItemsSource="{Binding FilteredSupports}" >
+                <BindableLayout.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15" Padding="20" BackgroundColor="White">
+                        <Image Source="family_portrait.png" WidthRequest="100" HeightRequest="100" Aspect="AspectFit" Opacity="0.5"/>
+                        <Label Text="No family accounts" FontSize="24" FontAttributes="Bold" TextColor="Gray" HorizontalOptions="Center"/>
+                        <Label Text="Click add family account to create a family account and get budgetting together!" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" TextColor="Gray" HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </BindableLayout.EmptyView>
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout touchEffects:TouchEffect.Color="{StaticResource PrimaryLightLight}" BackgroundColor="{Binding IsActive, Converter={StaticResource BoolToColorDisabledReverse}}">
+
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </StackLayout>
+        </ScrollView>
+        <Grid RowDefinitions="Auto" ColumnDefinitions="*" BackgroundColor="{StaticResource Primary}" x:Name="Footer" Grid.Row="2" Grid.Column="0">
+            <Button Command="{Binding AddNewFamilyAccountCommand}" WidthRequest="{Binding SignOutButtonWidth}" Grid.Row="0" Grid.Column="0" Style="{DynamicResource buttonClicked}" Text="Add new account" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,10,5,10" FontSize="18" CornerRadius="20" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
+        </Grid>
+    </Grid></local:BasePage>

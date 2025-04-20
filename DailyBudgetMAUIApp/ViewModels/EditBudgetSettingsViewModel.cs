@@ -114,6 +114,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private bool hasBorrowPayChanged;
         [ObservableProperty]
         private bool isMultipleAccounts;
+        [ObservableProperty]
+        private string currencySearchText;
 
         [RelayCommand]
         public async Task IsBorrowPayToggledCommand()
@@ -572,12 +574,11 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        [RelayCommand]
-        async Task CurrencySearch(string query)
+        async partial void OnCurrencySearchTextChanged(string value)
         {
             try
             {
-                CurrencySearchResults = await _ds.GetCurrencySymbols(query);
+                CurrencySearchResults = _ds.GetCurrencySymbols(value).Result;
             }
             catch (Exception ex)
             {
@@ -590,27 +591,22 @@ namespace DailyBudgetMAUIApp.ViewModels
                 }
                 else
                 {
-                    await _pt.HandleException(ex, "EditBudgetSettings", "CurrencySearch");
+                    await _pt.HandleException(ex, "CreateNewFamilyAccounts", "CurrencySearch");
                 }
             }
         }
 
-        
-
-        [RelayCommand]
-        private void CurrencySymbolSelected(lut_CurrencySymbol item)
+        async partial void OnSelectedCurrencySymbolChanged(lut_CurrencySymbol oldValue, lut_CurrencySymbol newValue)
         {
             try
             {
-                SelectedCurrencySymbol = item;
                 SearchVisible = false;
                 CurrencySearchResults = null;
             }
             catch (Exception ex)
             {
-                _pt.HandleException(ex, "EditBudgetSettings", "CurrencySymbolSelected");
+                await _pt.HandleException(ex, "CreateNewFamilyAccounts", "CurrencySymbolSelected");
             }
-
         }
 
         [RelayCommand]

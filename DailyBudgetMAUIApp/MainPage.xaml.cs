@@ -1223,6 +1223,7 @@ public partial class MainPage : BasePage
         try
         {
             var popup = new PopUpOTP(_vm.DefaultBudget.AccountInfo.BudgetShareRequestID, new PopUpOTPViewModel(_ds, _pt), "ShareBudget", _pt, _ds);
+            App.CurrentPopUp = popup;
             var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if ((string)result.ToString() != "User Closed")
@@ -2446,6 +2447,33 @@ public partial class MainPage : BasePage
     private void RefreshView_Refreshing(object sender, EventArgs e)
     {
         LoadMainDashboardContent();
+    }
+
+    private async void ViewManageFamilyAccounts_Tapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
+            }
+
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ManageFamilyAccounts)}");
+
+        }
+        catch (Exception ex)
+        {
+            _pt.HandleException(ex, "MainPage", "ViewManageFamilyAccounts_Tapped");
+        }
+
     }
 
     private void SavingsMoreOptions_Tapped(object sender, TappedEventArgs e)

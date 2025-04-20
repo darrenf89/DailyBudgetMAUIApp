@@ -211,6 +211,13 @@
                                     </Border>
                                     <Button Clicked="UpdatePassword_Clicked" Command="{Binding UpdatePasswordCommand}" Padding="0,0,0,0" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Update Password" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Info}" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
                                 </VerticalStackLayout>
+                                <VerticalStackLayout Margin="5,15,5,0" x:Name="FamilyAccounts" HorizontalOptions="Fill">
+                                    <Label Text="Family Accounts!" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="0,0,0,15"/>
+                                    <Button Clicked="ViewFamilyAccount_Clicked" Padding="0,0,0,0" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="View Family Accounts" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Info}" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
+                                    <Grid ColumnDefinitions="*" RowDefinitions="*" HorizontalOptions="Fill">
+                                        <handlers:ReadMoreAccordion Grid.Row="0" Grid.Column="0" Margin="0,5,0,10" HorizontalOptions="Start" TextBody="With a premium account, you can set up individual profiles for your children and other family members, giving everyone the tools to manage their money confidently. Whether it's setting up a regular pocket money transfer or a one-time allowance, you control how and when funds are shared. Each family member gets access to the same powerful features of dbudget, like goal tracking, spending insights, and savings challenges—so even kids can start building smart money habits early. It’s a fun and practical way to teach financial literacy while keeping the whole family financially connected."/>
+                                    </Grid>
+                                </VerticalStackLayout>                                
                                 <VerticalStackLayout Margin="5,15,5,0" x:Name="DPASetting" HorizontalOptions="Fill">
                                     <Label Text="Agree to be contacted by dBudget?" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="0,0,0,5"/>
                                     <Grid ColumnDefinitions="60,*" Margin="0,0,0,0" HeightRequest="40">

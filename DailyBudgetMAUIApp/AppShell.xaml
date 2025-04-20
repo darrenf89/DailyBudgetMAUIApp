@@ -52,6 +52,12 @@
         </Tab>
     </TabBar>
 
+    <TabBar x:Name="FamilyAccountsTabBar">
+        <Tab Route="ManageFamilyAccounts" Title="Manage" Icon="dashboard.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:ManageFamilyAccounts}"/>
+        </Tab>
+    </TabBar>
+
     <ShellItem Route="PatchNotes" FlyoutItemIsVisible="True">
         <ShellContent ContentTemplate="{DataTemplate Pages:PatchNotes}"/>
     </ShellItem>

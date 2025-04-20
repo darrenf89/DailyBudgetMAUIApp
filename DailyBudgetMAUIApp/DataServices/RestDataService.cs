@@ -5,9 +5,12 @@ using DailyBudgetMAUIApp.ViewModels;
 using DailySpendWebApp.Models;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using static Android.Telecom.Call;
+using static AndroidX.ConstraintLayout.Core.Motion.Utils.HyperSpline;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -2677,6 +2680,38 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
         }
 
+        public async Task<string> ValidateOTPCodeFamilyAccount(OTP UserOTP)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<OTP>(UserOTP, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/otp/validateotpcodefamilyaccount", request);
+
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return "Error";
+                }
+                else if (response.IsSuccessStatusCode)
+                {
+                    return "OK";
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
         public async Task<int> GetUserIdFromEmail(string UserEmail)
         {
             UserDetailsModel User = new UserDetailsModel();
@@ -3339,12 +3374,22 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
                 else
                 {
+                    if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        return "Incorrect Code";
+                    }
+
                     ErrorClass error = new ErrorClass();
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
                         Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
                         error = serializer.Deserialize<ErrorClass>(reader);
+
+                        if(error.ErrorMessage == "No budget share request")
+                        {
+                            return "Error";
+                        }
                     }
 
                     throw new Exception(error.ErrorMessage);
@@ -3898,6 +3943,82 @@ namespace DailyBudgetMAUIApp.DataServices
                     throw new Exception(error.ErrorMessage);
                 }
             }
+        }
+
+        public async Task<string?> FamilyAccountEmailValid(string Email, int UserID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/familyaccountemailvalid/{Email}/{UserID}");
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        var Result = serializer.Deserialize<FamilyUserAccountValidEmailObject>(reader);
+
+                        if (Result.IsValid.GetValueOrDefault())
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            switch (Result.InvalidReason)
+                            {
+                                case "EmailInUseByYou":
+                                    return "Sorry this email is in use by another one of you family accounts. Please delete this account or use another valid email to set up a new budget for a family member.";
+
+                                case "EmailInUseBySomeoneElse":
+                                default:
+                                    return "Sorry this email is in use by someone else. If you do not believe this is correct and are sure this is your email please contact us. Otherwise use another valid email.";
+                            }                            
+                        }
+                    }
+
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<FamilyUserAccount> SetUpNewFamilyAccount(FamilyUserAccount User)
+        {
+
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FamilyUserAccount>(User, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/userAccounts/setupnewfamilyaccount", request);
+            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        User = serializer.Deserialize<FamilyUserAccount>(reader);
+                    }
+
+                    return User;
+                }
+                else
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
+                        throw new Exception(error.ErrorMessage);
+                    }
+                }
         }
     }
 }

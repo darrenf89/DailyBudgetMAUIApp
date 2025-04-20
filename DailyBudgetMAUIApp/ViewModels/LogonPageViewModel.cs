@@ -89,6 +89,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 await ResetSuccessFailureMessage();
 
                 var popup = new PopUpOTP(0, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ResetPassword", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
+                App.CurrentPopUp = popup;
                 var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if((string)result.ToString() == "OK")
@@ -176,6 +177,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 if (status == "OK" || status == "MaxLimit")
                                                 {
                                                     var popup = new PopUpOTP(userDetails.UserID, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ValidateEmail", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
+                                                    App.CurrentPopUp = popup;
                                                     var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                                                     if ((string)result.ToString() == "OK")
@@ -227,7 +229,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                             {
                                                 ClientID = DeviceInfo.Current.Name,
                                                 ClientSecret = userDetails.Password,
-                                                UserID = userDetails.UserID
+                                                UserID = userDetails.UniqueUserID
                                             };
 
                                             SessionDetails Session = await _ds.CreateSession(Auth);
@@ -241,7 +243,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 FirebaseDevices UserDevice = new FirebaseDevices
                                                 {
                                                     FirebaseDeviceID = FirebaseID,
-                                                    UserAccountID = userDetails.UserID,
+                                                    UserAccountID = userDetails.UniqueUserID,
                                                     LoginExpiryDate = userDetails.SessionExpiry,
                                                     FirebaseToken = SecureStorage.Default.GetAsync("FirebaseToken").Result
                                                 };

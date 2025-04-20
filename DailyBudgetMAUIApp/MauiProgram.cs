@@ -106,6 +106,8 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewSupports>();
         builder.Services.AddTransient<ViewSupports>();
         builder.Services.AddTransient<ViewAccounts>();
+        builder.Services.AddTransient<ManageFamilyAccounts>();
+        builder.Services.AddTransient<CreateNewFamilyAccounts>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();
@@ -142,6 +144,8 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewSupportViewModel>();
         builder.Services.AddTransient<ViewSupportsViewModel>();
         builder.Services.AddTransient<ViewAccountsViewModel>();
+        builder.Services.AddTransient<ManageFamilyAccountsViewModel>();
+        builder.Services.AddTransient<CreateNewFamilyAccountsViewModel>();
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();
