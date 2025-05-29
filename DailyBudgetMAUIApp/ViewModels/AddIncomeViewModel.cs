@@ -1,16 +1,18 @@
 ﻿using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using static Java.Lang.ProcessBuilder;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     [QueryProperty(nameof(IncomeID), nameof(IncomeID))]
     [QueryProperty(nameof(NavigatedFrom), nameof(NavigatedFrom))]
+    [QueryProperty(nameof(FamilyAccountID), nameof(FamilyAccountID))]
     public partial class AddIncomeViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -20,6 +22,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private int  budgetID;
         [ObservableProperty]
         private int  incomeID;
+        [ObservableProperty]
+        private int familyAccountID;
         [ObservableProperty]
         private IncomeEvents  income;
         [ObservableProperty]
@@ -50,7 +54,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        public async void ChangeIncomeName()
+        public async Task ChangeIncomeName()
         {
             try
             {
@@ -72,7 +76,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        public async void BackButton()
+        public async Task BackButton()
         {
             try
             {
@@ -84,8 +88,19 @@ namespace DailyBudgetMAUIApp.ViewModels
                         App.CurrentPopUp = PopUp;
                         Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                }
+                else if (NavigatedFrom == "CreateNewFamilyAccount")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Incomes", false);
                 }
                 else if (NavigatedFrom == "ViewIncomes")
                 {
@@ -95,7 +110,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         App.CurrentPopUp = PopUp;
                         Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
                 }
                 else
@@ -112,7 +127,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public async void AddIncome()
         {
 
-            string SuccessCheck = _ds.SaveNewIncome(Income, BudgetID).Result;
+            string SuccessCheck = await _ds.SaveNewIncome(Income, BudgetID);
             if (SuccessCheck == "OK")
             {
                 if (NavigatedFrom == "CreateNewBudget")
@@ -123,8 +138,19 @@ namespace DailyBudgetMAUIApp.ViewModels
                         App.CurrentPopUp = PopUp;
                         Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                }
+                else if (NavigatedFrom == "CreateNewFamilyAccount")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Incomes", false);
                 }
                 else if (NavigatedFrom == "ViewIncomes")
                 {
@@ -134,7 +160,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         App.CurrentPopUp = PopUp;
                         Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
                 }
                 else
@@ -148,7 +174,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public async void UpdateIncome()
         {
 
-            string SuccessCheck = _ds.UpdateIncome(Income).Result;
+            string SuccessCheck = await _ds.UpdateIncome(Income);
             if (SuccessCheck == "OK")
             {
                 if (NavigatedFrom == "CreateNewBudget")
@@ -159,8 +185,19 @@ namespace DailyBudgetMAUIApp.ViewModels
                         App.CurrentPopUp = PopUp;
                         Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                }
+                else if (NavigatedFrom == "CreateNewFamilyAccount")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Incomes", false);
                 }
                 else if (NavigatedFrom == "ViewIncomes")
                 {
@@ -170,7 +207,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         App.CurrentPopUp = PopUp;
                         Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
                 }
                 else

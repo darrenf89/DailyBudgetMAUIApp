@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DailyBudgetMAUIApp"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:ViewModels="clr-namespace:DailyBudgetMAUIApp.ViewModels"
+             x:Class="DailyBudgetMAUIApp.Pages.FamilyAccountsEdit"
+             xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
+             xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
+             xmlns:sfavatar="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+             xmlns:sk="clr-namespace:Maui.FreakyEffects.Skeleton;assembly=Maui.FreakyEffects"
+             Shell.TabBarIsVisible="True"
+             Shell.NavBarIsVisible="True"
+             droid:NavigationBar.Color="{StaticResource PrimaryDark}"
+             droid:NavigationBar.Style="LightContent"
+             Title="{Binding Title}">
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="25,*" x:Name="TitleView">
+            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" x:Name="HomeButton" Command="{Binding BackButtonCommand}" HorizontalOptions="Center" Grid.Column="0" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Home}" Size="35" />
+                </Button.ImageSource>
+            </Button>
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
+        </Grid>
+    </Shell.TitleView>
+    <Grid ColumnDefinitions="*" RowDefinitions="Auto, *, Auto">
+        <Grid BackgroundColor="{StaticResource Primary}" ColumnDefinitions="*" RowDefinitions="Auto, Auto" Grid.Row="0" Grid.Column="0" >
+            <Border Style="{StaticResource StandardInputBorder}" Stroke="Transparent" Padding="0" Margin="20,10,20,15" HeightRequest="44" x:Name="vslPckrSwitchBudget"/>
+            <Grid.Shadow>
+                <Shadow Radius="10" Opacity="0.5" Offset="0, 2" Brush="Black"/>
+            </Grid.Shadow>
+        </Grid>
+        <ScrollView Grid.Row="1" Grid.Column="0">
+            <VerticalStackLayout Margin="10,5,10,0" x:Name="PayDaySetting" HorizontalOptions="Fill">
+                <Label Text="Accounts Parent Anchor Budget" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Padding="5,10,0,10"/>
+                <VerticalStackLayout Margin="5,0,0,0">
+                    <Label Text="Select Anchor Budget" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="0,0,0,10"/>
+                    <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="0,0,0,20" HeightRequest="44">
+                        <ContentView Content="{Binding SwitchParentBudgetPicker}" VerticalOptions="Start" HorizontalOptions="Start" touchEffects:TouchEffect.Color="{StaticResource PrimaryLightLight}" />
+                    </Border>
+                </VerticalStackLayout>
+                <Label Text="Allowance Details" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Padding="5,0,0,10"/>
+                <Label Text="Pay Amount" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,10"/>
+                <VerticalStackLayout Margin="5,0,0,0">
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}">
+                        <handlers:BorderlessEntry HeightRequest="44" CursorPosition="{Binding PayDayCursorPosition}" Text="{Binding PayAmountString}" TextColor="{DynamicResource Gray900}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entPayAmount" Keyboard="Numeric" />
+                    </Border>
+                    <HorizontalStackLayout IsVisible="{Binding ValidatorPayDayAmount}" Margin="0" x:Name="validatorPayDayAmount">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Can't get paid nothing" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+                <Label Text="When is Pay Day?" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,10"/>
+                <VerticalStackLayout Margin="5,0,0,0">
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0"  HeightRequest="44" Stroke="{StaticResource Info}">
+                        <DatePicker Margin="20,0,0,0" x:Name="dtpckPayDay" HeightRequest="44" TextColor="{DynamicResource Gray900}" Date="{Binding PayDayDate}"/>
+                    </Border>
+                    <HorizontalStackLayout IsVisible="{Binding ValidatorPayDay}" Margin="0" x:Name="validatorPayDay">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Select a pay day some time in the ... future" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+                <Label Text="How often?" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,10"/>
+                <VerticalStackLayout Margin="0,0,0,20">
+                    <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,0" HeightRequest="44" Stroke="{StaticResource Info}">
+                        <Grid RowDefinitions="*" ColumnDefinitions="*,*,*,*" VerticalOptions="Center">
+                            <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="Transparent">
+                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption1" Text="Option 1" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                </Label>
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Option1Select_Tapped"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="Transparent">
+                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption2" Text="Option 2" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                </Label>
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Option2Select_Tapped"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout x:Name="vslOption3Select" Grid.Column="2" BackgroundColor="Transparent" >
+                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption3" Text="Option 3" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                </Label>
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Option3Select_Tapped"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout x:Name="vslOption4Select" Grid.Column="3" BackgroundColor="Transparent" >
+                                <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption4" Text="Option 4" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                </Label>
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Option4Select_Tapped"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                    <HorizontalStackLayout IsVisible="{Binding ValidatorPayType}" Margin="5,0,0,0" x:Name="validatorPayType">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="You have to select how you get paid" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+                <VerticalStackLayout x:Name="vslOption1" IsVisible="false" Margin="0,0,0,20">
+                    <Label Text="Every nth ..." FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                        <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
+                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed" TextColor="{DynamicResource Gray900}" Text="{Binding EveryNthValue}"/>
+                        </Border>
+                        <Label Text="Duration of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="38" Grid.Column="1" Grid.Row="1" Stroke="{StaticResource Info}">
+                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration" SelectedItem="{Binding EveryNthDuration}">
+                                <Picker.ItemsSource>
+                                    <x:Array Type="{x:Type x:String}">
+                                        <x:String>days</x:String>
+                                        <x:String>weeks</x:String>
+                                        <x:String>months</x:String>
+                                    </x:Array>
+                                </Picker.ItemsSource>
+                            </handlers:BorderlessPicker>
+                        </Border>
+                    </Grid>
+                    <HorizontalStackLayout IsVisible="{Binding ValidatorEveryNthDuration}" Margin="5,5,0,0" x:Name="validatorEveryNthDuration">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Please insert your value" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+                <VerticalStackLayout x:Name="vslOption2" IsVisible="false">
+                    <Label Text=" ... Working days before the end of the month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                        <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
+                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entWorkingDaysValue" Keyboard="Numeric" TextChanged="WorkingDaysValue_Changed" TextColor="{DynamicResource Gray900}" Text="{Binding WorkingDaysValue}"/>
+                        </Border>
+                    </Grid>
+                    <HorizontalStackLayout IsVisible="{Binding ValidatorWorkingDayDuration}" Margin="5,5,0,0" x:Name="validatorWorkingDayDuration">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Please insert your value" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+                <VerticalStackLayout x:Name="vslOption3" IsVisible="false">
+                    <Label Text="On the ... of every month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                        <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
+                            <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entOfEveryMonthValue" Keyboard="Numeric" TextChanged="OfEveryMonthValue_Changed" TextColor="{DynamicResource Gray900}" Text="{Binding EveryMonthValue}"/>
+                        </Border>
+                    </Grid>
+                    <HorizontalStackLayout IsVisible="{Binding ValidatorOfEveryMonthDuration}" Margin="5,5,0,0" x:Name="validatorOfEveryMonthDuration">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Please insert your value" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+                <VerticalStackLayout x:Name="vslOption4" IsVisible="false">
+                    <Label Text="On the last ... of the month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,2" FontAttributes="Bold"/>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                        <Label Text="Duration of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="38" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
+                            <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrLastOfTheMonthDuration" Title="Select a duration" BackgroundColor="Transparent" SelectedItem="{Binding LastOfTheMonthDuration}">
+                                <Picker.ItemsSource>
+                                    <x:Array Type="{x:Type x:String}">
+                                        <x:String>Monday</x:String>
+                                        <x:String>Tuesday</x:String>
+                                        <x:String>Wednesday</x:String>
+                                        <x:String>Thursday</x:String>
+                                        <x:String>Friday</x:String>
+                                        <x:String>Saturday</x:String>
+                                        <x:String>Sunday</x:String>
+                                    </x:Array>
+                                </Picker.ItemsSource>
+                            </handlers:BorderlessPicker>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+        <Grid RowDefinitions="Auto" ColumnDefinitions="*" BackgroundColor="{StaticResource Primary}" x:Name="Footer" Grid.Row="2" Grid.Column="0">
+            <Button Command="{Binding SaveBudgetDetailsCommand}" WidthRequest="{Binding SignOutButtonWidth}" Grid.Row="0" Grid.Column="0" Style="{DynamicResource buttonClicked}" Text="Save allowance details" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,10,5,10" FontSize="18" CornerRadius="20" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
+        </Grid>
+    </Grid>
+    
+</local:BasePage>

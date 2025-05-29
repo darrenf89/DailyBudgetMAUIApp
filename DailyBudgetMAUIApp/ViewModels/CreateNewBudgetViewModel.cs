@@ -4,8 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
-using System.Diagnostics;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -79,15 +77,10 @@ namespace DailyBudgetMAUIApp.ViewModels
             _ds = ds;
             StageWidth = (((DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 52) / 5);
             AcceptTermsWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 80;
-            CurrencyPlacements = _ds.GetCurrencyPlacements("").Result;
-            DateFormats = _ds.GetDateFormatsByString("").Result;
-            NumberFormats = _ds.GetNumberFormats().Result;
-            TimeZones = _ds.GetBudgetTimeZones("").Result;
-
         }
 
         [RelayCommand]
-        async void ChangeBudgetName()
+        async Task ChangeBudgetName()
         {
             try
             {
@@ -114,7 +107,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                CurrencySearchResults = _ds.GetCurrencySymbols(value).Result;
+                CurrencySearchResults = await _ds.GetCurrencySymbols(value);
             }
             catch (Exception ex)
             {
@@ -174,7 +167,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void ContinueSettings()
+        async Task ContinueSettings()
         {
             try
             {
@@ -260,19 +253,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                 bool UpdateBudgetFlag = false;
 
                 decimal Balance = (decimal)_pt.FormatCurrencyNumber(BankBalanceText);
-
-                if (IsBorrowPay != Budget.IsBorrowPay)
-                {
-                    UpdateBudgetFlag = true;
-                    Budget.IsBorrowPay = IsBorrowPay;
-                    PatchDoc IsBorrow = new PatchDoc
-                    {
-                        op = "replace",
-                        path = "/IsBorrowPay",
-                        value = Budget.IsBorrowPay
-                    };
-                    BudgetUpdate.Add(IsBorrow);
-                }
 
                 if (Balance != Budget.BankBalance)
                 {
@@ -438,7 +418,20 @@ namespace DailyBudgetMAUIApp.ViewModels
                 break;
             case "Budget Outgoings":
 
-                if(Budget.Stage == 4)
+                if (IsBorrowPay != Budget.IsBorrowPay)
+                {
+                    UpdateBudgetFlag = true;
+                    Budget.IsBorrowPay = IsBorrowPay;
+                    PatchDoc IsBorrow = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/IsBorrowPay",
+                        value = Budget.IsBorrowPay
+                    };
+                    BudgetUpdate.Add(IsBorrow);
+                }
+
+                if (Budget.Stage == 4)
                 {
                     PatchDoc BudgetIsCreated = new PatchDoc
                     {
@@ -451,7 +444,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     await _ds.PatchBudget(BudgetID, BudgetUpdate);
                 }
                 break;
-            case "Budget Savings":
+            case "Budget Bills":
 
                 if(Budget.Stage == 5)
                 {
@@ -511,7 +504,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 break;
             }
 
-            Budget = _ds.GetBudgetDetailsAsync(BudgetID, "Full").Result;
+            Budget = await _ds.GetBudgetDetailsAsync(BudgetID, "Full");
 
         }
     }

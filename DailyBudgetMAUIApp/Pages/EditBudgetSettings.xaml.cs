@@ -1,9 +1,6 @@
 using DailyBudgetMAUIApp.ViewModels;
 using Microsoft.Maui.Layouts;
 using System.Text.RegularExpressions;
-using IeuanWalker.Maui.Switch.Events;
-using IeuanWalker.Maui.Switch.Helpers;
-using IeuanWalker.Maui.Switch;
 using DailyBudgetMAUIApp.DataServices;
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -35,16 +32,29 @@ public partial class EditBudgetSettings : BasePage
     {
         try
         {
+            
+            await _vm.OnLoad();
+
             base.OnAppearing();
 
-            TopBV.WidthRequest = ScreenWidth;
+            if(App.IsFamilyAccount)
+            {
+                DeleteBudget.IsVisible = false;
+                PayDaySettings.IsVisible = false;
+                PayDaySettingsBV.IsVisible = false;
+            }
+            else
+            {
+                DeleteBudget.IsVisible = true;
+                PayDaySettings.IsVisible = true;
+                PayDaySettingsBV.IsVisible = true;
+            }
+
             MainAbs.WidthRequest = ScreenWidth;
             MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
             MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));       
 
-            lblTitle.Text = $"Budget settings";
-
-            await _vm.OnLoad();
+            lblTitle.Text = $"Budget settings";            
 
             pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;            
             pckrDateFormat.SelectedIndex = _vm.SelectedDateFormats.Id - 1;
@@ -187,16 +197,16 @@ public partial class EditBudgetSettings : BasePage
         }
     }
 
-    private void ChangeSelectedCurrency_Tapped(object sender, TappedEventArgs e)
+    private async void ChangeSelectedCurrency_Tapped(object sender, TappedEventArgs e)
     {
         try
         {
-            _vm.ChangeSelectedCurrency();
+            await _vm.ChangeSelectedCurrency();
             CurrencySearch.Text = "";
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "EditBudgetSettings", "ChangeSelectedCurrency_Tapped");
+            await _pt.HandleException(ex, "EditBudgetSettings", "ChangeSelectedCurrency_Tapped");
         }
     }
 

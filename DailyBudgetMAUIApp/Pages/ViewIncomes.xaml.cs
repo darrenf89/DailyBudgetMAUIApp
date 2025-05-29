@@ -28,8 +28,8 @@ public partial class ViewIncomes : BasePage
     {
         try
         {
-            _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-            List<IncomeEvents> I = _ds.GetBudgetIncomes(App.DefaultBudgetID, "ViewIncomes").Result;
+            _vm.Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
+            List<IncomeEvents> I = await _ds.GetBudgetIncomes(App.DefaultBudgetID, "ViewIncomes");
 
             _vm.BalanceExtraPeriodIncome = _vm.Budget.BankBalance.GetValueOrDefault() + _vm.Budget.CurrentActiveIncome;
 

@@ -92,7 +92,7 @@ public partial class SelectCategoryPage : BasePage
 
             base.OnAppearing();
 
-            _vm.CategoryList = _ds.GetCategories(_vm.BudgetID).Result;
+            _vm.CategoryList = await _ds.GetCategories(_vm.BudgetID);
 
             if (_vm.CategoryList.Count == 0)
             {
@@ -627,7 +627,7 @@ public partial class SelectCategoryPage : BasePage
 
                 AddNewCat[CategoryGroup].Add(AddNewHeaderLabel, 1, 0);
 
-                NewCat = _ds.AddNewSubCategory(_vm.BudgetID, NewCat).Result;
+                NewCat = await _ds.AddNewSubCategory(_vm.BudgetID, NewCat);
 
                 _vm.SubCategoryList.Add(NewCat);
                 LoadCategoryList();
@@ -751,7 +751,7 @@ public partial class SelectCategoryPage : BasePage
                     _vm.Bill.Category = Category.CategoryName;
                     _vm.Bill.CategoryID = Category.CategoryID;
 
-                    await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&BillID={_vm.Bill.BillID}",
+                    await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&BillID={_vm.Bill.BillID}{(_vm.FamilyAccountID > 0 ? $"&FamilyAccountID={_vm.FamilyAccountID}" : "")}",
                         new Dictionary<string, object>
                         {
                             ["Bill"] = _vm.Bill
@@ -816,7 +816,7 @@ public partial class SelectCategoryPage : BasePage
                 _vm.Bill.Category = "";
                 _vm.Bill.CategoryID = 0;
 
-                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&BillID={_vm.Bill.BillID}",
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectCategoryPage&BillID={_vm.Bill.BillID}{(_vm.FamilyAccountID > 0 ? $"&FamilyAccountID={_vm.FamilyAccountID}" : "")}",
                 new Dictionary<string, object>
                 {
                     ["Bill"] = _vm.Bill

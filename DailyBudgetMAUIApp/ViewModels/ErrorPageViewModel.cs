@@ -24,10 +24,14 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void GoToLandingPage()
+        async Task GoToLandingPage()
         {
             try
             {
+                if(App.IsFamilyAccount && App.FamilyUserDetails is not null && App.FamilyUserDetails.SessionExpiry > DateTime.UtcNow)
+                {
+                    await Shell.Current.GoToAsync($"//{nameof(FamilyAccountMainPage)}");
+                }
                 if (App.UserDetails is not null && App.UserDetails.SessionExpiry > DateTime.UtcNow)
                 {
                     await Shell.Current.GoToAsync($"//{nameof(MainPage)}");

@@ -21,9 +21,19 @@ public class LogoutPage : ContentPage
             Preferences.Remove(nameof(App.DefaultBudgetID));
         }
 
-        if (SecureStorage.Default.GetAsync("Session").Result != null)
+        if (Preferences.ContainsKey(nameof(App.IsFamilyAccount)))
+        {
+            Preferences.Remove(nameof(App.IsFamilyAccount));
+        }
+
+        if (await SecureStorage.Default.GetAsync("Session") != null)
         {
             SecureStorage.Default.Remove("Session");
+        }
+
+        if (Preferences.ContainsKey("IsTopStickyVisible"))
+        {
+            Preferences.Remove("IsTopStickyVisible");
         }
 
         App.DefaultBudgetID = 0;

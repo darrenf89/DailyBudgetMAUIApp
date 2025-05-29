@@ -39,9 +39,9 @@ public partial class AddSaving : BasePage
                 _vm.BudgetID = App.DefaultBudgetID;
             }
 
-            _vm.BudgetNextPayDate = _ds.GetBudgetNextIncomePayDayAsync(_vm.BudgetID).Result;
+            _vm.BudgetNextPayDate = await _ds.GetBudgetNextIncomePayDayAsync(_vm.BudgetID);
             _vm.BudgetDaysToNextPay = (int)Math.Ceiling((_vm.BudgetNextPayDate.Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
-            _vm.BudgetDaysBetweenPay = _ds.GetBudgetDaysBetweenPayDay(_vm.BudgetID).Result;
+            _vm.BudgetDaysBetweenPay = await _ds.GetBudgetDaysBetweenPayDay(_vm.BudgetID);
 
             if (_vm.SavingID == 0)
             {
@@ -49,11 +49,11 @@ public partial class AddSaving : BasePage
                 _vm.Title = "Add a New Saving";
                 btnAddSaving.IsVisible = true;
 
-                if (_vm.NavigatedFrom == "ViewSavings")
+                if (_vm.NavigatedFrom == "ViewSavings" || _vm.NavigatedFrom == "CreateNewFamilyAccountSaving")
                 {
                     _vm.SavingType = "Regular";
                 }
-                else if (_vm.NavigatedFrom == "ViewEnvelopes")
+                else if (_vm.NavigatedFrom == "ViewEnvelopes" || _vm.NavigatedFrom == "CreateNewFamilyAccountEnvelope")
                 {
                     _vm.SavingType = "Envelope";
                 }
@@ -76,7 +76,7 @@ public partial class AddSaving : BasePage
             {
                 if (_vm.SavingID != -1)
                 {
-                    _vm.Saving = _ds.GetSavingFromID(_vm.SavingID).Result;
+                    _vm.Saving = await _ds.GetSavingFromID(_vm.SavingID);
                     _vm.Title = $"Update Saving {_vm.Saving.SavingsName}";
                     btnUpdateSaving.IsVisible = true;
                 }
@@ -206,7 +206,7 @@ public partial class AddSaving : BasePage
     {
         try
         {
-            bool result = await DisplayAlert("Savings Reset", "Are you sure you want to Reset " + _vm.Saving.SavingsName, "Yes, continue", "Cancel");
+            bool result = await DisplayAlert("Bills Reset", "Are you sure you want to Reset " + _vm.Saving.SavingsName, "Yes, continue", "Cancel");
             if (result)
             {
                 UpdateDisplaySelection("");
@@ -488,7 +488,7 @@ public partial class AddSaving : BasePage
             SavingTypeSelected.IsVisible = true;
             brdSavingDetails.IsVisible = true;
 
-            lblSelectedSavingTitle.Text = "Creating a Builder Savings";
+            lblSelectedSavingTitle.Text = "Creating a Builder Bills";
             lblSelectedSavingParaOne.Text = "For saving goals without any time or target constraints";
             lblSelectedSavingParaTwo.Text = "Save the same amount each period, as much as you can afford!";
             
@@ -741,7 +741,7 @@ public partial class AddSaving : BasePage
             PickerClass SavingPeriodClass = (PickerClass)pckrSavingPeriod.SelectedItem;
             _vm.Saving.DdlSavingsPeriod = SavingPeriodClass.Key;
 
-            decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(entSavingAmount.Text);
+            decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(entSavingAmount.Text ?? "0");
 
             if (_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
             {

@@ -147,7 +147,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 if (UploadFile is null) return;
 
-                long sizeInBytes = UploadFile.OpenReadAsync().Result.Length;
+                long sizeInBytes = await _pt.GetFileLengthAsync(UploadFile);
 
                 if (sizeInBytes < 3000000)
                 {

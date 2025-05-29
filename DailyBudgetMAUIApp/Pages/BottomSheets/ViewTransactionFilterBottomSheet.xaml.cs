@@ -136,26 +136,26 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
     }
 
-    private void LoadFilters()
+    private async Task LoadFilters()
     {
         IRestDataService ds = IPlatformApplication.Current.Services.GetService<IRestDataService>();
 
         TotalFilters = 2;
         SelectedFilters = 2;
 
-        Payees = ds.GetPayeeList(App.DefaultBudgetID).Result;
+        Payees = await ds.GetPayeeList(App.DefaultBudgetID);
         CreatePayeeButtons();
         TotalFilters += Payees.Count();
 
-        Categories = ds.GetCategories(App.DefaultBudgetID).Result;
+        Categories = await ds.GetCategories(App.DefaultBudgetID);
         CreateCategoryButtons();
         TotalFilters += Categories.Where(c => c.IsSubCategory).Count();
 
-        Savings = ds.GetAllBudgetSavings(App.DefaultBudgetID).Result;
+        Savings = await ds.GetAllBudgetSavings(App.DefaultBudgetID);
         CreateSavingsButtons();
         TotalFilters += Savings.Count();
 
-        EventTypes = ds.GetBudgetEventTypes(App.DefaultBudgetID).Result;
+        EventTypes = await ds.GetBudgetEventTypes(App.DefaultBudgetID);
         CreateEventTypeButtons();
         TotalFilters += EventTypes.Count();
     }

@@ -69,15 +69,18 @@ namespace DailyBudgetMAUIApp.ViewModels
             ChartContentHeight = ScreenHeight * 0.25;
             MaxChartContentHeight = ChartContentHeight + 10;
             SFListHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 389;
+        }
 
+        public async Task OnLoad()
+        {
             Title = $"Check Your Transactions {App.UserDetails.NickName}";
-            Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
+            Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
             RunningTotal = Budget.BankBalance.GetValueOrDefault();
             BalanceAfterPending = Budget.BankBalance.GetValueOrDefault();
             MaxNumberOfTransactions = Budget.AccountInfo.NumberOfTransactions;
 
             List<Transactions> LoadTransactions = new List<Transactions>();
-            LoadTransactions = _ds.GetCurrentPayPeriodTransactions(App.DefaultBudgetID, "ViewTransactions").Result;
+            LoadTransactions = await _ds.GetCurrentPayPeriodTransactions(App.DefaultBudgetID, "ViewTransactions");
 
             foreach (Transactions T in LoadTransactions)
             {
@@ -111,7 +114,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             CurrentOffset = Transactions.Count();
 
-            LoadChartData(LoadTransactions);
+            await LoadChartData(LoadTransactions);
             LoadChartBrushed();
         }
 
@@ -127,11 +130,11 @@ namespace DailyBudgetMAUIApp.ViewModels
             ChartBrushes = App.ChartBrush;
         }
 
-        private void LoadChartData(List<Transactions> Transactions)
+        private async Task LoadChartData(List<Transactions> Transactions)
         {
             if(Transactions == null || Transactions.Count == 0)
             {
-                List<Transactions> NewTransactions = LoadMoreTransactions().Result;
+                List<Transactions> NewTransactions = await LoadMoreTransactions();
                 Transactions.AddRange(NewTransactions);;
             }
 
@@ -147,7 +150,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 while (EarliestTransaction.TransactionDate > FirstDate.AddDays(-1))
                 {
-                    List<Transactions> NewTransactions = LoadMoreTransactions().Result;
+                    List<Transactions> NewTransactions = await LoadMoreTransactions();
                     if (NewTransactions.Count() == 0)
                     {
                         break;

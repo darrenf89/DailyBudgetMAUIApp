@@ -16,11 +16,14 @@
     <converters:SavingProgressBarMaxString x:Key="SavingProgressBarMaxString" />
     <xct:IsStringNullOrWhiteSpaceConverter x:Key="IsStringNullOrWhiteSpaceConverter" />
     <xct:SelectedItemEventArgsConverter x:Key="SelectedItemEventArgsConverter" />
+    <converters:NewSavingTypeHeaderConverter x:Key="NewSavingTypeHeaderConverter" />
     <converters:IsBudgetSharedBudgetToBool x:Key="IsBudgetSharedBudgetToBool" />
+    <converters:SavingTypeToString x:Key="SavingTypeToString" />
     <converters:IsBudgetNotSharedBudgetToBool x:Key="IsBudgetNotSharedBudgetToBool" />
     <converters:LeftToSpendDailyAmountHideShow x:Key="LeftToSpendDailyAmountHideShow" />
     <converters:RecurringBillDetails x:Key="RecurringBillDetails"/>
     <converters:IsSavingsBuilder x:Key="IsSavingsBuilder"/>
+    <converters:IsNotSavingsBuilder x:Key="IsNotSavingsBuilder"/>
     <converters:IsSavingsTargetAmount x:Key="IsSavingsTargetAmount"/>
     <converters:IsSavingsTargetDate x:Key="IsSavingsTargetDate"/>
     <converters:SavingToGlyph x:Key="SavingToGlyph"/>
@@ -68,7 +71,9 @@
     <converters:MessageAlignmentConverter x:Key="MessageAlignmentConverter"/>
     <converters:CustomerMessageColorConverter x:Key="CustomerMessageColorConverter"/>
     <converters:ReverseMessageAlignmentConverter x:Key="ReverseMessageAlignmentConverter"/>
-    <converters:BoolToColorDisabledReverse x:Key="BoolToColorDisabledReverse"/>    
+    <converters:BoolToColorDisabledReverse x:Key="BoolToColorDisabledReverse"/>
+    <converters:TransactionToDetailsString x:Key="TransactionToDetailsString"/>
+    <converters:BudgetPayPeriodDetails x:Key="BudgetPayPeriodDetails"/>    
     
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>
@@ -1079,22 +1084,6 @@
 
     <Style TargetType="handlers:BorderlessEntry">
         <Setter Property="FontAutoScalingEnabled" Value="False"/>
-        <Setter Property="VisualStateManager.VisualStateGroups">
-            <VisualStateGroupList>
-                <VisualStateGroup x:Name="CommonStates">
-                    <VisualState x:Name="Normal" >
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="{StaticResource White}"/>
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="Disabled">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="{StaticResource Gray200}"/>
-                        </VisualState.Setters>
-                    </VisualState>
-                </VisualStateGroup>
-            </VisualStateGroupList>
-        </Setter>
     </Style>
 
     <Style TargetType="handlers:BorderlessDatePicker">

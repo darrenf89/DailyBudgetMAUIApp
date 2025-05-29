@@ -106,8 +106,13 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewSupports>();
         builder.Services.AddTransient<ViewSupports>();
         builder.Services.AddTransient<ViewAccounts>();
-        builder.Services.AddTransient<ManageFamilyAccounts>();
+        builder.Services.AddTransient<FamilyAccountsManage>();
         builder.Services.AddTransient<CreateNewFamilyAccounts>();
+        builder.Services.AddTransient<FamilyAccountLogonPage>();
+        builder.Services.AddTransient<FamilyAccountMainPage>();
+        builder.Services.AddTransient<ViewBudgets>();
+        builder.Services.AddTransient<FamilyAccountsView>();
+        builder.Services.AddTransient<FamilyAccountsEdit>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();
@@ -144,8 +149,13 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewSupportViewModel>();
         builder.Services.AddTransient<ViewSupportsViewModel>();
         builder.Services.AddTransient<ViewAccountsViewModel>();
-        builder.Services.AddTransient<ManageFamilyAccountsViewModel>();
+        builder.Services.AddTransient<FamilyAccountsManageViewModel>();
         builder.Services.AddTransient<CreateNewFamilyAccountsViewModel>();
+        builder.Services.AddTransient<FamilyAccountLogonPageViewModel>();
+        builder.Services.AddTransient<FamilyAccountMainPageViewModel>();
+        builder.Services.AddTransient<ViewBudgetsViewModel>();
+        builder.Services.AddTransient<FamilyAccountsViewViewModel>();
+        builder.Services.AddTransient<FamilyAccountsEditViewModel>();
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();
@@ -165,6 +175,7 @@ public static class MauiProgram
         builder.Services.AddTransient<PopUpNoNetwork, PopUpNoNetworkViewModel>();
         builder.Services.AddTransient<PopUpNoServer, PopUpNoServerViewModel>();
         builder.Services.AddTransient<PopupMoveAccountBalance, PopupMoveAccountBalanceViewModel>();
+        builder.Services.AddTransient<PopupDailyAllowance, PopupDailyAllowanceViewModel>();
 
         //BottomSheets
         builder.Services.AddTransient<ViewTransactionFilterBottomSheet>();

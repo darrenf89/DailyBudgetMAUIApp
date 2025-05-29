@@ -76,13 +76,13 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void NavigateRegister()
+        async Task NavigateRegister()
         {
             await Shell.Current.GoToAsync($"../{nameof(RegisterPage)}");
         }
 
         [RelayCommand]
-        async void ResetPassword()
+        async Task ResetPassword()
         {
             try
             {
@@ -108,7 +108,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void Login()
+        async Task Login()
         {
             try
             {
@@ -131,11 +131,27 @@ namespace DailyBudgetMAUIApp.ViewModels
                     if (!string.IsNullOrEmpty(Password))
                     {
                         UserDetailsModel userDetails = new UserDetailsModel();
-
-                        string salt = await _ds.GetUserSaltAsync(Email);
-                        if (salt is null)
+                        string salt = "";
+                        try
                         {
-                            return;
+                            salt = await _ds.GetUserSaltAsync(Email);
+                            if (salt is null)
+                            {
+                                return;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex.Message.Contains("User not found"))
+                            {
+                                await App.CurrentPopUp.CloseAsync();
+                                App.CurrentPopUp = null;
+                                await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
+                            }
+                            else
+                            {
+                                throw;
+                            }
                         }
 
                         switch (salt)
@@ -211,16 +227,23 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 Preferences.Remove(nameof(App.DefaultBudgetID));
                                             }
 
+                                            if (Preferences.ContainsKey(nameof(App.IsFamilyAccount)))
+                                            {
+                                                Preferences.Remove(nameof(App.IsFamilyAccount));
+                                            }
+
                                             string userDetailsStr = JsonConvert.SerializeObject(userDetails);
                                             Preferences.Set(nameof(App.UserDetails), userDetailsStr);
                                             Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
 
                                             App.UserDetails = userDetails;
+                                            App.FamilyUserDetails = null;
                                             App.DefaultBudgetID = userDetails.DefaultBudgetID;
                                             App.HasVisitedCreatePage = false;
+                                            App.IsFamilyAccount = false;
                                             await _pt.SetSubDetails();
 
-                                            if (SecureStorage.Default.GetAsync("Session").Result != null)
+                                            if (await SecureStorage.Default.GetAsync("Session") != null)
                                             {
                                                 SecureStorage.Default.Remove("Session");
                                             }
@@ -245,7 +268,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                     FirebaseDeviceID = FirebaseID,
                                                     UserAccountID = userDetails.UniqueUserID,
                                                     LoginExpiryDate = userDetails.SessionExpiry,
-                                                    FirebaseToken = SecureStorage.Default.GetAsync("FirebaseToken").Result
+                                                    FirebaseToken = await SecureStorage.Default.GetAsync("FirebaseToken")
                                                 };
 
                                                 try
@@ -256,7 +279,12 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 {
                                                     //Log as non fatal error
                                                 }
-                                            }                                        
+                                            }
+
+                                            BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(userDetails.DefaultBudgetID);
+                                            App.CurrentSettings = Settings;
+
+                                            _pt.SetCultureInfo(App.CurrentSettings);
 
                                             //await _pt.LoadTabBars(App.UserDetails.SubscriptionType, App.UserDetails.SubscriptionExpiry, App.UserDetails.DefaultBudgetType);
                                             await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
@@ -288,7 +316,20 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 await _pt.HandleException(ex, "LogonPage", "Login");
             }
-        }        
+        }
+
+        [RelayCommand]
+        async Task NavigateFamilySignPage()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync($"{nameof(FamilyAccountLogonPage)}");
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "LogonPage", "NavigateFamilySignPage");
+            }
+        }
 
     }
 }

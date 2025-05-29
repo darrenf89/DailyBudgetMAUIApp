@@ -21,6 +21,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private UserDetailsModel user;
         [ObservableProperty]
+        private FamilyUserAccount familyUser;
+        [ObservableProperty]
         private string currentPassword;
         [ObservableProperty]
         private string newEmail;
@@ -82,6 +84,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         public bool isChanging;
         [ObservableProperty]
         public string isPushNotificationsEnabledLabelText;
+        [ObservableProperty]
+        private bool isBudgetHidden;
 
 
         public EditAccountSettingsViewModel(IProductTools pt, IRestDataService ds, INotificationPermissions notificationPermissions)
@@ -93,52 +97,62 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public async Task OnLoad()
         {
+            Title = "Edit your account's settings";
             IsChanging = true;
             VersionNumber = $"V{AppInfo.Current.VersionString}";
-            User = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
-            CurrentSubStatus = $"{User.SubscriptionType} expires on {User.SubscriptionExpiry.ToString("d", CultureInfo.CurrentCulture)}";
-            SubscriptionRenewal = "Monthly";
-
-            UserBudgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, "EditAccountSettings");
-
-            Application.Current.Resources.TryGetValue("White", out var White);
-            Application.Current.Resources.TryGetValue("Info", out var Info);
-            Application.Current.Resources.TryGetValue("Primary", out var Primary);
-            Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
-
-            BorderlessPicker picker = new BorderlessPicker
+            if(App.IsFamilyAccount)
             {
-                Title = "Select a budget",
-                ItemsSource = UserBudgets,
-                TitleColor = (Color)Gray900,
-                BackgroundColor = (Color)White,
-                TextColor = (Color)Info,
-                Margin = new Thickness(20, 0, 0, 0),
-            };
-
-            picker.ItemDisplayBinding = new Binding(".", BindingMode.Default, new ChangeBudgetStringConvertor());
-            picker.SelectedIndexChanged += async (s, e) =>
+                FamilyUser = await _ds.GetFamilyUserDetailsAsync(App.FamilyUserDetails.Email);
+                IsBudgetHidden = FamilyUser.IsBudgetHidden;
+            }
+            else
             {
-                var picker = (Picker)s;
-                var SelectedBudget = (Budgets)picker.SelectedItem;
+                User = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
+                CurrentSubStatus = $"{User.SubscriptionType} expires on {User.SubscriptionExpiry.ToString("d", CultureInfo.CurrentCulture)}";
+                SubscriptionRenewal = "Monthly";
 
-                await _pt.ChangeDefaultBudget(App.UserDetails.UserID, SelectedBudget.BudgetID, false);
-                CurrentBudgetName = SelectedBudget.BudgetName;
-            };            
-            
-            for (int i = 0; i < UserBudgets.Count; i++)
-            {
-                if (UserBudgets[i].BudgetID == User.DefaultBudgetID)
+                UserBudgets = await _ds.GetUserAccountBudgets(App.UserDetails.UserID, "EditAccountSettings");
+
+                Application.Current.Resources.TryGetValue("White", out var White);
+                Application.Current.Resources.TryGetValue("Info", out var Info);
+                Application.Current.Resources.TryGetValue("Primary", out var Primary);
+                Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+
+                BorderlessPicker picker = new BorderlessPicker
                 {
-                    CurrentBudgetName = UserBudgets[i].BudgetName;
-                    picker.SelectedItem = UserBudgets[i];
+                    Title = "Select a budget",
+                    ItemsSource = UserBudgets,
+                    TitleColor = (Color)Gray900,
+                    BackgroundColor = (Color)White,
+                    TextColor = (Color)Info,
+                    Margin = new Thickness(20, 0, 0, 0),
+                };
+
+                picker.ItemDisplayBinding = new Binding(".", BindingMode.Default, new ChangeBudgetStringConvertor());
+                picker.SelectedIndexChanged += async (s, e) =>
+                {
+                    var picker = (Picker)s;
+                    var SelectedBudget = (Budgets)picker.SelectedItem;
+
+                    await _pt.ChangeDefaultBudget(App.UserDetails.UserID, SelectedBudget.BudgetID, false);
+                    CurrentBudgetName = SelectedBudget.BudgetName;
+                };
+
+                for (int i = 0; i < UserBudgets.Count; i++)
+                {
+                    if (UserBudgets[i].BudgetID == User.DefaultBudgetID)
+                    {
+                        CurrentBudgetName = UserBudgets[i].BudgetName;
+                        picker.SelectedItem = UserBudgets[i];
+                    }
                 }
+
+                SwitchBudgetPicker = picker;
             }
 
-            SwitchBudgetPicker = picker;
 
-            IsDPA = User.IsDPAPermissions;
-            IsPushNotificationsEnabled = LocalNotificationCenter.Current.AreNotificationsEnabled().Result;
+            IsDPA = App.IsFamilyAccount ? FamilyUser.IsDPAPermissions : User.IsDPAPermissions;
+            IsPushNotificationsEnabled = await LocalNotificationCenter.Current.AreNotificationsEnabled();
             if(IsPushNotificationsEnabled)
             {
                 IsPushNotificationsEnabledLabelText = "Push Notifications Enabled";
@@ -180,9 +194,10 @@ namespace DailyBudgetMAUIApp.ViewModels
                 var Email = await Application.Current.Windows[0].Page.DisplayPromptAsync($"Are you sure you want to delete your account?", $"Enter the accounts email address to delete the account", "Ok", "Cancel");
                 if (Email != null)
                 {
-                    if(string.Equals(Email, App.UserDetails.Email, StringComparison.OrdinalIgnoreCase))
+                    if(string.Equals(Email, (App.IsFamilyAccount ? App.FamilyUserDetails.Email : App.UserDetails.Email), StringComparison.OrdinalIgnoreCase))
                     {
-                        string result = await _ds.DeleteUserAccount(App.UserDetails.UserID);
+                        string result = App.IsFamilyAccount ? await _ds.DeleteFamilyUserAccount(App.FamilyUserDetails.UserID) : await _ds.DeleteUserAccount(App.UserDetails.UserID);
+
                         if (result == "OK")
                         {
                             AppShell Shell = new AppShell();
@@ -230,11 +245,22 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         await Task.Delay(1);
 
-                        string salt = await _ds.GetUserSaltAsync(App.UserDetails.Email);
-                        UserDetailsModel userDetails = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
+                        string salt = App.IsFamilyAccount ? await _ds.GetFamilyUserSaltAsync(App.FamilyUserDetails.Email) : await _ds.GetUserSaltAsync(App.UserDetails.Email);
+                        string Password = "";
+                        if (App.IsFamilyAccount)
+                        {
+                            UserDetailsModel userDetails = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
+                            Password = userDetails.Password;
+                        }
+                        else
+                        {
+                            FamilyUserAccount familyUserAccount = await _ds.GetFamilyUserDetailsAsync(App.FamilyUserDetails.Email);
+                            Password = familyUserAccount.Password;
+                        }
+
                         string HashPassword = _pt.GenerateHashedPassword(CurrentPassword, salt);
 
-                        if (userDetails.Password != HashPassword)
+                        if (Password != HashPassword)
                         {
                             CurrentPasswordValid = false;
                             NewPasswordMatch = true;
@@ -267,7 +293,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                         value = NewPasswordUser.Salt
                                     };
 
-                                    PatchDoc Password = new PatchDoc
+                                    PatchDoc PasswordPatch = new PatchDoc
                                     {
                                         op = "replace",
                                         path = "/Password",
@@ -275,9 +301,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     };
 
                                     UserUpdate.Add(Salt);
-                                    UserUpdate.Add(Password);
+                                    UserUpdate.Add(PasswordPatch);
 
-                                    string result = await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                                    string result = App.IsFamilyAccount ? await _ds.PatchFamilyUserAccount(App.FamilyUserDetails.UserID, UserUpdate) :await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
                                     if(result == "OK")
                                     {
                                         PasswordChangedMessageVisible = true;
@@ -353,7 +379,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         UserUpdate.Add(EmailPatch);
 
-                        string result = await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                        string result = App.IsFamilyAccount ? await _ds.PatchFamilyUserAccount(App.FamilyUserDetails.UserID, UserUpdate) : await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
 
                         if (result == "OK")
                         {
@@ -395,8 +421,19 @@ namespace DailyBudgetMAUIApp.ViewModels
                     bool UpdateEmail = await Application.Current.Windows[0].Page.DisplayAlert($"Are you sure you want to update your email?", $"Are you sure you want to update your email to {NewEmail}? Make sure you have access to this email or you might have some issues!", "Yes", "No");
                     if (UpdateEmail)
                     {
-                        UserDetailsModel UserDetails = await _ds.GetUserDetailsAsync(NewEmail);
-                        if (UserDetails.Error != null)
+                        bool IsEmailExists = false;
+                        if(App.IsFamilyAccount)
+                        {
+                            UserDetailsModel UserDetails = await _ds.GetUserDetailsAsync(NewEmail);
+                            IsEmailExists = UserDetails.Error == null;
+                        }
+                        else
+                        {
+                            FamilyUserAccount familyUserAccount = await _ds.GetFamilyUserDetailsAsync(NewEmail);
+                            IsEmailExists = familyUserAccount != null;
+                        }
+
+                        if (!IsEmailExists)
                         {
                             List<PatchDoc> UserUpdate = new List<PatchDoc>();
 
@@ -409,7 +446,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                             UserUpdate.Add(EmailPatch);
 
-                            string result = await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                            string result = App.IsFamilyAccount ? await _ds.PatchFamilyUserAccount(App.FamilyUserDetails.UserID, UserUpdate) : await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
 
                             if(result == "OK")
                             {
@@ -543,7 +580,36 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     UserUpdate.Add(IsDPAPermissions);
 
-                    await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                    string result = App.IsFamilyAccount ? await _ds.PatchFamilyUserAccount(App.FamilyUserDetails.UserID, UserUpdate) : await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
+                    IsChanging = false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "EditAccountSettings", "OnIsDPAChanged");
+            }
+        }
+
+        async partial void OnIsBudgetHiddenChanged(bool oldValue, bool newValue)
+        {
+            try
+            {
+                if(!IsChanging)
+                {
+                    IsChanging = true;
+                    List<PatchDoc> UserUpdate = new List<PatchDoc>();
+
+                    PatchDoc IsBudgetHiddenValue = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/IsBudgetHidden",
+                        value = IsBudgetHidden
+                    };
+
+                    UserUpdate.Add(IsBudgetHiddenValue);
+
+                    string result = App.IsFamilyAccount ? await _ds.PatchFamilyUserAccount(App.FamilyUserDetails.UserID, UserUpdate) : await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
                     IsChanging = false;
                 }
 
@@ -581,6 +647,29 @@ namespace DailyBudgetMAUIApp.ViewModels
             catch (Exception ex)
             {
                 await _pt.HandleException(ex, "EditAccountSettings", "OnIsPushNotificationsEnabledChanged");
+            }
+        }
+
+
+        [RelayCommand]
+        public async Task BackButton()
+        {
+            try
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
+                await Task.Delay(1);
+
+                await Shell.Current.GoToAsync($"//{(App.IsFamilyAccount ? nameof(FamilyAccountMainPage) : nameof(MainPage))}");
+
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewBudgets", "BackButton");
             }
         }
 

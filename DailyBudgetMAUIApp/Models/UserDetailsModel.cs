@@ -37,7 +37,9 @@ namespace DailyBudgetMAUIApp.Models
         [ObservableProperty]
         public string? profilePicture;
         [ObservableProperty]
-        public bool hasFamiltyAccounts;
+        public bool hasFamilyAccounts;
+        [ObservableProperty]
+        public bool isFamilyAccounts;
 
     }
 }

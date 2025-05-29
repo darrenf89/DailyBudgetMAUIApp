@@ -1,47 +1,58 @@
 ﻿
 using CommunityToolkit.Mvvm.ComponentModel;
+using Syncfusion.Maui.Core;
+using System.Text.Json.Serialization;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class FamilyUserAccount : ObservableObject
     {
         [ObservableProperty]
-        public int userID;
+        private int userID;
         [ObservableProperty]
-        public int uniqueUserID;
+        private int uniqueUserID;
         [ObservableProperty]
-        public string nickName;
+        private string nickName;
         [ObservableProperty]
-        public string email;
+        private string email;
         [ObservableProperty]
-        public string password;
+        private string password;
         [ObservableProperty]
-        public string salt;
+        private string salt;
         [ObservableProperty]
-        public bool isEmailVerified;
+        private bool isEmailVerified;
         [ObservableProperty]
-        public DateTime sessionExpiry;
+        private DateTime sessionExpiry;
         [ObservableProperty]
-        public int budgetID;
+        private int budgetID;
         [ObservableProperty]
-        public bool isDPAPermissions;
+        private bool isDPAPermissions;
         [ObservableProperty]
-        public bool isAgreedToTerms;
+        private bool isAgreedToTerms;
         [ObservableProperty]
-        public string? profilePicture;
+        private string? profilePicture;
         [ObservableProperty]
-        public bool isActive;
+        private bool isActive;
         [ObservableProperty]
-        public bool isConfirmed;
+        private bool isConfirmed;
         [ObservableProperty]
-        public int parentUserID;
+        private int parentUserID;
         [ObservableProperty]
-        public int? assignedBudgetID;
+        private int? assignedBudgetID;
         [ObservableProperty]
-        public DateTime accountCreated;
+        private DateTime accountCreated;
         [ObservableProperty]
-        public DateTime lastLoggedOn;
+        private DateTime lastLoggedOn;
+        [ObservableProperty]
+        private bool isBudgetHidden;
+        [ObservableProperty]
+        private List<Budgets> budgets = new List<Budgets>();
+        [ObservableProperty]
+        private bool isBudgetCreated;
 
+        [JsonIgnore]
+        [ObservableProperty]
+        private SfAvatarView avatarView;
     }
 
     public class FamilyUserAccountValidEmailObject

@@ -5,6 +5,8 @@
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
              xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:sfavatar="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"   
+             xmlns:ViewModels="clr-namespace:DailyBudgetMAUIApp.ViewModels"
              x:Class="DailyBudgetMAUIApp.Pages.CreateNewFamilyAccounts"
              xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
              xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
@@ -25,7 +27,200 @@
                 <Border Grid.Row="1" Grid.Column="1" Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 20">
                     <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto">
                         <Label Grid.Row="0" Grid.Column="0" Text="{Binding InfoTitle}" FontAttributes="Bold" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Center" VerticalOptions="Center" HorizontalOptions="Center" FontFamily="OpenSansSemibold" TextColor="{DynamicResource PrimaryDark}" Margin="0,10,0,20" Padding="10,0,10,0"/>
-                        <Label Grid.Row="1" Grid.Column="0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="10,0,10,20" Text="{Binding InfoText}"/>
+                        <VerticalStackLayout Margin="10,0,10,20" Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsStageVisible1}">
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,4" Text="Please provide details for the family account you'd like to set up. We'll need a valid email address (this is required for logging in) and the name you'd like the account to be identified by."/>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,4" Text="When you have finalised setting up the family account an email with a one-time passcode (OTP) will be sent. You'll then need to go to the Family Account login screen to complete the setup and start budgeting."/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Margin="10,0,10,20" Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsStageVisible2}">
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                    <Span Text="You'll need to designate one of your budgets as the "  />
+                                    <Span Text="Anchor Budget " FontAttributes="Bold" />
+                                    <Span Text="for your family account. Allowances / Pocket money, any chore rewards, and any additional money requests  Are taken from this budget. A family account is linked to one of your Budgets directly not your account as a whole, but don't worry—you can update your Anchor Budget at any time if your financial setup changes." />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="A family account is linked to one of your Budgets directly not your account as a whole, but don't worry—you can update your Anchor Budget at any time if your financial setup changes."  />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Margin="10,0,10,20" Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsStageVisible3}">
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Tell us about the new family accounts budget by providing details of any funds they currently hold in their name that you'd like to include in their budgeting process. Specify the allowance amount you plan to set for them and define the frequency of these payments, enabling a seamless start to their financial journey."  />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Choose how often you'd like to pay their allowance—whether it's daily, weekly, or any schedule that suits you. "  />
+                                        <Span Text="This frequency doesn't need to align with your own budget cycle. " FontAttributes="Bold"  />
+                                        <Span Text="When the allowance payment date arrives, the specified amount will be deducted from your budget balance and credited to the Family account. "/>
+                                        <Span Text="They'll receive a notification, and upon confirming they've received the funds " FontAttributes="Bold" />
+                                        <Span Text="the amount will reflect in their balance."  />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Please provide the date for the next allowance payment. This date will serve as the starting point to calculate when the first payment is due, and will help us determine subsequent allowance dates to keep everything on track."  />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Margin="10,0,10,20" Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsStageVisible4}">
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Tailor the budgeting experience for the new family account by customizing the application's settings to suit your preferences. Adjust how currency, dates, and numbers are displayed to ensure the interface feels both familiar and visually appealing, creating a personalized and enjoyable user experience."  />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="You can also define your time zone within the application. This allows the app to track when your day concludes, ensuring that your budget for the next day is calculated and ready precisely at the right time for you."  />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Don't worry you can update these preferences at any time!" FontAttributes="Bold" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Margin="10,0,10,20" Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsStageVisible5}">
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Include any outgoings or bills you'd like to track in your budget. A bill is typically a "  />
+                                        <Span Text="regular expense for a good or service "  FontAttributes="Bold"/>
+                                        <Span Text="with a fixed (or mostly consistent) cost and recurring payment period."  />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="If you already know details for any bills, add them to the family member's new budget now. We'll use this information to accurately calculate their budget. If you're unsure of the details, don't worry bills can be added at any time, giving you flexibility to update their budget as needed."  />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Starting your budgeting journey doesn't have to be overwhelming. " />
+                                        <Span Text="We actually recommend adding details gradually. " FontAttributes="Bold" />
+                                        <Span Text=" As bills come in and require payment, include them in your budget to ensure you have the funds ready next time they’re due. This approach makes the process easier and more sustainable over time. " />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Margin="10,0,10,20" Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsStageVisible6}">
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Add any savings you'd like to include in your budget. Savings are typically long-term goals that, unlike bills, may not have a fixed total or a specific due date. They represent future expenses you'd like to prepare for. dBudget simplifies this process by allocating a portion of your funds each day to your savings balance. It also analyzes the time remaining until your next payday to determine how much you need to save and how much of your income is left to spend this period .. making sure you can achieve all your saving goals."  />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="The app offers various ways to set up savings that fit your goals. You can set a savings target alongside a daily contribution, and we’ll calculate the timeframe to achieve this "  />
+                                        <Span Text="(Target Amount) " FontAttributes="Bold" />
+                                        <Span Text="perfect for aspirations like a house deposit. Alternatively, you can define a savings goal with a specific deadline, and the app will work out how much you need to save each day to meet it "  />
+                                        <Span Text="(Target Date) " FontAttributes="Bold" />
+                                        <Span Text="ideal for planning something like a holiday."  />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="If your savings goal is less defined, you can use " />
+                                        <Span Text="the savings builder " FontAttributes="Bold" />
+                                        <Span Text="to set aside a fixed amount daily until you choose to stop. This could be for an emergency fund or a rainy-day stash. We strongly recommend starting with this, even if it’s as small as a penny a day—every bit makes a difference over time. "/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Again don't worry if you don't have all of the new family's account savings goal now, as their budget develops and they continue on their budgeting journey they will learn how they like to save and add all the saving types they need. That may be zero, one or dozens there is no right way other than the way that works for them." />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Margin="10,0,10,20" Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsStageVisible7}">
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Another type of saving in dBudget is called "  />
+                                        <Span Text="&quot;Envelopes&quot;" FontAttributes="Bold" />
+                                        <Span Text="which provides a straightforward way to manage your funds. On every payday, the app moves the specified amount into an &quot;Envelopes&quot; keeping it separate from the rest of your budget. This ensures the money won't be factored into calculations for daily or period-based spending amounts. "  />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Envelopes are especially useful for recurring expenses in specific categories, such as groceries, or for longer-term spending that doesn't require daily contributions. You can also use them to set aside money for occasional needs like " />
+                                        <Span Text="car maintenance " FontAttributes="Bold" />
+                                        <Span Text="or "/>
+                                        <Span Text="new running shoes. " FontAttributes="Bold" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="With Envelopes, you have two setup options: " />
+                                        <Span Text="Replenish " FontAttributes="Bold" />
+                                        <Span Text="or "/>
+                                        <Span Text="Top Up " FontAttributes="Bold" />
+                                        <Span Text="The Top Up option adds the specified saving amount to your current balance, allowing the envelope to grow with each payday. Meanwhile, the Replenish option resets the envelope to the specified amount every period, effectively moving any unused funds from the previous period back into your overall budget."/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Margin="10,0,10,20" Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsStageVisible8}">
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="You're almost done! The final step in setting up the budget is adding any extra income the family member might receive. Do they have a second job? Or perhaps they get an allowance from their grandparents? Extra income includes any regular or one-off payments you know in advance are coming. dBudget uses this information to help calculate spending amounts for the remainder of the pay period." />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="For regular incomes, you can enable the " />
+                                        <Span Text="Instant Active " FontAttributes="Bold" />
+                                        <Span Text="setting. When this is turned on, dBudget will determine which pay period the income belongs to and allocate the amount to the daily and pay period balances right from the start. This helps you manage your balance more effectively throughout the pay period. However, proceed cautiously—it may result in spending money that hasn’t actually reached your bank account yet, so careful planning is key. "/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Margin="10,0,10,20" Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsStageVisible9}">
+                            <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Padding="0" Margin="0,0,0,6">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Congrats you have finished setting up you family account and their budget. Click continue to confirm the set up and we will contact your family member with instructions on how to active their account and start budgetting! " />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>                           
+                        </VerticalStackLayout>
                         <Button Grid.Row="2" Grid.Column="0" Command="{Binding CloseInfoBoxCommand}" Padding="20,10,20,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Ok" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource PrimaryDark}" CornerRadius="8" Style="{StaticResource TitleButtons}" TextColor="White" Margin="80,20,80,10"/>
                     </Grid>
                 </Border>
@@ -58,7 +253,7 @@
                         <Label Text="Account Email" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
                         <Label Text="Enter the email you want to be associated with the family account, this has to be valid and not already in use for a family account." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                         <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,20" HeightRequest="44" IsEnabled="{Binding IsEmailEnabled}">
-                            <handlers:BorderlessEntry Margin="20,0,0,0" Text="{Binding AccountEmail}" IsEnabled="{Binding IsEmailEnabled}" HeightRequest="44"/>
+                            <handlers:BorderlessEntryDisable Margin="20,0,0,0" Text="{Binding AccountEmail}" IsEnabled="{Binding IsEmailEnabled}" HeightRequest="44"/>
                         </Border>
                         <Border Style="{StaticResource brdDanger}" Margin="5,10,0,10" VerticalOptions="Center" HorizontalOptions="Center" IsVisible="{Binding IsEmailExistsVisible, Converter={StaticResource BoolConverter}}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
                             <Label Text="{Binding IsEmailExistsText}" HorizontalTextAlignment="Center" VerticalOptions="Center" HorizontalOptions="Center" TextColor="{DynamicResource Danger}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
@@ -84,19 +279,228 @@
                             </Image>
                             <Label Text="{Binding IsNameValidText}" Style="{StaticResource ErrorMessage}"/>
                         </HorizontalStackLayout>
+                        <Label Text="Update Profile Picture" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
+                        <ContentView Content="{Binding ProfilePicture}" VerticalOptions="Start" HorizontalOptions="Start" Padding="10" touchEffects:TouchEffect.Color="{StaticResource PrimaryLightLight}">
+                            <ContentView.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding UpdateAvatarCommand}" />
+                            </ContentView.GestureRecognizers>
+                        </ContentView>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="VSLStage2" IsVisible="{Binding IsStageVisible2}" Padding="20,20,20,0">
-
+                        <Label Text="Select Anchor Budget" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
+                        <Label Text="Select which of your budgets you would like to be the anchor budget for this family account" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,20" HeightRequest="44">
+                            <ContentView Content="{Binding SwitchBudgetPicker}" VerticalOptions="Start" HorizontalOptions="Start" touchEffects:TouchEffect.Color="{StaticResource PrimaryLightLight}" />
+                        </Border>
+                        <Label Text="Budget Name" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
+                        <Label Text="Give the new budget a name to hlep everyone identify it!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,20" HeightRequest="44">
+                            <handlers:BorderlessEntry Margin="20,0,0,0" Text="{Binding Budget.BudgetName}" HeightRequest="44"/>
+                        </Border>
+                        <HorizontalStackLayout IsVisible="{Binding IsBudgetNameValid, Converter={StaticResource BoolConverter}}"  Margin="10,0,10,0">
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Text="{Binding IsBudgetNameValidText}" Style="{StaticResource ErrorMessage}"/>
+                        </HorizontalStackLayout>
+                        <VerticalStackLayout>
+                            <Label Text="Budget Visibility" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
+                            <Label Text="Choose whether you would like to be able to see the details of the family account, or give them a level of privacy over savings, transactions, etc." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
+                            <Grid ColumnDefinitions="60, *" Margin="5,5,0,0" RowDefinitions="Auto">
+                                <handlers:CustomSwitch Grid.Column="0" Grid.Row="0" IsToggled="{Binding FamilyAccount.IsBudgetHidden}"/>
+                                <Label IsVisible="{Binding FamilyAccount.IsBudgetHidden}" Margin="0,0,0,0" HorizontalOptions="Start" VerticalOptions="Center" Text="Hide detailed budget information"  Grid.Column="1" Grid.Row="0" TextColor="{StaticResource Info}" FontAttributes="Bold"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,0,0" />
+                                <Label IsVisible="{Binding FamilyAccount.IsBudgetHidden, Converter={StaticResource BoolConverter}}" Margin="0,0,0,0" HorizontalOptions="Start" VerticalOptions="Center" Text="Show all budget details" FontAttributes="Bold" Grid.Column="1" Grid.Row="0" TextColor="{StaticResource Info}"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,0,0" />
+                            </Grid>
+                            <Grid ColumnDefinitions="*" RowDefinitions="*" HorizontalOptions="Fill">
+                                <handlers:ReadMoreAccordion Grid.Row="0" Grid.Column="0" Margin="5,15,0,0" HorizontalOptions="Start" TextBody="Budget visibility is designed to provide flexible control over financial insights within a family account. By default, the parent account has full access to all aspects of the family budget, including transactions, savings, bills, and other financial details. However, users have the option to adjust this visibility, limiting access to high-level summaries instead of detailed breakdowns. This feature can be particularly useful in scenarios where a family member is learning to manage their finances independently, or if restricted visibility was agreed upon as part of a budgeting strategy. This visibility setting is configured at account creation, allowing family members to define the level of detail available to them from the start. If needed, the family account member can update their visibility preferences later, opting to access full financial details at any time."/>
+                            </Grid>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="VSLStage3" IsVisible="{Binding IsStageVisible3}" Padding="20,20,20,0">
-
+                        <HorizontalStackLayout Padding="5,0,0,2">
+                            <Label Text="Whats in their Bank account?" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}"/>
+                            <ImageButton Clicked="BankBalanceInfo" WidthRequest="14" HeightRequest="14" CornerRadius="5" VerticalOptions="Center" Margin="5,0,0,0">
+                                <ImageButton.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Info}" Color="{DynamicResource Info}"/>
+                                </ImageButton.Source>
+                            </ImageButton>
+                        </HorizontalStackLayout>
+                        <Label LineBreakMode="WordWrap" Text="If you want the money you currently have to be taken into account, let us know how much you got!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="7,0,0,10"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,20" HeightRequest="44" Stroke="{StaticResource Info}">
+                            <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entBankBalance" TextChanged="BankBalance_Changed" Keyboard="Numeric" />
+                        </Border>
+                        <HorizontalStackLayout Padding="5,0,0,2">
+                            <Label Text="Allowance Amount" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="Let us know how much from your own budget you want to / give to your family account as an allowance" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="7,0,0,10"/>
+                        <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,20" HeightRequest="44" Stroke="{StaticResource Info}">
+                            <handlers:BorderlessEntry TextColor="{DynamicResource Success}" CharacterSpacing="2" Margin="20,0,0,0" x:Name="entPayAmount" TextChanged="PayAmount_Changed" Keyboard="Numeric" />
+                        </Border>
+                        <HorizontalStackLayout Padding="5,0,0,2">
+                            <Label Text="When is the next allowance paid?" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}"/>
+                            <ImageButton Clicked="PayDayInfo" WidthRequest="14" HeightRequest="14" CornerRadius="5" VerticalOptions="Center" Margin="5,0,0,0">
+                                <ImageButton.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Info}" Color="{DynamicResource Info}"/>
+                                </ImageButton.Source>
+                            </ImageButton>
+                        </HorizontalStackLayout>
+                        <Label  Text="Let us know the date of the next allowance that you will transfer to your family member!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="7,0,0,10"/>
+                        <VerticalStackLayout Margin="0,0,0,20">
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,120,0" HeightRequest="44" Stroke="{StaticResource Info}">
+                                <DatePicker Margin="20,0,0,0" x:Name="dtpckPayDay" TextColor="{DynamicResource Gray900}" Date="{Binding Budget.NextIncomePayday}"/>
+                            </Border>
+                            <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validatorPayDay">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="Select a pay day some time in the ... future" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                        <HorizontalStackLayout Padding="5,0,0,10">
+                            <Label Text="How often do you transfer an allowance?" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}"/>
+                            <ImageButton Clicked="PayDetailsInfo" WidthRequest="14" HeightRequest="14" CornerRadius="5" VerticalOptions="Center" Margin="5,0,0,0">
+                                <ImageButton.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Info}" Color="{DynamicResource Info}" />
+                                </ImageButton.Source>
+                            </ImageButton>
+                        </HorizontalStackLayout>
+                        <VerticalStackLayout Margin="0,0,0,5">
+                            <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,5,0" HeightRequest="44" Stroke="{StaticResource Info}">
+                                <Grid RowDefinitions="*" ColumnDefinitions="*,*,*,*" VerticalOptions="Center">
+                                    <VerticalStackLayout x:Name="vslOption1Select" Grid.Column="0" BackgroundColor="Transparent">
+                                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption1" Text="Option 1" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                        </Label>
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="Option1Select_Tapped"/>
+                                        </VerticalStackLayout.GestureRecognizers>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout x:Name="vslOption2Select" Grid.Column="1" BackgroundColor="Transparent">
+                                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption2" Text="Option 2" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                        </Label>
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="Option2Select_Tapped"/>
+                                        </VerticalStackLayout.GestureRecognizers>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout x:Name="vslOption3Select" Grid.Column="2" BackgroundColor="Transparent" >
+                                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption3" Text="Option 3" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                        </Label>
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="Option3Select_Tapped"/>
+                                        </VerticalStackLayout.GestureRecognizers>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout x:Name="vslOption4Select" Grid.Column="3" BackgroundColor="Transparent" >
+                                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HeightRequest="44" VerticalTextAlignment="Center" x:Name="lblOption4" Text="Option 4" TextColor="{DynamicResource Gray900}" HorizontalOptions="Center">
+                                        </Label>
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="Option4Select_Tapped"/>
+                                        </VerticalStackLayout.GestureRecognizers>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                            <HorizontalStackLayout IsVisible="false" Margin="5,0,0,0" x:Name="validatorPayType">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="You have to select how you get paid" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout x:Name="vslOption1" IsVisible="false" Margin="0,0,0,20">
+                            <Label Text="Every nth ..." FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                                <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="44" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
+                                    <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entEverynthValue" Keyboard="Numeric" TextChanged="EveryNthValue_Changed" TextColor="{DynamicResource Gray900}" Text="{Binding EverynthValue}"/>
+                                </Border>
+                                <Label Text="Duration of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="1" Grid.Row="0"/>
+                                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,0" HeightRequest="44" Grid.Column="1" Grid.Row="1" Stroke="{StaticResource Info}">
+                                    <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrEverynthDuration" Title="Select a duration" SelectedItem="{Binding EverynthDuration}">
+                                        <Picker.ItemsSource>
+                                            <x:Array Type="{x:Type x:String}">
+                                                <x:String>days</x:String>
+                                                <x:String>weeks</x:String>
+                                                <x:String>months</x:String>
+                                            </x:Array>
+                                        </Picker.ItemsSource>
+                                    </handlers:BorderlessPicker>
+                                </Border>
+                            </Grid>
+                            <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validatorEveryNthDuration">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="Please insert your value" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout x:Name="vslOption2" IsVisible="false">
+                            <Label Text=" ... Working days before the end of the month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                                <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="44" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
+                                    <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entWorkingDaysValue" Keyboard="Numeric" TextChanged="WorkingDaysValue_Changed" TextColor="{DynamicResource Gray900}" Text="{Binding WorkingDaysValue}"/>
+                                </Border>
+                            </Grid>
+                            <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validatorWorkingDayDuration">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="Please insert your value" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout x:Name="vslOption3" IsVisible="false">
+                            <Label Text="On the ... of every month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                                <Label Text="Number of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="44" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
+                                    <handlers:BorderlessEntry Margin="20,0,0,0" x:Name="entOfEveryMonthValue" Keyboard="Numeric" TextChanged="OfEveryMonthValue_Changed" TextColor="{DynamicResource Gray900}" Text="{Binding OfEveryMonthValue}"/>
+                                </Border>
+                            </Grid>
+                            <HorizontalStackLayout IsVisible="false" Margin="5,5,0,0" x:Name="validatorOfEveryMonthDuration">
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}" Size="15" Color="{DynamicResource Danger}"/>
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="Please insert your value" Style="{StaticResource ErrorMessage}" VerticalOptions="Center" Padding="0" Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout x:Name="vslOption4" IsVisible="false">
+                            <Label Text="On the last ... of the month" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Margin="5,0,0,10" FontAttributes="Bold"/>
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                                <Label Text="Duration of" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,5" Grid.Column="0" Grid.Row="0"/>
+                                <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,50,20" HeightRequest="44" Grid.Column="0" Grid.Row="1" Stroke="{StaticResource Info}">
+                                    <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrLastOfTheMonthDuration" Title="Select a duration" BackgroundColor="Transparent" SelectedItem="{Binding LastOfTheMonthDuration}">
+                                        <Picker.ItemsSource>
+                                            <x:Array Type="{x:Type x:String}">
+                                                <x:String>Monday</x:String>
+                                                <x:String>Tuesday</x:String>
+                                                <x:String>Wednesday</x:String>
+                                                <x:String>Thursday</x:String>
+                                                <x:String>Friday</x:String>
+                                                <x:String>Saturday</x:String>
+                                                <x:String>Sunday</x:String>
+                                            </x:Array>
+                                        </Picker.ItemsSource>
+                                    </handlers:BorderlessPicker>
+                                </Border>
+                            </Grid>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="VSLStage4" IsVisible="{Binding IsStageVisible4}" Padding="20,20,20,0">
                         <Label Text="Currency Symbol" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
                         <Label Text="Select your local or preferred currency, we will try and show all figures using your preferred currency symbol. If you want to change your choice click on your selection below" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
                         <VerticalStackLayout x:Name="CurrencySearchBarLayout" IsVisible="{Binding SearchVisible}">
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,0" Stroke="{StaticResource Info}">
-                                <SearchBar x:Name="CurrencySearch" TextColor="{DynamicResource Gray900}" Margin="0" VerticalOptions="Center" HeightRequest="38" Text="{Binding CurrencySearchText}">
+                                <SearchBar x:Name="CurrencySearch" TextColor="{DynamicResource Gray900}" Margin="0" VerticalOptions="Center" HeightRequest="44" Text="{Binding CurrencySearchText}">
                                 </SearchBar>
                             </Border>
                             <Border Style="{StaticResource StandardInputBorder}" Padding="0"  Stroke="{StaticResource Info}" Margin="5,20,0,20">
@@ -113,58 +517,408 @@
                                 </CollectionView>
                             </Border>
                         </VerticalStackLayout>
-                        <Border x:Name="CurrencySearchResultLayout" Style="{StaticResource StandardInputBorder}" IsVisible="{Binding SearchVisible, Converter={StaticResource BoolConverter}}" Margin="5,0,40,20" Stroke="{StaticResource Info}">
-                            <Label x:Name="lblSelectedCurrency" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}">
+                        <Border x:Name="CurrencySearchResultLayout" Style="{StaticResource StandardInputBorder}" IsVisible="{Binding SearchVisible, Converter={StaticResource BoolConverter}}" Margin="5,0,40,20" Stroke="{StaticResource Info}" touchEffects:TouchEffect.Color="{StaticResource InfoLight}" Background="Transparent">
+                            <Label x:Name="lblSelectedCurrency" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" ZIndex="99" Background="Transparent" BackgroundColor="Transparent">
                                 <MultiBinding StringFormat="{}{2}">
                                     <Binding Path="SelectedCurrencySymbol.CurrencySymbol"/>
                                     <Binding Path="SelectedCurrencySymbol.Name"/>
                                     <Binding Path="SelectedCurrencySymbol.Code"/>
                                 </MultiBinding>
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="ChangeSelectedCurrency_Tapped"/>
-                                </Label.GestureRecognizers>
                             </Label>
+                            <Border.GestureRecognizers >
+                                <TapGestureRecognizer Tapped="ChangeSelectedCurrency_Tapped"/>
+                            </Border.GestureRecognizers>
                         </Border>
                         <Label Text="Symbol Placement" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
                         <Label Text="Select how you would like your choosen currency symbol to be palced." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
-                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="44">
                             <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrSymbolPlacement" Title="Select your currency symbol placement" ItemsSource="{Binding CurrencyPlacements}" ItemDisplayBinding="{Binding CurrencyPlacement}" SelectedItem="{Binding SelectedCurrencyPlacement}"/>
                         </Border>
                         <Label Text="Date Format" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
                         <Label Text="Select your preferred date format, when presenting a date in numbers we will use this format." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
-                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="44">
                             <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrDateFormat" Title="Select your preferred Date Format" ItemsSource="{Binding DateFormats}" ItemDisplayBinding="{Binding DateFormat}" SelectedItem="{Binding SelectedDateFormats}"/>
                         </Border>
                         <Label Text="Number Format" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
                         <Label Text="Select your preferred number format. Number of decimals, decimal symbol and number group seperator. " FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
-                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="44">
                             <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrNumberFormat" Title="Select your preferred number format" ItemsSource="{Binding NumberFormats}" ItemDisplayBinding="{Binding NumberFormat}" SelectedItem="{Binding SelectedNumberFormats}"/>
                         </Border>
                         <Label Text="Budget Time Zone " FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,0,0,2"/>
                         <Label Text="Select the time zone for your budget. This will dictate when the daily budgetting happens so choose carefully!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,0,0,10"/>
-                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="38">
+                        <Border Stroke="{StaticResource Info}" Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,40,20" HeightRequest="44">
                             <handlers:BorderlessPicker TextColor="{DynamicResource Gray900}" Margin="20,0,0,0" x:Name="pckrTimeZone" Title="Select your Time Zone" ItemsSource="{Binding TimeZones}" ItemDisplayBinding="{Binding TimeZoneDisplayName}" SelectedItem="{Binding SelectedTimeZone}"/>
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="VSLStage5" IsVisible="{Binding IsStageVisible5}" Padding="20,20,20,0">
-
-
+                        <Label Text="Borrow Pay for outgoings" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Padding="5,5,0,0"/>
+                        <Grid ColumnDefinitions="60,*" Margin="5,5,0,10" HeightRequest="40">
+                            <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsBorrowPay}" />
+                            <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">
+                                <Label HorizontalOptions="Start" Text="{Binding IsBorrowPay, Converter={StaticResource IsBorrowPayTextConverter}}" TextColor="{StaticResource Primary}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </Grid>
+                        <Label Margin="5,0,0,20">
+                            <Label.FormattedText Padding="0,5,0,0" >
+                                <FormattedString>
+                                    <Span Text="To find out how changing this setting will affect how we calculate your budget " TextColor="{StaticResource Gray700}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"/>
+                                    <Span Text="read more here" TextColor="{StaticResource Info}"  TextDecorations="Underline" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold">
+                                        <Span.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding GoToBorrowPayVideosCommand}"/>
+                                        </Span.GestureRecognizers>
+                                    </Span>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <HorizontalStackLayout Padding="5,0,0,2">
+                            <Label Text="Current Outgoings" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="Below are the details of any bills you have added to your budget, if you need to add more click the add button." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,5,0,0"/>
+                        <Border Style="{StaticResource ClearInfoBorder}" WidthRequest="180" HorizontalOptions="Start" Margin="5,10,0,10">
+                            <Button Margin="0" Padding="0" Text="Add a New Bill" Command="{Binding AddNewOutgoingCommand}" HorizontalOptions="Center" Style="{StaticResource ClearInfoButton}"  WidthRequest="180"/>
+                        </Border>
+                        <Grid Padding="0" RowDefinitions="*" ColumnDefinitions="*" Margin="5,20,0,0">
+                            <StackLayout Grid.Row="0" Grid.Column="0" BindableLayout.ItemsSource="{Binding Bills}" Padding="0" Margin="0">
+                                <BindableLayout.EmptyView>
+                                    <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto">
+                                        <Label Grid.Row="0" Grid.Column="0" Text="No bills added" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource Primary}" HorizontalOptions="Center" Margin="0,20,0,0"/>
+                                        <Label Grid.Row="1" Grid.Column="0" Margin="10,10,10,0" Text="Click add a new bill to add a regular outgoing to your budget" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" TextColor="Gray" HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                                    </Grid>
+                                </BindableLayout.EmptyView>
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
+                                        <VerticalStackLayout Padding="0,10,0,15">
+                                            <BoxView HeightRequest="4" Margin="0" Color="{DynamicResource PrimaryDark}" ZIndex="99"/>
+                                            <Border BackgroundColor="White" Stroke="{StaticResource Info}" Margin="0,-2,0,0">
+                                                <Border.Shadow>
+                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="10" />
+                                                </Border.Shadow>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="15"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="30"/>
+                                                        <RowDefinition Height="25"/>
+                                                        <RowDefinition Height="45"/>
+                                                        <RowDefinition Height="5"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="2*"/>
+                                                        <ColumnDefinition Width="7*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border Style="{StaticResource PictureFrame40}" Margin="0,0,0,0" Grid.Column="0" Grid.Row="1" Grid.RowSpan="6" VerticalOptions="Start" HorizontalOptions="Center">
+                                                        <Image Source="billsicon.png" />
+                                                    </Border>
+                                                    <Label Grid.Column="1" Grid.Row="1"  LineBreakMode="WordWrap" TextColor="{DynamicResource Gray600}" VerticalOptions="Center" FontAttributes="Bold" Text="{Binding ., Converter={StaticResource RecurringBillDetails}}" Margin="0,0,0,5" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" />
+                                                    <Label Text="{Binding BillName}" Grid.Column="1" Grid.Row="2" VerticalOptions="Center" FontAttributes="Bold" TextColor="{DynamicResource PrimaryDark}" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}"/>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="3" VerticalOptions="End">
+                                                        <Label TextColor="{DynamicResource Info}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Text="{Binding BillCurrentBalance, StringFormat='{0:C}'}"/>
+                                                        <Label TextColor="{DynamicResource Gray300}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Text="{Binding BillAmount, StringFormat='/{0:c}'}"/>
+                                                        <Label TextColor="{DynamicResource Gray600}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" Text="{Binding RegularBillValue, StringFormat='  {0:C} per day'}"/>
+                                                    </HorizontalStackLayout>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="4" VerticalOptions="Center">
+                                                        <HorizontalStackLayout Margin="0,0,20,0" HorizontalOptions="End" VerticalOptions="Center">
+                                                            <Image Background="{DynamicResource White}">
+                                                                <Image.Source>
+                                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
+                                                                </Image.Source>
+                                                            </Image>
+                                                            <Label Text="Edit" TextColor="{DynamicResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
+                                                            <HorizontalStackLayout.GestureRecognizers>
+                                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CreateNewFamilyAccountsViewModel}}, Path=EditBudgetOutgoingsCommand}" CommandParameter="{Binding .}"/>
+                                                            </HorizontalStackLayout.GestureRecognizers>
+                                                        </HorizontalStackLayout>
+                                                        <HorizontalStackLayout Margin="0" HorizontalOptions="End" VerticalOptions="Center">
+                                                            <Image Background="{DynamicResource White}">
+                                                                <Image.Source>
+                                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete}" Size="12" Color="{DynamicResource Info}"/>
+                                                                </Image.Source>
+                                                            </Image>
+                                                            <Label Text="Delete" TextColor="{DynamicResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
+                                                            <HorizontalStackLayout.GestureRecognizers>
+                                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CreateNewFamilyAccountsViewModel}}, Path=DeleteBudgetOutgoingsCommand}" CommandParameter="{Binding .}"/>
+                                                            </HorizontalStackLayout.GestureRecognizers>
+                                                        </HorizontalStackLayout>
+                                                    </HorizontalStackLayout>
+                                                </Grid>
+                                            </Border>
+                                        </VerticalStackLayout>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </StackLayout>
+                        </Grid>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="VSLStage6" IsVisible="{Binding IsStageVisible6}" Padding="20,20,20,0">
-
-
+                        <HorizontalStackLayout Padding="5,0,0,2">
+                            <Label Text="Current Savings" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="Below are the details of any savings you have added to your budget, if you need to add more click the add button." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,5,0,0"/>
+                        <Border Style="{StaticResource ClearInfoBorder}" WidthRequest="180" HorizontalOptions="Start" Margin="5,10,0,10">
+                            <Button Margin="0" Padding="0" Text="Add a Saving" Command="{Binding AddNewSavingCommand}" HorizontalOptions="Center" Style="{StaticResource ClearInfoButton}"  WidthRequest="180"/>
+                        </Border>
+                        <Grid Padding="0" RowDefinitions="*" ColumnDefinitions="*" Margin="5,20,0,0">
+                            <StackLayout Grid.Row="0" Grid.Column="0" BindableLayout.ItemsSource="{Binding Savings}" Padding="0" Margin="0">
+                                <BindableLayout.EmptyView>
+                                    <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto">
+                                        <Label Grid.Row="0" Grid.Column="0" Text="No savings added" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource Primary}" HorizontalOptions="Center" Margin="0,20,0,0"/>
+                                        <Label Grid.Row="1" Grid.Column="0" Margin="10,10,10,0" Text="Click add a new saving to add a regular saving goal to your budget" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" TextColor="Gray" HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                                    </Grid>
+                                </BindableLayout.EmptyView>
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
+                                        <VerticalStackLayout Padding="0,10,0,15">
+                                            <BoxView HeightRequest="4" Margin="0" Color="{DynamicResource Primary}" ZIndex="99" />
+                                            <Border BackgroundColor="White" Stroke="{StaticResource Info}" Margin="0,-2,0,0">
+                                                <Border.Shadow>
+                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="10" />
+                                                </Border.Shadow>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="15"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="30"/>
+                                                        <RowDefinition Height="25"/>
+                                                        <RowDefinition Height="45"/>
+                                                        <RowDefinition Height="5"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="2*"/>
+                                                        <ColumnDefinition Width="7*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border Style="{StaticResource PictureFrame40}" Margin="0,5,0,0" Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" VerticalOptions="Start" HorizontalOptions="Center">
+                                                        <Image Source="savingicon.png"  />
+                                                    </Border>
+                                                        <Label Grid.Column="1" Grid.Row="1"  LineBreakMode="WordWrap" TextColor="{DynamicResource Gray600}" VerticalOptions="Center" FontAttributes="Bold" Text="{Binding ., Converter={StaticResource NewSavingTypeHeaderConverter}}" Margin="0,0,0,5" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}"/>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="2">
+                                                        <Label Text="{Binding SavingsName}" FontAttributes="Bold" TextColor="{DynamicResource PrimaryDark}" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}"/>
+                                                    </HorizontalStackLayout>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="3" VerticalOptions="End">
+                                                        <Label TextColor="{DynamicResource Info}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Text="{Binding CurrentBalance, StringFormat='{0:C} '}"/>
+                                                        <Label TextColor="{DynamicResource Gray300}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Text="{Binding SavingsGoal, StringFormat='/ {0:c}'}" IsVisible="{Binding ., Converter={StaticResource IsNotSavingsBuilder}}"/>
+                                                        <Label TextColor="{DynamicResource Gray600}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" Text="{Binding RegularSavingValue, StringFormat='  {0:C} per day'}"/>                                                    
+                                                    </HorizontalStackLayout>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="4" VerticalOptions="Center">
+                                                        <HorizontalStackLayout Margin="0,0,20,0" HorizontalOptions="End" VerticalOptions="Center">
+                                                            <Image Background="{DynamicResource White}">
+                                                                <Image.Source>
+                                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
+                                                                </Image.Source>
+                                                            </Image>
+                                                            <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
+                                                            <HorizontalStackLayout.GestureRecognizers>
+                                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CreateNewFamilyAccountsViewModel}}, Path=EditBudgetSavingsCommand}" CommandParameter="{Binding .}"/>
+                                                            </HorizontalStackLayout.GestureRecognizers>
+                                                        </HorizontalStackLayout>
+                                                        <HorizontalStackLayout Margin="0" HorizontalOptions="End" VerticalOptions="Center">
+                                                            <Image Background="{DynamicResource White}">
+                                                                <Image.Source>
+                                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete}" Size="12" Color="{DynamicResource Info}"/>
+                                                                </Image.Source>
+                                                            </Image>
+                                                            <Label Text="Delete" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
+                                                            <HorizontalStackLayout.GestureRecognizers>
+                                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CreateNewFamilyAccountsViewModel}}, Path=DeleteBudgetSavingsCommand}" CommandParameter="{Binding .}"/>
+                                                            </HorizontalStackLayout.GestureRecognizers>
+                                                        </HorizontalStackLayout>
+                                                    </HorizontalStackLayout>
+                                                </Grid>
+                                            </Border>
+                                        </VerticalStackLayout>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </StackLayout>
+                        </Grid>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="VSLStage7" IsVisible="{Binding IsStageVisible7}" Padding="20,20,20,0">
-
-
+                        <HorizontalStackLayout Padding="5,0,0,2">
+                            <Label Text="Current Envelopes" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="Below are the details of any envelopes you have added to your budget, if you need to add more click the add button." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,5,0,0"/>
+                        <Border Style="{StaticResource ClearInfoBorder}" WidthRequest="180" HorizontalOptions="Start" Margin="5,10,0,10">
+                            <Button Margin="0" Padding="0" Text="Add Envelope" Command="{Binding AddNewEnvelopeCommand}" HorizontalOptions="Center" Style="{StaticResource ClearInfoButton}"  WidthRequest="180"/>
+                        </Border>
+                        <Grid Padding="0" RowDefinitions="*" ColumnDefinitions="*" Margin="5,20,0,0">
+                            <StackLayout Grid.Row="0" Grid.Column="0" BindableLayout.ItemsSource="{Binding Envelopes}" Padding="0" Margin="0">
+                                <BindableLayout.EmptyView>
+                                    <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto">
+                                        <Label Grid.Row="0" Grid.Column="0" Text="No envelopes added" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource Primary}" HorizontalOptions="Center" Margin="0,20,0,0"/>
+                                        <Label Grid.Row="1" Grid.Column="0" Margin="10,10,10,0" Text="Click add envelopes to add a envelope to your budget" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" TextColor="Gray" HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                                    </Grid>
+                                </BindableLayout.EmptyView>
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
+                                        <VerticalStackLayout Padding="0,10,0,15">
+                                            <BoxView HeightRequest="4" Margin="0" Color="{DynamicResource Primary}" ZIndex="99" />
+                                            <Border BackgroundColor="White" Stroke="{StaticResource Info}" Margin="0,-2,0,0">
+                                                <Border.Shadow>
+                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="10" />
+                                                </Border.Shadow>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="15"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="30"/>
+                                                        <RowDefinition Height="25"/>
+                                                        <RowDefinition Height="45"/>
+                                                        <RowDefinition Height="5"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="2*"/>
+                                                        <ColumnDefinition Width="7*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border Style="{StaticResource PictureFrame40}" Margin="0,5,0,0" Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" VerticalOptions="Start" HorizontalOptions="Center">
+                                                        <Image Source="envelope_image.jpg"  />
+                                                    </Border>
+                                                    <Label Grid.Column="1" Grid.Row="1"  LineBreakMode="WordWrap" TextColor="{DynamicResource Gray600}" VerticalOptions="Center" FontAttributes="Bold" Text="{Binding ., Converter={StaticResource NewSavingTypeHeaderConverter}}" Margin="0,0,0,5" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}"/>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="2">
+                                                        <Label Text="{Binding SavingsName}" FontAttributes="Bold" TextColor="{DynamicResource PrimaryDark}" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}"/>
+                                                    </HorizontalStackLayout>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="3" VerticalOptions="End">
+                                                        <Label TextColor="{DynamicResource Info}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Text="{Binding CurrentBalance, StringFormat='{0:C} '}"/>
+                                                        <Label TextColor="{DynamicResource Gray300}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" Text="{Binding PeriodSavingValue, StringFormat='/ {0:c}'}"/>
+                                                    </HorizontalStackLayout>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="4" VerticalOptions="Center">
+                                                        <HorizontalStackLayout Margin="0,0,20,0" HorizontalOptions="End" VerticalOptions="Center">
+                                                            <Image Background="{DynamicResource White}">
+                                                                <Image.Source>
+                                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
+                                                                </Image.Source>
+                                                            </Image>
+                                                            <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
+                                                            <HorizontalStackLayout.GestureRecognizers>
+                                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CreateNewFamilyAccountsViewModel}}, Path=EditBudgetEnvelopesCommand}" CommandParameter="{Binding .}"/>
+                                                            </HorizontalStackLayout.GestureRecognizers>
+                                                        </HorizontalStackLayout>
+                                                        <HorizontalStackLayout Margin="0" HorizontalOptions="End" VerticalOptions="Center">
+                                                            <Image Background="{DynamicResource White}">
+                                                                <Image.Source>
+                                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete}" Size="12" Color="{DynamicResource Info}"/>
+                                                                </Image.Source>
+                                                            </Image>
+                                                            <Label Text="Delete" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
+                                                            <HorizontalStackLayout.GestureRecognizers>
+                                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CreateNewFamilyAccountsViewModel}}, Path=DeleteBudgetEnvelopesCommand}" CommandParameter="{Binding .}"/>
+                                                            </HorizontalStackLayout.GestureRecognizers>
+                                                        </HorizontalStackLayout>
+                                                    </HorizontalStackLayout>
+                                                </Grid>
+                                            </Border>
+                                        </VerticalStackLayout>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </StackLayout>
+                        </Grid>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="VSLStage8" IsVisible="{Binding IsStageVisible8}" Padding="20,20,20,0">
-
-
+                        <HorizontalStackLayout Padding="5,0,0,2">
+                            <Label Text="Current Extra Income" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="Below are the details of any extra income outside of your pay day you have added to your budget, if you need to add more click the add button." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray700}" Padding="5,5,0,0"/>
+                        <Border Style="{StaticResource ClearInfoBorder}" WidthRequest="180" HorizontalOptions="Start" Margin="5,10,0,10">
+                            <Button Margin="0" Padding="0" Text="Add Income" Command="{Binding AddNewIncomeCommand}" HorizontalOptions="Center" Style="{StaticResource ClearInfoButton}"  WidthRequest="180"/>
+                        </Border>
+                        <Grid Padding="0" RowDefinitions="*" ColumnDefinitions="*" Margin="5,20,0,0">
+                            <StackLayout Grid.Row="0" Grid.Column="0" BindableLayout.ItemsSource="{Binding Incomes}" Padding="0" Margin="0">
+                                <BindableLayout.EmptyView>
+                                    <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto">
+                                        <Label Grid.Row="0" Grid.Column="0" Text="No extra incomes added" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource Primary}" HorizontalOptions="Center" Margin="0,20,0,0"/>
+                                        <Label Grid.Row="1" Grid.Column="0" Margin="10,10,10,0" Text="Click add income to add an extra income to your budget" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" TextColor="Gray" HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                                    </Grid>
+                                </BindableLayout.EmptyView>
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
+                                        <VerticalStackLayout Padding="0,10,0,15">
+                                            <BoxView HeightRequest="4" Margin="0" Color="{DynamicResource Primary}" ZIndex="99" />
+                                            <Border BackgroundColor="White" Stroke="{StaticResource Info}" Margin="0,-2,0,0">
+                                                <Border.Shadow>
+                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="10" />
+                                                </Border.Shadow>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="15"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="30"/>
+                                                        <RowDefinition Height="25"/>
+                                                        <RowDefinition Height="45"/>
+                                                        <RowDefinition Height="5"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="2*"/>
+                                                        <ColumnDefinition Width="7*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border Style="{StaticResource PictureFrame40}" Margin="0,5,0,0" Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" VerticalOptions="Start" HorizontalOptions="Center">
+                                                        <Image Source="incomeicon.png"  />
+                                                    </Border>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="1" VerticalOptions="Center" >
+                                                        <Image Background="{DynamicResource White}" IsVisible="{Binding IsRecurringIncome}" Margin="0,0,4,0" VerticalOptions="Center">
+                                                            <Image.Source VerticalOptions="Center">
+                                                                <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Refresh}" Size="16" Color="{DynamicResource Info}"/>
+                                                            </Image.Source>
+                                                        </Image>
+                                                        <Label LineBreakMode="WordWrap" TextColor="{DynamicResource Gray600}" VerticalOptions="Center" FontAttributes="Bold" Text="{Binding ., Converter={StaticResource RecurringIncomeDetails}}" Margin="0,0,0,5" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}"/>
+                                                    </HorizontalStackLayout>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="2">
+                                                        <Label Text="{Binding IncomeName}" FontAttributes="Bold" TextColor="{DynamicResource PrimaryDark}" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}"/>
+                                                    </HorizontalStackLayout>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="3" VerticalOptions="End">
+                                                        <Image Background="{DynamicResource White}" IsVisible="{Binding IsInstantActive}" Margin="0,0,4,0" VerticalOptions="Center">
+                                                            <Image.Source VerticalOptions="Center">
+                                                                <FontImageSource  FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Electric_bolt}" Size="16" Color="{DynamicResource Info}"/>
+                                                            </Image.Source>
+                                                        </Image>
+                                                        <Label TextColor="{DynamicResource Info}" Text="{Binding IncomeAmount, StringFormat='{0:C} | '}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}"/>
+                                                        <Label TextColor="{DynamicResource Gray900}" Text="{Binding DateOfIncomeEvent, StringFormat='{0:dd MMMM yyyy}'}" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}"/>
+                                                    </HorizontalStackLayout>
+                                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="4" VerticalOptions="Center">
+                                                        <HorizontalStackLayout Margin="0,0,20,0" HorizontalOptions="End" VerticalOptions="Center">
+                                                            <Image Background="{DynamicResource White}">
+                                                                <Image.Source>
+                                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Edit}" Size="12" Color="{DynamicResource Info}"/>
+                                                                </Image.Source>
+                                                            </Image>
+                                                            <Label Text="Edit" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
+                                                            <HorizontalStackLayout.GestureRecognizers>
+                                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CreateNewFamilyAccountsViewModel}}, Path=EditBudgetIncomesCommand}" CommandParameter="{Binding .}"/>
+                                                            </HorizontalStackLayout.GestureRecognizers>
+                                                        </HorizontalStackLayout>
+                                                        <HorizontalStackLayout Margin="0" HorizontalOptions="End" VerticalOptions="Center">
+                                                            <Image Background="{DynamicResource White}">
+                                                                <Image.Source>
+                                                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Delete}" Size="12" Color="{DynamicResource Info}"/>
+                                                                </Image.Source>
+                                                            </Image>
+                                                            <Label Text="Delete" TextColor="{DynamicResource Info}" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="5,0,0,0"/>
+                                                            <HorizontalStackLayout.GestureRecognizers>
+                                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CreateNewFamilyAccountsViewModel}}, Path=DeleteBudgetIncomesCommand}" CommandParameter="{Binding .}"/>
+                                                            </HorizontalStackLayout.GestureRecognizers>
+                                                        </HorizontalStackLayout>
+                                                    </HorizontalStackLayout>
+                                                </Grid>
+                                            </Border>
+                                        </VerticalStackLayout>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </StackLayout>
+                        </Grid>
                     </VerticalStackLayout>
                     <VerticalStackLayout x:Name="VSLStage9" IsVisible="{Binding IsStageVisible9}" Padding="20,20,20,0">
-
-
+                        <Label Text="Completed Budget Stats" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Info}" Margin="5,0,0,10"/>
+                        <Label Text="Bank Balance (BB)" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
+                        <Label Text="Your Bank Balance is what it says, its the amount of money you currently hold in your bank account or accounts ... or under the mattress if thats the way you are inclined" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray500}" Padding="5,0,0,2"/>
+                        <Label Padding="15,10,0,15" Text="{Binding Budget.BankBalance, StringFormat='{0:c}'}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                        <Label Text="Money Available Balance (MaB)" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
+                        <Label Text="Your Money available Balance is the amount of money you have at your disposal that hasn't already been committed to one of your finanical liabilities ... your budget's outgoings." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray500}" Padding="5,0,0,2"/>
+                        <Label Padding="15,10,0,15" Text="{Binding Budget.MoneyAvailableBalance, StringFormat='{0:c}'}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                        <Label Text="Left To Spend Balance (LtSB)" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
+                        <Label Text="Your Left to Spend Balance is what we think you have left to spend in your budget between now and pay day. So your Bank Balance minus any savings goals and outgoing liabilities." FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray500}" Padding="5,0,0,2"/>
+                        <Label Padding="15,10,0,15" Text="{Binding Budget.LeftToSpendBalance, StringFormat='{0:c}'}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
+                        <Label Text="Daily Budget" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" Padding="5,0,0,2"/>
+                        <Label Text="We used all the information you provided and have calculated that you have this amount to spend each day between now and your next pay day!" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray500}" Padding="5,0,0,2"/>
+                        <Label Padding="15,10,0,15" Text="{Binding Budget.LeftToSpendDailyAmount, StringFormat='{0:c}'}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}"/>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
                 <HorizontalStackLayout Grid.Row="2" Grid.Column="0" VerticalOptions="End" HorizontalOptions="End" Margin="0,10,20,20">

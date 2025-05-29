@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Helpers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
 using System.Globalization;
@@ -117,6 +118,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private string currencySearchText;
 
+
         [RelayCommand]
         public async Task IsBorrowPayToggledCommand()
         {
@@ -127,29 +129,33 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             _pt = pt;
             _ds = ds;
-
-            CurrencyPlacements = _ds.GetCurrencyPlacements("").Result;
-            DateFormats = _ds.GetDateFormatsByString("").Result;
-            NumberFormats = _ds.GetNumberFormats().Result;
-            TimeZones = _ds.GetBudgetTimeZones("").Result;
         }      
         
         public async Task OnLoad()
         {
+            Title = "Edit your budget's settings";
+            CurrencyPlacements = await _ds.GetCurrencyPlacements("");
+            DateFormats = await _ds.GetDateFormatsByString("");
+            NumberFormats = await _ds.GetNumberFormats();
+            TimeZones = await _ds.GetBudgetTimeZones("");
 
-            BudgetSettings = _ds.GetBudgetSettings(App.DefaultBudgetID).Result;
-            Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
+            BudgetSettings = await _ds.GetBudgetSettings(App.DefaultBudgetID);
+            Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
 
-            SelectedCurrencySymbol = _ds.GetCurrencySymbols(BudgetSettings.CurrencySymbol.ToString()).Result[0];
-            SelectedCurrencyPlacement = _ds.GetCurrencyPlacements(BudgetSettings.CurrencyPattern.ToString()).Result[0];
-            SelectedDateFormats = _ds.GetDateFormatsById(BudgetSettings.ShortDatePattern ?? 1, BudgetSettings.DateSeperator ?? 1).Result;
-            SelectedNumberFormats = _ds.GetNumberFormatsById(BudgetSettings.CurrencyDecimalDigits ?? 2, BudgetSettings.CurrencyDecimalSeparator ?? 2, BudgetSettings.CurrencyGroupSeparator ?? 1).Result;
-            SelectedTimeZone = _ds.GetTimeZoneById(BudgetSettings.TimeZone.GetValueOrDefault()).Result;
+            SelectedCurrencySymbol = (await _ds.GetCurrencySymbols(BudgetSettings.CurrencySymbol.ToString()))[0];
+            SelectedCurrencyPlacement = (await _ds.GetCurrencyPlacements(BudgetSettings.CurrencyPattern.ToString()))[0];
+            SelectedDateFormats = await _ds.GetDateFormatsById(BudgetSettings.ShortDatePattern ?? 1, BudgetSettings.DateSeperator ?? 1);
+            SelectedNumberFormats = await _ds.GetNumberFormatsById(
+                BudgetSettings.CurrencyDecimalDigits ?? 2,
+                BudgetSettings.CurrencyDecimalSeparator ?? 2,
+                BudgetSettings.CurrencyGroupSeparator ?? 1
+            );
+            SelectedTimeZone = await _ds.GetTimeZoneById(BudgetSettings.TimeZone.GetValueOrDefault());
 
-            TimeCultureInfo.DateTimeFormat.ShortDatePattern = _ds.GetShortDatePatternById(SelectedDateFormats.ShortDatePatternID).Result.ShortDatePattern;
-            TimeCultureInfo.DateTimeFormat.DateSeparator = _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID).Result.DateSeperator;
+            TimeCultureInfo.DateTimeFormat.ShortDatePattern = (await _ds.GetShortDatePatternById(SelectedDateFormats.ShortDatePatternID)).ShortDatePattern;
+            TimeCultureInfo.DateTimeFormat.DateSeparator = (await _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID)).DateSeperator;
 
-            UpdateCurrencySettingValue();
+            await UpdateCurrencySettingValue();
 
             PayAmount = Budget.PaydayAmount ?? 0;
             PayAmountString = PayAmount.ToString("c", CultureInfo.CurrentCulture);
@@ -255,7 +261,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                         BudgetUpdate.Add(IsMultipleAccountsPatch);
                         await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
                     }
-                    App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                    var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                    App.DefaultBudget = Budget;
                 }
             }
             catch (Exception ex)
@@ -446,22 +453,27 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        private void UpdateCurrencySettingValue()
+        private async Task UpdateCurrencySettingValue()
         {
             if(SelectedNumberFormats != null && SelectedCurrencyPlacement != null && SelectedCurrencySymbol != null)
             {
                 CurrencyCultureInfo.NumberFormat.CurrencySymbol = SelectedCurrencySymbol.CurrencySymbol;
-                if(SelectedNumberFormats.CurrencyDecimalSeparatorID != 0)
+                if (SelectedNumberFormats.CurrencyDecimalSeparatorID != 0)
                 {
-                    CurrencyCultureInfo.NumberFormat.CurrencyDecimalSeparator = _ds.GetCurrencyDecimalSeparatorById(SelectedNumberFormats.CurrencyDecimalSeparatorID).Result.CurrencyDecimalSeparator;
+                    var decimalSeparatorResult = await _ds.GetCurrencyDecimalSeparatorById(SelectedNumberFormats.CurrencyDecimalSeparatorID);
+                    CurrencyCultureInfo.NumberFormat.CurrencyDecimalSeparator = decimalSeparatorResult.CurrencyDecimalSeparator;
                 }
+
                 if (SelectedNumberFormats.CurrencyGroupSeparatorID != 0)
                 {
-                    CurrencyCultureInfo.NumberFormat.CurrencyGroupSeparator = _ds.GetCurrencyGroupSeparatorById(SelectedNumberFormats.CurrencyGroupSeparatorID).Result.CurrencyGroupSeparator;
+                    var groupSeparatorResult = await _ds.GetCurrencyGroupSeparatorById(SelectedNumberFormats.CurrencyGroupSeparatorID);
+                    CurrencyCultureInfo.NumberFormat.CurrencyGroupSeparator = groupSeparatorResult.CurrencyGroupSeparator;
                 }
-                if(SelectedNumberFormats.CurrencyDecimalDigitsID != 0)
+
+                if (SelectedNumberFormats.CurrencyDecimalDigitsID != 0)
                 {
-                    CurrencyCultureInfo.NumberFormat.CurrencyDecimalDigits = Convert.ToInt32(_ds.GetCurrencyDecimalDigitsById(SelectedNumberFormats.CurrencyDecimalDigitsID).Result.currencyDecimalDigits);
+                    var decimalDigitsResult = await _ds.GetCurrencyDecimalDigitsById(SelectedNumberFormats.CurrencyDecimalDigitsID);
+                    CurrencyCultureInfo.NumberFormat.CurrencyDecimalDigits = Convert.ToInt32(decimalDigitsResult.CurrencyDecimalDigits);
                 }
                 CurrencyCultureInfo.NumberFormat.CurrencyPositivePattern = SelectedCurrencyPlacement.CurrencyPositivePatternRef;
             }
@@ -474,7 +486,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             try
             {
                 HasNumberFormatsChanged = true;
-                UpdateCurrencySettingValue();
+                UpdateCurrencySettingValue().FireAndForgetSafeAsync();
             }
             catch (Exception ex)
             {
@@ -508,7 +520,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        partial void OnSelectedDateFormatsChanged(lut_DateFormat value)
+        async partial void OnSelectedDateFormatsChanged(lut_DateFormat value)
         {
             try
             {
@@ -518,12 +530,12 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     TimeCultureInfo.DateTimeFormat.ShortDatePattern = SelectedDateFormats.DateFormat;
                     TimeCultureInfo.DateTimeFormat.LongDatePattern = SelectedDateFormats.DateFormat + " HH:mm:ss";
-                    TimeCultureInfo.DateTimeFormat.DateSeparator = _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID).Result.DateSeperator;
+                    TimeCultureInfo.DateTimeFormat.DateSeparator = (await _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID)).DateSeperator; 
                 }
             }
             catch (Exception ex)
             {
-                _pt.HandleException(ex, "EditBudgetSettings", "OnSelectedDateFormatsChanged");
+                await _pt.HandleException(ex, "EditBudgetSettings", "OnSelectedDateFormatsChanged");
             }
 
         }
@@ -533,10 +545,10 @@ namespace DailyBudgetMAUIApp.ViewModels
             HasTimeZoneChanged = true;
         }
         
-        public void ChangeSelectedCurrency()
+        public async Task ChangeSelectedCurrency()
         {
             SearchVisible = true;
-            CurrencySearchResults = _ds.GetCurrencySymbols("").Result;
+            CurrencySearchResults = await _ds.GetCurrencySymbols("");
         }
 
         [RelayCommand]
@@ -578,7 +590,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                CurrencySearchResults = _ds.GetCurrencySymbols(value).Result;
+                CurrencySearchResults = await _ds.GetCurrencySymbols(value);
             }
             catch (Exception ex)
             {
@@ -941,7 +953,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                             App.DefaultBudgetID = Budgets[0].BudgetID;
                             App.DefaultBudget = Budgets[0];
-                            BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+                            BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(App.DefaultBudgetID);
                             App.CurrentSettings = Settings;
 
                             if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
@@ -1038,6 +1050,29 @@ namespace DailyBudgetMAUIApp.ViewModels
             if (!result)
             {
                 IsBorrowPay = true;
+            }
+        }
+
+
+        [RelayCommand]
+        public async Task BackButton()
+        {
+            try
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
+                await Task.Delay(1);
+
+                await Shell.Current.GoToAsync($"//{(App.IsFamilyAccount ? nameof(FamilyAccountMainPage) : nameof(MainPage))}");
+
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewBudgets", "BackButton");
             }
         }
 

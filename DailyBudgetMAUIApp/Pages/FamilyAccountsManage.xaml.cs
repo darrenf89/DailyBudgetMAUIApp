@@ -4,12 +4,12 @@ using Plugin.LocalNotification;
 
 namespace DailyBudgetMAUIApp.Pages;
 
-public partial class ManageFamilyAccounts : BasePage
+public partial class FamilyAccountsManage : BasePage
 {
-    private readonly ManageFamilyAccountsViewModel _vm;
+    private readonly FamilyAccountsManageViewModel _vm;
     private readonly IProductTools _pt;
 
-    public ManageFamilyAccounts(ManageFamilyAccountsViewModel vm, IProductTools pt)
+    public FamilyAccountsManage(FamilyAccountsManageViewModel vm, IProductTools pt)
     {
         InitializeComponent();
         _vm = vm;
@@ -38,7 +38,7 @@ public partial class ManageFamilyAccounts : BasePage
         }
         catch (Exception ex)
         {
-            await _pt.HandleException(ex, "ManageFamilyAccounts", "OnAppearing");
+            await _pt.HandleException(ex, "FamilyAccountsManage", "OnAppearing");
         }
     }
 

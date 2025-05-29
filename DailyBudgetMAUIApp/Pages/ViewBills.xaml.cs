@@ -28,8 +28,8 @@ public partial class ViewBills : BasePage
     {
         try
         {
-            _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-            List<Bills> B = _ds.GetBudgetBills(App.DefaultBudgetID, "ViewBills").Result;
+            _vm.Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
+            List<Bills> B = await _ds.GetBudgetBills(App.DefaultBudgetID, "ViewBills");
 
             _vm.TotalBills = 0;
             _vm.Budget.DailyBillOutgoing = 0;
@@ -199,7 +199,8 @@ public partial class ViewBills : BasePage
             await _pt.PayBillNow(Bill, App.DefaultBudget);
 
             await _ds.ReCalculateBudget(App.DefaultBudgetID);
-            App.DefaultBudget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full").Result;
+            var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+            App.DefaultBudget = Budget;
 
             if (App.CurrentPopUp != null)
             {

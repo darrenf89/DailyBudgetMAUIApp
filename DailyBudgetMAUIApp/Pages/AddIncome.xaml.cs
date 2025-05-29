@@ -45,7 +45,7 @@ public partial class AddIncome : BasePage
             }
             else
             {
-                _vm.Income = _ds.GetIncomeFromID(_vm.IncomeID).Result;
+                _vm.Income = await _ds.GetIncomeFromID(_vm.IncomeID);
                 btnUpdateIncome.IsVisible = true;
                 _vm.Title = $"Update Income {_vm.Income.IncomeName}";
                 SelectIncomeType.IsVisible = false;

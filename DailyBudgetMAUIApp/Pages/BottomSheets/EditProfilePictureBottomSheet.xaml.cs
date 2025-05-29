@@ -157,27 +157,41 @@ public partial class EditProfilePictureBottomSheet : BottomSheet
 
     private async Task UpdateSelectedAvatar(string Avatar)
     {
-        List<PatchDoc> UserUpdate = new List<PatchDoc>();
+        Page CurrentPage = Shell.Current.CurrentPage;
 
-        PatchDoc ProfilePicture = new PatchDoc
+        if (CurrentPage is CreateNewFamilyAccounts FamilyAccountPage)
         {
-            op = "replace",
-            path = "/ProfilePicture",
-            value = Avatar
-        };
 
-        UserUpdate.Add(ProfilePicture);
+            FamilyAccountPage.UpdatedAvatar = Avatar;
 
-        await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
-
-        EditAccountSettings CurrentPage = (EditAccountSettings)Shell.Current.CurrentPage;
-        CurrentPage.UpdatedAvatar = Avatar;
-
-        if (App.CurrentBottomSheet != null)
-        {
-            await this.DismissAsync();
-            App.CurrentBottomSheet = null;
+            if (App.CurrentBottomSheet != null)
+            {
+                await this.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
         }
+        else if (CurrentPage is ViewBudgets ViewBudgetsPage)
+        {
+            List<PatchDoc> UserUpdate = new List<PatchDoc>();
+            PatchDoc ProfilePicture = new PatchDoc
+            {
+                op = "replace",
+                path = "/ProfilePicture",
+                value = Avatar
+            };
+            UserUpdate.Add(ProfilePicture);
+
+            await (App.IsFamilyAccount? _ds.PatchFamilyUserAccount(App.FamilyUserDetails.UserID, UserUpdate) : _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate));            
+            ViewBudgetsPage.UpdatedAvatar = Avatar;
+
+            if (App.CurrentBottomSheet != null)
+            {
+                await this.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
+        }
+
+
     }
 
     private async void UploadPicture_Clicked(object sender, EventArgs e)
@@ -188,44 +202,65 @@ public partial class EditProfilePictureBottomSheet : BottomSheet
 
             if (UploadFile is null) return;
 
-            if (UploadFile.OpenReadAsync().Result.Length < 3000000)
+            if (await _pt.GetFileLengthAsync(UploadFile) < 3000000)
             {
-                string result = await _ds.UploadUserProfilePicture(App.UserDetails.UserID, UploadFile);
+                string result = await _ds.UploadUserProfilePicture((App.IsFamilyAccount ? App.FamilyUserDetails.UniqueUserID : App.UserDetails.UniqueUserID), UploadFile);            
 
-                if(result == "OK")
+                Page CurrentPage = Shell.Current.CurrentPage;
+
+                if(CurrentPage is CreateNewFamilyAccounts FamilyAccountPage)
                 {
-                    List<PatchDoc> UserUpdate = new List<PatchDoc>();
-
-                    PatchDoc ProfilePicture = new PatchDoc
+                    if (result == "OK")
                     {
-                        op = "replace",
-                        path = "/ProfilePicture",
-                        value = "Upload"
-                    };
+                        FamilyAccountPage.ProfilePicStream = await UploadFile.OpenReadAsync();
 
-                    UserUpdate.Add(ProfilePicture);
-
-                    await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
-
-                    EditAccountSettings CurrentPage = (EditAccountSettings)Shell.Current.CurrentPage;
-                    CurrentPage.ProfilePicStream = await UploadFile.OpenReadAsync();
-
-                    if (App.CurrentBottomSheet != null)
-                    {
-                        await this.DismissAsync();
-                        App.CurrentBottomSheet = null;
+                        if (App.CurrentBottomSheet != null)
+                        {
+                            await this.DismissAsync();
+                            App.CurrentBottomSheet = null;
+                        }
                     }
-                }    
-                else
-                {
-
+                    else
+                    {
+                        await Shell.Current.DisplayAlert("Sorry we had a problem", "There was an issue uploading your image sorry", "OK");
+                    }
                 }
+                else if(CurrentPage is ViewBudgets ViewBudgetPage)
+                {
+                    if (result == "OK")
+                    {
+                        List<PatchDoc> UserUpdate = new List<PatchDoc>();
 
+                        PatchDoc ProfilePicture = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/ProfilePicture",
+                            value = "Upload"
+                        };
+
+                        UserUpdate.Add(ProfilePicture);
+
+                        await (App.IsFamilyAccount ? _ds.PatchFamilyUserAccount(App.FamilyUserDetails.UserID, UserUpdate) : _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate));
+
+                        ViewBudgetPage.ProfilePicStream = await UploadFile.OpenReadAsync();
+
+                        if (App.CurrentBottomSheet != null)
+                        {
+                            await this.DismissAsync();
+                            App.CurrentBottomSheet = null;
+                        }
+                    }
+                    else
+                    {
+                        await Shell.Current.DisplayAlert("Sorry we had a problem", "There was an issue uploading your image sorry", "OK");
+                    }
+                }
             }
             else
             {
-
+                await Shell.Current.DisplayAlert("File too large", "Please select a file smaller than 3MB", "OK");
             }
+
         }
         catch (Exception ex)
         {

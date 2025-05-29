@@ -31,9 +31,11 @@ namespace DailyBudgetMAUIApp;
 public partial class App : Application
 {
 	public static UserDetailsModel UserDetails;	
+	public static FamilyUserAccount FamilyUserDetails;	
 	public static bool IsPremiumAccount;	
 	public static int DefaultBudgetID;
 	public static bool IsBudgetUpdated;
+	public static bool IsFamilyAccount;
     public static Budgets DefaultBudget;
     public static DateTime SessionLastUpdate;
     public static bool HasVisitedCreatePage;
@@ -174,7 +176,7 @@ public partial class App : Application
                     {
                         if (currentActivity != null) 
                         {       
-                            if(App.UserDetails == null)
+                            if(App.UserDetails == null && App.FamilyUserDetails == null)
                             {
                                 Toast.MakeText(currentActivity.ApplicationContext, "Please login to use quick transaction", ToastLength.Short).Show();
                                 break;

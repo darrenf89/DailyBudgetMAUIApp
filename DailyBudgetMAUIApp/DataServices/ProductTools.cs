@@ -8,13 +8,16 @@ using DailyBudgetMAUIApp.Helpers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.ViewModels;
+using DailySpendWebApp.Models;
 using Newtonsoft.Json;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
 using static DailyBudgetMAUIApp.Pages.ViewAccounts;
+
 
 
 
@@ -107,11 +110,11 @@ namespace DailyBudgetMAUIApp.DataServices
             }
         }
 
-        public DateTime? GetBudgetLastUpdated(int BudgetID)
+        public async Task<DateTime>? GetBudgetLastUpdated(int BudgetID)
         {
-            DateTime? LastUpdated = _ds.GetBudgetLastUpdatedAsync(BudgetID).Result;
+            DateTime? LastUpdated = await _ds.GetBudgetLastUpdatedAsync(BudgetID);
 
-            return LastUpdated;
+            return LastUpdated.GetValueOrDefault();
         }
 
         public void ShowPopup(PopUpPage popup)
@@ -962,32 +965,53 @@ namespace DailyBudgetMAUIApp.DataServices
             CultureInfo.DefaultThreadCurrentUICulture = CultureSetting;
         }
 
-        private void TransactPayDay(ref Budgets budget)
+        private async Task<Budgets> TransactPayDayAsync(Budgets budget)
         {
-            Transactions PayDayTransaction = new Transactions();
-            PayDayTransaction.TransactionAmount = budget.PaydayAmount;
-            PayDayTransaction.EventType = "PayDay";
-            PayDayTransaction.TransactionDate = budget.NextIncomePayday;
-            PayDayTransaction.Notes = $"Transaction added for Budget Payday";
-            PayDayTransaction.IsTransacted = true;
-            PayDayTransaction.IsIncome = true;
-
-            if (budget.IsMultipleAccounts) 
+            Transactions payDayTransaction = new Transactions
             {
-                BankAccounts Account = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
-                if(Account != null)
+                TransactionAmount = budget.PaydayAmount,
+                EventType = App.IsFamilyAccount ? "Allowance" : "PayDay",
+                TransactionDate = budget.NextIncomePayday,
+                Notes = App.IsFamilyAccount ? "Transaction added for Allowance" : "Transaction added for Budget Payday",
+                IsTransacted = true,
+                IsIncome = true
+            };
+
+            if (budget.IsMultipleAccounts)
+            {
+                BankAccounts account = budget.BankAccounts.FirstOrDefault(b => b.IsDefaultAccount);
+                if (account != null)
                 {
-                    PayDayTransaction.AccountID = Account.ID;
+                    payDayTransaction.AccountID = account.ID;
                 }
-                
             }
 
-            PayDayTransaction = _ds.SaveNewTransaction(PayDayTransaction, budget.BudgetID).Result;
+            payDayTransaction = await _ds.SaveNewTransaction(payDayTransaction, budget.BudgetID);
 
-            budget.BankBalance += budget.PaydayAmount;
-            budget.MoneyAvailableBalance += budget.PaydayAmount;
-            budget.LeftToSpendBalance += budget.PaydayAmount;
-            budget.PlusStashSpendBalance += budget.PaydayAmount;
+            if(App.IsFamilyAccount)
+            {
+                FamilyUserBudgetsAllowance familyUserBudgetsAllowance = new FamilyUserBudgetsAllowance
+                {
+                    ParentUserID = App.FamilyUserDetails.ParentUserID,
+                    FamilyUserID = App.FamilyUserDetails.UserID,
+                    ParentBudgetID = App.FamilyUserDetails.AssignedBudgetID.GetValueOrDefault(),
+                    AllowancePaymentDate = budget.NextIncomePayday.GetValueOrDefault(),
+                    AllowancePaymentAmount = (double)budget.PaydayAmount.GetValueOrDefault(),
+                    IsParentAdded = false
+                };
+
+                familyUserBudgetsAllowance = await _ds.ProcessFamilyBudgetAllowance(familyUserBudgetsAllowance);
+            }
+
+            if (payDayTransaction.TransactionID != 0)
+            {
+                budget.BankBalance += budget.PaydayAmount;
+                budget.MoneyAvailableBalance += budget.PaydayAmount;
+                budget.LeftToSpendBalance += budget.PaydayAmount;
+                budget.PlusStashSpendBalance += budget.PaydayAmount;
+            }
+
+            return budget;
         }
 
         private void CloseSaving(ref Savings Saving)
@@ -999,35 +1023,37 @@ namespace DailyBudgetMAUIApp.DataServices
             Saving.IsSavingsClosed = true;
         }
 
-        private void TransactBill(ref Bills Bill, Budgets budget)
+        private async Task<Bills> TransactBillAsync(Bills Bill, Budgets budget)
         {
-            Transactions BillTransaction = new Transactions();
-            BillTransaction.TransactionAmount = Bill.BillAmount;
-            BillTransaction.EventType = "Bill";
-            BillTransaction.TransactionDate = Bill.BillDueDate;
-            BillTransaction.Notes = $"Transaction added for bill, {Bill.BillName}";
-            BillTransaction.IsTransacted = true;
-            BillTransaction.Payee = Bill.BillPayee;
-            BillTransaction.Category = Bill.Category;
-            BillTransaction.CategoryID = Bill.CategoryID;
+            Transactions BillTransaction = new Transactions
+            {
+                TransactionAmount = Bill.BillAmount,
+                EventType = "Bill",
+                TransactionDate = Bill.BillDueDate,
+                Notes = $"Transaction added for bill, {Bill.BillName}",
+                IsTransacted = true,
+                Payee = Bill.BillPayee,
+                Category = Bill.Category,
+                CategoryID = Bill.CategoryID
+            };
 
             if (budget.IsMultipleAccounts)
             {
-                if(Bill.AccountID == null || Bill.AccountID == 0)
+                if (Bill.AccountID == null || Bill.AccountID == 0)
                 {
-                    BankAccounts Account = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
-                    if (Account != null)
+                    BankAccounts account = budget.BankAccounts.FirstOrDefault(b => b.IsDefaultAccount);
+                    if (account != null)
                     {
-                        BillTransaction.AccountID = Account.ID;
+                        BillTransaction.AccountID = account.ID;
                     }
                 }
                 else
                 {
                     BillTransaction.AccountID = Bill.AccountID;
-                }     
+                }
             }
 
-            BillTransaction = _ds.SaveNewTransaction(BillTransaction, budget.BudgetID).Result;
+            BillTransaction = await _ds.SaveNewTransaction(BillTransaction, budget.BudgetID);
 
             if (BillTransaction.TransactionID != 0)
             {
@@ -1061,54 +1087,63 @@ namespace DailyBudgetMAUIApp.DataServices
                 Bill.IsClosed = true;
                 Bill.LastUpdatedDate = DateTime.UtcNow;
             }
-        }
 
-        private void TransactIncomeEvent(ref IncomeEvents Income, Budgets budget)
+            return Bill;
+        }
+        private async Task<IncomeEvents> TransactIncomeEventAsync(IncomeEvents income, Budgets budget)
         {
-            Transactions IncomeTransaction = new Transactions();
-            IncomeTransaction.TransactionAmount = Income.IncomeAmount;
-            IncomeTransaction.EventType = "IncomeEvent";
-            IncomeTransaction.TransactionDate = Income.DateOfIncomeEvent;
-            IncomeTransaction.Notes = $"Transaction added for Income Event, {Income.IncomeName}";
-            IncomeTransaction.IsTransacted = true;
-            IncomeTransaction.IsIncome = true;
+            Transactions incomeTransaction = new Transactions
+            {
+                TransactionAmount = income.IncomeAmount,
+                EventType = "IncomeEvent",
+                TransactionDate = income.DateOfIncomeEvent,
+                Notes = $"Transaction added for Income Event, {income.IncomeName}",
+                IsTransacted = true,
+                IsIncome = true
+            };
 
             if (budget.IsMultipleAccounts)
             {
-                if (Income.AccountID == null || Income.AccountID == 0)
+                if (income.AccountID == null || income.AccountID == 0)
                 {
-                    BankAccounts Account = budget.BankAccounts.Where(b => b.IsDefaultAccount).FirstOrDefault();
-                    if (Account != null)
+                    BankAccounts account = budget.BankAccounts.FirstOrDefault(b => b.IsDefaultAccount);
+                    if (account != null)
                     {
-                        IncomeTransaction.AccountID = Account.ID;
+                        incomeTransaction.AccountID = account.ID;
                     }
                 }
                 else
                 {
-                    IncomeTransaction.AccountID = Income.AccountID;
+                    incomeTransaction.AccountID = income.AccountID;
                 }
             }
 
-            IncomeTransaction = _ds.SaveNewTransaction(IncomeTransaction, budget.BudgetID).Result;
+            // Make this asynchronous
+            incomeTransaction = await _ds.SaveNewTransaction(incomeTransaction, budget.BudgetID);
 
-            if (IncomeTransaction.TransactionID != 0)
+            if (incomeTransaction.TransactionID != 0)
             {
-                if (Income.IsRecurringIncome)
+                if (income.IsRecurringIncome)
                 {
-                    Income.DateOfIncomeEvent = CalculateNextDate(Income.DateOfIncomeEvent, Income.RecurringIncomeType, Income.RecurringIncomeValue.GetValueOrDefault(), Income.RecurringIncomeDuration);
+                    income.DateOfIncomeEvent = CalculateNextDate(
+                        income.DateOfIncomeEvent,
+                        income.RecurringIncomeType,
+                        income.RecurringIncomeValue.GetValueOrDefault(),
+                        income.RecurringIncomeDuration);
 
-                    if (Income.IsInstantActive.GetValueOrDefault())
+                    if (income.IsInstantActive.GetValueOrDefault())
                     {
-                        Income.IncomeActiveDate = DateTime.UtcNow;
+                        income.IncomeActiveDate = DateTime.UtcNow;
                     }
-
                 }
                 else
                 {
-                    Income.IsClosed = true;
-                    Income.IsIncomeAddedToBalance = true;
+                    income.IsClosed = true;
+                    income.IsIncomeAddedToBalance = true;
                 }
             }
+
+            return income;
         }
 
         public string BudgetDailyEventsValuesUpdate(ref Budgets Budget)
@@ -1231,6 +1266,13 @@ namespace DailyBudgetMAUIApp.DataServices
                         
                     }
                 }
+
+                if(!App.IsFamilyAccount)
+                {
+                    await CheckFamilyAccountAllowancePayments(budget);
+                }
+
+
             }
             return budget;
         }
@@ -1354,7 +1396,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     Stats = budget.PayPeriodStats[Index];
 
                     //Add next pay amount
-                    TransactPayDay(ref budget);
+                    budget = await TransactPayDayAsync(budget);
                     Stats.IncomeToDate += budget.PaydayAmount.GetValueOrDefault();
                     //Update the next pay date
                     budget.NextIncomePayday = CalculateNextDate(budget.NextIncomePayday.GetValueOrDefault(), budget.PaydayType, budget.PaydayValue.GetValueOrDefault(), budget.PaydayDuration);
@@ -1412,7 +1454,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         Stats = budget.PayPeriodStats[Index];
 
                         //Add next pay amount
-                        TransactPayDay(ref budget);
+                        budget = await TransactPayDayAsync(budget);
                         Stats.IncomeToDate += budget.PaydayAmount.GetValueOrDefault();
                         //Update the next pay date
                         budget.NextIncomePayday = CalculateNextDate(budget.NextIncomePayday.GetValueOrDefault(), budget.PaydayType, budget.PaydayValue.GetValueOrDefault(), budget.PaydayDuration);
@@ -1575,7 +1617,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     if ((string)result.ToString() == "OK")
                     {
-                        TransactBill(ref Bill, budget);
+                        Bill = await TransactBillAsync(Bill, budget);
                         Stats.SpendToDate += Bill.BillAmount.GetValueOrDefault();
                         budget.BankBalance = budget.BankBalance - Bill.BillAmount;
                         budget.Bills[i] = Bill;
@@ -1591,7 +1633,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         if (Bill.BillDueDate.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
                         {
-                            TransactBill(ref Bill, budget);
+                            Bill = await TransactBillAsync(Bill, budget);
                             Stats.SpendToDate += Bill.BillAmount.GetValueOrDefault();
                             budget.BankBalance = budget.BankBalance - Bill.BillAmount;
                         }
@@ -1639,7 +1681,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                     if ((string)result.ToString() == "OK")
                     {
-                        TransactIncomeEvent(ref Income, budget);
+                        Income = await TransactIncomeEventAsync(Income, budget);
                         Stats.IncomeToDate += Income.IncomeAmount;
                         budget.BankBalance = budget.BankBalance + Income.IncomeAmount;
                         budget.IncomeEvents[i] = Income;
@@ -1655,7 +1697,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         if (Income.DateOfIncomeEvent.Date <= budget.BudgetValuesLastUpdated.Date)
                         {
-                            TransactIncomeEvent(ref Income, budget);
+                            Income = await TransactIncomeEventAsync(Income, budget);
                             Stats.IncomeToDate += Income.IncomeAmount;
                             budget.BankBalance = budget.BankBalance + Income.IncomeAmount;
                         }
@@ -1735,6 +1777,154 @@ namespace DailyBudgetMAUIApp.DataServices
             budget.PayPeriodStats[Index] = Stats;
 
             return budget;
+
+        }
+
+        private async Task CheckFamilyAccountAllowancePayments(Budgets budget)
+        {
+            //DF CHECK IF ANY ALLOWANCES HAVEN"T BEEN PROCESSED YET AND ADD
+            List<FamilyUserAccount> familyUserAccounts = await _ds.GetBudgetFamilyUserAccounts(budget.BudgetID);
+
+            if (familyUserAccounts != null && familyUserAccounts.Count > 0)
+            {
+                foreach (var familyUser in familyUserAccounts)
+                {
+                    if (familyUser.IsActive && familyUser.IsConfirmed)
+                    {
+                        var FamilyBudget = await _ds.GetBudgetDetailsAsync(familyUser.BudgetID, "Limited");
+
+                        if (FamilyBudget != null)
+                        {
+                            while(FamilyBudget.NextIncomePayday.GetValueOrDefault().Date <= DateTime.Now.Date)
+                            {
+                                FamilyUserBudgetsAllowance familyUserBudgetsAllowance = new FamilyUserBudgetsAllowance
+                                {
+                                    ParentUserID = App.UserDetails.UserID,
+                                    FamilyUserID = familyUser.UserID,
+                                    ParentBudgetID = budget.BudgetID,
+                                    AllowancePaymentDate = FamilyBudget.NextIncomePayday.GetValueOrDefault(),
+                                    AllowancePaymentAmount = (double)FamilyBudget.PaydayAmount.GetValueOrDefault()
+                                };
+
+                                bool IsAllowanceProcessed = await _ds.CheckIsAllowanceProcessedParent(familyUserBudgetsAllowance);
+                                if (!IsAllowanceProcessed)
+                                {
+                                    var popup = new PopupDailyAllowance(FamilyBudget, familyUser.UserID, "Parent", familyUser.NickName ,new PopupDailyAllowanceViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
+                                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+
+                                    if ((string)result.ToString() == "OK")
+                                    {
+                                        Transactions Transaction = new Transactions
+                                        {
+                                            TransactionAmount = FamilyBudget.PaydayAmount.GetValueOrDefault(),
+                                            EventType = "AllowancePayment",
+                                            TransactionDate = DateTime.UtcNow,
+                                            Notes = $"Paid {familyUser.NickName} their allowance",
+                                            IsTransacted = true,
+                                            Payee = familyUser.NickName,
+                                            IsIncome = false                                            
+                                        };
+
+                                        if (budget.IsMultipleAccounts)
+                                        {
+                                            BankAccounts account = budget.BankAccounts.FirstOrDefault(b => b.IsDefaultAccount);
+                                            if (account != null)
+                                            {
+                                                Transaction.AccountID = account.ID;
+                                            } 
+                                        }
+
+                                        Transaction = await _ds.SaveNewTransaction(Transaction, budget.BudgetID);
+
+                                        familyUserBudgetsAllowance.IsParentAdded = true;
+                                        familyUserBudgetsAllowance = await _ds.ProcessFamilyBudgetAllowance(familyUserBudgetsAllowance);
+                                    }
+                                    else if((string)result.ToString() == "DEACTIVATE")
+                                    {
+                                        familyUser.IsActive = false;                                        
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        FamilyBudget = (Budgets)result;
+
+                                        if (FamilyBudget.NextIncomePayday.GetValueOrDefault().Date <= DateTime.Now.Date)
+                                        {
+                                            Transactions Transaction = new Transactions
+                                            {
+                                                TransactionAmount = FamilyBudget.PaydayAmount.GetValueOrDefault(),
+                                                EventType = "AllowancePayment",
+                                                TransactionDate = DateTime.UtcNow,
+                                                Notes = $"Paid {familyUser.NickName} their allowance",
+                                                IsTransacted = true,
+                                                Payee = familyUser.NickName,
+                                                IsIncome = false
+                                            };
+
+                                            if (budget.IsMultipleAccounts)
+                                            {
+                                                BankAccounts account = budget.BankAccounts.FirstOrDefault(b => b.IsDefaultAccount);
+                                                if (account != null)
+                                                {
+                                                    Transaction.AccountID = account.ID;
+                                                }
+                                            }
+
+                                            Transaction = await _ds.SaveNewTransaction(Transaction, budget.BudgetID);
+
+                                            familyUserBudgetsAllowance.IsParentAdded = true;
+                                            familyUserBudgetsAllowance = await _ds.ProcessFamilyBudgetAllowance(familyUserBudgetsAllowance);
+                                        }
+                                    }
+                                }
+
+                                FamilyBudget.NextIncomePayday = CalculateNextDate(FamilyBudget.NextIncomePayday.GetValueOrDefault(), FamilyBudget.PaydayType, FamilyBudget.PaydayValue.GetValueOrDefault(), FamilyBudget.PaydayDuration);
+
+                            }
+                        }
+                    }
+                }
+            }
+
+            //DF: CHECK FOR ANY ALLOWANCES THAT HAVE BEEN PROCESSED BUT NOT ADDED TO THE BUDGET
+            List<FamilyUserBudgetsAllowance> familyUserBudgetsAllowances = await _ds.GetUnprocessedAllowancePayments(budget.BudgetID);
+
+            foreach(FamilyUserBudgetsAllowance familyUserBudgetsAllowance in familyUserBudgetsAllowances)
+            {
+                if (!familyUserBudgetsAllowance.IsParentAdded)
+                {
+                    var familyUser = await _ds.GetFamilyUserAccount(familyUserBudgetsAllowance.FamilyUserID);
+                    var FamilyBudget = await _ds.GetBudgetDetailsAsync(familyUser.BudgetID, "Limited");
+
+                    var popup = new PopupDailyAllowance(FamilyBudget, familyUserBudgetsAllowance.FamilyUserID, "ParentProcessed", familyUser.NickName, new PopupDailyAllowanceViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
+                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+                    if ((string)result.ToString() == "OK")
+                    {
+                        Transactions Transaction = new Transactions
+                        {
+                            TransactionAmount = (decimal)familyUserBudgetsAllowance.AllowancePaymentAmount,
+                            EventType = "AllowancePayment",
+                            TransactionDate = familyUserBudgetsAllowance.AllowancePaymentDate,
+                            Notes = $"Paid {familyUser.NickName} their allowance",
+                            IsTransacted = true,
+                            Payee = familyUser.NickName,
+                            IsIncome = false
+                        };
+
+                        if (budget.IsMultipleAccounts)
+                        {
+                            BankAccounts account = budget.BankAccounts.FirstOrDefault(b => b.IsDefaultAccount);
+                            if (account != null)
+                            {
+                                Transaction.AccountID = account.ID;
+                            }
+                        }
+
+                        await _ds.AddParentTransactionBudgetAllowance(familyUserBudgetsAllowance.AllowancePaymentID);
+                        Transaction = await _ds.SaveNewTransaction(Transaction, budget.BudgetID);
+                    }
+                }
+            }
 
         }
 
@@ -2150,10 +2340,17 @@ namespace DailyBudgetMAUIApp.DataServices
                     Preferences.Remove(nameof(App.UserDetails));
                 }
 
+                if (Preferences.ContainsKey(nameof(App.IsFamilyAccount)))
+                {
+                    Preferences.Remove(nameof(App.IsFamilyAccount));
+                }
+
                 Preferences.Set(nameof(App.UserDetails), userDetailsStr);
                 Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
+                Preferences.Set(nameof(App.IsFamilyAccount), false);
 
                 App.UserDetails = userDetails;
+                App.FamilyUserDetails = null;
                 App.DefaultBudgetID = BudgetID;
 
                 if (App.CurrentBottomSheet != null)
@@ -2303,7 +2500,11 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task SetSubDetails()
         {
-            if (App.UserDetails != null)
+            if(App.FamilyUserDetails != null)
+            {
+                App.IsPremiumAccount = true;
+            }
+            else if (App.UserDetails != null)
             {
                 if (App.UserDetails.SubscriptionType == "PremiumPlus")
                 {
@@ -2437,12 +2638,12 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task PayBillNow(Bills Bill, Budgets budget)
         {
             var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), true);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if ((string)result.ToString() == "OK")
             {
                 Bill.BillDueDate = DateTime.UtcNow;
-                TransactBill(ref Bill, budget);
+                Bill = await TransactBillAsync(Bill, budget);
                 await _ds.UpdateBill(Bill);
 
             }
@@ -2461,7 +2662,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             //Confirm pay amount and date!
             var popup = new PopupDailyPayDay(budget, new PopupDailyPayDayViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), true);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if ((string)result.ToString() == "OK")
             {
@@ -2473,7 +2674,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 Stats = budget.PayPeriodStats[Index];
 
                 //Add next pay amount
-                TransactPayDay(ref budget);
+                budget = await TransactPayDayAsync(budget);
                 Stats.IncomeToDate += budget.PaydayAmount.GetValueOrDefault();
                 //Update the next pay date
                 budget.NextIncomePayday = CalculateNextDate(budget.NextIncomePayday.GetValueOrDefault(), budget.PaydayType, budget.PaydayValue.GetValueOrDefault(), budget.PaydayDuration);
@@ -2577,5 +2778,34 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
             }
         }
+
+        public async Task<long> GetFileLengthAsync(FileResult fileResult)
+        {
+            if (fileResult == null)
+                throw new ArgumentNullException(nameof(fileResult));
+
+            using (Stream stream = await fileResult.OpenReadAsync())
+            {
+                if (stream.CanSeek)
+                {
+                    return stream.Length; // Directly get the length if the stream is seekable
+                }
+                else
+                {
+                    // If the stream is not seekable, calculate length manually
+                    long length = 0;
+                    byte[] buffer = new byte[8192]; // Buffer size
+                    int bytesRead;
+
+                    while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                    {
+                        length += bytesRead;
+                    }
+
+                    return length;
+                }
+            }
+        }
+
     }
 }

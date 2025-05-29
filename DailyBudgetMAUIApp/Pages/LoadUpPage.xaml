@@ -29,6 +29,10 @@
                     </Button>
                 </Border>
             </HorizontalStackLayout>
+            <Border Style="{StaticResource PrimaryBorderTertiaryShadow}" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,20,0,20" >
+                <Button Style="{StaticResource LightButton150Width}" Text="Family Accounts" Command="{Binding FamilyAccountLogonCommand}" >
+                </Button>
+            </Border>
             
             <Image Source="whitenamenobackground.png" HeightRequest="80" HorizontalOptions="Center" Margin="0,80,0,50"></Image>
             

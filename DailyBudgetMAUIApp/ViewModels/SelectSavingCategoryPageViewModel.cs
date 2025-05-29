@@ -21,7 +21,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private List<Savings>?  envelopeFilteredSavingList = new List<Savings>();
         [ObservableProperty]
-        private string  noEnvelopeSavingText = "You have not set up any Envelope Savings!";
+        private string  noEnvelopeSavingText = "You have not set up any Envelope Bills!";
         [ObservableProperty]
         private bool  isFilterShown = false;
         [ObservableProperty]

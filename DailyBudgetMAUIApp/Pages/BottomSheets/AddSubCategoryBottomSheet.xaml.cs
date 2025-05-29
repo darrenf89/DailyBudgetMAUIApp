@@ -113,7 +113,7 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
                 CategoryName = entCategoryName.Text
             };
 
-            NewCat = _ds.AddNewSubCategory(App.DefaultBudgetID, NewCat).Result;
+            NewCat = await _ds.AddNewSubCategory(App.DefaultBudgetID, NewCat);
 
             entCategoryName.IsEnabled = false;
             entCategoryName.IsEnabled = true;

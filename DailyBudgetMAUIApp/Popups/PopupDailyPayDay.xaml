@@ -25,8 +25,8 @@
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
-                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="No better time of the year, month or day ... than pay day"/>
-                        <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,2,20,5" Text="Or do we have it wrong, is pay day not today? Or did you get paid more ... or less this time?!"/>
+                        <Label x:Name="lblOne" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,15,20,5" Text="No better time of the year, month or day ... than pay day"/>
+                        <Label x:Name="lblTwo" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,2,20,5" Text="Or do we have it wrong, is pay day not today? Or did you get paid more ... or less this time?!"/>
                         <VerticalStackLayout Margin="40,0,20,0">
                             <HorizontalStackLayout x:Name="hslPayDayAmount" Margin="0" IsVisible="False" HeightRequest="45">
                                 <Image Margin="0,0,5,0" VerticalOptions="Center">

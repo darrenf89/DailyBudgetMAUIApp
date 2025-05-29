@@ -18,9 +18,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         public OTP  oTP;
         [ObservableProperty]
-        private bool  emailValid;
+        private bool  emailValid = true;
         [ObservableProperty]
-        private bool  emailRequired;
+        private bool  emailRequired = true;
         [ObservableProperty]
         private bool  oTPNotFound;
         [ObservableProperty]
@@ -42,17 +42,21 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool  resendFailure;
         [ObservableProperty]
-        private bool  passwordRequired;
+        private bool  passwordRequired = true;
         [ObservableProperty]
-        private bool  passwordSameSame;
+        private bool  passwordSameSame = true;
         [ObservableProperty]
-        private bool  passwordStrong;
+        private bool  passwordStrong = true;
         [ObservableProperty]
         private string  password;
         [ObservableProperty]
         private string  passwordConfirm;
         [ObservableProperty]
         private bool  passwordResetFailure;
+        [ObservableProperty]
+        private bool familyAccountSetUpFailure;
+        [ObservableProperty]
+        private string familyAccountSetUpFailureText;
         [ObservableProperty]
         private ShareBudgetRequest  shareBudgetRequest;
 
@@ -153,7 +157,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                 else
                 {
                     status = await _ds.CreateNewOtpCode(UserID, OTPType);
-                }            
+                }
+                
 
                 CountdownVisible = true;
                 ResendVisible = false;

@@ -61,7 +61,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        public async void BackButton()
+        public async Task BackButton()
         {
             try
             {

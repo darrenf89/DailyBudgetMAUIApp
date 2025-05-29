@@ -64,7 +64,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             Categories.Clear();
             CategoriesChart.Clear();
 
-            List<Categories> CategoryList = _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID).Result;
+            List<Categories> CategoryList = await _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID);
 
             foreach (Categories cat in CategoryList)
             {

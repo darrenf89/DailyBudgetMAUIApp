@@ -113,7 +113,7 @@ public partial class AddTransaction : BasePage
             {
                 if(_vm.Transaction == null)
                 {
-                    _vm.Transaction = _ds.GetTransactionFromID(_vm.TransactionID).Result;
+                    _vm.Transaction = await _ds.GetTransactionFromID(_vm.TransactionID);
                 }            
                 _vm.Title = $"Update your transaction!";
 
@@ -313,7 +313,8 @@ public partial class AddTransaction : BasePage
                         _vm.Transaction.AccountID = null;
                     }
 
-                    _vm.Transaction = _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID).Result;
+                    _vm.Transaction.IsQuickTransaction = false;
+                    _vm.Transaction = await _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID);
                     if (_vm.Transaction.TransactionID != 0)
                     {
                         if(!_vm.IsPremiumAccount)
@@ -388,7 +389,8 @@ public partial class AddTransaction : BasePage
                         _vm.Transaction.AccountID = null;
                     }
 
-                    string status = _ds.UpdateTransaction(_vm.Transaction).Result;
+                    _vm.Transaction.IsQuickTransaction = false;
+                    string status = await _ds.UpdateTransaction(_vm.Transaction);
                     if (status == "OK")
                     {
                         if (_vm.RedirectTo == "ViewTransactions")

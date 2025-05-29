@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:DailyBudgetMAUIApp"
     xmlns:Pages="clr-namespace:DailyBudgetMAUIApp.Pages"
+    xmlns:sys="clr-namespace:System;assembly=netstandard"
     Shell.FlyoutBehavior="Disabled"
     Shell.TabBarIsVisible="True">
 
@@ -19,6 +20,24 @@
     <TabBar x:Name="MainTabBar">
         <Tab Title="Dashboard" Route="MainPage" Icon="dashboard.svg">
             <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+        </Tab>
+        <Tab Title="Bill" Route="AddBill" Icon="bill.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>
+        </Tab>
+        <Tab Route="AddTransaction" Title="Transaction" Icon="transaction.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddTransaction}"/>
+        </Tab>
+        <Tab Route="AddIncome" Title="Income" Icon="income.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddIncome}"/>
+        </Tab>
+        <Tab Route="AddSaving" Title="Saving" Icon="saving.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddSaving}"/>
+        </Tab>
+    </TabBar>
+
+    <TabBar x:Name="FamilyAccountMainTabBar">
+        <Tab Title="Dashboard" Route="FamilyAccountMainPage" Icon="dashboard.svg">
+            <ShellContent ContentTemplate="{DataTemplate local:FamilyAccountMainPage}" />
         </Tab>
         <Tab Title="Bill" Route="AddBill" Icon="bill.svg">
             <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>
@@ -53,8 +72,14 @@
     </TabBar>
 
     <TabBar x:Name="FamilyAccountsTabBar">
-        <Tab Route="ManageFamilyAccounts" Title="Manage" Icon="dashboard.svg">
-            <ShellContent ContentTemplate="{DataTemplate Pages:ManageFamilyAccounts}"/>
+        <Tab Route="FamilyAccountsManage" Title="Manage" Icon="dashboard.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:FamilyAccountsManage}"/>
+        </Tab>
+        <Tab Route="FamilyAccountsView" Title="View Accounts" Icon="accountsettings.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:FamilyAccountsView}"/>
+        </Tab>
+        <Tab Route="FamilyAccountsEdit" Title="Edit Accounts" Icon="edit.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:FamilyAccountsEdit}"/>
         </Tab>
     </TabBar>
 
@@ -78,4 +103,48 @@
         <ShellContent ContentTemplate="{DataTemplate Pages:ViewPayees}"/>
     </ShellItem>
 
+    <FlyoutItem Title="View Budgets" Icon="budget.svg" Route="ViewBudgets">
+        <Tab>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewBudgets}" />
+        </Tab>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Budget Settings" Icon="settings.svg" Route="EditBudgetSettings">
+        <Tab>
+            <ShellContent ContentTemplate="{DataTemplate Pages:EditBudgetSettings}" />
+        </Tab>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Account Settings" Icon="accountsettings.svg" Route="EditAccountSettings">
+        <Tab>
+            <ShellContent ContentTemplate="{DataTemplate Pages:EditAccountSettings}" />
+        </Tab>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Account Details" Icon="details.svg" Route="EditAccountDetails">
+        <Tab>
+            <ShellContent ContentTemplate="{DataTemplate Pages:EditAccountDetails}" />
+        </Tab>
+    </FlyoutItem>
+
+    <MenuItem Text="Dashboard"
+              IconImageSource="dashboard.svg"
+              Command="{Binding GotoMainPageCommand}" />
+
+    <Shell.FlyoutHeaderTemplate>
+        <DataTemplate>
+            <Grid BackgroundColor="Transparent" Margin="0" RowDefinitions="Auto" ColumnDefinitions="*">
+                <Image Source="mainpagelogoprimary.png" HeightRequest="150" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,45,0,0" Grid.Column="0" Grid.Row="0"/>
+            </Grid>
+        </DataTemplate>
+    </Shell.FlyoutHeaderTemplate>
+    
+    <Shell.FlyoutFooterTemplate>
+        <DataTemplate>
+            <Grid BackgroundColor="Transparent" RowDefinitions="Auto,Auto" ColumnDefinitions="*">
+                <Image Source="mainpagelogo.png" Opacity="0.6" HeightRequest="80" Margin="20,0,20,0" Grid.Row="0" Grid.Column="0"/>
+                <Label Grid.Row="1" Grid.Column="0" FontAttributes="Bold" Margin="0,0,0,10" x:DataType="sys:DateTime" Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='{0:MMMM dd, yyyy}'}" TextColor="{StaticResource Gray600}" HorizontalOptions="Center" />
+            </Grid>
+        </DataTemplate>
+    </Shell.FlyoutFooterTemplate>
 </Shell>

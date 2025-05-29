@@ -100,6 +100,7 @@ namespace DailyBudgetMAUIApp.Models
         public int NumberOfSavings { get; set; }
         public bool IsSupportOpen { get; set; }
         public int NumberUnreadMessages { get; set; }
+        public int NumberPendingQuickTransactions { get; set; }
 
     }
 

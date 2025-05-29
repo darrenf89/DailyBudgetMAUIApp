@@ -28,7 +28,7 @@ public partial class ShareBudget : BottomSheet
         btnShareBudgetButton.WidthRequest = ButtonWidth;
     }
 
-    private void btnShareBudgetButton_Clicked(object sender, EventArgs e)
+    private async void btnShareBudgetButton_Clicked(object sender, EventArgs e)
     {
         try
         {
@@ -45,7 +45,7 @@ public partial class ShareBudget : BottomSheet
             {
                 ShareBudgetRequest.SharedWithUserEmail = entSharedWithUserEmail.Text;
 
-                string Status = _ds.ShareBudgetRequest(ShareBudgetRequest).Result;
+                string Status = await _ds.ShareBudgetRequest(ShareBudgetRequest);
 
                 if (Status == "OK")
                 {

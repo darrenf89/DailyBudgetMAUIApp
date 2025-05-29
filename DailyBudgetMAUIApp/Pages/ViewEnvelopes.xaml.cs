@@ -28,8 +28,8 @@ public partial class ViewEnvelopes : BasePage
         {
             base.OnAppearing();
 
-            _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-            List<Savings> S = _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID).Result;
+            _vm.Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
+            List<Savings> S = await _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID);
 
             _vm.EnvelopeBalance = 0;
             _vm.EnvelopeTotal = 0;
@@ -186,7 +186,7 @@ public partial class ViewEnvelopes : BasePage
             var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             if (result.ToString() == "OK")
             {
-                List<Savings> S = _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID).Result;
+                List<Savings> S = await _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID);
 
                 _vm.EnvelopeBalance = 0;
                 _vm.EnvelopeTotal = 0;
@@ -201,7 +201,8 @@ public partial class ViewEnvelopes : BasePage
                     _vm.Savings.Add(saving);
                 }
 
-                App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                App.DefaultBudget = Budget;
             }
         }
         catch (Exception ex)

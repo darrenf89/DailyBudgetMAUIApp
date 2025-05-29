@@ -92,7 +92,7 @@ public partial class ViewCategory : BasePage
         _vm.Categories.Clear();
         _vm.CategoriesChart.Clear();
 
-        List<Categories> CategoryList = _ds.GetHeaderCategoryDetailsFull(_vm.HeaderCatId, App.DefaultBudgetID).Result;
+        List<Categories> CategoryList = await _ds.GetHeaderCategoryDetailsFull(_vm.HeaderCatId, App.DefaultBudgetID);
 
         var CategoryName = CategoryList.Where(c => !c.IsSubCategory).Select(c => c.CategoryName).FirstOrDefault();
 

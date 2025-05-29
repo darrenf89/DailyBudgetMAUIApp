@@ -13,47 +13,6 @@ namespace DailyBudgetMAUIApp.Pages;
 
 public partial class EditAccountDetails : BasePage
 {
-    public string _updatedAvatar = "";
-    public string UpdatedAvatar
-    {
-        get => _updatedAvatar;
-        set
-        {
-            if (_updatedAvatar != value)
-            {
-                _updatedAvatar = value;
-                bool Success = Enum.TryParse(value, out AvatarCharacter Avatar);
-                if (Success)
-                {
-                    ProfilePicture.ContentType = ContentType.AvatarCharacter;
-                    ProfilePicture.AvatarCharacter = Avatar;
-                    int Number = Convert.ToInt32(value[value.Length - 1]);
-                    Math.DivRem(Number, 8, out int index);
-                    ProfilePicture.Background = App.ChartColor[index];
-                }
-                else
-                {
-                    ProfilePicture.AvatarCharacter = AvatarCharacter.Avatar1;
-                    ProfilePicture.Background = App.ChartColor[1];
-                }
-            }
-        }
-    }
-
-    public Stream _profilePicStream;
-    public Stream ProfilePicStream
-    {
-        get => _profilePicStream;
-        set
-        {
-            if (_profilePicStream != value)
-            {
-                _profilePicStream = value;
-                ProfilePicture.ContentType = ContentType.Custom;
-                ProfilePicture.ImageSource = ImageSource.FromStream(() => ProfilePicStream);
-            }
-        }
-    }
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
     public double ScreenHeight { get; set; }
@@ -84,34 +43,16 @@ public partial class EditAccountDetails : BasePage
         {
             base.OnAppearing();
 
-            TopBV.WidthRequest = ScreenWidth;
             MainAbs.WidthRequest = ScreenWidth;
             MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
             MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
 
             await _vm.OnLoad();
 
-            if (_vm.User.ProfilePicture.Contains("Avatar"))
+            if(App.IsFamilyAccount)
             {
-                ProfilePicture.ContentType = ContentType.AvatarCharacter;
-                bool Success = Enum.TryParse(_vm.User.ProfilePicture, out AvatarCharacter Avatar);
-                if (Success)
-                {
-                    ProfilePicture.AvatarCharacter = Avatar;
-                    int Number = Convert.ToInt32(_vm.User.ProfilePicture[_vm.User.ProfilePicture.Length - 1]);
-                    Math.DivRem(Number, 8, out int index);
-                    ProfilePicture.Background = App.ChartColor[index];
-                }
-                else
-                {
-                    ProfilePicture.AvatarCharacter = AvatarCharacter.Avatar1;
-                    ProfilePicture.Background = App.ChartColor[1];
-                }
-            }
-            else
-            {
-                ProfilePicStream = await _vm.GetUserProfilePictureStream(App.UserDetails.UserID);
-            }
+                ViewSubDetails.IsVisible = false;
+            }            
 
             if (App.CurrentPopUp != null)
             {
@@ -305,7 +246,17 @@ public partial class EditAccountDetails : BasePage
                 Preferences.Remove(nameof(App.DefaultBudgetID));
             }
 
-            if (SecureStorage.Default.GetAsync("Session").Result != null)
+            if (Preferences.ContainsKey(nameof(App.IsFamilyAccount)))
+            {
+                Preferences.Remove(nameof(App.IsFamilyAccount));
+            }
+
+            if (Preferences.ContainsKey("IsTopStickyVisible"))
+            {
+                Preferences.Remove("IsTopStickyVisible");
+            }
+
+            if (await SecureStorage.Default.GetAsync("Session") != null)
             {
                 SecureStorage.Default.Remove("Session");
             }

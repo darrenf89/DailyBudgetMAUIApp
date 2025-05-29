@@ -9,46 +9,17 @@
             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
             xmlns:checkBox="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
             xmlns:sfavatar="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
-            xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects">
+            xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
+            xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"            
+            Shell.TabBarIsVisible="False"
+            Shell.NavBarIsVisible="True"
+            Shell.FlyoutBehavior="Flyout"
+            droid:NavigationBar.Color="{StaticResource PrimaryDark}"
+            droid:NavigationBar.Style="LightContent"
+            Title="{Binding Title}">
     <VerticalStackLayout x:Name="AllContent">
         <AbsoluteLayout x:Name="MainAbs">
-            <HorizontalStackLayout AbsoluteLayout.LayoutBounds="1,0" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,15,10,0">
-                <Label TextColor="{StaticResource Info}" Text="Close" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
-                <Image Background="{DynamicResource White}" Margin="5,0,0,0" VerticalOptions="End">
-                    <Image.Source>
-                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Close}" Size="16" Color="{DynamicResource Info}"/>
-                    </Image.Source>
-                </Image>
-                <HorizontalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding CloseSettingsCommand}" CommandParameter="{Binding .}"/>
-                </HorizontalStackLayout.GestureRecognizers>
-            </HorizontalStackLayout>
-            <AbsoluteLayout AbsoluteLayout.LayoutBounds="0.5,0,150,210" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,30,0,0">
-                <ImageButton Command="{Binding ChangeSelectedProfilePicCommand}" Style="{StaticResource TitleButtons}" ZIndex="999" WidthRequest="40" HeightRequest="40" Padding="6" Aspect="Center" CornerRadius="20" VerticalOptions="Center" Margin="5,0,0,0" AbsoluteLayout.LayoutBounds="0.95,0.78" AbsoluteLayout.LayoutFlags="PositionProportional" BackgroundColor="{StaticResource Primary}">
-                    <ImageButton.Source>
-                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Photo_camera}" Color="{DynamicResource White}" Size="25"/>
-                    </ImageButton.Source>
-                    <ImageButton.Shadow>
-                        <Shadow />
-                    </ImageButton.Shadow>
-                </ImageButton>
-                <sfavatar:SfAvatarView Stroke="White" StrokeThickness="8" x:Name="ProfilePicture" AbsoluteLayout.LayoutBounds="0.5,0" AbsoluteLayout.LayoutFlags="PositionProportional" VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="150" CornerRadius="75" WidthRequest="150" >
-                    <sfavatar:SfAvatarView.Shadow>
-                        <Shadow/>
-                    </sfavatar:SfAvatarView.Shadow>
-                </sfavatar:SfAvatarView>
-            </AbsoluteLayout>
             <Grid x:Name="MainVSL" AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,0,0,0" RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
-                <VerticalStackLayout Grid.Column="0" Grid.Row="0">
-                    <BoxView x:Name="TopBV" HeightRequest="9" Color="{DynamicResource InfoLL}" HorizontalOptions="Center" Margin="0,0,0,10"/>
-                    <Label CharacterSpacing="1.5" Margin="0,165,0,0" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" Text="{Binding User.NickName}"/>
-                    <Label CharacterSpacing="0" Margin="0,4,0,0" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Gray500}" Text="{Binding User.Email}"/>
-                    <BoxView HeightRequest="3" Color="{DynamicResource PrimaryDark}" Margin="0,10,0,0">
-                        <BoxView.Shadow>
-                            <Shadow Offset="0,5" Opacity="0.3" Brush="{DynamicResource Gray900}" Radius="5" />
-                        </BoxView.Shadow>
-                    </BoxView>
-                </VerticalStackLayout>
                 <ScrollView x:Name="MainScrollView" Margin="0" Grid.Column="0" Grid.Row="1" >
                     <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" x:Name="grdFilters" Margin="0,0,0,0">
                         <VerticalStackLayout Grid.Row="0" Grid.Column="0" Margin="5,5,5,0">
@@ -241,13 +212,24 @@
                                     <Grid ColumnDefinitions="*" RowDefinitions="*" HorizontalOptions="Fill">
                                         <handlers:ReadMoreAccordion Grid.Row="0" Grid.Column="0" Margin="0,5,0,0" HorizontalOptions="Start" TextBody="dBudget sends notifications to keep you informed about updates to your account or if we’ve reached out regarding a support request. We also notify you about scheduled events, such as upcoming bill due dates or when a savings goal is achieved. To receive these notifications on your phone, enable push notifications for the app. Rest assured, we won’t overwhelm you with unnecessary alerts."/>
                                     </Grid>
-                                </VerticalStackLayout>                                
+                                </VerticalStackLayout>
+                                <VerticalStackLayout x:Name="BudgetVisibility" Margin="0,15,5,0">
+                                    <Label Text="Update Budget Visibility" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
+                                    <Grid ColumnDefinitions="60, *" Margin="5,5,0,0" RowDefinitions="Auto">
+                                        <handlers:CustomSwitch Grid.Column="0" Grid.Row="0" IsToggled="{Binding IsBudgetHidden}"/>
+                                        <Label IsVisible="{Binding IsBudgetHidden}" Margin="10,0,0,0" HorizontalOptions="Start" VerticalOptions="Center" Text="Hide detailed budget information"  Grid.Column="1" Grid.Row="0" TextColor="{StaticResource Info}" FontAttributes="Bold"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,0,0" />
+                                        <Label IsVisible="{Binding IsBudgetHidden, Converter={StaticResource BoolConverter}}" Margin="10,0,0,0" HorizontalOptions="Start" VerticalOptions="Center" Text="Show all budget details" FontAttributes="Bold" Grid.Column="1" Grid.Row="0" TextColor="{StaticResource Info}"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,0,0" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*" RowDefinitions="*" HorizontalOptions="Fill">
+                                        <handlers:ReadMoreAccordion Grid.Row="0" Grid.Column="0" Margin="5,10,0,0" HorizontalOptions="Start" TextBody="Budget visibility is designed to provide flexible control over financial insights within a family account. By default, the parent account has full access to all aspects of the family budget, including transactions, savings, bills, and other financial details. However, users have the option to adjust this visibility, limiting access to high-level summaries instead of detailed breakdowns. This feature can be particularly useful in scenarios where a family member is learning to manage their finances independently, or if restricted visibility was agreed upon as part of a budgeting strategy. This visibility setting is configured at account creation, allowing family members to define the level of detail available to them from the start. If needed, the family account member can update their visibility preferences later, opting to access full financial details at any time."/>
+                                    </Grid>
+                                </VerticalStackLayout>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
                         <BoxView HeightRequest="1" Grid.Row="1" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
                     </Grid>
                 </ScrollView>
-                <VerticalStackLayout x:Name="BtnApply" Grid.Column="0" Grid.Row="2" Margin="0,0,0,25">
+                <VerticalStackLayout x:Name="BtnApply" Grid.Column="0" Grid.Row="2" Margin="0,0,0,0">
                     <Button Command="{Binding DeleteUserAccountCommand}" Padding="0,10,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Delete Account" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Danger}" Margin="10,10,10,0" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
                 </VerticalStackLayout>
             </Grid>

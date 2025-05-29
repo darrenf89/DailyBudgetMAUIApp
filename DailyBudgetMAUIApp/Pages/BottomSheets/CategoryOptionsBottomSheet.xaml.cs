@@ -278,7 +278,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
                 int CategoryID = CatDict[SelectCategory];
 
                 Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
-                List<Categories> CategoryDetails = _ds.GetHeaderCategoryDetailsFull(CategoryID, App.DefaultBudgetID).Result;
+                List<Categories> CategoryDetails = await _ds.GetHeaderCategoryDetailsFull(CategoryID, App.DefaultBudgetID);
 
                 var Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, CategoryID, CategoryDetails, _ds, _pt));
                 var result = await Shell.Current.ShowPopupAsync(Popup);

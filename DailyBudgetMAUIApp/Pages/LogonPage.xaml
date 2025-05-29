@@ -205,7 +205,16 @@
                                      Size="20" />
                                 </Button.ImageSource>
                             </Button>
-                            <Label Text="Or sign in using your social media" 
+                            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Margin="0,20,0,20">
+                                <Label Text="Looking for a family account, " FontAttributes="Bold"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}">
+                                </Label>
+                                <Label Text="Click Here!" TextColor="{DynamicResource Primary}" TextDecorations="Underline" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding NavigateFamilySignPageCommand}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </HorizontalStackLayout>
+                            <!--<Label Text="Or sign in using your social media" 
                                 TextColor="{DynamicResource Primary}" 
                                 FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"
                                 FontAttributes="Bold"
@@ -215,7 +224,7 @@
                                 <Image Source="fb_icon_325x325.png" WidthRequest="35"/>
                                 <Image Source="google.png" WidthRequest="35"/>
                                 <Image Source="twitter.png" WidthRequest="35"/>
-                            </HorizontalStackLayout>
+                            </HorizontalStackLayout>-->
                         </VerticalStackLayout>
                     </Border>
                     <VerticalStackLayout Margin="0,40,0,0">

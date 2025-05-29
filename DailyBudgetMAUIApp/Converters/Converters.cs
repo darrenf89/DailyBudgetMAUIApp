@@ -32,6 +32,33 @@ namespace DailyBudgetMAUIApp.Converters
             return null;
         }
     }
+    public class IsNotSavingsBuilder : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if (value == null) return null;
+
+            if (value is Savings saving)
+            {
+                if (saving.SavingsType == "SavingsBuilder")
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            return true;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
 
     public class IsSavingsTargetAmount : IValueConverter
     {
@@ -949,6 +976,50 @@ namespace DailyBudgetMAUIApp.Converters
 
     }
 
+    public class NewSavingTypeHeaderConverter : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if (value is Savings saving)
+            {
+
+                if (saving.SavingsType == "SavingsBuilder")
+                {
+                    return string.Format("{0:c}", saving.RegularSavingValue) + " Bills Builder Added";
+                }
+                else if (saving.SavingsType == "TargetAmount")
+                {
+                    return  "Goal of " + string.Format("{0:c}", saving.SavingsGoal) + " Saving with " + string.Format("{0:c}", saving.RegularSavingValue) + " each day.";
+                }
+                else if (saving.SavingsType == "TargetDate")
+                {
+                    return saving.GoalDate.GetValueOrDefault().ToString("dd MMM yy") + " Bills Goal Added for " + string.Format("{0:c}", saving.SavingsGoal);
+                }
+                else
+                {
+                    if (saving.IsTopUp)
+                    {
+                        return "Top up envelope " + string.Format("{0:c}", saving.PeriodSavingValue) + " each period";
+                    }
+                    else
+                    {
+                        return "Replenish envelope " + string.Format("{0:c}", saving.PeriodSavingValue) + " each period";
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
     public class BillTypeConverter : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -1046,8 +1117,84 @@ namespace DailyBudgetMAUIApp.Converters
                 }
                 else
                 {
-                    return "";
+                    return "One off Bill";
                 }
+            }
+
+            return "";
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+        public string NumberToWords(int number)
+        {
+            if (number == 0) return "Zero";
+
+            string[] units = { "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" };
+            string[] teens = { "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen" };
+            string[] tens = { "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" };
+
+            if (number < 10) return units[number];
+            if (number < 20) return teens[number - 10];
+            if (number < 100) return tens[number / 10] + (number % 10 != 0 ? " " + units[number % 10] : "");
+
+            return "Number too large"; // Extend this for larger numbers if needed.
+        }
+
+    }
+
+
+    public class BudgetPayPeriodDetails : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if(value is Budgets Budget)
+            {
+
+                    if (Budget.PaydayType == "Everynth")
+                    {
+                        return Budget.PaydayValue == 1 ? $"Every {Budget.PaydayDuration.Replace("s", "")}" : $"Every {Budget.PaydayValue} {Budget.PaydayDuration}";
+                    }
+                    else if (Budget.PaydayType == "OfEveryMonth")
+                    {
+                        string DayString;
+                        if (Budget.PaydayValue == 1 || Budget.PaydayValue == 21 || Budget.PaydayValue == 31)
+                        {
+                            DayString = $"{Budget.PaydayValue}st";
+                        }
+                        else if (Budget.PaydayValue == 2 || Budget.PaydayValue == 22)
+                        {
+                            DayString = $"{Budget.PaydayValue}nd";
+                        }
+                        else if (Budget.PaydayValue == 3 || Budget.PaydayValue == 23)
+                        {
+                            DayString = $"{Budget.PaydayValue}rd";
+                        }
+                        else
+                        {
+                            DayString = $"{Budget.PaydayValue}th";
+                        }
+
+                        return $"{DayString} of the month";
+                    }
+                    else if (Budget.PaydayType == "WorkingDays")
+                    {
+                        return Budget.PaydayValue == 1 ? $"{NumberToWords(Budget.PaydayValue.GetValueOrDefault())} working day before the end of month" : $"{NumberToWords(Budget.PaydayValue.GetValueOrDefault())} working days before the end of month"; ;
+                    }
+                    else if (Budget.PaydayType == "LastOfTheMonth")
+                    {
+                        return $"Last {Budget.PaydayDuration} of the month";
+                    }
+                    else
+                    {
+                        return "";
+                    }
             }
 
             return "";
@@ -1180,7 +1327,7 @@ namespace DailyBudgetMAUIApp.Converters
                 }
                 else
                 {
-                    return "";
+                    return "One-off Bill";
                 }
             }
 
@@ -1282,6 +1429,40 @@ namespace DailyBudgetMAUIApp.Converters
 
     }
 
+    public class SavingTypeToString : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return "\uf17e";
+
+            string SavingType = (string)value;
+
+            if (SavingType == "TargetDate")
+            {
+                return "\uebcc";
+            }
+            else if (SavingType == "TargetAmount")
+            {
+                return "\ue227";
+            }
+            else if (SavingType == "SavingsBuilder")
+            {
+                return "\uea3c";
+            }
+            else
+            {
+                return "\ue0be";
+            }
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
     public class TransactionAmountToCurrencyString : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -1305,6 +1486,28 @@ namespace DailyBudgetMAUIApp.Converters
             }
 
             return TString;
+
+        }
+
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+
+    }
+
+    public class TransactionToDetailsString : IValueConverter
+    {
+        object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            if (value is Transactions T)
+            {
+                return $"{(T.IsIncome ? "You added an Income amount of" : "You added a transaction for")} {T.TransactionAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} {(T.TransactionDate.GetValueOrDefault().Date == DateTime.Now.Date ? "Today" : $"Last {T.TransactionDate.GetValueOrDefault().ToString("dddd")}")}. Finish entering information with a click, or swipe to dismiss!";
+            }
+
+            return "Sorry there was an issue retrieving transaction details";
 
         }
 

@@ -84,7 +84,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void SelectNext(object obj)
+        private async Task SelectNext(object obj)
         {
             try
             {
@@ -108,7 +108,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void SelectPrevious(object obj)
+        private async Task SelectPrevious(object obj)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void LoadMoreEvents(object obj)
+        private async Task LoadMoreEvents(object obj)
         {
             try
             {

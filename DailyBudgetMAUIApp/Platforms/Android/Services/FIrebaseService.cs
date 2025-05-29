@@ -51,8 +51,8 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
                 {
                     if (App.UserDetails.UserID != 0)
                     {
-                        NewDevice.UserAccountID = App.UserDetails.UniqueUserID;
-                        NewDevice.LoginExpiryDate = App.UserDetails.SessionExpiry;
+                        NewDevice.UserAccountID = (App.IsFamilyAccount ? App.FamilyUserDetails.UniqueUserID : App.UserDetails.UniqueUserID);
+                        NewDevice.LoginExpiryDate = (App.IsFamilyAccount ? App.FamilyUserDetails.SessionExpiry : App.UserDetails.SessionExpiry);
                     };
                 }
                 else
@@ -61,7 +61,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
                     NewDevice.LoginExpiryDate = DateTime.UtcNow;
                 }
 
-                NewDevice = _ds.RegisterNewFirebaseDevice(NewDevice).Result;
+                NewDevice = await _ds.RegisterNewFirebaseDevice(NewDevice);
 
                 await SecureStorage.Default.SetAsync("FirebaseToken", token);
                 await SecureStorage.Default.SetAsync("FirebaseID", NewDevice.FirebaseDeviceID.ToString());

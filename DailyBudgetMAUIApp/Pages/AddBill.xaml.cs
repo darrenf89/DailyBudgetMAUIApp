@@ -15,7 +15,8 @@ public partial class AddBill : BasePage
     private readonly AddBillViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    public AddBill(AddBillViewModel viewModel, IProductTools pt, IRestDataService ds)
+    private readonly IKeyboardService _ks;
+    public AddBill(AddBillViewModel viewModel, IProductTools pt, IRestDataService ds, IKeyboardService ks)
 	{
 		InitializeComponent();
 
@@ -23,6 +24,7 @@ public partial class AddBill : BasePage
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
+        _ks = ks;
 
         dtpckBillDueDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(1);
     }
@@ -79,7 +81,7 @@ public partial class AddBill : BasePage
                 _vm.BillPayee = "";
                 _vm.BillCategory = "";
             }
-            else if (string.Equals(_vm.NavigatedFrom, "CreateNewBudget", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewBills", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(_vm.NavigatedFrom, "CreateNewBudget", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewBills", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "CreateNewFamilyAccount", StringComparison.OrdinalIgnoreCase))
             {
                 _vm.RedirectTo = _vm.NavigatedFrom;
             }
@@ -111,7 +113,7 @@ public partial class AddBill : BasePage
             {
                 if(_vm.Bill is null)
                 {
-                    _vm.Bill = _ds.GetBillFromID(_vm.BillID).Result;
+                    _vm.Bill = await _ds.GetBillFromID(_vm.BillID);
                 }
                 _vm.Title = $"Update Outgoing {_vm.Bill.BillName}";
                 btnUpdateBill.IsVisible = true;
@@ -892,7 +894,7 @@ public partial class AddBill : BasePage
             {
                 _vm.Bill.BillPayee = "";
             }
-            await Shell.Current.GoToAsync($"/{nameof(SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
+            await Shell.Current.GoToAsync($"/{nameof(SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Bill{(_vm.FamilyAccountID > 0 ? $"&FamilyAccountID={_vm.FamilyAccountID}" : "")}",
                 new Dictionary<string, object>
                 {
                     ["Bill"] = _vm.Bill
@@ -906,14 +908,7 @@ public partial class AddBill : BasePage
 
     private void HideKeyBoard()
     {
-        entAmountDue.IsEnabled = false;
-        entAmountDue.IsEnabled = true;
-        entCurrentSaved.IsEnabled = false;
-        entCurrentSaved.IsEnabled = true;
-        entEverynthValue.IsEnabled = false;
-        entEverynthValue.IsEnabled = true;
-        entOfEveryMonthValue.IsEnabled = false;
-        entOfEveryMonthValue.IsEnabled = true;
+        _ks.HideKeyboard();
     }
 
     private async void SelectCategory_Tapped(object sender, TappedEventArgs e)
@@ -930,7 +925,7 @@ public partial class AddBill : BasePage
                 _vm.Bill.Category = "";
             }
 
-            await Shell.Current.GoToAsync($"/{nameof(SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
+            await Shell.Current.GoToAsync($"/{nameof(SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Bill{(_vm.FamilyAccountID > 0 ? $"&FamilyAccountID={_vm.FamilyAccountID}" : "")}",
                 new Dictionary<string, object>
                 {
                     ["Bill"] = _vm.Bill

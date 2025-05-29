@@ -9,8 +9,6 @@ using System.Dynamic;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using static Android.Telecom.Call;
-using static AndroidX.ConstraintLayout.Core.Motion.Utils.HyperSpline;
 
 
 namespace DailyBudgetMAUIApp.DataServices
@@ -25,8 +23,8 @@ namespace DailyBudgetMAUIApp.DataServices
         private readonly JsonSerializerOptions _jsonSerialiserOptions;
 
         private readonly int maxRetries = 5;
-        private readonly int delayMilliseconds = 200;
-        private readonly TimeSpan timeoutMilliseconds = TimeSpan.FromMilliseconds(8000);
+        private readonly int delayMilliseconds = 500;
+        private readonly TimeSpan timeoutMilliseconds = TimeSpan.FromMilliseconds(3000);
         private DateTime LastServerHealthCheck;
 
         private bool IsRefreshingToken = false;
@@ -65,8 +63,8 @@ namespace DailyBudgetMAUIApp.DataServices
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<ErrorLog>(NewLog, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = PostHttpRequestAsync($"{_url}/error/adderrorlogentry", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
+                HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/error/adderrorlogentry", request);
+                string content = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -110,7 +108,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     var stopwatch = Stopwatch.StartNew();
                     //var request = new HttpRequestMessage(HttpMethod.Head, $"{_url}/healthCheck");
                     //HttpResponseMessage response = await pingClient.SendAsync(request);
-                    HttpResponseMessage response = pingClient.GetAsync($"{_url}/healthCheck").Result;
+                    HttpResponseMessage response = await pingClient.GetAsync($"{_url}/healthCheck");
                     stopwatch.Stop();
 
                     if (response.IsSuccessStatusCode)
@@ -139,7 +137,7 @@ namespace DailyBudgetMAUIApp.DataServices
                                 stopwatch = Stopwatch.StartNew();
                                 //request = new HttpRequestMessage(HttpMethod.Head, $"{_url}/healthCheck");
                                 //response = await pingClient.SendAsync(request);
-                                response = pingClient.GetAsync($"{_url}/healthCheck").Result;
+                                response = await pingClient.GetAsync($"{_url}/healthCheck");
                                 stopwatch.Stop();
 
                                 roundTripTime = stopwatch.Elapsed.TotalMilliseconds;
@@ -290,7 +288,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 return;
             }
 
-            string SessionString = SecureStorage.Default.GetAsync("Session").Result;
+            string SessionString = await SecureStorage.Default.GetAsync("Session");
             if (string.IsNullOrEmpty(SessionString))
             {
                 if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionToken"))
@@ -323,11 +321,11 @@ namespace DailyBudgetMAUIApp.DataServices
                 Sessions = await RefreshSession(Sessions);
                 SessionString = JsonConvert.SerializeObject(Sessions);
 
-                if (SecureStorage.Default.GetAsync("Session").Result != null)
+                if (await SecureStorage.Default.GetAsync("Session") != null)
                 {
                     SecureStorage.Default.Remove("Session");
                 }
-                SecureStorage.Default.SetAsync("Session", SessionString);
+                await SecureStorage.Default.SetAsync("Session", SessionString);
 
                 _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionToken", Sessions.SessionToken);
                 _httpClient.DefaultRequestHeaders.Add("X-Custom-SessionClient", Sessions.SessionUser);
@@ -362,14 +360,15 @@ namespace DailyBudgetMAUIApp.DataServices
             {
                 try
                 {
-                    attempt++;                  
+                    attempt++;
                     await CheckAndUpdateSession();
-                    HttpResponseMessage response = _httpClient.GetAsync(requestURL).Result;
+
+                    HttpResponseMessage response = await _httpClient.GetAsync(requestURL);
                     await HideServerConnectionPopup();
 
-                    if(response.StatusCode == HttpStatusCode.Unauthorized)
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
                     {
-                        throw new Exception("Invalid_Session");                        
+                        throw new Exception("Invalid_Session");
                     }
 
                     return response;
@@ -378,18 +377,14 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
                     await _ls.LogErrorAsync($"GET REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
                 }
+                catch (Exception ex) when (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
+                {
+                    await _ls.LogErrorAsync($"GET REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
+                }
                 catch (Exception ex)
                 {
-                    if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
-                    {
-                        await _ls.LogErrorAsync($"GET REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
-                    }
-                    else
-                    {
-                        await _ls.LogErrorAsync($"GET REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
-
-                        throw;
-                    }
+                    await _ls.LogErrorAsync($"GET REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
+                    throw;
                 }
 
                 if (attempt == 1)
@@ -400,13 +395,11 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (attempt != maxRetries)
                 {
-                    int delay = delayMilliseconds * (int)Math.Pow(2, attempt - 1);
+                    int delay = delayMilliseconds;
                     await Task.Delay(delay);
                 }
-
             }
 
-            // If all retries fail throw an exception
             await HideServerConnectionPopup();
             throw new HttpRequestException("Server Connectivity");
         }
@@ -422,7 +415,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
                     attempt++;
                     await CheckAndUpdateSession();
-                    HttpResponseMessage response = _httpClient.PostAsync(requestURL, content).Result;
+                    HttpResponseMessage response = await _httpClient.PostAsync(requestURL, content);
                     await HideServerConnectionPopup();
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -437,18 +430,15 @@ namespace DailyBudgetMAUIApp.DataServices
                     await _ls.LogErrorAsync($"POST REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
 
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
                 {
-                    if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
-                    {
-                        await _ls.LogErrorAsync($"POST REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
+                    await _ls.LogErrorAsync($"POST REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
 
-                    }
-                    else
-                    {
-                        await _ls.LogErrorAsync($"POST REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
-                        throw;
-                    }
+                }
+                catch (Exception ex)
+                { 
+                    await _ls.LogErrorAsync($"POST REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
+                    throw;                    
                 }
 
                 if (attempt == 1)
@@ -459,7 +449,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (attempt != maxRetries)
                 {
-                    int delay = delayMilliseconds * (int)Math.Pow(2, attempt - 1);
+                    int delay = delayMilliseconds;
                     await Task.Delay(delay);
                 }
             }
@@ -481,7 +471,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                     attempt++;
                     await CheckAndUpdateSession();
-                    HttpResponseMessage response = _httpClient.PatchAsync(requestURL, content).Result;
+                    HttpResponseMessage response = await _httpClient.PatchAsync(requestURL, content);
                     await HideServerConnectionPopup();
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -496,17 +486,15 @@ namespace DailyBudgetMAUIApp.DataServices
                     await _ls.LogErrorAsync($"PATCH REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
 
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
                 {
-                    if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
-                    {
-                        await _ls.LogErrorAsync($"PATCH REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
-                    }
-                    else
-                    {
-                        await _ls.LogErrorAsync($"PATCH REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
-                        throw;
-                    }
+                    await _ls.LogErrorAsync($"PATCH REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
+
+                }
+                catch (Exception ex)   
+                {
+                    await _ls.LogErrorAsync($"PATCH REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
+                    throw;                    
                 }
 
                 if (attempt == 1)
@@ -538,7 +526,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
                     attempt++;
                     await CheckAndUpdateSession();
-                    HttpResponseMessage response = _httpClient.PutAsync(requestURL, content).Result;
+                    HttpResponseMessage response = await _httpClient.PutAsync(requestURL, content);
                     await HideServerConnectionPopup();
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -553,17 +541,16 @@ namespace DailyBudgetMAUIApp.DataServices
                     await _ls.LogErrorAsync($"PUT REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
 
                 }
+                catch (Exception ex) when (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
+                {
+                    await _ls.LogErrorAsync($"PUT REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
+
+                }
                 catch (Exception ex)
                 {
-                    if (ex.InnerException is TaskCanceledException || ex.InnerException is WebException)
-                    {
-                        await _ls.LogErrorAsync($"PUT REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
-                    }
-                    else
-                    {
-                        await _ls.LogErrorAsync($"PATCH REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
-                        throw;
-                    }
+
+                    await _ls.LogErrorAsync($"PATCH REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
+                    throw;                    
                 }
 
                 if (attempt == 1)
@@ -624,7 +611,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/userAccounts/{UserID}", request);
-            string content = response.Content.ReadAsStringAsync().Result;
+            string content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
                 return "OK";
@@ -636,12 +623,68 @@ namespace DailyBudgetMAUIApp.DataServices
             }
 
         }
+
+        public async Task<string> PatchFamilyUserAccount(int UserID, List<PatchDoc> PatchDoc)
+        {
+
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<List<PatchDoc>>(PatchDoc, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/userAccounts/familyaccounts/{UserID}", request);
+            string content = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
+            }
+
+        }
+
+        public async Task<string> ConfirmFamilyAccountSetUp(int UserID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/confirmfamilyaccountsetup/{UserID}");
+            string content = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return "OK";
+            }
+            else
+            {
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
+            }
+        }
+
         public async Task<string> GetUserSaltAsync(string UserEmail)
         {
             RegisterModel User = new RegisterModel();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getsalt/{System.Web.HttpUtility.UrlEncode(UserEmail)}");
-            string content = response.Content.ReadAsStringAsync().Result;
+            string content = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+
+                User = System.Text.Json.JsonSerializer.Deserialize<RegisterModel>(content, _jsonSerialiserOptions);
+
+                return User.Salt;
+            }
+            else
+            {
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                throw new Exception(error.ErrorMessage);
+            }
+        }
+
+        public async Task<string> GetFamilyUserSaltAsync(string UserEmail)
+        {
+            RegisterModel User = new RegisterModel();
+
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getfamilysalt/{System.Web.HttpUtility.UrlEncode(UserEmail)}");
+            string content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
 
@@ -669,7 +712,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/userAccounts/registeruser", request);
-            string content = response.Content.ReadAsStringAsync().Result;
+            string content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
@@ -711,14 +754,38 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 throw new Exception(error.ErrorMessage);
             }
+        }
 
+        public async Task<FamilyUserAccount> GetFamilyUserDetailsAsync(string UserEmail)
+        {
+            FamilyUserAccount User = new();
+
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getFamilyLogonDetails/{System.Web.HttpUtility.UrlEncode(UserEmail)}");
+            string content = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                User = System.Text.Json.JsonSerializer.Deserialize<FamilyUserAccount>(content, _jsonSerialiserOptions);
+                return User;
+            }
+            else
+            {
+                ErrorClass error = System.Text.Json.JsonSerializer.Deserialize<ErrorClass>(content, _jsonSerialiserOptions);
+                if (error.ErrorMessage.ToLower() == "user not found")
+                {
+                    return null;
+                }
+                else
+                {
+                    throw new Exception(error.ErrorMessage);
+                }
+            }
         }
 
         public async Task<UserAddDetails> GetUserAddDetails(int UserID)
         {
             UserAddDetails User = new UserAddDetails();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getuseradddetails/{UserID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -749,7 +816,7 @@ namespace DailyBudgetMAUIApp.DataServices
             UserAddDetails User = new UserAddDetails();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/downgrageuseraccount/{UserID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -797,7 +864,7 @@ namespace DailyBudgetMAUIApp.DataServices
             };
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/userAccounts/uploaduserprofilepicture/{UserID}", content);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -829,7 +896,7 @@ namespace DailyBudgetMAUIApp.DataServices
             else
             {
                 ErrorClass error = new ErrorClass();
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (Stream s = await response.Content.ReadAsStreamAsync())
                 using (StreamReader sr = new StreamReader(s))
                 using (JsonReader reader = new JsonTextReader(sr))
                 {
@@ -858,7 +925,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/{ApiMethod}/{BudgetID}");
             await HideServerConnectionPopup();
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -992,7 +1059,7 @@ namespace DailyBudgetMAUIApp.DataServices
             BudgetSettingValues BudgetSettings = new BudgetSettingValues();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getbudgetsettingsvalues/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1043,7 +1110,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/deletebudget/{BudgetID}/{UserID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1073,7 +1140,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> ReCalculateBudget(int BudgetID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/recalculateBudget/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1101,7 +1168,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/deleteaccount/{UserID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1127,12 +1194,33 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
         }
 
+        public async Task<string> DeleteFamilyUserAccount(int UserID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/deletefamilyaccount/{UserID}");
+            using (Stream s = await response.Content.ReadAsStreamAsync())
+            using (StreamReader sr = new StreamReader(s))
+            {
+                string jsonString = await sr.ReadToEndAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString);
+                    string returnString = result["result"];
+                    return returnString;
+                }
+                else
+                {
+                    throw new Exception(jsonString);
+                }
+            }
+        }
+
         public async Task<List<lut_CurrencySymbol>> GetCurrencySymbols(string SearchQuery)
         {
             List<lut_CurrencySymbol> Currencies = new List<lut_CurrencySymbol>();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getcurrencysymbols/{SearchQuery}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1164,7 +1252,7 @@ namespace DailyBudgetMAUIApp.DataServices
             List<lut_CurrencyPlacement> Placements = new List<lut_CurrencyPlacement>();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getcurrencyplcements/{Query}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1197,7 +1285,7 @@ namespace DailyBudgetMAUIApp.DataServices
             List<lut_BudgetTimeZone> TimeZones = new List<lut_BudgetTimeZone>();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getbudgettimezones/{Query}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1231,7 +1319,7 @@ namespace DailyBudgetMAUIApp.DataServices
             List<lut_DateFormat> DateFormats = new List<lut_DateFormat>();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getdateformatsbystring/{SearchQuery}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1266,7 +1354,7 @@ namespace DailyBudgetMAUIApp.DataServices
             lut_DateFormat DateFormat = new lut_DateFormat();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getdateformatsbyid/{ShortDatePattern}/{Seperator}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1299,7 +1387,7 @@ namespace DailyBudgetMAUIApp.DataServices
             lut_BudgetTimeZone TimeZone = new lut_BudgetTimeZone();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/gettimezonebyid/{TimeZoneID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1333,7 +1421,7 @@ namespace DailyBudgetMAUIApp.DataServices
             lut_NumberFormat NumberFormat = new lut_NumberFormat();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getnumberformatsbyid/{CurrencyDecimalDigits}/{CurrencyDecimalSeparator}/{CurrencyGroupSeparator}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1367,7 +1455,7 @@ namespace DailyBudgetMAUIApp.DataServices
             lut_ShortDatePattern ShaortDatePattern = new lut_ShortDatePattern();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getshortdatepatternbyid/{ShortDatePatternID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1399,7 +1487,7 @@ namespace DailyBudgetMAUIApp.DataServices
             lut_DateSeperator DateSeperator = new lut_DateSeperator();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getdateseperatorbyid/{DateSeperatorID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1431,7 +1519,7 @@ namespace DailyBudgetMAUIApp.DataServices
             lut_CurrencyGroupSeparator GroupSeparator = new lut_CurrencyGroupSeparator();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getcurrencygroupseparatorbyid/{CurrencyGroupSeparatorId}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1463,7 +1551,7 @@ namespace DailyBudgetMAUIApp.DataServices
             lut_CurrencyDecimalSeparator DecimalSeparator = new lut_CurrencyDecimalSeparator();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getcurrencydecimalseparatorbyid/{CurrencyDecimalSeparatorId}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1495,7 +1583,7 @@ namespace DailyBudgetMAUIApp.DataServices
             lut_CurrencyDecimalDigits DecimalDigits = new lut_CurrencyDecimalDigits();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getcurrencydecimaldigitsbyid/{CurrencyDecimalDigitsId}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1527,7 +1615,7 @@ namespace DailyBudgetMAUIApp.DataServices
             List<lut_NumberFormat> NumberFormat = new List<lut_NumberFormat>();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgetsettings/getnumberformats");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1561,7 +1649,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/budgets/updatepayperiodstats", request);
-            string content = response.Content.ReadAsStringAsync().Result;
+            string content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
@@ -1579,7 +1667,7 @@ namespace DailyBudgetMAUIApp.DataServices
             PayPeriodStats stats = new PayPeriodStats();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/createnewpayperiodstats/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1614,7 +1702,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/budgets/updatebudget/{BudgetID}", request);
-            string content = response.Content.ReadAsStringAsync().Result;
+            string content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
@@ -1633,7 +1721,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/budgetsettings/updatebudgetsettings/{BudgetID}", request);
-            string content = response.Content.ReadAsStringAsync().Result;
+            string content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
@@ -1670,7 +1758,7 @@ namespace DailyBudgetMAUIApp.DataServices
             Bills Bill = new Bills();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/bills/getbillfromid/{BillID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1759,7 +1847,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> DeleteBill(int BillID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/bills/deletebill/{BillID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1789,7 +1877,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Bills> Bills = new List<Bills>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/bills/getbudgetbills/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1822,7 +1910,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Savings Saving = new Savings();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/getsavingfromid/{SavingID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1912,7 +2000,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> DeleteSaving(int SavingID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/deletesaving/{SavingID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1941,7 +2029,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> UnPauseSaving(int SavingID, int BudgetID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/unpausesaving/{SavingID}/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -1970,7 +2058,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> PauseSaving(int SavingID, int BudgetID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/pausesaving/{SavingID}/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2000,7 +2088,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Savings> Savings = new List<Savings>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/getallbudgetsavings/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2032,7 +2120,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             IncomeEvents Income = new IncomeEvents();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/incomes/getincomefromid/{IncomeID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2120,7 +2208,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> DeleteIncome(int IncomeID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/incomes/deleteincome/{IncomeID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2148,7 +2236,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<IncomeEvents> IncomeEvents = new List<IncomeEvents>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/incomes/getbudgetincomeevents/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2177,7 +2265,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> UpdateBudgetValues(int budgetID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/updatebudgetvalues/{budgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2224,7 +2312,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Transactions Transaction = new Transactions();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/transacttransaction/{TransactionID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
                 if (response.IsSuccessStatusCode)
                 {
@@ -2272,7 +2360,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> DeleteTransaction(int TransactionID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/deletetransaction/{TransactionID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2300,7 +2388,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<string> EventTypes = new List<string>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/getbudgeteventtypes/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2331,7 +2419,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Transactions Transaction = new Transactions();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/gettransactionfromid/{TransactionID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
                 if (response.IsSuccessStatusCode)
                 {
@@ -2363,7 +2451,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Budgets Budget = new Budgets();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/getallbudgettransactions/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2396,7 +2484,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Transactions> transactions = new List<Transactions>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/getrecenttransactions/{BudgetID}/{NumberOf}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2430,7 +2518,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Transactions> transactions = new List<Transactions>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/getcurrentpayperiodtransactions/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2465,7 +2553,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/transactions/getfilteredtransactions/{BudgetID}", request);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2498,7 +2586,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Transactions> transactions = new List<Transactions>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/transactions/getrecenttransactionsoffset/{BudgetID}/{NumberOf}/{Offset}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2533,7 +2621,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/budgets/savebudgetdailycycle", request);
 
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2565,7 +2653,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             OTP UserOTP = new OTP();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/otp/createnewotpcodesharebudget/{UserID}/{ShareBudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
@@ -2609,7 +2697,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             OTP UserOTP = new OTP();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/otp/createnewotpcode/{UserID}/{OTPType}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
@@ -2655,7 +2743,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/otp/validateotpcodeemail", request);
 
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -2687,7 +2775,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/otp/validateotpcodefamilyaccount", request);
 
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -2716,7 +2804,43 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             UserDetailsModel User = new UserDetailsModel();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/otp/getuseridfromemail/{UserEmail}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return 0;
+                }
+                else if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        User = serializer.Deserialize<UserDetailsModel>(reader);
+                    }
+
+                    return User.UserID;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<int> GetUserIdFamilyAccountFromEmail(string UserEmail)
+        {
+            UserDetailsModel User = new UserDetailsModel();
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/otp/getuseridfamilyaccountfromemail/{UserEmail}");
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -2752,7 +2876,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<string>? Payee = new List<string>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/payee/getpayeelist/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2782,7 +2906,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Payees>? Payee = new List<Payees>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/payee/getpayeelistfull/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2812,7 +2936,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Categories Category = new Categories();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/payee/getpayeelastcategory/{BudgetID}/{PayeeName}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2841,7 +2965,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> DeletePayee(int BudgetID, string OldPayeeName, string NewPayeeName)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/payee/deletepayee/{BudgetID}/{OldPayeeName}/{NewPayeeName}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2863,7 +2987,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> UpdatePayee(int BudgetID, string OldPayeeName, string NewPayeeName)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/payee/updatepayee/{BudgetID}/{OldPayeeName}/{NewPayeeName}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2886,7 +3010,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Categories>? categories = new List<Categories>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/getcategories/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2916,7 +3040,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Categories? Category = new Categories();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/getcategoryfromid/{CategoryID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2951,7 +3075,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/categories/addnewcategory/{BudgetID}", request);
 
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -2985,7 +3109,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/categories/addnewsubcategory/{BudgetID}", request);
 
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3018,7 +3142,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/categories/patchcategory/{CategoryID}", request);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3041,7 +3165,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> UpdateAllTransactionsCategoryName(int CategoryID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/Updatealltransactionscategoryname/{CategoryID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3065,7 +3189,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Categories>? categories = new List<Categories>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/getallheadercategorydetailsfull/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3094,7 +3218,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Categories>? categories = new List<Categories>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/getheadercategorydetailsfull/{CategoryID}/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3123,7 +3247,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> DeleteCategory(int CategoryID, bool IsReassign, int ReAssignID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/deletecategory/{CategoryID}/{IsReassign}/{ReAssignID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3147,7 +3271,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             Dictionary<string, int> Categories = new Dictionary<string, int>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/categories/getallcategorynames/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3177,7 +3301,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Savings>? Savings = new List<Savings>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/getbudgetenvelopesaving/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3207,7 +3331,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Savings>? Savings = new List<Savings>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/savings/getbudgetregularsaving/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3239,7 +3363,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/budgets/sharebudgetrequest", request);
 
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3295,7 +3419,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/firebasedevices/registernewfirebasedevice", request);
 
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3330,7 +3454,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/firebasedevices/updatedeviceuserdetails", request);
 
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3365,7 +3489,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/otp/validateotpcodesharebudget/{SharedBudgetRequestID}", request);
 
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3400,7 +3524,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             ShareBudgetRequest ShareRequest = new ShareBudgetRequest();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/getsharebudgetrequestbyid/{SharedBudgetRequestID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3430,7 +3554,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> CancelCurrentShareBudgetRequest(int BudgetID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/cancelcurrentsharebudgetrequest/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3453,7 +3577,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> StopSharingBudget(int BudgetID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/stopsharingbudget/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3477,7 +3601,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<Budgets> budgets = new List<Budgets>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getuseraccountbudgets/{UserID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3507,7 +3631,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             List<CustomerSupport> Support = new List<CustomerSupport>();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/supports/getsupports/{UserID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3537,7 +3661,7 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             CustomerSupport Support = new CustomerSupport();
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/supports/getsupport/{SupportID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3569,7 +3693,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/supports/createsupport/{UserID}", request);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3598,7 +3722,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/supports/addreply/{SupportID}", request);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3630,7 +3754,7 @@ namespace DailyBudgetMAUIApp.DataServices
             };
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/supports/savefile", content);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3665,7 +3789,7 @@ namespace DailyBudgetMAUIApp.DataServices
             else
             {
                 ErrorClass error = new ErrorClass();
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (Stream s = await response.Content.ReadAsStreamAsync())
                 using (StreamReader sr = new StreamReader(s))
                 using (JsonReader reader = new JsonTextReader(sr))
                 {
@@ -3683,7 +3807,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PatchHttpRequestAsync($"{_url}/supports/patchSupport/{SupportID}", request);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
                 if (response.IsSuccessStatusCode)
                 {
@@ -3712,7 +3836,7 @@ namespace DailyBudgetMAUIApp.DataServices
             else
             {
                 ErrorClass error = new ErrorClass();
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (Stream s = await response.Content.ReadAsStreamAsync())
                 using (StreamReader sr = new StreamReader(s))
                 using (JsonReader reader = new JsonTextReader(sr))
                 {
@@ -3734,7 +3858,7 @@ namespace DailyBudgetMAUIApp.DataServices
             else
             {
                 ErrorClass error = new ErrorClass();
-                using (Stream s = response.Content.ReadAsStreamAsync().Result)
+                using (Stream s = await response.Content.ReadAsStreamAsync())
                 using (StreamReader sr = new StreamReader(s))
                 using (JsonReader reader = new JsonTextReader(sr))
                 {
@@ -3751,7 +3875,7 @@ namespace DailyBudgetMAUIApp.DataServices
             List<BankAccounts> Accounts = new List<BankAccounts>();
 
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/getbankaccounts/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3783,7 +3907,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/budgets/addbankaccounts/{BudgetID}", request);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3813,7 +3937,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/budgets/updatebankaccounts/{BudgetID}", request);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
             if (response.IsSuccessStatusCode)
@@ -3840,7 +3964,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> DeleteBankAccounts(int BudgetID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/deletebankaccounts/{BudgetID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
             if (response.IsSuccessStatusCode)
@@ -3863,7 +3987,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string> DeleteBankAccount(int ID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/deletebankaccount/{ID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
             if (response.IsSuccessStatusCode)
@@ -3889,7 +4013,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/auth/RefreshSession", request);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
             if (response.IsSuccessStatusCode)
@@ -3921,7 +4045,7 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/auth/CreateSession", request);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
             if (response.IsSuccessStatusCode)
@@ -3948,7 +4072,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public async Task<string?> FamilyAccountEmailValid(string Email, int UserID)
         {
             HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/familyaccountemailvalid/{Email}/{UserID}");
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -3997,7 +4121,30 @@ namespace DailyBudgetMAUIApp.DataServices
             StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/userAccounts/setupnewfamilyaccount", request);
-            using (Stream s = response.Content.ReadAsStreamAsync().Result)
+            using (Stream s = await response.Content.ReadAsStreamAsync())
+            using (StreamReader sr = new StreamReader(s))
+            {
+                string jsonString = await sr.ReadToEndAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    User = JsonConvert.DeserializeObject<FamilyUserAccount>(jsonString);
+                    return User;
+                }
+                else
+                {
+                    throw new Exception(jsonString);                    
+                }
+            }
+        }
+
+        public async Task<List<FamilyUserAccount>> GetUserFamilyAccounts(int UserID)
+        {
+            List<FamilyUserAccount> FamilyAccounts = new List<FamilyUserAccount>();
+
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getuserfamilyaccounts/{UserID}");
+            using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
                 if (response.IsSuccessStatusCode)
@@ -4005,20 +4152,233 @@ namespace DailyBudgetMAUIApp.DataServices
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
                         Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                        User = serializer.Deserialize<FamilyUserAccount>(reader);
+                        FamilyAccounts = serializer.Deserialize<List<FamilyUserAccount>>(reader);
                     }
 
-                    return User;
+                    return FamilyAccounts;
                 }
                 else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    if (error.ErrorMessage == null)
+                    {
+                        string jsonString = sr.ReadToEnd();
+                        throw new Exception(jsonString);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<List<FamilyUserAccount>> GetBudgetFamilyUserAccounts(int BudgetID)
+        {
+            List<FamilyUserAccount> FamilyAccounts = new List<FamilyUserAccount>();
+
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getbudgetfamilyuseraccounts/{BudgetID}");
+            using (Stream s = await response.Content.ReadAsStreamAsync())
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
                 {
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
                         Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                        ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
-                        throw new Exception(error.ErrorMessage);
+                        FamilyAccounts = serializer.Deserialize<List<FamilyUserAccount>>(reader);
+                    }
+
+                    return FamilyAccounts;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    if (error.ErrorMessage == null)
+                    {
+                        string jsonString = sr.ReadToEnd();
+                        throw new Exception(jsonString);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<FamilyUserAccount> GetFamilyUserAccount(int UserID)
+        {
+            FamilyUserAccount FamilyAccount = new FamilyUserAccount();
+
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getfamilyuseraccount/{UserID}");
+            using (Stream s = await response.Content.ReadAsStreamAsync())
+            using (StreamReader sr = new StreamReader(s))
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        FamilyAccount = serializer.Deserialize<FamilyUserAccount>(reader);
+                    }
+
+                    return FamilyAccount;
+                }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
+
+                    throw new Exception(error.ErrorMessage);
+                }
+        }
+
+        public async Task<FamilyUserAccount> FinaliseFamilyAccount(FamilyUserAccount User)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FamilyUserAccount>(User, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/userAccounts/finalisefamilyaccount", request);
+            using (Stream s = await response.Content.ReadAsStreamAsync())
+            using (StreamReader sr = new StreamReader(s))
+            {
+                string jsonString = await sr.ReadToEndAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    User = JsonConvert.DeserializeObject<FamilyUserAccount>(jsonString);
+                    return User;
+                }
+                else
+                {
+                    throw new Exception(jsonString);
+                }
+            }
+        }
+
+        public async Task<List<Transactions>> GetPendingQuickTransactions(int BudgetID)
+        {
+            List<Transactions> transactions = new List<Transactions>();
+
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/budgets/getpendingquicktransactions/{BudgetID}");
+            using (Stream s = await response.Content.ReadAsStreamAsync())
+            using (StreamReader sr = new StreamReader(s))
+            {
+                string jsonString = await sr.ReadToEndAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    transactions = JsonConvert.DeserializeObject<List<Transactions>>(jsonString);
+                    return transactions;
+                }
+                else
+                {
+                    throw new Exception(jsonString);
+                }
+            }            
+        }
+
+        public async Task<bool> CheckIsAllowanceProcessedParent(FamilyUserBudgetsAllowance familyUserBudgetsAllowance)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FamilyUserBudgetsAllowance>(familyUserBudgetsAllowance, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/userAccounts/checkisallowanceprocessedparent", request);
+            using (Stream s = await response.Content.ReadAsStreamAsync())
+            using (StreamReader sr = new StreamReader(s))
+            {
+                string jsonString = await sr.ReadToEndAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    if(jsonString == "OK")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
+                else
+                {
+                    throw new Exception(jsonString);
+                }
+            }
+        }
+        public async Task<FamilyUserBudgetsAllowance> ProcessFamilyBudgetAllowance(FamilyUserBudgetsAllowance familyUserBudgetsAllowance)
+        {
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize<FamilyUserBudgetsAllowance>(familyUserBudgetsAllowance, _jsonSerialiserOptions);
+            StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await PostHttpRequestAsync($"{_url}/userAccounts/processfamilybudgetallowance", request);
+            using (Stream s = await response.Content.ReadAsStreamAsync())
+            using (StreamReader sr = new StreamReader(s))
+            {
+                string jsonString = await sr.ReadToEndAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    familyUserBudgetsAllowance = JsonConvert.DeserializeObject<FamilyUserBudgetsAllowance>(jsonString);
+                    return familyUserBudgetsAllowance;
+                }
+                else
+                {
+                    throw new Exception(jsonString);
+                }
+            }
+        }
+
+        public async Task<List<FamilyUserBudgetsAllowance>> GetUnprocessedAllowancePayments(int BudgetID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/getunprocessedallowancepayments/{BudgetID}");
+            using (Stream s = await response.Content.ReadAsStreamAsync())
+            using (StreamReader sr = new StreamReader(s))
+            {
+                string jsonString = await sr.ReadToEndAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    List<FamilyUserBudgetsAllowance> familyUserBudgetsAllowance = JsonConvert.DeserializeObject<List<FamilyUserBudgetsAllowance>>(jsonString);
+                    return familyUserBudgetsAllowance;
+                }
+                else
+                {
+                    throw new Exception(jsonString);
+                }
+            }
+        }
+
+        public async Task<FamilyUserBudgetsAllowance> AddParentTransactionBudgetAllowance(int AllowancePaymentID)
+        {
+            HttpResponseMessage response = await GetHttpRequestAsync($"{_url}/userAccounts/addparenttransactionbudgetallowance/{AllowancePaymentID}");
+            using (Stream s = await response.Content.ReadAsStreamAsync())
+            using (StreamReader sr = new StreamReader(s))
+            {
+                string jsonString = await sr.ReadToEndAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    FamilyUserBudgetsAllowance familyUserBudgetsAllowance = JsonConvert.DeserializeObject<FamilyUserBudgetsAllowance>(jsonString);
+                    return familyUserBudgetsAllowance;
+                }
+                else
+                {
+                    throw new Exception(jsonString);
+                }
+            }
         }
     }
 }

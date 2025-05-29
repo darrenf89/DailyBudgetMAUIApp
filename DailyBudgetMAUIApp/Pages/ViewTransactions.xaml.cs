@@ -83,6 +83,7 @@ public partial class ViewTransactions : BasePage
     {
         try
         {
+            await _vm.OnLoad();
             base.OnAppearing();
 
             AbsMain.SetLayoutBounds(vslChart, new Rect(0, 0, _vm.ScreenWidth, _vm.ChartContentHeight + 10));

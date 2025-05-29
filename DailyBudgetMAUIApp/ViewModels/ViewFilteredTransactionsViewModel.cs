@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 namespace DailyBudgetMAUIApp.ViewModels
 {
     [QueryProperty(nameof(Filters), nameof(Filters))]
+    [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     public partial class ViewFilteredTransactionsViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -27,6 +28,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         private string  totalSpendTypeHeader;
         [ObservableProperty]
         private decimal  totalSpend;
+        [ObservableProperty]
+        private int budgetID = 0;
 
         public ViewFilteredTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -40,17 +43,21 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public async void OnAppearing()
         {
-            
-            if(Filters.SavingFilter != null)
+            var FilterBudgetID = BudgetID == 0 ? App.DefaultBudgetID : BudgetID;
+
+            Budget = await _ds.GetBudgetDetailsAsync(FilterBudgetID, "Limited");
+            List<Transactions> LoadTransactions = await _ds.GetFilteredTransactions(FilterBudgetID, Filters, "ViewFilterTransactions");
+
+            if (Filters.SavingFilter != null)
             {
                 TotalSpendTypeHeader = "Total saving/s spend";
-                Savings Saving = _ds.GetSavingFromID(Filters.SavingFilter[0]).Result;
+                Savings Saving = await _ds.GetSavingFromID(Filters.SavingFilter[0]);
                 Title = $"{Saving.SavingsName}";
             }
             else if(Filters.CategoryFilter != null)
             {
                 TotalSpendTypeHeader = "Total category/s spend";
-                Categories Category = _ds.GetCategoryFromID(Filters.CategoryFilter[0]).Result;
+                Categories Category = await _ds.GetCategoryFromID(Filters.CategoryFilter[0]);
                 Title = $"{Category.CategoryName}";
             }
             else if (Filters.TransactionEventTypeFilter != null)
@@ -62,10 +69,12 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 TotalSpendTypeHeader = "Total payee/s spend";
                 Title = $"{Filters.PayeeFilter[0]}";
-            }            
-
-            Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-            List<Transactions> LoadTransactions = _ds.GetFilteredTransactions(App.DefaultBudgetID, Filters, "ViewFilterTransactions").Result;
+            }
+            else
+            {
+                TotalSpendTypeHeader = $"Total Spend";
+                Title = $"{Budget.BudgetName}";
+            }
 
             foreach (Transactions T in LoadTransactions)
             {

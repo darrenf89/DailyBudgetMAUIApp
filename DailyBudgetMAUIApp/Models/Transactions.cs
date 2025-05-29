@@ -5,42 +5,44 @@ namespace DailyBudgetMAUIApp.Models
     public partial class Transactions : ObservableObject
     {
         [ObservableProperty]
-        public int  transactionID;
+        private int  transactionID;
         [ObservableProperty]
-        public bool  isSpendFromSavings;
+        private bool  isSpendFromSavings;
         [ObservableProperty]
-        public int?  savingID;
+        private int?  savingID;
         [ObservableProperty]
-        public string?  savingName;
+        private string?  savingName;
         [ObservableProperty]
-        public DateTime?  transactionDate;
+        private DateTime?  transactionDate;
         [ObservableProperty]
-        public DateTime?  whenAdded  = DateTime.UtcNow;
+        private DateTime?  whenAdded  = DateTime.UtcNow;
         [ObservableProperty]
-        public bool  isIncome;
+        private bool  isIncome;
         [ObservableProperty]
-        public decimal?  transactionAmount;
+        private bool isQuickTransaction;
         [ObservableProperty]
-        public string?  category;
+        private decimal?  transactionAmount;
         [ObservableProperty]
-        public string?  payee;
+        private string?  category;
         [ObservableProperty]
-        public string?  notes;
+        private string?  payee;
         [ObservableProperty]
-        public int?  categoryID;
+        private string?  notes;
         [ObservableProperty]
-        public int?  accountID;
+        private int?  categoryID;
         [ObservableProperty]
-        public bool  isTransacted;
+        private int?  accountID;
         [ObservableProperty]
-        public string?  savingsSpendType;
+        private bool  isTransacted;
         [ObservableProperty]
-        public string  stage;
+        private string?  savingsSpendType;
         [ObservableProperty]
-        public string  eventType;
+        private string  stage;
         [ObservableProperty]
-        public decimal?  runningTotal;
+        private string  eventType;
         [ObservableProperty]
-        public bool  isVisible;
+        private decimal?  runningTotal;
+        [ObservableProperty]
+        private bool  isVisible;
     }
 }

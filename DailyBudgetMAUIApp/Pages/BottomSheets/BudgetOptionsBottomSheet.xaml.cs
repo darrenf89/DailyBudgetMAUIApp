@@ -36,7 +36,16 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
         _pt = pt;
         _ds = ds;
 
-        if (!App.IsPremiumAccount)
+        if(App.IsFamilyAccount)
+        {
+            EditPayInfobrd.IsVisible = false;
+            BudgetEditFillTwo.IsVisible = true;
+            BudgetEditFillOne.IsVisible = true;
+            CreateNewBudgetbrd.IsVisible = false;
+            SwitchBudgetbrd.IsVisible = false;
+        }
+
+        if (!App.IsPremiumAccount || App.IsFamilyAccount)
         {
             ViewShareBudget.IsVisible = false;
             NewShareBudget.IsVisible = false;
@@ -54,20 +63,25 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             NewShareBudget.IsVisible = true;
         }
 
-        if(App.UserDetails.SubscriptionType == "Basic")
+        if(App.UserDetails != null && App.UserDetails.SubscriptionType == "Basic")
         {
             VSLUpgradeSubscription.IsVisible = true;
             VSLViewSubscription.IsVisible = false;
         }
-        else
+        else if(!App.IsFamilyAccount)
         {
             VSLUpgradeSubscription.IsVisible = false;
             VSLViewSubscription.IsVisible = true;
         }
+        else
+        {
+            VSLUpgradeSubscription.IsVisible = false;
+            VSLViewSubscription.IsVisible = false;
+        }
 
         if (App.IsPremiumAccount)
         {
-            if(App.DefaultBudget.IsMultipleAccounts)
+            if (App.DefaultBudget.IsMultipleAccounts)
             {
                 viewMultipleAccounts.IsVisible = true;
                 viewSyncBankBalance.IsVisible = false;
@@ -532,7 +546,8 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             await Task.Delay(100);
             if (result.ToString() == "OK")
             {
-                App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                App.DefaultBudget = Budget;
             }
         }
         catch (Exception ex)
@@ -602,7 +617,8 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             }
 
             await page.ShowAsync();
-            App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+            var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+            App.DefaultBudget = Budget;
         }
         catch (Exception ex)
         {
@@ -666,7 +682,8 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
                 BudgetUpdate.Add(IsMultipleAccountsPatch);
                 await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
-                App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                App.DefaultBudget = Budget;
 
                 if (App.CurrentBottomSheet != null)
                 {

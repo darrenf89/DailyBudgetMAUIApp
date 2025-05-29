@@ -80,18 +80,18 @@ namespace DailyBudgetMAUIApp.ViewModels
             return IsValid;
         }
 
-        private async Task ResetSuccessFailureMessage()
+        private void ResetSuccessFailureMessage()
         {
             RegisterSuccess = false;
         }
 
         [RelayCommand]    
-        async void SignUp()
+        async Task SignUp()
         {
             
             try
             {
-                await ResetSuccessFailureMessage();
+                ResetSuccessFailureMessage();
                 if (!PageIsValid())                
                 {
                     return;
@@ -154,11 +154,17 @@ namespace DailyBudgetMAUIApp.ViewModels
                                         Preferences.Remove(nameof(App.DefaultBudgetID));
                                     }
 
+                                    if (Preferences.ContainsKey(nameof(App.IsFamilyAccount)))
+                                    {
+                                        Preferences.Remove(nameof(App.IsFamilyAccount));
+                                    }
+
                                     string userDetailsStr = JsonConvert.SerializeObject(ReturnUser);
                                     Preferences.Set(nameof(App.UserDetails), userDetailsStr);
                                     Preferences.Set(nameof(App.DefaultBudgetID), ReturnUser.DefaultBudgetID);
 
                                     App.UserDetails = ReturnUser;
+                                    App.FamilyUserDetails = null;
                                     App.DefaultBudgetID = ReturnUser.DefaultBudgetID;
                                     App.HasVisitedCreatePage = false;
                                     await _pt.SetSubDetails();
@@ -235,7 +241,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void NavigateSignIn()
+        async Task NavigateSignIn()
         {
             try
             {
@@ -247,6 +253,19 @@ namespace DailyBudgetMAUIApp.ViewModels
                 await _pt.HandleException(ex, "RegisterPage", "NavigateSignIn");
             }
 
+        }
+
+        [RelayCommand]
+        async Task NavigateFamilySignPage()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync($"{nameof(FamilyAccountLogonPage)}");
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "RegisterPage", "NavigateFamilySignPage");
+            }
         }
     }
 }

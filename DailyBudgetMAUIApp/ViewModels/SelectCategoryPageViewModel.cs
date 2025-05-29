@@ -9,6 +9,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     [QueryProperty(nameof(Bill), nameof(Bill))]
     [QueryProperty(nameof(PageType), nameof(PageType))]
+    [QueryProperty(nameof(FamilyAccountID), nameof(FamilyAccountID))]
     public partial class SelectCategoryPageViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -16,6 +17,8 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         private int  budgetID;
+        [ObservableProperty]
+        private int familyAccountID;
         [ObservableProperty]
         private Transactions transaction;
         [ObservableProperty]

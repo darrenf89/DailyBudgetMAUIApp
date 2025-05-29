@@ -36,9 +36,7 @@
             get => (Color)GetValue(BorderColorProperty);
             set => SetValue(BorderColorProperty, value);
         }
-        /// <summary>
-        /// This property cannot be changed at runtime in iOS.
-        /// </summary>
+
         public Thickness Padding
         {
             get => (Thickness)GetValue(PaddingProperty);

@@ -450,7 +450,8 @@ public partial class MultipleAccountsBottomSheet : BottomSheet, INotifyPropertyC
                 }
 
                 await _ds.ReCalculateBudget(App.DefaultBudgetID);
-                App.DefaultBudget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full").Result;
+                var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                App.DefaultBudget = Budget;
 
                 try
                 {

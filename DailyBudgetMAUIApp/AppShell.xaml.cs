@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.Input;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Popups;
 using Plugin.LocalNotification;
@@ -14,11 +16,14 @@ public partial class AppShell : Shell
 
         Routing.RegisterRoute($"{nameof(ViewTransactions)}/{nameof(AddTransaction)}", typeof(AddTransaction));
         Routing.RegisterRoute($"{nameof(MainPage)}/{nameof(AddTransaction)}", typeof(AddTransaction));
+        Routing.RegisterRoute($"{nameof(FamilyAccountMainPage)}/{nameof(AddTransaction)}", typeof(AddTransaction));
         Routing.RegisterRoute($"{nameof(ViewBills)}/{nameof(AddBill)}", typeof(AddBill));
+        Routing.RegisterRoute($"{nameof(FamilyAccountMainPage)}/{nameof(AddBill)}", typeof(AddBill));
         Routing.RegisterRoute($"{nameof(MainPage)}/{nameof(AddBill)}", typeof(AddBill));
         Routing.RegisterRoute($"{nameof(ViewSavings)}/{nameof(AddSaving)}", typeof(AddSaving));
         Routing.RegisterRoute($"{nameof(MainPage)}/{nameof(AddSaving)}", typeof(AddSaving));
         Routing.RegisterRoute($"{nameof(ViewIncomes)}/{nameof(AddIncome)}", typeof(AddIncome));
+        Routing.RegisterRoute($"{nameof(FamilyAccountMainPage)}/{nameof(AddIncome)}", typeof(AddIncome));
         Routing.RegisterRoute($"{nameof(MainPage)}/{nameof(AddIncome)}", typeof(AddIncome));
         Routing.RegisterRoute($"{nameof(ViewEnvelopes)}/{nameof(AddSaving)}", typeof(AddSaving));
         Routing.RegisterRoute($"{nameof(CreateNewBudget)}/{nameof(AddBill)}", typeof(AddBill));
@@ -37,14 +42,38 @@ public partial class AppShell : Shell
         Routing.RegisterRoute($"{nameof(ViewCategories)}/{nameof(ViewCategory)}", typeof(ViewCategory));
         Routing.RegisterRoute($"{nameof(ViewFilteredTransactions)}", typeof(ViewFilteredTransactions));
         Routing.RegisterRoute($"{nameof(LogonPage)}", typeof(LogonPage));
+        Routing.RegisterRoute($"{nameof(FamilyAccountLogonPage)}", typeof(FamilyAccountLogonPage));
         Routing.RegisterRoute($"{nameof(RegisterPage)}", typeof(RegisterPage));
         Routing.RegisterRoute($"{nameof(ViewSupport)}", typeof(ViewSupport));
         Routing.RegisterRoute($"{nameof(ViewSupports)}", typeof(ViewSupports));
         Routing.RegisterRoute($"{nameof(ViewAccounts)}", typeof(ViewAccounts));
         Routing.RegisterRoute($"{nameof(LogoutPage)}", typeof(LogoutPage));
         Routing.RegisterRoute($"{nameof(CreateNewFamilyAccounts)}", typeof(CreateNewFamilyAccounts));
+        Routing.RegisterRoute($"{nameof(CreateNewFamilyAccounts)}/{nameof(AddBill)}", typeof(AddBill));
+        Routing.RegisterRoute($"{nameof(CreateNewFamilyAccounts)}/{nameof(AddIncome)}", typeof(AddIncome));
+        Routing.RegisterRoute($"{nameof(CreateNewFamilyAccounts)}/{nameof(AddSaving)}", typeof(AddSaving));
 
         this.BindingContext = this;
+    }
+
+    [RelayCommand]
+    public async Task GotoMainPage()
+    {
+        try
+        {
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
+            }
+            await Task.Delay(1);
+            await Shell.Current.GoToAsync($"//{(App.IsFamilyAccount ? nameof(FamilyAccountMainPage) : nameof(MainPage))}");
+        }
+        catch
+        {
+
+        }
     }
 
     [RelayCommand]
@@ -60,7 +89,17 @@ public partial class AppShell : Shell
             Preferences.Remove(nameof(App.DefaultBudgetID));
         }
 
-        if (SecureStorage.Default.GetAsync("Session").Result != null)
+        if (Preferences.ContainsKey(nameof(App.IsFamilyAccount)))
+        {
+            Preferences.Remove(nameof(App.IsFamilyAccount));
+        }
+
+        if (Preferences.ContainsKey("IsTopStickyVisible"))
+        {
+            Preferences.Remove("IsTopStickyVisible");
+        }
+
+        if (await SecureStorage.Default.GetAsync("Session") != null)
         {
             SecureStorage.Default.Remove("Session");
         }

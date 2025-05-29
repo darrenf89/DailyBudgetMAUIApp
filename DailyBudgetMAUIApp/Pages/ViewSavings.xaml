@@ -34,6 +34,7 @@
             <Label Margin="0,0,20,10" Grid.Row="1" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Total savings" TextColor="White" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="Start"/>
             <Label Margin="0,0,20,0" Grid.Row="0" Grid.Column="1" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="{Binding TotalSavings, Converter={StaticResource DecimalToCurrencyString}}" TextColor="White" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="End" VerticalTextAlignment="End"/>
             <BoxView HeightRequest="8" Color="{StaticResource White}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5"/>
+            
         </Grid>
         <ScrollView Grid.Row="1" Grid.Column="0">
             <StackLayout BindableLayout.ItemsSource="{Binding Savings}" >

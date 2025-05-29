@@ -44,8 +44,8 @@ public partial class ViewSavings : BasePage
 
     private async Task LoadPageData()
     {
-        _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-        List<Savings> S = _ds.GetBudgetRegularSaving(App.DefaultBudgetID).Result;
+        _vm.Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
+        List<Savings> S = await _ds.GetBudgetRegularSaving(App.DefaultBudgetID);
 
         _vm.TotalSavings = 0;
         _vm.Budget.DailySavingOutgoing = 0;
@@ -202,7 +202,8 @@ public partial class ViewSavings : BasePage
                 if (result)
                 {
                     await _ds.ReCalculateBudget(App.DefaultBudgetID);
-                    App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                    var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                    App.DefaultBudget = Budget;
                     App.IsBudgetUpdated = true;
                 }
 
@@ -245,7 +246,8 @@ public partial class ViewSavings : BasePage
                 if (result)
                 {
                     await _ds.ReCalculateBudget(App.DefaultBudgetID);
-                    App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                    var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                    App.DefaultBudget = Budget;
                     App.IsBudgetUpdated = true;
                 }
 

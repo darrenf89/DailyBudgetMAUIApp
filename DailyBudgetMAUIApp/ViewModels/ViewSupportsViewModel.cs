@@ -37,7 +37,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public async Task GetSupports()
         {
-            this.Supports = await _ds.GetSupports(App.UserDetails.UserID, "ViewSupports");
+            this.Supports = await _ds.GetSupports(App.IsFamilyAccount ? App.FamilyUserDetails.UniqueUserID : App.UserDetails.UniqueUserID, "ViewSupports");
             foreach(CustomerSupport C in Supports)
             {
                 C.IsUnreadMessages = C.Replys.Any(c => !c.IsRead);

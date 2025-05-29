@@ -11,6 +11,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     [QueryProperty(nameof(Bill), nameof(Bill))]
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     [QueryProperty(nameof(PageType), nameof(PageType))]
+    [QueryProperty(nameof(FamilyAccountID), nameof(FamilyAccountID))]
     public partial class SelectPayeePageViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
@@ -18,6 +19,8 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         private int  budgetID;
+        [ObservableProperty]
+        private int familyAccountID;
         [ObservableProperty]
         private Transactions  transaction = new Transactions();
         [ObservableProperty]
@@ -56,7 +59,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void ClosePayee(object obj)
+        private async Task ClosePayee(object obj)
         {
             try
             {

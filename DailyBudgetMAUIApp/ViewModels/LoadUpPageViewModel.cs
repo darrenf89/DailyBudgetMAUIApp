@@ -14,7 +14,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void Logon()
+        async Task Logon()
         {
             try
             {
@@ -29,7 +29,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void Register()
+        async Task Register()
         {
             try
             {
@@ -38,6 +38,20 @@ namespace DailyBudgetMAUIApp.ViewModels
             catch (Exception ex)
             {
                 await _pt.HandleException(ex, "LoadUpPage", "Register");
+            }
+            
+        }  
+
+        [RelayCommand]
+        async Task FamilyAccountLogon()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(FamilyAccountLogonPage));
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "LoadUpPage", "FamilyAccountLogon");
             }
             
         }  

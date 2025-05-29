@@ -192,7 +192,7 @@ public partial class SelectPayeePage : BasePage
                 entTransactionPayee.IsVisible = true;
             }
 
-            _vm.PayeeList = _ds.GetPayeeList(_vm.BudgetID).Result;
+            _vm.PayeeList = await _ds.GetPayeeList(_vm.BudgetID);
 
             LoadHeader();
             if (_vm.PageType == "Bill")
@@ -492,7 +492,7 @@ public partial class SelectPayeePage : BasePage
                 else if (_vm.PageType == "Bill")
                 {
                     _vm.Bill.BillPayee = Payee;
-                    await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&BillID={_vm.Bill.BillID}",
+                    await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&BillID={_vm.Bill.BillID}{(_vm.FamilyAccountID > 0 ? $"&FamilyAccountID={_vm.FamilyAccountID}" : "")}",
                     new Dictionary<string, object>
                     {
                         ["Bill"] = _vm.Bill
@@ -534,7 +534,7 @@ public partial class SelectPayeePage : BasePage
             {
                 _vm.Bill.BillPayee = "";
 
-                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&BillID={_vm.Bill.BillID}",
+                await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&BillID={_vm.Bill.BillID}{(_vm.FamilyAccountID > 0 ? $"&FamilyAccountID={_vm.FamilyAccountID}" : "")}",
                 new Dictionary<string, object>
                 {
                     ["Bill"] = _vm.Bill
@@ -645,7 +645,7 @@ public partial class SelectPayeePage : BasePage
                     entBillPayee.IsEnabled = true;
                     entBillPayee.Unfocus();
 
-                    await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&BillID={_vm.Bill.BillID}",
+                    await Shell.Current.GoToAsync($"..?BudgetID={_vm.BudgetID}&NavigatedFrom=SelectPayeePage&BillID={_vm.Bill.BillID}{(_vm.FamilyAccountID > 0 ? $"&FamilyAccountID={_vm.FamilyAccountID}" : "")}",
                     new Dictionary<string, object>
                     {
                         ["Bill"] = _vm.Bill

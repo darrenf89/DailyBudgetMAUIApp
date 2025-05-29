@@ -50,7 +50,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void GoToLandingPage()
+        async Task GoToLandingPage()
         {
             try
             {
