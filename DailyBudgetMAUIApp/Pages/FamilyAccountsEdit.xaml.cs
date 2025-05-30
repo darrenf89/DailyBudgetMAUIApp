@@ -41,27 +41,36 @@ public partial class FamilyAccountsEdit : BasePage
 
             await _vm.OnLoad();
 
-            _vm.SwitchBudgetPicker.SelectedIndexChanged += async (s, e) =>
+            if (_vm.FamilyUserAccounts.Count > 0)
             {
-                _vm.IsPageBusy = true;
-                await Task.Delay(1);
+                _vm.SwitchBudgetPicker.SelectedIndexChanged += async (s, e) =>
+                {
+                    _vm.IsPageBusy = true;
+                    await Task.Delay(1);
 
-                var picker = (Picker)s;
-                var SelectedAccount = (FamilyUserAccount)picker.SelectedItem;
-                _vm.FamilyUserAccount = SelectedAccount;
+                    var picker = (Picker)s;
+                    var SelectedAccount = (FamilyUserAccount)picker.SelectedItem;
+                    _vm.FamilyUserAccount = SelectedAccount;
 
-                _vm.Budget = await _ds.GetBudgetDetailsAsync(SelectedAccount.BudgetID, "Full");
-                _vm.FamilyAccountID = SelectedAccount.UserID;
-                await _vm.LoadBudgetDetails();
+                    _vm.Budget = await _ds.GetBudgetDetailsAsync(SelectedAccount.BudgetID, "Full");
+                    _vm.FamilyAccountID = SelectedAccount.UserID;
+                    await _vm.LoadBudgetDetails();
+                    UpdateSelectedOption(_vm.PayDayTypeText);
+
+                    _vm.IsPageBusy = false;
+                };
+
                 UpdateSelectedOption(_vm.PayDayTypeText);
 
+                vslPckrSwitchBudget.Content = _vm.SwitchBudgetPicker;
                 _vm.IsPageBusy = false;
-            };
+            }
+            else
+            {
+                PayDaySetting.IsVisible = false;
+                NoFamilyAccounts.IsVisible = true;
+            }
 
-            UpdateSelectedOption(_vm.PayDayTypeText);
-
-            vslPckrSwitchBudget.Content = _vm.SwitchBudgetPicker;
-            _vm.IsPageBusy = false;
 
         }
         catch (Exception ex)

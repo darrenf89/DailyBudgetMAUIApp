@@ -150,7 +150,7 @@ namespace DailyBudgetMAUIApp.Handlers
             GestureRecognizers.Add(tapGesture);
 
             var longPressGestureImageUpdate = new TouchBehavior();
-            longPressGestureImageUpdate.LongPressDuration = 1;
+            longPressGestureImageUpdate.LongPressDuration = 300;
             longPressGestureImageUpdate.LongPressCommand = new Command(async () =>
             {
                 if(ClickScale > 1)
@@ -170,7 +170,7 @@ namespace DailyBudgetMAUIApp.Handlers
 
                 await Task.Run(async () =>
                 {
-                    await Task.Delay(750);
+                    await Task.Delay(3000);
                     await MainThread.InvokeOnMainThreadAsync(() =>
                     {
                         HeightRequest /= ClickScale;
@@ -182,7 +182,7 @@ namespace DailyBudgetMAUIApp.Handlers
             this.Behaviors.Add(longPressGestureImageUpdate);
 
             var longPressGesture = new TouchBehavior();
-            longPressGesture.LongPressDuration = 750;
+            longPressGesture.LongPressDuration = 3000;
             longPressGesture.LongPressCommand = new Command(async () =>
             {
                 _longPressTriggered = true;

@@ -36,10 +36,14 @@ public partial class AddBill : BasePage
         _vm.NavigatedFrom = "";
     }
 
-    async protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
-
         base.OnNavigatedTo(args);
+
+        if (Navigation.NavigationStack.Count > 1)
+        {
+            Shell.SetTabBarIsVisible(this, false);
+        }
     }
 
     async protected override void OnAppearing()

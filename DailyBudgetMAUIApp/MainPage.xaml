@@ -114,7 +114,7 @@
             </VerticalStackLayout>
             <ScrollView x:Name="MainScrollView" Grid.Row="1" Grid.Column="0">
                 <VerticalStackLayout VerticalOptions="Start" >
-                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border  Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
                             <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
                                 <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
@@ -156,7 +156,7 @@
                             <TapGestureRecognizer x:Name="SwitchBudgetMain" Tapped="SwitchBudgetMain_Tapped"/>
                         </Border.GestureRecognizers>
                     </Border>
-                    <Border Margin="10,0,10,20" Style="{DynamicResource DashboardMainContent}" Stroke="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColorLight}}" StrokeThickness="3" Padding="0" >
+                    <Border Margin="10,10,10,20" Style="{DynamicResource DashboardMainContent}" Stroke="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColorLight}}" StrokeThickness="3" Padding="0" >
                         <Border.Shadow>
                             <Shadow Offset="0,0" Opacity="1" Brush="{Binding DefaultBudget.LeftToSpendDailyAmount, Converter={StaticResource GreaterLessZeroColorLight}}" Radius="10" />
                         </Border.Shadow>

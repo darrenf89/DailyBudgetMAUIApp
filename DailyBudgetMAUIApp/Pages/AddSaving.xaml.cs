@@ -3,9 +3,6 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using IeuanWalker.Maui.Switch;
-using IeuanWalker.Maui.Switch.Events;
-using IeuanWalker.Maui.Switch.Helpers;
 using System.Globalization;
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -25,6 +22,16 @@ public partial class AddSaving : BasePage
         _ds = ds;        
        
 	}
+
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+
+        if (Navigation.NavigationStack.Count > 1)
+        {
+            Shell.SetTabBarIsVisible(this, false);
+        }
+    }
 
     async protected override void OnAppearing()
     {

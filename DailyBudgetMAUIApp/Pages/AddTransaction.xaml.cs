@@ -30,6 +30,16 @@ public partial class AddTransaction : BasePage
 
     }
 
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+
+        if (Navigation.NavigationStack.Count > 1)
+        {
+            Shell.SetTabBarIsVisible(this, false);
+        }
+    }
+
     private async void Content_Loaded(object sender, EventArgs e)
     {
         if (App.CurrentPopUp != null)

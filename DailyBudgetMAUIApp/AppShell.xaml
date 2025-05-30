@@ -7,7 +7,8 @@
     xmlns:Pages="clr-namespace:DailyBudgetMAUIApp.Pages"
     xmlns:sys="clr-namespace:System;assembly=netstandard"
     Shell.FlyoutBehavior="Disabled"
-    Shell.TabBarIsVisible="True">
+    Shell.TabBarIsVisible="True"
+    FlyoutBackgroundColor="White">
 
     <ShellItem Route="LandingPage" FlyoutItemIsVisible="False">
         <ShellContent ContentTemplate="{DataTemplate Pages:LandingPage}"/>
@@ -133,15 +134,15 @@
 
     <Shell.FlyoutHeaderTemplate>
         <DataTemplate>
-            <Grid BackgroundColor="Transparent" Margin="0" RowDefinitions="Auto" ColumnDefinitions="*">
+            <Grid BackgroundColor="White" Margin="0" RowDefinitions="Auto" ColumnDefinitions="*">
                 <Image Source="mainpagelogoprimary.png" HeightRequest="150" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,45,0,0" Grid.Column="0" Grid.Row="0"/>
             </Grid>
         </DataTemplate>
-    </Shell.FlyoutHeaderTemplate>
+    </Shell.FlyoutHeaderTemplate>   
     
     <Shell.FlyoutFooterTemplate>
         <DataTemplate>
-            <Grid BackgroundColor="Transparent" RowDefinitions="Auto,Auto" ColumnDefinitions="*">
+            <Grid BackgroundColor="White" RowDefinitions="Auto,Auto" ColumnDefinitions="*">
                 <Image Source="mainpagelogo.png" Opacity="0.6" HeightRequest="80" Margin="20,0,20,0" Grid.Row="0" Grid.Column="0"/>
                 <Label Grid.Row="1" Grid.Column="0" FontAttributes="Bold" Margin="0,0,0,10" x:DataType="sys:DateTime" Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='{0:MMMM dd, yyyy}'}" TextColor="{StaticResource Gray600}" HorizontalOptions="Center" />
             </Grid>
