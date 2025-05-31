@@ -148,4 +148,22 @@
             </Grid>
         </DataTemplate>
     </Shell.FlyoutFooterTemplate>
+
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid ColumnDefinitions="Auto,*" Margin="10">
+                <Image Grid.Column="0" Source="{Binding Icon}" Margin="5" HeightRequest="25" />
+                <Label Margin="20,0,0,0" Grid.Column="1" Text="{Binding Title}" TextColor="{StaticResource PrimaryDark}" FontAttributes="Bold" VerticalTextAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    <Shell.MenuItemTemplate>
+        <DataTemplate>
+            <Grid ColumnDefinitions="Auto,*" Margin="10">
+                <Image Grid.Column="0" Source="{Binding Icon}" Margin="5" HeightRequest="25" />
+                <Label Margin="20,0,0,0" Grid.Column="1" Text="{Binding Text}" TextColor="{StaticResource PrimaryDark}" FontAttributes="Bold" VerticalTextAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+    </Shell.MenuItemTemplate>
 </Shell>
