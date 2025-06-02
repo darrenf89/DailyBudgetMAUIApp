@@ -38,6 +38,7 @@ public partial class ViewBills : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
             _vm.Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
             List<Bills> B = await _ds.GetBudgetBills(App.DefaultBudgetID, "ViewBills");
 
@@ -66,6 +67,7 @@ public partial class ViewBills : BasePage
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {

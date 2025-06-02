@@ -3,7 +3,6 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Popups;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -26,6 +25,7 @@ public partial class ViewEnvelopes : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
             base.OnAppearing();
 
             _vm.Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
@@ -54,6 +54,7 @@ public partial class ViewEnvelopes : BasePage
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+            _vm.IsPageBusy = true;
         }
         catch (Exception ex)
         {

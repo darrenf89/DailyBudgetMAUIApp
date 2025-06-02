@@ -38,6 +38,7 @@ public partial class ViewIncomes : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
             _vm.Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
             List<IncomeEvents> I = await _ds.GetBudgetIncomes(App.DefaultBudgetID, "ViewIncomes");
 
@@ -59,6 +60,7 @@ public partial class ViewIncomes : BasePage
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {

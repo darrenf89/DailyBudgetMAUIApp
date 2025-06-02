@@ -79,8 +79,10 @@ public partial class ViewCategory : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
             base.OnAppearing();
             await LoadData();
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {
@@ -123,9 +125,6 @@ public partial class ViewCategory : BasePage
                 _vm.PayPeriods.Add($"{SP.FromDate: dd MMM} to {SP.ToDate: dd MMM}");
             }
         }
-
-        listView.RefreshView();
-        listView.RefreshItem();
 
         if (App.CurrentPopUp != null)
         {
@@ -348,9 +347,6 @@ public partial class ViewCategory : BasePage
                     _vm.CategoriesChart.RemoveAt(index);
                 }
 
-                listView.RefreshView();
-                listView.RefreshItem();
-
             }
         }
         catch (Exception ex)
@@ -365,8 +361,6 @@ public partial class ViewCategory : BasePage
         {
             Categories cat = (Categories)e.Parameter;
             cat.IsEditMode = true;
-
-            listView.RefreshItem();
 
             var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
             var EntryList = Entries.ToList();
@@ -407,8 +401,6 @@ public partial class ViewCategory : BasePage
             _ds.UpdateAllTransactionsCategoryName(cat.CategoryID);
 
             cat.IsEditMode = false;
-
-            listView.RefreshItem();
 
             var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
             var EntryList = Entries.ToList();

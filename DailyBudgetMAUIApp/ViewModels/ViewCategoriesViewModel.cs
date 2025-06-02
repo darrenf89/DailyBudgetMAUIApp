@@ -33,7 +33,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool  isPlaying;
         [ObservableProperty]
-        private List<string>  payPeriods = new List<string>();
+        private ObservableCollection<string>  payPeriods = new ObservableCollection<string>();
         [ObservableProperty]
         private int  selectedIndex = 1;
 

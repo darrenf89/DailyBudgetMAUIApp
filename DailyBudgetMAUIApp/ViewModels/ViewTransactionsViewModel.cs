@@ -48,15 +48,15 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private int  scrollCount;
         [ObservableProperty]
-        private List<ChartClass>  transactionChart = new List<ChartClass>();
+        private ObservableCollection<ChartClass>  transactionChart = new ObservableCollection<ChartClass>();
         [ObservableProperty]
-        private List<ChartClass>  billChart = new List<ChartClass>();
+        private ObservableCollection<ChartClass>  billChart = new ObservableCollection<ChartClass>();
         [ObservableProperty]
-        private List<ChartClass>  savingsChart = new List<ChartClass>();
+        private ObservableCollection<ChartClass>  savingsChart = new ObservableCollection<ChartClass>();
         [ObservableProperty]
-        private List<ChartClass>  envelopeChart = new List<ChartClass>();
+        private ObservableCollection<ChartClass>  envelopeChart = new ObservableCollection<ChartClass>();
         [ObservableProperty]
-        private List<Brush>  chartBrushes = new List<Brush>();
+        private ObservableCollection<Brush>  chartBrushes = new ObservableCollection<Brush>();
 
         public ViewTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -126,8 +126,17 @@ namespace DailyBudgetMAUIApp.ViewModels
             Application.Current.Resources.TryGetValue("PrimaryLightBrush", out var PrimaryLightBrush);
             Application.Current.Resources.TryGetValue("PrimaryLightLightBrush", out var PrimaryLightLightBrush);
 
-
-            ChartBrushes = App.ChartBrush;
+            foreach (Brush B in App.ChartBrush)
+            {
+                if (B is SolidColorBrush solidColorBrush)
+                {
+                    if (solidColorBrush.Color == Colors.Transparent)
+                    {
+                        continue;
+                    }
+                }
+                ChartBrushes.Add(B);
+            }
         }
 
         private async Task LoadChartData(List<Transactions> Transactions)

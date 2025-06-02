@@ -6,7 +6,6 @@ using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.ViewModels;
 using Syncfusion.Maui.Carousel;
 using Syncfusion.Maui.ListView;
-using System.ComponentModel;
 using The49.Maui.BottomSheet;
 
 
@@ -84,23 +83,19 @@ public partial class ViewCategories : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
             base.OnAppearing();
 
             await _vm.OnLoad();
 
             var size = _vm.ScreenWidth / 170;
-            GridLayout gridLayout = new GridLayout();
-            gridLayout.SpanCount = (int)size;
-            listView.ItemsLayout = gridLayout;
-
-            listView.RefreshView();
-            listView.RefreshItem();
-
             if (App.CurrentPopUp != null)
             {
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {

@@ -1,4 +1,3 @@
-using CommunityToolkit.Maui.Core.Extensions;
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
@@ -77,8 +76,10 @@ public partial class ViewPayees : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
             base.OnAppearing();
             await LoadData();
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {
@@ -93,7 +94,7 @@ public partial class ViewPayees : BasePage
         List<Payees> PayeeList = await _ds.GetPayeeListFull( App.DefaultBudgetID);
         PayeeList = PayeeList.OrderByDescending(p => p.PayeeSpendPayPeriod).ToList();
 
-        _vm.Title = $"Payee Bills";
+        _vm.Title = $"Payee Details";
 
         foreach (Payees payee in PayeeList)
         {
@@ -124,9 +125,6 @@ public partial class ViewPayees : BasePage
                 _vm.PayPeriods.Add($"{SP.FromDate: dd MMM} to {SP.ToDate: dd MMM}");
             }
         }
-
-        listView.RefreshView();
-        listView.RefreshItem();
 
         if (App.CurrentPopUp != null)
         {
@@ -361,8 +359,6 @@ public partial class ViewPayees : BasePage
                     _vm.PayeesChart.RemoveAt(index);
                 }
 
-                listView.RefreshView();
-                listView.RefreshItem();
             }
         }
         catch (Exception ex)
@@ -379,8 +375,6 @@ public partial class ViewPayees : BasePage
             {        
                 Payees payee = (Payees)e.Parameter;
                 payee.IsEditMode = true;
-
-                listView.RefreshItem();
 
                 _vm.OldPayeeName = payee.Payee;
 
@@ -412,8 +406,6 @@ public partial class ViewPayees : BasePage
             _ds.UpdatePayee(App.DefaultBudgetID, _vm.OldPayeeName, payee.Payee);
 
             payee.IsEditMode = false;
-
-            listView.RefreshItem();
 
             var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
             var EntryList = Entries.ToList();

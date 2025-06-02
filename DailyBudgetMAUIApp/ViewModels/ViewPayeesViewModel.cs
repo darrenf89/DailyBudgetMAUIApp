@@ -33,7 +33,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private bool  isPlaying;
         [ObservableProperty]
-        private List<string>  payPeriods = new List<string>();
+        private ObservableCollection<string>  payPeriods = new ObservableCollection<string>();
         [ObservableProperty]
         private int  selectedIndex = 1;
         [ObservableProperty]
@@ -41,13 +41,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private string?  oldPayeeName;
 
-        private readonly IProductTools _pt;
-        private readonly IRestDataService _ds;
-        
-        public ViewPayeesViewModel(IProductTools pt, IRestDataService ds)
+        public ViewPayeesViewModel()
         {
-            _ds = ds;
-            _pt = pt;
 
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             ScreenWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density);

@@ -9,6 +9,7 @@
              xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:data="clr-namespace:Syncfusion.Maui.DataSource;assembly=Syncfusion.Maui.DataSource"
              xmlns:carousel="clr-namespace:Syncfusion.Maui.Carousel;assembly=Syncfusion.Maui.Carousel"
+             xmlns:sk="clr-namespace:Maui.FreakyEffects.Skeleton;assembly=Maui.FreakyEffects"
              BackgroundColor="{StaticResource Primary}"
              x:Name="Content"
              Shell.TabBarIsVisible="False">
@@ -25,105 +26,102 @@
             <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
         </Grid>
     </Shell.TitleView>
-    <sfList:SfListView IsStickyHeader="True" BackgroundColor="White" SelectionMode="None" x:Name="listView" ItemsSource="{Binding Categories}" AutoFitMode="Height" IsScrollingEnabled="True">
-        <sfList:SfListView.HeaderTemplate>
-            <DataTemplate>
-                <AbsoluteLayout BackgroundColor="{StaticResource Primary}">
-                    <Button x:Name="btnPlayPause" Clicked="btnPlayPause_Clicked" BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="XProportional" AbsoluteLayout.LayoutBounds="-0.02,40" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
-                        <Button.ImageSource>
-                            <FontImageSource x:Name="PlayPause" FontFamily="MaterialDesignIcons" Glyph="{Binding IsPlaying, Converter={StaticResource PlayPauseGlyph}}" Size="40" Color="{DynamicResource Tertiary}"/>
-                        </Button.ImageSource>
-                    </Button>
-                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="XProportional" AbsoluteLayout.LayoutBounds="1.02,40" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
-                        <Button.ImageSource>
-                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Fullscreen}" Size="40" Color="{DynamicResource Tertiary}"/>
-                        </Button.ImageSource>
-                    </Button>
-                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="-0.03,0.53" Margin="0,0,0,0" Style="{StaticResource TitleButtons}">
-                        <Button.ImageSource>
-                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Arrow_left}" Size="40" Color="{DynamicResource Gray400}"/>
-                        </Button.ImageSource>
-                    </Button>
-                    <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="1.03,0.53" Margin="0,0,0,0" Style="{StaticResource TitleButtons}">
-                        <Button.ImageSource>
-                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Arrow_right}" Size="40" Color="{DynamicResource Gray400}"/>
-                        </Button.ImageSource>
-                    </Button>
-                    <Border HorizontalOptions="Center" ZIndex="99" AbsoluteLayout.LayoutFlags="XProportional" AbsoluteLayout.LayoutBounds="0,45" IsVisible="{Binding ChartUpdating}" Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="10,0,10,20" Padding="0">
-                        <ActivityIndicator IsRunning="{Binding ChartUpdating}" IsVisible="{Binding ChartUpdating}" VerticalOptions="Center" HorizontalOptions="Center" Margin="0" Color="{DynamicResource Primary}" Scale="1.2"/>
-                    </Border>
-                    <VerticalStackLayout AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" WidthRequest="{Binding ScreenWidth}" >
-                        <HorizontalStackLayout x:Name="hslTabs" HeightRequest="45" VerticalOptions="Center" HorizontalOptions="Center">
-                            <carousel:SfCarousel SelectedIndex="{Binding SelectedIndex}" x:Name="TabCarousel" ItemsSource="{Binding PayPeriods}" ItemHeight="35" VerticalOptions="Center" HorizontalOptions="Center" ScaleOffset="0.6" SwipeEnded="TabCarousel_SwipeEnded" WidthRequest="{Binding TabContentWidth}" SelectionChanged="TabCarousel_SelectionChanged">
-                                <carousel:SfCarousel.ItemTemplate>
+    <Grid ColumnDefinitions="*" RowDefinitions="Auto,*">
+        <AbsoluteLayout BackgroundColor="{StaticResource Primary}" Grid.Column="0" Grid.Row="0">
+            <Button x:Name="btnPlayPause" Clicked="btnPlayPause_Clicked" BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="XProportional" AbsoluteLayout.LayoutBounds="-0.02,40" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
+                <Button.ImageSource>
+                    <FontImageSource x:Name="PlayPause" FontFamily="MaterialDesignIcons" Glyph="{Binding IsPlaying, Converter={StaticResource PlayPauseGlyph}}" Size="40" Color="{DynamicResource Tertiary}"/>
+                </Button.ImageSource>
+            </Button>
+            <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="XProportional" AbsoluteLayout.LayoutBounds="1.02,40" Margin="0,0,0,25" Style="{StaticResource TitleButtons}">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Fullscreen}" Size="40" Color="{DynamicResource Tertiary}"/>
+                </Button.ImageSource>
+            </Button>
+            <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="-0.03,0.53" Margin="0,0,0,0" Style="{StaticResource TitleButtons}">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Arrow_left}" Size="40" Color="{DynamicResource Gray400}"/>
+                </Button.ImageSource>
+            </Button>
+            <Button BackgroundColor="Transparent" ZIndex="99" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="1.03,0.53" Margin="0,0,0,0" Style="{StaticResource TitleButtons}">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Arrow_right}" Size="40" Color="{DynamicResource Gray400}"/>
+                </Button.ImageSource>
+            </Button>
+            <Border HorizontalOptions="Center" ZIndex="99" AbsoluteLayout.LayoutFlags="XProportional" AbsoluteLayout.LayoutBounds="0,45" IsVisible="{Binding ChartUpdating}" Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="10,0,10,20" Padding="0">
+                <ActivityIndicator IsRunning="{Binding ChartUpdating}" IsVisible="{Binding ChartUpdating}" VerticalOptions="Center" HorizontalOptions="Center" Margin="0" Color="{DynamicResource Primary}" Scale="1.2"/>
+            </Border>
+            <VerticalStackLayout AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" WidthRequest="{Binding ScreenWidth}" >
+                <HorizontalStackLayout sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}" x:Name="hslTabs" HeightRequest="45" VerticalOptions="Center" HorizontalOptions="Center">
+                    <carousel:SfCarousel SelectedIndex="{Binding SelectedIndex}" x:Name="TabCarousel" ItemsSource="{Binding PayPeriods}" ItemHeight="35" VerticalOptions="Center" HorizontalOptions="Center" ScaleOffset="0.6" SwipeEnded="TabCarousel_SwipeEnded" WidthRequest="{Binding TabContentWidth}" SelectionChanged="TabCarousel_SelectionChanged">
+                        <carousel:SfCarousel.ItemTemplate>
+                            <DataTemplate>
+                                <Border Stroke="{StaticResource White}" BackgroundColor="{StaticResource White}" StrokeShape="RoundRectangle 2" StrokeThickness="1">
+                                    <HorizontalStackLayout Padding="10,0,10,0" VerticalOptions="Center" HorizontalOptions="Center">
+                                        <Label Text="{Binding .}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold"/>
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </carousel:SfCarousel.ItemTemplate>
+                    </carousel:SfCarousel>
+                </HorizontalStackLayout>
+                <Border sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}" Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="0,0,0,20" Padding="0">
+                    <chart:SfCircularChart Margin="5,20,5,20" BackgroundColor="Transparent">
+                        <chart:SfCircularChart.GestureRecognizers>
+                            <SwipeGestureRecognizer Direction="Left" Swiped="SwipeGestureRecognizer_Swiped"/>
+                            <SwipeGestureRecognizer Direction="Right" Swiped="SwipeGestureRecognizer_Swiped"/>
+                        </chart:SfCircularChart.GestureRecognizers>
+                        <chart:SfCircularChart.Legend>
+                            <chart:ChartLegend Placement="Right">
+                                <chart:ChartLegend.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Stroke="{StaticResource White}" BackgroundColor="{StaticResource White}" StrokeShape="RoundRectangle 2" StrokeThickness="1">
-                                            <HorizontalStackLayout Padding="10,0,10,0" VerticalOptions="Center" HorizontalOptions="Center">
-                                                <Label Text="{Binding .}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold"/>
-                                            </HorizontalStackLayout>
-                                        </Border>
+                                        <HorizontalStackLayout ZIndex="99">
+                                            <RoundRectangle CornerRadius="2" HeightRequest="8" WidthRequest="8" Margin="0,0,2,5" Background="{Binding IconBrush}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                            <Label Text="{Binding Text}" Margin="0,0,30,5" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" HorizontalOptions="Center" VerticalOptions="Center" CharacterSpacing="0"/>
+                                        </HorizontalStackLayout>
                                     </DataTemplate>
-                                </carousel:SfCarousel.ItemTemplate>
-                            </carousel:SfCarousel>
-                        </HorizontalStackLayout>
-                        <Border Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="0,0,0,20" Padding="0">
-                            <chart:SfCircularChart Margin="5,20,5,20" BackgroundColor="Transparent">
-                                <chart:SfCircularChart.GestureRecognizers>
-                                    <SwipeGestureRecognizer Direction="Left" Swiped="SwipeGestureRecognizer_Swiped"/>
-                                    <SwipeGestureRecognizer Direction="Right" Swiped="SwipeGestureRecognizer_Swiped"/>
-                                </chart:SfCircularChart.GestureRecognizers>
-                                <chart:SfCircularChart.Legend>
-                                    <chart:ChartLegend Placement="Right">
-                                        <chart:ChartLegend.ItemTemplate>
-                                            <DataTemplate>
-                                                <HorizontalStackLayout ZIndex="99">
-                                                    <RoundRectangle CornerRadius="2" HeightRequest="8" WidthRequest="8" Margin="0,0,2,5" Background="{Binding IconBrush}" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                                    <Label Text="{Binding Text}" Margin="0,0,30,5" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" HorizontalOptions="Center" VerticalOptions="Center" CharacterSpacing="0"/>
-                                                </HorizontalStackLayout>
-                                            </DataTemplate>
-                                        </chart:ChartLegend.ItemTemplate>
-                                    </chart:ChartLegend>
-                                </chart:SfCircularChart.Legend>
-                                <chart:PieSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
-                            </chart:SfCircularChart>
+                                </chart:ChartLegend.ItemTemplate>
+                            </chart:ChartLegend>
+                        </chart:SfCircularChart.Legend>
+                        <chart:PieSeries EnableTooltip="True" PaletteBrushes="{Binding ChartBrushes}" ItemsSource="{Binding CategoriesChart}" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
+                    </chart:SfCircularChart>
+                </Border>
+                <BoxView HeightRequest="8" Color="{StaticResource White}" />
+            </VerticalStackLayout>
+        </AbsoluteLayout>
+        <CollectionView Grid.Column="0" Grid.Row="1" x:Name="listView" ItemsSource="{Binding Categories}" SelectionMode="None" BackgroundColor="White" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="2" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout Padding="10">
+                        <Border Style="{StaticResource brdCardViewSquare}">
+                            <Grid ColumnDefinitions="*" RowDefinitions="Auto,*,Auto,Auto">
+                                <Label Grid.Column="0" Grid.Row="0" HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategoryName}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
+                                <Border Grid.Column="0" Grid.Row="1" WidthRequest="75" HeightRequest="75" StrokeThickness="0" BackgroundColor="{Binding CategoryID,Converter={StaticResource CategoryIDToColor}}" StrokeShape="RoundRectangle 30">
+                                    <Image  HorizontalOptions="Center" VerticalOptions="Center" >
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding CategoryIcon, Converter={StaticResource IconNameConverter}}" Size="50" Color="{DynamicResource White}"/>
+                                        </Image.Source>
+                                    </Image>
+                                </Border>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="2" HorizontalOptions="Center" IsVisible="{Binding CategoryID, Converter={StaticResource CategoryIDToBool}}">
+                                    <Label HorizontalOptions="Center" VerticalOptions="Center" Text="Spend pay period | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}"/>
+                                    <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategorySpendPayPeriod, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="3" HorizontalOptions="Center" IsVisible="{Binding CategoryID, Converter={StaticResource CategoryIDToBool}}">
+                                    <Label HorizontalOptions="Center" VerticalOptions="Center" Text="Spend all time | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}"/>
+                                    <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategorySpendAllTime, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer CommandParameter="{Binding .}" x:Name="ListViewTapped" Tapped="ListViewTapped_Tapped"/>
+                            </Border.GestureRecognizers>
                         </Border>
-                        <BoxView HeightRequest="8" Color="{StaticResource White}" />
                     </VerticalStackLayout>
-                </AbsoluteLayout>
-            </DataTemplate>
-        </sfList:SfListView.HeaderTemplate>
-        <sfList:SfListView.ItemTemplate>
-            <DataTemplate>
-                <ViewCell>
-                    <ViewCell.View>
-                        <VerticalStackLayout Padding="10">
-                            <Border Style="{StaticResource brdCardViewSquare}">
-                                <Grid ColumnDefinitions="*" RowDefinitions="Auto,*,Auto,Auto">
-                                    <Label Grid.Column="0" Grid.Row="0" HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategoryName}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"/>
-                                    <Border Grid.Column="0" Grid.Row="1" WidthRequest="75" HeightRequest="75" StrokeThickness="0" BackgroundColor="{Binding CategoryID,Converter={StaticResource CategoryIDToColor}}" StrokeShape="RoundRectangle 30">
-                                        <Image  HorizontalOptions="Center" VerticalOptions="Center" >
-                                            <Image.Source>
-                                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{Binding CategoryIcon, Converter={StaticResource IconNameConverter}}" Size="50" Color="{DynamicResource White}"/>
-                                            </Image.Source>
-                                        </Image>
-                                    </Border>
-                                    <HorizontalStackLayout Grid.Column="0" Grid.Row="2" HorizontalOptions="Center" IsVisible="{Binding CategoryID, Converter={StaticResource CategoryIDToBool}}">
-                                        <Label HorizontalOptions="Center" VerticalOptions="Center" Text="Spend pay period | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}"/>
-                                        <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategorySpendPayPeriod, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}"/>
-                                    </HorizontalStackLayout>
-                                    <HorizontalStackLayout Grid.Column="0" Grid.Row="3" HorizontalOptions="Center" IsVisible="{Binding CategoryID, Converter={StaticResource CategoryIDToBool}}">
-                                        <Label HorizontalOptions="Center" VerticalOptions="Center" Text="Spend all time | " TextColor="{StaticResource Info}" CharacterSpacing="0" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}"/>
-                                        <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding CategorySpendAllTime, Converter={StaticResource DecimalToCurrencyString}}" TextColor="{StaticResource Gray900}" CharacterSpacing="0" FontSize="{Binding Source=Micro, Converter={StaticResource StringToSizeConverter}}"/>
-                                    </HorizontalStackLayout>
-                                </Grid>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer CommandParameter="{Binding .}" x:Name="ListViewTapped" Tapped="ListViewTapped_Tapped"/>
-                                </Border.GestureRecognizers>
-                            </Border>
-                        </VerticalStackLayout>
-                    </ViewCell.View>
-                </ViewCell>
-            </DataTemplate>
-        </sfList:SfListView.ItemTemplate>
-    </sfList:SfListView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
 </local:BasePage>

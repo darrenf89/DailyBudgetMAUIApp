@@ -37,6 +37,7 @@ public partial class ViewSavings : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
             base.OnAppearing();
             await LoadPageData();
 
@@ -45,6 +46,7 @@ public partial class ViewSavings : BasePage
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {

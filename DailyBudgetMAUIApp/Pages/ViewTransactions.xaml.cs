@@ -93,6 +93,7 @@ public partial class ViewTransactions : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
             await _vm.OnLoad();
             base.OnAppearing();
 
@@ -104,6 +105,7 @@ public partial class ViewTransactions : BasePage
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {
