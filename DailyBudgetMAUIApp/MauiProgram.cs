@@ -191,6 +191,8 @@ public static class MauiProgram
         builder.Services.AddTransient<PayeeOptionsBottomSheet>();
         builder.Services.AddTransient<MultipleAccountsBottomSheet>();
 
+        builder.Services.AddTransient<BaseViewModel>();
+
 #if WINDOWS
         SetWindowHandlers(); 
 #endif

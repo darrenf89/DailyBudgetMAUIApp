@@ -67,7 +67,7 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
         ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
         ButtonWidth = ScreenWidth - 40;
 
-        MainScrollView.MaximumHeightRequest = ScreenHeight - App.StatusBarHeight - 201;
+        MainScrollView.MaximumHeightRequest = ScreenHeight - App.StatusBarHeight - App.NavBarHeight - 201;
         MainAbs.HeightRequest = ScreenHeight - App.StatusBarHeight;
 
         MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);

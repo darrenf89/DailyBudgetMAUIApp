@@ -11,7 +11,7 @@
         <chart:SfCircularChart x:Name="CircularChart"  sk:SkeletonEffect.IsParent="False" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding Source={x:Reference CustomBudgetPayeeChart}, Path=IsBusy}"  Margin="5,0,0,20" BackgroundColor="Transparent" Grid.Row="0" Grid.Column="0">
             <chart:DoughnutSeries x:Name="Doughnut"  EnableTooltip="True" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
         </chart:SfCircularChart>
-        <ScrollView Grid.Row="0" Grid.Column="1" Margin="0,5,0,5" sk:SkeletonEffect.IsParent="False" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"   sk:SkeletonEffect.IsBusy="{Binding Source={x:Reference CustomBudgetPayeeChart}, Path=IsBusy}">
+        <ScrollView Grid.Row="0" Grid.Column="1" Margin="20,10,0,10" sk:SkeletonEffect.IsParent="False" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"   sk:SkeletonEffect.IsBusy="{Binding Source={x:Reference CustomBudgetPayeeChart}, Path=IsBusy}">
             <VerticalStackLayout x:Name="PayeeLegend">
 
             </VerticalStackLayout>

@@ -1,6 +1,7 @@
-﻿using DailyBudgetMAUIApp.DataServices;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -17,6 +18,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private ObservableCollection<Transactions>  transactions = new ObservableCollection<Transactions>();
         [ObservableProperty]
+        private List<Transactions>  loadedTransactions = new List<Transactions>();
+        [ObservableProperty]
         private Budgets  budget;
         [ObservableProperty]
         private double  sFListHeight;
@@ -30,6 +33,10 @@ namespace DailyBudgetMAUIApp.ViewModels
         private decimal  totalSpend;
         [ObservableProperty]
         private int budgetID = 0;
+        [ObservableProperty]
+        private int currentOffset = 0;
+        [ObservableProperty]
+        private int maxNumberOfTransactions;
 
         public ViewFilteredTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -38,15 +45,18 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             ScreenWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density);
-            SFListHeight = ScreenHeight - App.NavBarHeight - App.StatusBarHeight - 37;
+            SFListHeight = ScreenHeight - App.NavBarHeight - App.StatusBarHeight - 113;
         }
 
         public async void OnAppearing()
         {
+            CurrentOffset = 0;
             var FilterBudgetID = BudgetID == 0 ? App.DefaultBudgetID : BudgetID;
 
             Budget = await _ds.GetBudgetDetailsAsync(FilterBudgetID, "Limited");
-            List<Transactions> LoadTransactions = await _ds.GetFilteredTransactions(FilterBudgetID, Filters, "ViewFilterTransactions");
+            LoadedTransactions = await _ds.GetFilteredTransactions(FilterBudgetID, Filters, "ViewFilterTransactions");
+            LoadedTransactions = LoadedTransactions.OrderByDescending(t => t.TransactionDate).ToList();
+            MaxNumberOfTransactions = LoadedTransactions.Count;
 
             if (Filters.SavingFilter != null)
             {
@@ -76,14 +86,50 @@ namespace DailyBudgetMAUIApp.ViewModels
                 Title = $"{Budget.BudgetName}";
             }
 
-            foreach (Transactions T in LoadTransactions)
+            foreach (Transactions T in LoadedTransactions)
             {
                 TotalSpend += T.TransactionAmount.GetValueOrDefault();
-                Transactions.Add(T);
             }
 
+            var NextStep = CurrentOffset + 5 > MaxNumberOfTransactions ? MaxNumberOfTransactions : CurrentOffset + 5;
+            for (int i = CurrentOffset; i <= NextStep - 1; i ++)
+            {
+                Transactions.Add(LoadedTransactions[i]);
+            }
+            CurrentOffset = NextStep;          
         }
 
+        [RelayCommand]
+        async Task LoadMoreItems(object obj)
+        {
+            try
+            {
+                if (Transactions.Count() < MaxNumberOfTransactions)
+                {
+                    var listView = obj as Syncfusion.Maui.ListView.SfListView;
+                    listView.IsLazyLoading = true;                    
+
+                    await LoadMoreTransactions();
+
+                    listView.IsLazyLoading = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewFilteredTransactions", "LoadMoreItems");
+            }
+        }
+
+        private async Task LoadMoreTransactions()
+        {
+            await Task.Delay(1000);
+            var NextStep = CurrentOffset + 5 > MaxNumberOfTransactions ? MaxNumberOfTransactions : CurrentOffset + 5;
+            for (int i = CurrentOffset; i <= NextStep - 1; i++)
+            {
+                Transactions.Add(LoadedTransactions[i]);
+            }
+            CurrentOffset = NextStep;
+        }
     }
 }
 

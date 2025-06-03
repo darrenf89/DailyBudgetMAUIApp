@@ -28,6 +28,8 @@ public partial class ViewFilteredTransactions : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
+            await Task.Delay(1);
             base.OnAppearing();
             listView.ItemTapped += ListView_ItemTapped;
             listView.DataSource.SortDescriptors.Add(new SortDescriptor { PropertyName = "TransactionDate", Direction = ListSortDirection.Descending });
@@ -51,6 +53,9 @@ public partial class ViewFilteredTransactions : BasePage
             });
 
             _vm.OnAppearing();
+        
+            _vm.IsPageBusy = false;
+            await Task.Delay(1);
 
             if (App.CurrentPopUp != null)
             {
