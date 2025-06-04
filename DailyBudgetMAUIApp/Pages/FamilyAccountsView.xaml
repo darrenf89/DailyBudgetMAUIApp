@@ -10,8 +10,7 @@
              xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
              xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
              xmlns:sfavatar="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
-             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
-             xmlns:sk="clr-namespace:Maui.FreakyEffects.Skeleton;assembly=Maui.FreakyEffects"
+             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"             
              Shell.TabBarIsVisible="True"
              Shell.NavBarIsVisible="True"
              droid:NavigationBar.Color="{StaticResource PrimaryDark}"
@@ -41,7 +40,7 @@
                     <Label HorizontalTextAlignment="Center"  Text="You don't have any family accounts to view, add a new family account and complete set up to view details" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Padding="5,0,0,10"/>
                 </VerticalStackLayout>
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*" IsVisible="{Binding IsBudgetVisible}">
-                    <Border Margin="10,20,10,0" Grid.Row="0" Grid.Column="0" Style="{StaticResource brdCardViewRectange}" Padding="0" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border Margin="10,20,10,0" Grid.Row="0" Grid.Column="0" Style="{StaticResource brdCardViewRectange}" Padding="0" >
                         <Grid ColumnDefinitions="45, *, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
                             <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
                             <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding Budget.BudgetName}" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="10,5,0,20" TextColor="{StaticResource Primary}" Margin="0"/>
@@ -72,7 +71,7 @@
                             </HorizontalStackLayout>
                         </Grid>
                     </Border>
-                    <Border Margin="10,20,10,0" Grid.Row="1" Grid.Column="0" Style="{StaticResource brdCardViewRectange}" Padding="0" IsVisible="{Binding IsTransactionVisible}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border Margin="10,20,10,0" Grid.Row="1" Grid.Column="0" Style="{StaticResource brdCardViewRectange}" Padding="0" IsVisible="{Binding IsTransactionVisible}" >
                         <VerticalStackLayout>
                             <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="45,*,*">
                                 <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>

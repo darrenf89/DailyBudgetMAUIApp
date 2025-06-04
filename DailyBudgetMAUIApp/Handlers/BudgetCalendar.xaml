@@ -3,11 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyBudgetMAUIApp.Handlers.BudgetCalendar"
              xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
-             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
-             xmlns:sk="clr-namespace:Maui.FreakyEffects.Skeleton;assembly=Maui.FreakyEffects"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"             
              xmlns:scheduler="clr-namespace:Syncfusion.Maui.Scheduler;assembly=Syncfusion.Maui.Scheduler"
              x:Name="CustomBudgetCalendar">
-    <scheduler:SfScheduler sk:SkeletonEffect.IsParent="False" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding Source={x:Reference CustomBudgetCalendar}, Path=IsBusy}" Margin="5,0,10,0"  TodayHighlightBrush="{StaticResource PrimaryDark}" x:Name="Scheduler" View="Agenda" MaximumHeightRequest="230">
+    <scheduler:SfScheduler  Margin="5,0,10,0" TodayHighlightBrush="{StaticResource PrimaryDark}" x:Name="Scheduler" View="Agenda" MaximumHeightRequest="230">
         <scheduler:SfScheduler.HeaderView>
             <scheduler:SchedulerHeaderView Height="50" Background="White" />
         </scheduler:SfScheduler.HeaderView>

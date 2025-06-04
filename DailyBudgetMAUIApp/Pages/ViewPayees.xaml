@@ -8,8 +8,7 @@
              xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
              xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:data="clr-namespace:Syncfusion.Maui.DataSource;assembly=Syncfusion.Maui.DataSource"
-             xmlns:carousel="clr-namespace:Syncfusion.Maui.Carousel;assembly=Syncfusion.Maui.Carousel"
-             xmlns:sk="clr-namespace:Maui.FreakyEffects.Skeleton;assembly=Maui.FreakyEffects"
+             xmlns:carousel="clr-namespace:Syncfusion.Maui.Carousel;assembly=Syncfusion.Maui.Carousel"             
              BackgroundColor="{StaticResource Primary}"
              x:Name="Content"
              Shell.TabBarIsVisible="False">
@@ -27,7 +26,7 @@
         </Grid>
     </Shell.TitleView>
     <Grid RowDefinitions="45,*" ColumnDefinitions="*">
-        <VerticalStackLayout  sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}" Grid.Row="0" Grid.Column="0" HeightRequest="45" BackgroundColor="Transparent">
+        <VerticalStackLayout   Grid.Row="0" Grid.Column="0" HeightRequest="45" BackgroundColor="Transparent">
             <carousel:SfCarousel SelectedIndex="{Binding SelectedIndex}" x:Name="TabCarousel" ItemsSource="{Binding PayPeriods}" ItemHeight="35" VerticalOptions="Center" HorizontalOptions="Center" ScaleOffset="0.6" SwipeEnded="TabCarousel_SwipeEnded" WidthRequest="{Binding TabContentWidth}" SelectionChanged="TabCarousel_SelectionChanged">
                 <carousel:SfCarousel.ItemTemplate>
                     <DataTemplate>
@@ -40,7 +39,7 @@
                 </carousel:SfCarousel.ItemTemplate>
             </carousel:SfCarousel>
         </VerticalStackLayout>
-        <CollectionView  sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}" Grid.Row="1" Grid.Column="0" x:Name="listView" ItemsSource="{Binding Payees}" SelectionMode="None" BackgroundColor="White" >
+        <CollectionView   Grid.Row="1" Grid.Column="0" x:Name="listView" ItemsSource="{Binding Payees}" SelectionMode="None" BackgroundColor="White" >
             <CollectionView.Header>
                 <VerticalStackLayout BackgroundColor="{StaticResource Primary}">
                     <AbsoluteLayout BackgroundColor="{StaticResource Primary}">
@@ -67,7 +66,7 @@
                         <Border HorizontalOptions="Center" ZIndex="99" AbsoluteLayout.LayoutFlags="XProportional" AbsoluteLayout.LayoutBounds="0,45" IsVisible="{Binding ChartUpdating}" Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="10,0,10,20" Padding="0">
                             <ActivityIndicator IsRunning="{Binding ChartUpdating}" IsVisible="{Binding ChartUpdating}" VerticalOptions="Center" HorizontalOptions="Center" Margin="0" Color="{DynamicResource Primary}" Scale="1.2"/>
                         </Border>
-                        <VerticalStackLayout  sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}" AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" WidthRequest="{Binding ScreenWidth}" >
+                        <VerticalStackLayout   AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" HorizontalOptions="Center" WidthRequest="{Binding ScreenWidth}" >
                             <Border Style="{DynamicResource DashboardMainContent}" WidthRequest="{Binding ChartContentWidth}" HeightRequest="{Binding ChartContentHeight}" Margin="0,0,0,10" Padding="0">
                                 <chart:SfCartesianChart Margin="5,20,5,10" BackgroundColor="Transparent">
                                     <chart:SfCartesianChart.GestureRecognizers>
