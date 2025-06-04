@@ -18,7 +18,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 {
     [QueryProperty(nameof(SnackBar), nameof(SnackBar))]
     [QueryProperty(nameof(SnackID), nameof(SnackID))]
-    public partial class MainPageViewModel : ObservableObject
+    public partial class MainPageViewModel : BaseViewModel
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
@@ -27,13 +27,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         private int  defaultBudgetID;
         [ObservableProperty]
-        private bool isPageBusy = false;
-        [ObservableProperty]
-        private bool isButtonBusy;
-        [ObservableProperty]
-        private string title;
-        [ObservableProperty]
-        private bool isPremiumAccount = App.IsPremiumAccount;
+        private bool isMainPageBusy = false;
         [ObservableProperty]
         private Budgets  defaultBudget = new Budgets();
         [ObservableProperty]
@@ -132,61 +126,6 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             ChartBrushes = App.ChartBrush;
 
-            Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
-        }
-
-        ~MainPageViewModel()
-        {
-            Connectivity.ConnectivityChanged -= Connectivity_ConnectivityChanged;
-        }
-
-        private async void Connectivity_ConnectivityChanged(object sender, ConnectivityChangedEventArgs e)
-        {
-            await HandleConnectivityChangeAsync(e);
-        }
-
-        private async Task HandleConnectivityChangeAsync(ConnectivityChangedEventArgs e)
-        {
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet && !App.IsBackgrounded)
-            {
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
-
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpNoNetwork(new PopUpNoNetworkViewModel());
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
-                await Task.Delay(1);
-
-                int i = 0;
-                while (Connectivity.Current.NetworkAccess != NetworkAccess.Internet && i < 30)
-                {
-                    await Task.Delay(1000);
-                    i++;
-                }
-
-                if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
-                {
-
-                }
-                else
-                {
-                    await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
-                }
-
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
-
-            }
         }
 
 

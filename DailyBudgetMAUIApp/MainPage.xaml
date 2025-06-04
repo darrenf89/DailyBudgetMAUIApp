@@ -79,7 +79,7 @@
         </Grid>
         <Grid AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1" ColumnDefinitions="*" RowDefinitions="Auto,*">
             <VerticalStackLayout Grid.Row="0" Grid.Column="0">
-                <Border IsVisible="{Binding IsTopStickyVisible}" x:Name="TopSticky" Style="{DynamicResource DashboardMainContent}" Padding="0,2,0,5"  Margin="10,0,10,8" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                <Border IsVisible="{Binding IsTopStickyVisible}" x:Name="TopSticky" Style="{DynamicResource DashboardMainContent}" Padding="0,2,0,5"  Margin="10,0,10,8" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                     <Grid x:Name="TopStickyGrid" ColumnDefinitions="45,*,Auto" RowDefinitions="Auto,*,Auto,Auto" HeightRequest="80">
                         <Label Grid.Row="0" Grid.Column="1" Margin="10,5,0,0" VerticalOptions="End" Text="You are budgeting in"  FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Tertiary}" FontFamily="OpenSansSemibold"/>
                         <Label sk:SkeletonEffect.IsParent="False" LineBreakMode="TailTruncation" Grid.Row="1" Grid.Column="1" Margin="10,0,0,10" Padding="0" VerticalOptions="Start" Text="{Binding DefaultBudget.BudgetName}"  FontSize="{Binding Source=MainTitle, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Primary}" FontAttributes="Bold" FontFamily="OpenSansSemibold"/>
@@ -114,7 +114,7 @@
             </VerticalStackLayout>
             <ScrollView x:Name="MainScrollView" Grid.Row="1" Grid.Column="0">
                 <VerticalStackLayout VerticalOptions="Start" >
-                    <Border  Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border  Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
                             <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
                                 <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
@@ -135,7 +135,7 @@
                             <TapGestureRecognizer Command="{Binding NavigateCreateNewBudgetCommand}"/>
                         </Border.GestureRecognizers>
                     </Border>
-                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}"  sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}"  sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
                             <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" x:Name="MainVSLView">
                                 <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
@@ -211,7 +211,7 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <gauge:SfRadialGauge x:Name="MainSFGauge" Background="Transparent"  Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" MaximumHeightRequest="100" MaximumWidthRequest="100" sk:SkeletonEffect.IsParent="False" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                            <gauge:SfRadialGauge x:Name="MainSFGauge" Background="Transparent"  Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" MaximumHeightRequest="100" MaximumWidthRequest="100" sk:SkeletonEffect.IsParent="False" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                                 <gauge:SfRadialGauge.Axes>
                                     <gauge:RadialAxis StartAngle="150" EndAngle="30" Minimum="0" Maximum="{Binding DefaultBudget.StartDayDailyAmount}" Interval="0" AnimationDuration="3000" EnableLoadingAnimation="True" RadiusFactor="0.95">
                                         <gauge:RadialAxis.AxisLineStyle>
@@ -248,7 +248,7 @@
                             <TapGestureRecognizer x:Name="NoMoneyLeft" Tapped="NoMoneyLeft_Tapped"/>
                         </Border.GestureRecognizers>
                     </Border>
-                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsUnreadMessage}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border Padding="0" Style="{DynamicResource DashboardMainContent}" IsVisible="{Binding IsUnreadMessage}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0">
                             <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
                                 <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
@@ -269,10 +269,10 @@
                             <TapGestureRecognizer Command="{Binding NavigateViewSupportsCommand}"/>
                         </Border.GestureRecognizers>
                     </Border>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding IsPremiumAccount, Converter={StaticResource BoolConverter}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding IsPremiumAccount, Converter={StaticResource BoolConverter}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                         <adMob:MTAdView AdsId="ca-app-pub-3940256099942544/6300978111" AdSize="Smart"/>
                     </Border>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendDailyAmountHideShow}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource LeftToSpendDailyAmountHideShow}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
                             <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,5,5,0">
@@ -296,7 +296,7 @@
                             <Image Source="mainpagelogo.png"  Grid.Row="0" Grid.Column="0" MaximumHeightRequest="70" Margin="10,0,0,0" HorizontalOptions="Center" />
                         </Grid>
                     </Border>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetShareRequestToBool}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetShareRequestToBool}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                         <Grid ColumnDefinitions="45,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0">
                             <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0" Grid.Row="0" Grid.Column="0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,5,5,0">
@@ -332,8 +332,8 @@
                                 <Label Text="{Binding MaxBankBalance, Converter={StaticResource DecimalToCurrencyString}, StringFormat='({0})'}" CharacterSpacing="0.1" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,2" VerticalTextAlignment="End" VerticalOptions="End" Margin="0"/>
                             </HorizontalStackLayout>
                             <Label Text="Current Bank Balance" Grid.Column="1" Grid.Row="3" TextColor="{StaticResource Gray400}" Padding="10,0,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
-                            <progressBar:SfLinearProgressBar sk:SkeletonEffect.IsParent="False" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}" AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" ZIndex="999" Grid.Row="6" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" Background="Transparent" TrackFill="Transparent" SecondaryProgressFill="Transparent" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,5,10,5" Minimum="0" Maximum="{Binding MaxBankBalance}" Progress="{Binding DefaultBudget.LeftToSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
-                            <progressBar:SfLinearProgressBar sk:SkeletonEffect.IsParent="False" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}" AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" SecondaryProgressFill="{StaticResource PrimaryLight}" ProgressFill="{StaticResource Tertiary}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,5,10,5" Minimum="0" Maximum="{Binding MaxBankBalance}" Progress="{Binding DefaultBudget.PlusStashSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
+                            <progressBar:SfLinearProgressBar sk:SkeletonEffect.IsParent="False" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}" AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" ZIndex="999" Grid.Row="6" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" Background="Transparent" TrackFill="Transparent" SecondaryProgressFill="Transparent" ProgressFill="{StaticResource Success}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,5,10,5" Minimum="0" Maximum="{Binding MaxBankBalance}" Progress="{Binding DefaultBudget.LeftToSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
+                            <progressBar:SfLinearProgressBar sk:SkeletonEffect.IsParent="False" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}" AnimationDuration="3000" HorizontalOptions="Center" WidthRequest="{Binding ProgressBarWidthRequest}" Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2" AnimationEasing="{x:Static Easing.CubicInOut}" TrackFill="{StaticResource Gray100}" SecondaryProgressFill="{StaticResource PrimaryLight}" ProgressFill="{StaticResource Tertiary}" TrackHeight="10" TrackCornerRadius="5" ProgressCornerRadius="5" ProgressHeight="10" SecondaryProgressCornerRadius="5" SecondaryProgressHeight="10" Margin="10,5,10,5" Minimum="0" Maximum="{Binding MaxBankBalance}" Progress="{Binding DefaultBudget.PlusStashSpendBalance}" SecondaryProgress="{Binding DefaultBudget.MoneyAvailableBalance}"/>
                             <Label Grid.Column="1" Grid.Row="4" Text="Money to Spend" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Success}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
                             <Label CharacterSpacing="0" FontAttributes="Bold" Grid.Column="1" Grid.Row="5" Text="{Binding DefaultBudget.LeftToSpendBalance, Converter={StaticResource DecimalToCurrencyString}}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" Padding="10,0,0,0" HorizontalTextAlignment="Start"/>
                             <Label Grid.Column="2" Grid.Row="4" Text="Available Money" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource PrimaryDark}" Padding="10,0,10,0" HorizontalTextAlignment="End"/>
@@ -364,7 +364,7 @@
                                 <Shadow Offset="0,0" Opacity="0.8" Brush="{DynamicResource Black}" Radius="5" />
                             </Border.Shadow>
                         </Border>
-                        <Border x:Name="QuickTransactionBorder" Stroke="{StaticResource InfoLight}" StrokeThickness="2" Padding="0" Margin="0" AbsoluteLayout.LayoutFlags="WidthProportional" AbsoluteLayout.LayoutBounds="0,0,1,80" Style="{DynamicResource DashboardMainContent}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                        <Border x:Name="QuickTransactionBorder" Stroke="{StaticResource InfoLight}" StrokeThickness="2" Padding="0" Margin="0" AbsoluteLayout.LayoutFlags="WidthProportional" AbsoluteLayout.LayoutBounds="0,0,1,80" Style="{DynamicResource DashboardMainContent}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                             <Grid ColumnDefinitions="45,*" RowDefinitions="80" Padding="0" Margin="0,0,0,0">
                                 <Image Source="transaction.png" BackgroundColor="White" Margin="10,10,0,0" WidthRequest="25" HeightRequest="25" VerticalOptions="Start" HorizontalOptions="Start" Grid.Row="0" Grid.Column="0"/>
                                 <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,5,5,0">
@@ -536,7 +536,7 @@
                             </ScrollView>
                         </Grid>
                     </Border>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetNotSharedBudgetToBool}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetNotSharedBudgetToBool}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                         <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
                             <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
@@ -555,7 +555,7 @@
                             <TapGestureRecognizer x:Name="ShareBudget" Tapped="ShareBudget_Tapped" />
                         </Border.GestureRecognizers>
                     </Border>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetSharedBudgetToBool}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding DefaultBudget, Converter={StaticResource IsBudgetSharedBudgetToBool}}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                         <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
                             <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">
@@ -586,7 +586,7 @@
                         </Border>
                         <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0"  x:Name="brdSavingCarousel" AbsoluteLayout.LayoutBounds="0,0" >
                             <VerticalStackLayout>
-                                <handlers:SavingsCarousel Savings="{Binding CarouselSavings}" IsBusy="{Binding IsPageBusy}"/>
+                                <handlers:SavingsCarousel Savings="{Binding CarouselSavings}" IsBusy="{Binding IsMainPageBusy}"/>
                                 <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
                                     <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
                                     <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="See All Savings" TextColor="{DynamicResource Info}"/>
@@ -614,7 +614,7 @@
                         </Border>
                         <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0" x:Name="brdBillCarousel" AbsoluteLayout.LayoutBounds="0,0" >
                             <VerticalStackLayout>
-                                <handlers:BillsCarousel Bills="{Binding CarouselBills}" IsBusy="{Binding IsPageBusy}"/>
+                                <handlers:BillsCarousel Bills="{Binding CarouselBills}" IsBusy="{Binding IsMainPageBusy}"/>
                                 <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
                                     <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
                                     <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,2,5,2" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="See All Outgoings" TextColor="{DynamicResource Info}"/>
@@ -642,7 +642,7 @@
                         </Border>
                         <Border Style="{DynamicResource DashboardMainContent}" Padding="0,10,0,0" x:Name="brdIncomeCarousel"  AbsoluteLayout.LayoutBounds="0,0" >
                             <VerticalStackLayout>
-                                <handlers:IncomesCarousel Incomes="{Binding CarouselIncomes}" IsBusy="{Binding IsPageBusy}"/>
+                                <handlers:IncomesCarousel Incomes="{Binding CarouselIncomes}" IsBusy="{Binding IsMainPageBusy}"/>
                                 <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" BackgroundColor="{StaticResource InfoLL}" Margin="0,5,0,0">
                                     <BoxView HeightRequest="2" Color="{StaticResource Info}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
                                     <Label FontAttributes="Bold" Grid.Row="1" Grid.Column="0" Padding="25,7,5,7" HorizontalOptions="Start" VerticalOptions="Center" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="See All Extra Income Events" TextColor="{DynamicResource Info}"/>
@@ -658,7 +658,7 @@
                             </VerticalStackLayout>
                         </Border>
                     </AbsoluteLayout>
-                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding IsPremiumAccount}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsPageBusy}">
+                    <Border Style="{DynamicResource DashboardMainContent}" Padding="0" IsVisible="{Binding IsPremiumAccount}" sk:SkeletonEffect.Animation="{sk:DefaultAnimation Source=Fade, Interval='600',Parameter='0.3'}"  sk:SkeletonEffect.IsBusy="{Binding IsMainPageBusy}">
                         <Grid ColumnDefinitions="50,*,Auto" RowDefinitions="Auto" Padding="0" Margin="0,0,0,0" Grid.Row="0" Grid.Column="0">
                             <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,10,0,0"/>
                             <VerticalStackLayout Grid.Column="1" Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="0,5,5,0">

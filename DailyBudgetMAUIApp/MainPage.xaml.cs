@@ -65,6 +65,21 @@ public partial class MainPage : BasePage
         await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
     }
 
+    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+        }
+
+        _vm.IsMainPageBusy = false;
+
+        await Task.Delay(1000);
+        base.OnNavigatingFrom(args);
+    }
+
     protected async override void OnAppearing()
     {
 
@@ -77,7 +92,7 @@ public partial class MainPage : BasePage
                 return;
             }
 
-            _vm.IsPageBusy = true;
+            _vm.IsMainPageBusy = true;
             if (App.IsBudgetUpdated)
             {
                 _vm.DefaultBudget = App.DefaultBudget;
@@ -218,7 +233,7 @@ public partial class MainPage : BasePage
                 App.CurrentPopUp = null;
             }
 
-            _vm.IsPageBusy = false;
+            _vm.IsMainPageBusy = false;
         }
         catch (Exception ex)
         {
