@@ -16,13 +16,16 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public decimal OriginalAmount { get; set; }
         public DateTime OriginalDate { get; set; }
-        [ObservableProperty]
-        public decimal amount;
-        [ObservableProperty]
-        public DateTime date;
 
         [ObservableProperty]
-        public Budgets budget;
+        public partial decimal Amount { get; set; }
+
+        [ObservableProperty]
+        public partial DateTime Date { get; set; }
+
+        [ObservableProperty]
+        public partial Budgets Budget { get; set; }
+
 
         public PopupEditNextPayInfoViewModel()
         {

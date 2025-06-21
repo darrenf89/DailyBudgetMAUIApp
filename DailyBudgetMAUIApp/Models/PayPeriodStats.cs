@@ -1,44 +1,59 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-
+using System;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class PayPeriodStats : ObservableObject
     {
         [ObservableProperty]
-        public int  payPeriodID;
-        [ObservableProperty]
-        public bool  isCurrentPeriod;
-        [ObservableProperty]
-        public DateTime  startDate;
-        [ObservableProperty]
-        public DateTime  endDate;
-        [ObservableProperty]
-        public int  durationOfPeriod;
-        [ObservableProperty]
-        public decimal  savingsToDate;
-        [ObservableProperty]
-        public decimal  billsToDate;
-        [ObservableProperty]
-        public decimal  incomeToDate;
-        [ObservableProperty]
-        public decimal  spendToDate;
-        [ObservableProperty]
-        public decimal?  startLtSDailyAmount;
-        [ObservableProperty]
-        public decimal?  startLtSPeiordAmount;
-        [ObservableProperty]
-        public decimal?  startBBPeiordAmount;
-        [ObservableProperty]
-        public decimal?  startMaBPeiordAmount;
-        [ObservableProperty]
-        public decimal?  endLtSDailyAmount;
-        [ObservableProperty]
-        public decimal?  endLtSPeiordAmount;
-        [ObservableProperty]
-        public decimal?  endBBPeiordAmount;
-        [ObservableProperty]
-        public decimal?  endMaBPeiordAmount;
+        public partial int PayPeriodID { get; set; }
 
+        [ObservableProperty]
+        public partial bool IsCurrentPeriod { get; set; }
+
+        [ObservableProperty]
+        public partial DateTime StartDate { get; set; }
+
+        [ObservableProperty]
+        public partial DateTime EndDate { get; set; }
+
+        [ObservableProperty]
+        public partial int DurationOfPeriod { get; set; }
+
+        [ObservableProperty]
+        public partial decimal SavingsToDate { get; set; }
+
+        [ObservableProperty]
+        public partial decimal BillsToDate { get; set; }
+
+        [ObservableProperty]
+        public partial decimal IncomeToDate { get; set; }
+
+        [ObservableProperty]
+        public partial decimal SpendToDate { get; set; }
+
+        [ObservableProperty]
+        public partial decimal? StartLtSDailyAmount { get; set; }
+
+        [ObservableProperty]
+        public partial decimal? StartLtSPeiordAmount { get; set; }
+
+        [ObservableProperty]
+        public partial decimal? StartBBPeiordAmount { get; set; }
+
+        [ObservableProperty]
+        public partial decimal? StartMaBPeiordAmount { get; set; }
+
+        [ObservableProperty]
+        public partial decimal? EndLtSDailyAmount { get; set; }
+
+        [ObservableProperty]
+        public partial decimal? EndLtSPeiordAmount { get; set; }
+
+        [ObservableProperty]
+        public partial decimal? EndBBPeiordAmount { get; set; }
+
+        [ObservableProperty]
+        public partial decimal? EndMaBPeiordAmount { get; set; }
     }
 }

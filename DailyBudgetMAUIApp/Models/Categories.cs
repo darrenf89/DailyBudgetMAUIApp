@@ -7,36 +7,36 @@ namespace DailyBudgetMAUIApp.Models
     public partial class Categories : ObservableObject, IIndexable
     {
         [ObservableProperty]
-        public int  categoryID;
+        public partial int  CategoryID { get; set; }
         [ObservableProperty]
-        public string?  categoryName;
+        public partial string?  CategoryName { get; set; }
         [ObservableProperty]
-        public bool  isSubCategory;
+        public partial bool  IsSubCategory { get; set; }
         [ObservableProperty]
-        public int?  categoryGroupID;
+        public partial int?  CategoryGroupID { get; set; }
         [ObservableProperty]
-        public string  categoryIcon;
+        public partial string  CategoryIcon { get; set; }
         [ObservableProperty]
-        public decimal  categorySpendAllTime;
+        public partial decimal  CategorySpendAllTime { get; set; }
         [ObservableProperty]
-        public decimal  categorySpendPayPeriod;
+        public partial decimal  CategorySpendPayPeriod { get; set; }
         [ObservableProperty]
-        public List<SpendPeriods>  categorySpendPeriods = new List<SpendPeriods>();
+        public partial List<SpendPeriods>  CategorySpendPeriods  { get; set; } = new List<SpendPeriods>();
         [ObservableProperty]
-        public bool  isEditMode = false;
+        public partial bool IsEditMode { get; set; } = false;
         public int Index { get; set; }
     }
 
     public partial class SpendPeriods: ObservableObject
     {
         [ObservableProperty]
-        public DateTime  fromDate;
+        public partial DateTime  FromDate { get; set; }
         [ObservableProperty]
-        public DateTime  toDate;
+        public partial DateTime  ToDate { get; set; }
         [ObservableProperty]
-        public decimal  spendTotalAmount;
+        public partial decimal  SpendTotalAmount { get; set; }
         [ObservableProperty]
-        public bool  isCurrentPeriod;
+        public partial bool  IsCurrentPeriod { get; set; }
     }
 
     public class DefaultCategories

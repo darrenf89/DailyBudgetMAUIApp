@@ -6,13 +6,13 @@ namespace DailyBudgetMAUIApp.Models
     public partial class BankAccounts : ObservableObject
     {
         [ObservableProperty]
-        private int  iD;
+        public partial int  ID { get; set; }
         [ObservableProperty]
-        private string bankAccountName;
+        public partial string BankAccountName { get; set; }
         [ObservableProperty]
-        private decimal? accountBankBalance;
+        public partial decimal? AccountBankBalance { get; set; }
         [ObservableProperty]
-        private bool isDefaultAccount;
+        public partial bool IsDefaultAccount { get; set; }
 
     }  
 }

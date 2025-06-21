@@ -25,6 +25,9 @@
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
+                        <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label HorizontalTextAlignment="Center" Text="{Binding Income.IncomeName}" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,5,0,0" />
+                        </HorizontalStackLayout>
                         <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Nice one, you have more money coming in which means more money to spend ... or save if you want to be a bore!"/>
                         <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,2,20,5" Text="Or do these details not seem right? You forget you had this Income added or does the amount seem different ... or is the person paying you late?"/>
                         <VerticalStackLayout Margin="40,0,20,0">

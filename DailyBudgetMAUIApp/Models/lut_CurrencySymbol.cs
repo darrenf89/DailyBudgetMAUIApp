@@ -1,17 +1,19 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class lut_CurrencySymbol : ObservableObject
     {
         [ObservableProperty]
-        public int  id;
-        [ObservableProperty]        
-        public string  currencySymbol = "";
+        public partial int Id { get; set; }
+
         [ObservableProperty]
-        public string  name = "";
+        public partial string CurrencySymbol { get; set; } = "";
+
         [ObservableProperty]
-        public string  code = "";
+        public partial string Name { get; set; } = "";
+
+        [ObservableProperty]
+        public partial string Code { get; set; } = "";
     }
 }

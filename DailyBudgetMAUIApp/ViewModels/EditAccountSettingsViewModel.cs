@@ -19,73 +19,107 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly INotificationPermissions _notificationPermissions;
 
         [ObservableProperty]
-        private UserDetailsModel user;
+        public partial UserDetailsModel User { get; set; }
+
         [ObservableProperty]
-        private FamilyUserAccount familyUser;
+        public partial FamilyUserAccount FamilyUser { get; set; }
+
         [ObservableProperty]
-        private string currentPassword;
+        public partial string CurrentPassword { get; set; }
+
         [ObservableProperty]
-        private string newEmail;
+        public partial string NewEmail { get; set; }
+
         [ObservableProperty]
-        private string newPassword;        
+        public partial string NewPassword { get; set; }
+
         [ObservableProperty]
-        private string newNickName;
+        public partial string NewNickName { get; set; }
+
         [ObservableProperty]
-        private string newPasswordConfirm;
+        public partial string NewPasswordConfirm { get; set; }
+
         [ObservableProperty]
-        private bool currentPasswordValid = true;
+        public partial bool CurrentPasswordValid { get; set; } = true;
+
         [ObservableProperty]
-        private bool newPasswordValid;
+        public partial bool NewPasswordValid { get; set; }
+
         [ObservableProperty]
-        private bool newPasswordMatch = true;
+        public partial bool NewPasswordMatch { get; set; } = true;
+
         [ObservableProperty]
-        private bool passwordRequired;
+        public partial bool PasswordRequired { get; set; }
+
         [ObservableProperty]
-        private bool newPasswordRequired;
+        public partial bool NewPasswordRequired { get; set; }
+
         [ObservableProperty]
-        private bool passwordConfirmRequired;
+        public partial bool PasswordConfirmRequired { get; set; }
+
         [ObservableProperty]
-        private bool passwordChangedMessageVisible;
+        public partial bool PasswordChangedMessageVisible { get; set; }
+
         [ObservableProperty]
-        private bool passwordNotChangedMessageVisible;
+        public partial bool PasswordNotChangedMessageVisible { get; set; }
+
         [ObservableProperty]
-        private bool emailChangedMessageVisible;
+        public partial bool EmailChangedMessageVisible { get; set; }
+
         [ObservableProperty]
-        private bool emailNotChangedMessageVisible;
+        public partial bool EmailNotChangedMessageVisible { get; set; }
+
         [ObservableProperty]
-        private bool emailValid;
+        public partial bool EmailValid { get; set; }
+
         [ObservableProperty]
-        private bool emailRequired;
+        public partial bool EmailRequired { get; set; }
+
         [ObservableProperty]
-        private bool nicknameChangedMessageVisible;
+        public partial bool NicknameChangedMessageVisible { get; set; }
+
         [ObservableProperty]
-        private bool nicknameNotChangedMessageVisible;
+        public partial bool NicknameNotChangedMessageVisible { get; set; }
+
         [ObservableProperty]
-        private bool nickNameRequired;
+        public partial bool NickNameRequired { get; set; }
+
         [ObservableProperty]
-        private string currentBudgetName;
+        public partial string CurrentBudgetName { get; set; }
+
         [ObservableProperty]
-        private List<Budgets> userBudgets;  
+        public partial List<Budgets> UserBudgets { get; set; }
+
         [ObservableProperty]
-        private string currentSubStatus;        
+        public partial string CurrentSubStatus { get; set; }
+
         [ObservableProperty]
-        private string subscriptionRenewal;        
+        public partial string SubscriptionRenewal { get; set; }
+
         [ObservableProperty]
-        private string versionNumber;
+        public partial string VersionNumber { get; set; }
+
         [ObservableProperty]
-        public BorderlessPicker switchBudgetPicker;        
+        public partial BorderlessPicker SwitchBudgetPicker { get; set; }
+
         [ObservableProperty]
-        public Budgets selectedBudget;        
+        public partial Budgets SelectedBudget { get; set; }
+
         [ObservableProperty]
-        public bool isDPA;
+        public partial bool IsDPA { get; set; }
+
         [ObservableProperty]
-        public bool isPushNotificationsEnabled;
+        public partial bool IsPushNotificationsEnabled { get; set; }
+
         [ObservableProperty]
-        public bool isChanging;
+        public partial bool IsChanging { get; set; }
+
         [ObservableProperty]
-        public string isPushNotificationsEnabledLabelText;
+        public partial string IsPushNotificationsEnabledLabelText { get; set; }
+
         [ObservableProperty]
-        private bool isBudgetHidden;
+        public partial bool IsBudgetHidden { get; set; }
+
 
 
         public EditAccountSettingsViewModel(IProductTools pt, IRestDataService ds, INotificationPermissions notificationPermissions)

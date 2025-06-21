@@ -25,6 +25,9 @@
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
+                        <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label HorizontalTextAlignment="Center" Text="{Binding Bill.BillName}" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,5,0,0" />
+                        </HorizontalStackLayout>
                         <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Congrats! you have put enough aside each day to pay your bill in full and on time, feels good!"/>
                         <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,2,20,5" Text="Or do these details not seem right? You forget you had this Outgoing and not owe it anymore or do you owe a different amount ... or is it not even due today?"/>
                         <VerticalStackLayout Margin="40,0,20,0">

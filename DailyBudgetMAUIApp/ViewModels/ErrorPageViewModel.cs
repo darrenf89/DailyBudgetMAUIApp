@@ -11,9 +11,11 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class ErrorPageViewModel : BaseViewModel
     {
         [ObservableProperty]
-        private ErrorLog _error;
+        public partial ErrorLog Error { get; set; }
+
         [ObservableProperty]
-        private string txtErrorMessage = "";
+        public partial string TxtErrorMessage { get; set; } = "";
+
 
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;

@@ -8,7 +8,6 @@ using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.ViewModels;
-using DailySpendWebApp.Models;
 using Plugin.LocalNotification;
 using System.Globalization;
 using The49.Maui.BottomSheet;
@@ -373,9 +372,12 @@ public partial class MainPage : BasePage
                 }
             }
 
-
             _vm.MaxBankBalance = _vm.DefaultBudget.BankBalance.GetValueOrDefault();
             _vm.MaxBankBalance += _vm.DefaultBudget.CurrentActiveIncome;
+            LeftToSpendBalanceProgress.SecondaryProgress = (double)_vm.DefaultBudget.MoneyAvailableBalance;
+            LeftToSpendBalanceProgress.SetProgress((double)_vm.DefaultBudget.LeftToSpendBalance, 3000, Easing.CubicInOut);
+            PlusStashSpendBalanceProgress.SecondaryProgress = (double)_vm.DefaultBudget.MoneyAvailableBalance;
+            PlusStashSpendBalanceProgress.SetProgress((double)_vm.DefaultBudget.PlusStashSpendBalance, 3000, Easing.CubicInOut);
 
             decimal Amount = 0;
 
@@ -420,6 +422,9 @@ public partial class MainPage : BasePage
             };
 
             MainSFGaugeAnnotation.Content = label;
+            MainSFGaugeRadialAxis.Maximum = (double)_vm.DefaultBudget.StartDayDailyAmount;
+            MainSFGaugeRadialRange.EndValue = (double)_vm.DefaultBudget.LeftToSpendDailyAmount;
+
             _vm.NumberPendingQuickTransactions = _vm.DefaultBudget.AccountInfo.NumberPendingQuickTransactions;
             if (App.IsPremiumAccount && _vm.DefaultBudget.AccountInfo.NumberPendingQuickTransactions > 0 )
             {

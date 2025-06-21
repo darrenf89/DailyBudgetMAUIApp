@@ -9,37 +9,53 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class ViewPayeesViewModel : BaseViewModel
     {
         [ObservableProperty]
-        private IndexableObservableCollection<Payees>  payees = new IndexableObservableCollection<Payees>();
+        public partial IndexableObservableCollection<Payees> Payees { get; set; } = new IndexableObservableCollection<Payees>();
+
         [ObservableProperty]
-        private ObservableCollection<ChartClass>  payeesChart = new ObservableCollection<ChartClass>();
+        public partial ObservableCollection<ChartClass> PayeesChart { get; set; } = new ObservableCollection<ChartClass>();
+
         [ObservableProperty]
-        private double  screenWidth;
+        public partial double ScreenWidth { get; set; }
+
         [ObservableProperty]
-        private double  screenHeight;
+        public partial double ScreenHeight { get; set; }
+
         [ObservableProperty]
-        private List<Brush>  chartBrushes = new List<Brush>();
+        public partial List<Brush> ChartBrushes { get; set; } = new List<Brush>();
+
         [ObservableProperty]
-        private double  chartContentHeight;
+        public partial double ChartContentHeight { get; set; }
+
         [ObservableProperty]
-        private double  chartContentWidth;
+        public partial double ChartContentWidth { get; set; }
+
         [ObservableProperty]
-        private double  tabContentWidth;
+        public partial double TabContentWidth { get; set; }
+
         [ObservableProperty]
-        private double  maxChartContentHeight;
+        public partial double MaxChartContentHeight { get; set; }
+
         [ObservableProperty]
-        private string  chartTitle;
+        public partial string ChartTitle { get; set; }
+
         [ObservableProperty]
-        private bool  chartUpdating;
+        public partial bool ChartUpdating { get; set; }
+
         [ObservableProperty]
-        private bool  isPlaying;
+        public partial bool IsPlaying { get; set; }
+
         [ObservableProperty]
-        private ObservableCollection<string>  payPeriods = new ObservableCollection<string>();
+        public partial ObservableCollection<string> PayPeriods { get; set; } = new ObservableCollection<string>();
+
         [ObservableProperty]
-        private int  selectedIndex = 1;
+        public partial int SelectedIndex { get; set; } = 1;
+
         [ObservableProperty]
-        private int  headerCatId;
+        public partial int HeaderCatId { get; set; }
+
         [ObservableProperty]
-        private string?  oldPayeeName;
+        public partial string? OldPayeeName { get; set; }
+
 
         public ViewPayeesViewModel()
         {

@@ -23,29 +23,41 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int  budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private int familyAccountID;
+        public partial int FamilyAccountID { get; set; }
+
         [ObservableProperty]
-        private int  savingID;        
+        public partial int SavingID { get; set; }
+
         [ObservableProperty]
-        private int selectedCalculatorIndex = 0;
+        public partial int SelectedCalculatorIndex { get; set; } = 0;
+
         [ObservableProperty]
-        private Savings  saving;
+        public partial Savings Saving { get; set; }
+
         [ObservableProperty]
-        private bool  isPageValid;
+        public partial bool IsPageValid { get; set; }
+
         [ObservableProperty]
-        private DateTime  minimumDate = DateTime.UtcNow.Date.AddDays(1);
+        public partial DateTime MinimumDate { get; set; } = DateTime.UtcNow.Date.AddDays(1);
+
         [ObservableProperty]
-        private string  savingType;
+        public partial string SavingType { get; set; }
+
         [ObservableProperty]
-        private string  navigatedFrom;         
+        public partial string NavigatedFrom { get; set; }
+
         [ObservableProperty]
-        private string isTopUpLabelText = "Replenish";            
+        public partial string IsTopUpLabelText { get; set; } = "Replenish";
+
         [ObservableProperty]
-        private string isTopUpParaText = "By replenishing the stash, every pay period we will reset the envelopes balance to the saving amount. Any balance not spent by the end of the period will effectively be added back to your budget for you to spend!";        
+        public partial string IsTopUpParaText { get; set; } = "By replenishing the stash, every pay period we will reset the envelopes balance to the saving amount. Any balance not spent by the end of the period will effectively be added back to your budget for you to spend!";
+
         [ObservableProperty]
-        private bool showCalculator;
+        public partial bool ShowCalculator { get; set; }
+
 
         public string SavingTypeText { get; set; } = "";
         public string SavingRecurringText { get; set; } = "";

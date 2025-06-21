@@ -8,74 +8,107 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class PopUpOTPViewModel : BaseViewModel
     {
         [ObservableProperty]
-        public int  userID;
-        [ObservableProperty]
-        public string  oTPType;
-        [ObservableProperty]
-        public string  returnData;
-        [ObservableProperty]
-        public string  userEmail;
-        [ObservableProperty]
-        public OTP  oTP;
-        [ObservableProperty]
-        private bool  emailValid = true;
-        [ObservableProperty]
-        private bool  emailRequired = true;
-        [ObservableProperty]
-        private bool  oTPNotFound;
-        [ObservableProperty]
-        private bool  oTPRequired;
-        [ObservableProperty]
-        private bool  emailNotFound;
-        [ObservableProperty]
-        private bool  oTPValidated;
-        [ObservableProperty]
-        private int  countdownNumber = 120;
-        [ObservableProperty]
-        private bool  countdownVisible = false;
-        [ObservableProperty]
-        private bool  resendVisible = true;
-        [ObservableProperty]
-        private bool  resendSuccess;
-        [ObservableProperty]
-        private bool  maxLimitFailure;
-        [ObservableProperty]
-        private bool  resendFailure;
-        [ObservableProperty]
-        private bool  passwordRequired = true;
-        [ObservableProperty]
-        private bool  passwordSameSame = true;
-        [ObservableProperty]
-        private bool  passwordStrong = true;
-        [ObservableProperty]
-        private string  password;
-        [ObservableProperty]
-        private string  passwordConfirm;
-        [ObservableProperty]
-        private bool  passwordResetFailure;
-        [ObservableProperty]
-        private bool familyAccountSetUpFailure;
-        [ObservableProperty]
-        private string familyAccountSetUpFailureText;
-        [ObservableProperty]
-        private ShareBudgetRequest  shareBudgetRequest;
+        public partial int UserID { get; set; }
 
         [ObservableProperty]
-        private string oTPOne;
+        public partial string OTPType { get; set; }
+
         [ObservableProperty]
-        private string oTPTwo;
+        public partial string ReturnData { get; set; }
+
         [ObservableProperty]
-        private string oTPThree;
+        public partial string UserEmail { get; set; }
+
         [ObservableProperty]
-        private string oTPFour;
+        public partial OTP OTP { get; set; }
+
         [ObservableProperty]
-        private string oTPFive;
+        public partial bool EmailValid { get; set; } = true;
+
         [ObservableProperty]
-        private string oTPSix;        
+        public partial bool EmailRequired { get; set; } = true;
+
         [ObservableProperty]
-        private string oTPCopyErrorMessage;        
+        public partial bool OTPNotFound { get; set; }
+
         [ObservableProperty]
-        private bool oTPCopyContentValid = false;
+        public partial bool OTPRequired { get; set; }
+
+        [ObservableProperty]
+        public partial bool EmailNotFound { get; set; }
+
+        [ObservableProperty]
+        public partial bool OTPValidated { get; set; }
+
+        [ObservableProperty]
+        public partial int CountdownNumber { get; set; } = 120;
+
+        [ObservableProperty]
+        public partial bool CountdownVisible { get; set; } = false;
+
+        [ObservableProperty]
+        public partial bool ResendVisible { get; set; } = true;
+
+        [ObservableProperty]
+        public partial bool ResendSuccess { get; set; }
+
+        [ObservableProperty]
+        public partial bool MaxLimitFailure { get; set; }
+
+        [ObservableProperty]
+        public partial bool ResendFailure { get; set; }
+
+        [ObservableProperty]
+        public partial bool PasswordRequired { get; set; } = true;
+
+        [ObservableProperty]
+        public partial bool PasswordSameSame { get; set; } = true;
+
+        [ObservableProperty]
+        public partial bool PasswordStrong { get; set; } = true;
+
+        [ObservableProperty]
+        public partial string Password { get; set; }
+
+        [ObservableProperty]
+        public partial string PasswordConfirm { get; set; }
+
+        [ObservableProperty]
+        public partial bool PasswordResetFailure { get; set; }
+
+        [ObservableProperty]
+        public partial bool FamilyAccountSetUpFailure { get; set; }
+
+        [ObservableProperty]
+        public partial string FamilyAccountSetUpFailureText { get; set; }
+
+        [ObservableProperty]
+        public partial ShareBudgetRequest ShareBudgetRequest { get; set; }
+
+        [ObservableProperty]
+        public partial string OTPOne { get; set; }
+
+        [ObservableProperty]
+        public partial string OTPTwo { get; set; }
+
+        [ObservableProperty]
+        public partial string OTPThree { get; set; }
+
+        [ObservableProperty]
+        public partial string OTPFour { get; set; }
+
+        [ObservableProperty]
+        public partial string OTPFive { get; set; }
+
+        [ObservableProperty]
+        public partial string OTPSix { get; set; }
+
+        [ObservableProperty]
+        public partial string OTPCopyErrorMessage { get; set; }
+
+        [ObservableProperty]
+        public partial bool OTPCopyContentValid { get; set; } = false;
+
 
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }

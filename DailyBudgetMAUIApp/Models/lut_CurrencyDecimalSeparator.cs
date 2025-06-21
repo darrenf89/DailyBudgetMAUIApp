@@ -1,14 +1,13 @@
- using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.Models
 {
-
     public partial class lut_CurrencyDecimalSeparator : ObservableObject
     {
         [ObservableProperty]
-        public int  id;
-        [ObservableProperty]
-        public string currencyDecimalSeparator;
-    }
+        public partial int Id { get; set; }
 
+        [ObservableProperty]
+        public partial string CurrencyDecimalSeparator { get; set; }
+    }
 }

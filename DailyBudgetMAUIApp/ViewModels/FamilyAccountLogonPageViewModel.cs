@@ -24,37 +24,38 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ObservableProperty]
-        private string  email;
+        public partial string Email { get; set; }
 
         [ObservableProperty]
-        private string  password;
+        public partial string Password { get; set; }
 
         [ObservableProperty]
-        private bool  rememberMe;
+        public partial bool RememberMe { get; set; }
 
         [ObservableProperty]
-        private bool  emailRequired;
+        public partial bool EmailRequired { get; set; }
 
         [ObservableProperty]
-        private bool  emailValid;
+        public partial bool EmailValid { get; set; }
 
         [ObservableProperty]
-        private bool  passwordRequired;
+        public partial bool PasswordRequired { get; set; }
 
         [ObservableProperty]
-        private bool  emailValidatedSuccess;
+        public partial bool EmailValidatedSuccess { get; set; }
 
         [ObservableProperty]
-        private bool  resetPasswordSuccess;
+        public partial bool ResetPasswordSuccess { get; set; }
 
         [ObservableProperty]
-        private bool accountCreationFail;
+        public partial bool AccountCreationFail { get; set; }
 
         [ObservableProperty]
-        private bool accountCreationSuccess;
+        public partial bool AccountCreationSuccess { get; set; }
 
         [ObservableProperty]
-        private bool  resetPasswordFail;
+        public partial bool ResetPasswordFail { get; set; }
+
 
         public bool PageIsValid()
         {

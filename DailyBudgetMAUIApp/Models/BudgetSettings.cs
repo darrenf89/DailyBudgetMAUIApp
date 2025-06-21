@@ -7,25 +7,25 @@ namespace DailyBudgetMAUIApp.Models
     public partial class BudgetSettings : ObservableObject
     {
         [ObservableProperty]
-        public int settingsID; 
+        public partial int SettingsID { get; set; }
         [ObservableProperty]
-        public int? budgetID; 
+        public partial int? BudgetID { get; set; }
         [ObservableProperty]
-        public int? currencyPattern  = 1;
+        public partial int? CurrencyPattern  { get; set; } = 1;
         [ObservableProperty]
-        public int? currencySymbol  = 1;
+        public partial int? CurrencySymbol  { get; set; } = 1;
         [ObservableProperty]
-        public int? currencyDecimalDigits  = 2;
+        public partial int? CurrencyDecimalDigits  { get; set; } = 2;
         [ObservableProperty]
-        public int? currencyDecimalSeparator  = 1;
+        public partial int? CurrencyDecimalSeparator  { get; set; } = 1;
         [ObservableProperty]
-        public int? currencyGroupSeparator  = 2;
+        public partial int? CurrencyGroupSeparator  { get; set; } = 2;
         [ObservableProperty]
-        public int? dateSeperator  = 1;
+        public partial int? DateSeperator  { get; set; } = 1;
         [ObservableProperty]       
-        public int? shortDatePattern  = 2;
+        public partial int? ShortDatePattern  { get; set; } = 2;
         [ObservableProperty]
-        public int? timeZone = 47;
+        public partial int? TimeZone { get; set; } = 47;
 
     }
 }

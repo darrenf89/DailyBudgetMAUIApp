@@ -21,35 +21,50 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int  budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private int  familyAccountID;
+        public partial int FamilyAccountID { get; set; }
+
         [ObservableProperty]
-        private int  billID;
+        public partial int BillID { get; set; }
+
         [ObservableProperty]
-        private Bills  bill;
+        public partial Bills Bill { get; set; }
+
         [ObservableProperty]
-        private decimal  billOldBalance;
+        public partial decimal BillOldBalance { get; set; }
+
         [ObservableProperty]
-        private bool  isPageValid;
+        public partial bool IsPageValid { get; set; }
+
         [ObservableProperty]
-        private DateTime  minimumDate = DateTime.UtcNow.Date.AddDays(1);
+        public partial DateTime MinimumDate { get; set; } = DateTime.UtcNow.Date.AddDays(1);
+
         [ObservableProperty]
-        private string  navigatedFrom;
+        public partial string NavigatedFrom { get; set; }
+
         [ObservableProperty]
-        private string  billName;
+        public partial string BillName { get; set; }
+
         [ObservableProperty]
-        private string  billPayee;
+        public partial string BillPayee { get; set; }
+
         [ObservableProperty]
-        private string billCategory;
+        public partial string BillCategory { get; set; }
+
         [ObservableProperty]
-        private string redirectTo;
+        public partial string RedirectTo { get; set; }
+
         [ObservableProperty]
-        private bool isMultipleAccounts;
+        public partial bool IsMultipleAccounts { get; set; }
+
         [ObservableProperty]
-        private List<BankAccounts> bankAccounts;
+        public partial List<BankAccounts> BankAccounts { get; set; }
+
         [ObservableProperty]
-        private BankAccounts? selectedBankAccount;
+        public partial BankAccounts? SelectedBankAccount { get; set; }
+
 
 
         public string BillTypeText { get; set; } = "";

@@ -8,47 +8,67 @@ namespace DailyBudgetMAUIApp.Models
     public partial class FamilyUserAccount : ObservableObject
     {
         [ObservableProperty]
-        private int userID;
+        public partial int UserID { get; set; }
+
         [ObservableProperty]
-        private int uniqueUserID;
+        public partial int UniqueUserID { get; set; }
+
         [ObservableProperty]
-        private string nickName;
+        public partial string NickName { get; set; }
+
         [ObservableProperty]
-        private string email;
+        public partial string Email { get; set; }
+
         [ObservableProperty]
-        private string password;
+        public partial string Password { get; set; }
+
         [ObservableProperty]
-        private string salt;
+        public partial string Salt { get; set; }
+
         [ObservableProperty]
-        private bool isEmailVerified;
+        public partial bool IsEmailVerified { get; set; }
+
         [ObservableProperty]
-        private DateTime sessionExpiry;
+        public partial DateTime SessionExpiry { get; set; }
+
         [ObservableProperty]
-        private int budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private bool isDPAPermissions;
+        public partial bool IsDPAPermissions { get; set; }
+
         [ObservableProperty]
-        private bool isAgreedToTerms;
+        public partial bool IsAgreedToTerms { get; set; }
+
         [ObservableProperty]
-        private string? profilePicture;
+        public partial string? ProfilePicture { get; set; }
+
         [ObservableProperty]
-        private bool isActive;
+        public partial bool IsActive { get; set; }
+
         [ObservableProperty]
-        private bool isConfirmed;
+        public partial bool IsConfirmed { get; set; }
+
         [ObservableProperty]
-        private int parentUserID;
+        public partial int ParentUserID { get; set; }
+
         [ObservableProperty]
-        private int? assignedBudgetID;
+        public partial int? AssignedBudgetID { get; set; }
+
         [ObservableProperty]
-        private DateTime accountCreated;
+        public partial DateTime AccountCreated { get; set; }
+
         [ObservableProperty]
-        private DateTime lastLoggedOn;
+        public partial DateTime LastLoggedOn { get; set; }
+
         [ObservableProperty]
-        private bool isBudgetHidden;
+        public partial bool IsBudgetHidden { get; set; }
+
         [ObservableProperty]
-        private List<Budgets> budgets = new List<Budgets>();
+        public partial List<Budgets> Budgets { get; set; } = new List<Budgets>();
+
         [ObservableProperty]
-        private bool isBudgetCreated;
+        public partial bool IsBudgetCreated { get; set; }
 
         [JsonIgnore]
         [ObservableProperty]

@@ -20,103 +20,152 @@ namespace DailyBudgetMAUIApp.ViewModels
         public VerticalStackLayout BtnApply { get; set; }
 
         [ObservableProperty]
-        private List<lut_CurrencySymbol> currencySearchResults;
+        public partial List<lut_CurrencySymbol> CurrencySearchResults { get; set; }
+
         [ObservableProperty]
-        private lut_CurrencySymbol selectedCurrencySymbol;
+        public partial lut_CurrencySymbol SelectedCurrencySymbol { get; set; }
+
         [ObservableProperty]
-        private bool hasCurrencySymbolChanged;
+        public partial bool HasCurrencySymbolChanged { get; set; }
+
         [ObservableProperty]
-        private bool searchVisible = false;
+        public partial bool SearchVisible { get; set; } = false;
+
         [ObservableProperty]
-        private List<lut_CurrencyPlacement> currencyPlacements;
+        public partial List<lut_CurrencyPlacement> CurrencyPlacements { get; set; }
+
         [ObservableProperty]
-        private lut_CurrencyPlacement selectedCurrencyPlacement;
+        public partial lut_CurrencyPlacement SelectedCurrencyPlacement { get; set; }
+
         [ObservableProperty]
-        private bool hasCurrencyPlacementChanged;
+        public partial bool HasCurrencyPlacementChanged { get; set; }
+
         [ObservableProperty]
-        private List<lut_DateFormat> dateFormats;
+        public partial List<lut_DateFormat> DateFormats { get; set; }
+
         [ObservableProperty]
-        private List<lut_BudgetTimeZone> timeZones;
+        public partial List<lut_BudgetTimeZone> TimeZones { get; set; }
+
         [ObservableProperty]
-        private lut_DateFormat selectedDateFormats;
+        public partial lut_DateFormat SelectedDateFormats { get; set; }
+
         [ObservableProperty]
-        private bool hasDateFormatChanged;
+        public partial bool HasDateFormatChanged { get; set; }
+
         [ObservableProperty]
-        private List<lut_NumberFormat> numberFormats;
+        public partial List<lut_NumberFormat> NumberFormats { get; set; }
+
         [ObservableProperty]
-        private lut_NumberFormat selectedNumberFormats;
+        public partial lut_NumberFormat SelectedNumberFormats { get; set; }
+
         [ObservableProperty]
-        private bool hasNumberFormatsChanged;
+        public partial bool HasNumberFormatsChanged { get; set; }
+
         [ObservableProperty]
-        private lut_BudgetTimeZone selectedTimeZone;
+        public partial lut_BudgetTimeZone SelectedTimeZone { get; set; }
+
         [ObservableProperty]
-        private bool hasTimeZoneChanged;
+        public partial bool HasTimeZoneChanged { get; set; }
+
         [ObservableProperty]
-        private bool isBorrowPay;
+        public partial bool IsBorrowPay { get; set; }
+
         [ObservableProperty]
-        private BudgetSettings budgetSettings;
+        public partial BudgetSettings BudgetSettings { get; set; }
+
         [ObservableProperty]
-        private Budgets budget;
+        public partial Budgets Budget { get; set; }
+
         [ObservableProperty]
-        private string currentTime;
+        public partial string CurrentTime { get; set; }
+
         [ObservableProperty]
-        private CultureInfo timeCultureInfo = new CultureInfo("en-gb");
+        public partial CultureInfo TimeCultureInfo { get; set; } = new CultureInfo("en-gb");
+
         [ObservableProperty]
-        private string currencySettingValue;
+        public partial string CurrencySettingValue { get; set; }
+
         [ObservableProperty]
-        private CultureInfo currencyCultureInfo = new CultureInfo("en-gb");
+        public partial CultureInfo CurrencyCultureInfo { get; set; } = new CultureInfo("en-gb");
+
         [ObservableProperty]
-        private string payDaySettings;
+        public partial string PayDaySettings { get; set; }
+
         [ObservableProperty]
-        private decimal payAmount;
+        public partial decimal PayAmount { get; set; }
+
         [ObservableProperty]
-        private string payAmountString;
+        public partial string PayAmountString { get; set; }
+
         [ObservableProperty]
-        private int payAmountCursorPosition;
+        public partial int PayAmountCursorPosition { get; set; }
+
         [ObservableProperty]
-        private bool hasPayAmountChanged;
+        public partial bool HasPayAmountChanged { get; set; }
+
         [ObservableProperty]
-        private DateTime payDayDate;
+        public partial DateTime PayDayDate { get; set; }
+
         [ObservableProperty]
-        private bool hasPayDayDateChanged;
+        public partial bool HasPayDayDateChanged { get; set; }
+
         [ObservableProperty]
-        private bool hasPageLoaded;
+        public partial bool HasPageLoaded { get; set; }
+
         [ObservableProperty]
-        private bool validatorPayDay;
+        public partial bool ValidatorPayDay { get; set; }
+
         [ObservableProperty]
-        private bool validatorPayDayAmount;
+        public partial bool ValidatorPayDayAmount { get; set; }
+
         [ObservableProperty]
-        private string payDayTypeText;
+        public partial string PayDayTypeText { get; set; }
+
         [ObservableProperty]
-        private bool validatorPayType;
+        public partial bool ValidatorPayType { get; set; }
+
         [ObservableProperty]
-        private bool hasPayDayTypeTextChanged;
+        public partial bool HasPayDayTypeTextChanged { get; set; }
+
         [ObservableProperty]
-        private bool hasPayDayOptionsChanged;
+        public partial bool HasPayDayOptionsChanged { get; set; }
+
         [ObservableProperty]
-        private string everyNthDuration;
+        public partial string EveryNthDuration { get; set; }
+
         [ObservableProperty]
-        private string everyNthValue;
+        public partial string EveryNthValue { get; set; }
+
         [ObservableProperty]
-        private bool validatorEveryNthDuration;
+        public partial bool ValidatorEveryNthDuration { get; set; }
+
         [ObservableProperty]
-        private string workingDaysValue;
+        public partial string WorkingDaysValue { get; set; }
+
         [ObservableProperty]
-        private bool validatorWorkingDayDuration;
+        public partial bool ValidatorWorkingDayDuration { get; set; }
+
         [ObservableProperty]
-        private string everyMonthValue;
+        public partial string EveryMonthValue { get; set; }
+
         [ObservableProperty]
-        private bool validatorOfEveryMonthDuration;
+        public partial bool ValidatorOfEveryMonthDuration { get; set; }
+
         [ObservableProperty]
-        private string lastOfTheMonthDuration;
+        public partial string LastOfTheMonthDuration { get; set; }
+
         [ObservableProperty]
-        private string payDayTwoSettings;
+        public partial string PayDayTwoSettings { get; set; }
+
         [ObservableProperty]
-        private bool hasBorrowPayChanged;
+        public partial bool HasBorrowPayChanged { get; set; }
+
         [ObservableProperty]
-        private bool isMultipleAccounts;
+        public partial bool IsMultipleAccounts { get; set; }
+
         [ObservableProperty]
-        private string currencySearchText;
+        public partial string CurrencySearchText { get; set; }
+
 
 
         [RelayCommand]

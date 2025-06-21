@@ -16,36 +16,50 @@ namespace DailyBudgetMAUIApp.ViewModels
         public decimal OriginalAmount { get; set; }
         public DateTime OriginalDate { get; set; }
         [ObservableProperty]
-        public decimal amount;
-        [ObservableProperty]
-        public DateTime date;
-        [ObservableProperty]
-        public bool fromEnabled;
-        [ObservableProperty]
-        public bool toEnabled;        
-        [ObservableProperty]
-        public string fromNewBalanceString;
-        [ObservableProperty]
-        public string toNewBalanceString;        
-        [ObservableProperty]
-        public MoveBalanceClass fromSelectedMoveBalance;
-        [ObservableProperty]
-        public MoveBalanceClass toSelectedMoveBalance;
-        [ObservableProperty]
-        public Style fromBalanceStyle;
-        [ObservableProperty]
-        public Style toBalanceStyle;
-        [ObservableProperty]
-        public Color fromBalanceColor;
-        [ObservableProperty]
-        public Color toBalanceColor;        
-        [ObservableProperty]
-        public bool isCoverOverspend;
+        public partial decimal Amount { get; set; }
 
         [ObservableProperty]
-        public Budgets budget;
+        public partial DateTime Date { get; set; }
+
         [ObservableProperty]
-        public ObservableCollection<MoveBalanceClass> moveBalances = new();
+        public partial bool FromEnabled { get; set; }
+
+        [ObservableProperty]
+        public partial bool ToEnabled { get; set; }
+
+        [ObservableProperty]
+        public partial string FromNewBalanceString { get; set; }
+
+        [ObservableProperty]
+        public partial string ToNewBalanceString { get; set; }
+
+        [ObservableProperty]
+        public partial MoveBalanceClass FromSelectedMoveBalance { get; set; }
+
+        [ObservableProperty]
+        public partial MoveBalanceClass ToSelectedMoveBalance { get; set; }
+
+        [ObservableProperty]
+        public partial Style FromBalanceStyle { get; set; }
+
+        [ObservableProperty]
+        public partial Style ToBalanceStyle { get; set; }
+
+        [ObservableProperty]
+        public partial Color FromBalanceColor { get; set; }
+
+        [ObservableProperty]
+        public partial Color ToBalanceColor { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsCoverOverspend { get; set; }
+
+        [ObservableProperty]
+        public partial Budgets Budget { get; set; }
+
+        [ObservableProperty]
+        public partial ObservableCollection<MoveBalanceClass> MoveBalances { get; set; } = new();
+
 
         public PopupMoveAccountBalanceViewModel()
         {

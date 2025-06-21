@@ -1,48 +1,68 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class Transactions : ObservableObject
     {
         [ObservableProperty]
-        private int  transactionID;
+        public partial int TransactionID { get; set; }
+
         [ObservableProperty]
-        private bool  isSpendFromSavings;
+        public partial bool IsSpendFromSavings { get; set; }
+
         [ObservableProperty]
-        private int?  savingID;
+        public partial int? SavingID { get; set; }
+
         [ObservableProperty]
-        private string?  savingName;
+        public partial string? SavingName { get; set; }
+
         [ObservableProperty]
-        private DateTime?  transactionDate;
+        public partial DateTime? TransactionDate { get; set; }
+
         [ObservableProperty]
-        private DateTime?  whenAdded  = DateTime.UtcNow;
+        public partial DateTime? WhenAdded { get; set; } = DateTime.UtcNow;
+
         [ObservableProperty]
-        private bool  isIncome;
+        public partial bool IsIncome { get; set; }
+
         [ObservableProperty]
-        private bool isQuickTransaction;
+        public partial bool IsQuickTransaction { get; set; }
+
         [ObservableProperty]
-        private decimal?  transactionAmount;
+        public partial decimal? TransactionAmount { get; set; }
+
         [ObservableProperty]
-        private string?  category;
+        public partial string? Category { get; set; }
+
         [ObservableProperty]
-        private string?  payee;
+        public partial string? Payee { get; set; }
+
         [ObservableProperty]
-        private string?  notes;
+        public partial string? Notes { get; set; }
+
         [ObservableProperty]
-        private int?  categoryID;
+        public partial int? CategoryID { get; set; }
+
         [ObservableProperty]
-        private int?  accountID;
+        public partial int? AccountID { get; set; }
+
         [ObservableProperty]
-        private bool  isTransacted;
+        public partial bool IsTransacted { get; set; }
+
         [ObservableProperty]
-        private string?  savingsSpendType;
+        public partial string? SavingsSpendType { get; set; }
+
         [ObservableProperty]
-        private string  stage;
+        public partial string Stage { get; set; }
+
         [ObservableProperty]
-        private string  eventType;
+        public partial string EventType { get; set; }
+
         [ObservableProperty]
-        private decimal?  runningTotal;
+        public partial decimal? RunningTotal { get; set; }
+
         [ObservableProperty]
-        private bool  isVisible;
+        public partial bool IsVisible { get; set; }
     }
 }

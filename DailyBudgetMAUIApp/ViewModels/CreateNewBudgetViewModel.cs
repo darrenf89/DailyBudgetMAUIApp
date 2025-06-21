@@ -15,45 +15,65 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private string? navigatedFrom;
+        public partial string? NavigatedFrom { get; set; }
+
         [ObservableProperty]
-        private int budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private BudgetSettings budgetSettings;
+        public partial BudgetSettings BudgetSettings { get; set; }
+
         [ObservableProperty]
-        private Budgets budget;        
+        public partial Budgets Budget { get; set; }
+
         [ObservableProperty]
-        private string budgetName;
+        public partial string BudgetName { get; set; }
+
         [ObservableProperty]
-        private string _stage = "Budget Settings";
+        public partial string Stage { get; set; } = "Budget Settings";
+
         public double StageWidth { get; }
         public double AcceptTermsWidth { get; }
+
         [ObservableProperty]
-        private List<lut_CurrencySymbol> currencySearchResults;
+        public partial List<lut_CurrencySymbol> CurrencySearchResults { get; set; }
+
         [ObservableProperty]
-        private lut_CurrencySymbol selectedCurrencySymbol;
+        public partial lut_CurrencySymbol SelectedCurrencySymbol { get; set; }
+
         [ObservableProperty]
-        private bool searchVisible = false;
+        public partial bool SearchVisible { get; set; } = false;
+
         [ObservableProperty]
-        private List<lut_CurrencyPlacement> currencyPlacements;
+        public partial List<lut_CurrencyPlacement> CurrencyPlacements { get; set; }
+
         [ObservableProperty]
-        private lut_CurrencyPlacement selectedCurrencyPlacement;
+        public partial lut_CurrencyPlacement SelectedCurrencyPlacement { get; set; }
+
         [ObservableProperty]
-        private List<lut_DateFormat> dateFormats;
+        public partial List<lut_DateFormat> DateFormats { get; set; }
+
         [ObservableProperty]
-        private List<lut_BudgetTimeZone> timeZones;
+        public partial List<lut_BudgetTimeZone> TimeZones { get; set; }
+
         [ObservableProperty]
-        private lut_DateFormat selectedDateFormats;
+        public partial lut_DateFormat SelectedDateFormats { get; set; }
+
         [ObservableProperty]
-        private List<lut_NumberFormat> numberFormats;
+        public partial List<lut_NumberFormat> NumberFormats { get; set; }
+
         [ObservableProperty]
-        private lut_NumberFormat selectedNumberFormats;
+        public partial lut_NumberFormat SelectedNumberFormats { get; set; }
+
         [ObservableProperty]
-        private lut_BudgetTimeZone selectedTimeZone;
+        public partial lut_BudgetTimeZone SelectedTimeZone { get; set; }
+
         [ObservableProperty]
-        private bool isBorrowPay;
+        public partial bool IsBorrowPay { get; set; }
+
         [ObservableProperty]
-        private string currencySearchText;
+        public partial string CurrencySearchText { get; set; }
+
 
         public string PayDayTypeText { get; set; }
         public string PayAmountText { get; set; }

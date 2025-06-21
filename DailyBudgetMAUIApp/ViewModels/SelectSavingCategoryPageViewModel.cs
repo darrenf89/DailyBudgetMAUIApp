@@ -13,19 +13,26 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int  budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private Transactions  transaction;
+        public partial Transactions Transaction { get; set; }
+
         [ObservableProperty]
-        private List<Savings>?  envelopeSavingList = new List<Savings>();
+        public partial List<Savings>? EnvelopeSavingList { get; set; } = new List<Savings>();
+
         [ObservableProperty]
-        private List<Savings>?  envelopeFilteredSavingList = new List<Savings>();
+        public partial List<Savings>? EnvelopeFilteredSavingList { get; set; } = new List<Savings>();
+
         [ObservableProperty]
-        private string  noEnvelopeSavingText = "You have not set up any Envelope Bills!";
+        public partial string NoEnvelopeSavingText { get; set; } = "You have not set up any Envelope Bills!";
+
         [ObservableProperty]
-        private bool  isFilterShown = false;
+        public partial bool IsFilterShown { get; set; } = false;
+
         [ObservableProperty]
-        private double  sortFilterHeight = 236.190476190476;
+        public partial double SortFilterHeight { get; set; } = 236.190476190476;
+
 
 
 

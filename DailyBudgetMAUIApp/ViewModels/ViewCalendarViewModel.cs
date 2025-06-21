@@ -14,48 +14,67 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private bool  showBusyIndicator;
-        [ObservableProperty]
-        private Budgets  budget;
-        [ObservableProperty]
-        private Budgets  budgetCard = new Budgets();
-        [ObservableProperty]
-        private bool  isBudgetVisible;
-        [ObservableProperty]
-        private ObservableCollection<SchedulerAppointment>  eventList = new ObservableCollection<SchedulerAppointment> ();
-        [ObservableProperty]
-        private List<SchedulerAppointment>  events = new List<SchedulerAppointment>();
-        [ObservableProperty]
-        private DateTime  today = DateTime.Today;
-        [ObservableProperty]
-        private double  schedulerHeight;
-        [ObservableProperty]
-        private Savings  saving = new Savings();
-        [ObservableProperty]
-        private bool  isSavingVisible;
-        [ObservableProperty]
-        private Transactions  transaction = new Transactions();
-        [ObservableProperty]
-        private bool  isTransactionVisible;
-        [ObservableProperty]
-        private IncomeEvents  income = new IncomeEvents();
-        [ObservableProperty]
-        private bool  isIncomeVisible;
-        [ObservableProperty]
-        private Bills  bill = new Bills();
-        [ObservableProperty]
-        private bool  isBillVisible;
-        [ObservableProperty]
-        private Savings  envelope = new Savings();
-        [ObservableProperty]
-        private bool  isEnvelopeVisible;
-        [ObservableProperty]
-        private int  selectedIndex = 0;
-        [ObservableProperty]
-        private bool  isNextEnabled = true;
-        [ObservableProperty]
-        private bool  isPreviousEnabled = false;
+        public partial bool ShowBusyIndicator { get; set; }
 
+        [ObservableProperty]
+        public partial Budgets Budget { get; set; }
+
+        [ObservableProperty]
+        public partial Budgets BudgetCard { get; set; } = new Budgets();
+
+        [ObservableProperty]
+        public partial bool IsBudgetVisible { get; set; }
+
+        [ObservableProperty]
+        public partial ObservableCollection<SchedulerAppointment> EventList { get; set; } = new ObservableCollection<SchedulerAppointment>();
+
+        [ObservableProperty]
+        public partial List<SchedulerAppointment> Events { get; set; } = new List<SchedulerAppointment>();
+
+        [ObservableProperty]
+        public partial DateTime Today { get; set; } = DateTime.Today;
+
+        [ObservableProperty]
+        public partial double SchedulerHeight { get; set; }
+
+        [ObservableProperty]
+        public partial Savings Saving { get; set; } = new Savings();
+
+        [ObservableProperty]
+        public partial bool IsSavingVisible { get; set; }
+
+        [ObservableProperty]
+        public partial Transactions Transaction { get; set; } = new Transactions();
+
+        [ObservableProperty]
+        public partial bool IsTransactionVisible { get; set; }
+
+        [ObservableProperty]
+        public partial IncomeEvents Income { get; set; } = new IncomeEvents();
+
+        [ObservableProperty]
+        public partial bool IsIncomeVisible { get; set; }
+
+        [ObservableProperty]
+        public partial Bills Bill { get; set; } = new Bills();
+
+        [ObservableProperty]
+        public partial bool IsBillVisible { get; set; }
+
+        [ObservableProperty]
+        public partial Savings Envelope { get; set; } = new Savings();
+
+        [ObservableProperty]
+        public partial bool IsEnvelopeVisible { get; set; }
+
+        [ObservableProperty]
+        public partial int SelectedIndex { get; set; } = 0;
+
+        [ObservableProperty]
+        public partial bool IsNextEnabled { get; set; } = true;
+
+        [ObservableProperty]
+        public partial bool IsPreviousEnabled { get; set; } = false;
 
         public ViewCalendarViewModel(IProductTools pt, IRestDataService ds)
         {

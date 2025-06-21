@@ -13,19 +13,26 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
         [ObservableProperty]
-        private ObservableCollection<Savings>  savings = new ObservableCollection<Savings>();
+        public partial ObservableCollection<Savings> Savings { get; set; } = new ObservableCollection<Savings>();
+
         [ObservableProperty]
-        private Budgets  budget;
+        public partial Budgets Budget { get; set; }
+
         [ObservableProperty]
-        private decimal  totalSavings;
+        public partial decimal TotalSavings { get; set; }
+
         [ObservableProperty]
-        private decimal  payDaySavings;
+        public partial decimal PayDaySavings { get; set; }
+
         [ObservableProperty]
-        private double  screenHeight;
+        public partial double ScreenHeight { get; set; }
+
         [ObservableProperty]
-        private double  signOutButtonWidth;
+        public partial double SignOutButtonWidth { get; set; }
+
         [ObservableProperty]
-        private double  minHeight;
+        public partial double MinHeight { get; set; }
+
 
 
         public ViewSavingsViewModel(IProductTools pt, IRestDataService ds)

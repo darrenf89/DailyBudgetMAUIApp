@@ -13,27 +13,38 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly FilePickerFileType FileTypes;
 
         [ObservableProperty]
-        private int supportID;
+        public partial int SupportID { get; set; }
+
         [ObservableProperty]
-        private bool isOpen;
+        public partial bool IsOpen { get; set; }
+
         [ObservableProperty]
-        private bool isDownloaded;
+        public partial bool IsDownloaded { get; set; }
+
         [ObservableProperty]
-        private bool isFileUpload;
+        public partial bool IsFileUpload { get; set; }
+
         [ObservableProperty]
-        private string status;        
+        public partial string Status { get; set; }
+
         [ObservableProperty]
-        private string newMessageText;
+        public partial string NewMessageText { get; set; }
+
         [ObservableProperty]
-        private CustomerSupport support = new CustomerSupport();
+        public partial CustomerSupport Support { get; set; } = new CustomerSupport();
+
         [ObservableProperty]
-        public FileResult uploadFile;
+        public partial FileResult UploadFile { get; set; }
+
         [ObservableProperty]
-        public string fileName;
+        public partial string FileName { get; set; }
+
         [ObservableProperty]
-        public string txtDownloadFile; 
+        public partial string TxtDownloadFile { get; set; }
+
         [ObservableProperty]
-        public bool isUploadInValid;
+        public partial bool IsUploadInValid { get; set; }
+
 
         public ViewSupportViewModel(IProductTools pt, IRestDataService ds)
         {

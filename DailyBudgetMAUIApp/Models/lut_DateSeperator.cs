@@ -5,9 +5,9 @@ namespace DailyBudgetMAUIApp.Models
     public partial class lut_DateSeperator : ObservableObject
     {
         [ObservableProperty]
-        public int  id;
-        [ObservableProperty]        
-        public string dateSeperator = "";
+        public partial int Id { get; set; }
 
+        [ObservableProperty]
+        public partial string DateSeperator { get; set; } = "";
     }
 }

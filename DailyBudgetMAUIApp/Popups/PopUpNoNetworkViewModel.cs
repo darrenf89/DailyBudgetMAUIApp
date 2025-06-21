@@ -6,9 +6,11 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
 
         [ObservableProperty]
-        private int countdownNumber = 29;        
+        public partial int CountdownNumber { get; set; } = 29;
+
         [ObservableProperty]
-        private string countdownString = "Please wait another 30 seconds";
+        public partial string CountdownString { get; set; } = "Please wait another 30 seconds";
+
         private IDispatcherTimer _timer;
 
         public PopUpNoNetworkViewModel()

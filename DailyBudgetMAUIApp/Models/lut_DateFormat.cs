@@ -1,17 +1,19 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class lut_DateFormat : ObservableObject
     {
         [ObservableProperty]
-        public int  id;
+        public partial int Id { get; set; }
+
         [ObservableProperty]
-        public int  dateSeperatorID;
+        public partial int DateSeperatorID { get; set; }
+
         [ObservableProperty]
-        public int  shortDatePatternID;
+        public partial int ShortDatePatternID { get; set; }
+
         [ObservableProperty]
-        public string  dateFormat = "";
+        public partial string DateFormat { get; set; } = "";
     }
 }

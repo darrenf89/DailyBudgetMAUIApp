@@ -19,7 +19,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public DateTime OriginalDate { get; set; }
 
         [ObservableProperty]
-        public Bills bill;
+        public partial Bills Bill { get; set; }
 
         public PopupDailyBillViewModel()
         {

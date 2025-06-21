@@ -1,21 +1,27 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-
+using System;
+using System.IO;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class ProfilePictureImage : ObservableObject
     {
         [ObservableProperty]
-        public int id;
+        public partial int Id { get; set; }
+
         [ObservableProperty]
-        public int userID;
+        public partial int UserID { get; set; }
+
         [ObservableProperty]
-        public string fileLocation;
+        public partial string FileLocation { get; set; }
+
         [ObservableProperty]
-        public DateTime whenAdded;
+        public partial DateTime WhenAdded { get; set; }
+
         [ObservableProperty]
-        public Stream file;
+        public partial Stream File { get; set; }
+
         [ObservableProperty]
-        public string fileName;
-    }   
+        public partial string FileName { get; set; }
+    }
 }

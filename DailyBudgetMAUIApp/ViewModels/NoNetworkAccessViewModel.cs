@@ -10,13 +10,17 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class NoNetworkAccessViewModel : ObservableObject
     {
         [ObservableProperty]
-        private string txtSubHeading = "It looks like you have no internet connection.\nPlease make sure your WIFI and mobile network are turned on and try again.";
+        public partial string TxtSubHeading { get; set; } = "It looks like you have no internet connection.\nPlease make sure your WIFI and mobile network are turned on and try again.";
+
         [ObservableProperty]
-        private bool btnIsEnabled;
+        public partial bool BtnIsEnabled { get; set; }
+
         [ObservableProperty]
-        private string txtConnectionStatus = "";
+        public partial string TxtConnectionStatus { get; set; } = "";
+
         [ObservableProperty]
-        private Color colorConnectionStatus;
+        public partial Color ColorConnectionStatus { get; set; }
+
         private readonly IProductTools _pt;
 
         public NoNetworkAccessViewModel(IProductTools pt)

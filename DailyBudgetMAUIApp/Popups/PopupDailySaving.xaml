@@ -25,6 +25,9 @@
                                 </Image.Source>
                             </Image>
                         </HorizontalStackLayout>
+                        <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label HorizontalTextAlignment="Center" Text="{Binding Saving.SavingsName}" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Margin="0,5,0,0" />
+                        </HorizontalStackLayout>
                         <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,15,20,0" Text="Congrats! you have completed a Saving goal you set for yourself."/>
                         <Label FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray400}" Margin="20,2,20,5" Text="Are you happy with how much you have saved? Would you like to close it and stop saving or do you want to update the goal?"/>
                         <VerticalStackLayout Margin="40,0,20,0">

@@ -27,148 +27,209 @@ namespace DailyBudgetMAUIApp.ViewModels
 
 
         [ObservableProperty]
-        private FamilyUserAccount familyAccount;
-        [ObservableProperty]
-        private Budgets budget;
-        [ObservableProperty]
-        private int accountID;
-        [ObservableProperty]
-        private string? navigatedFrom;
-        [ObservableProperty]
-        private string infoTitle;
-        [ObservableProperty]
-        private string stage;
-        [ObservableProperty]
-        private string accountEmail;
-        [ObservableProperty]
-        private string accountName;
-        [ObservableProperty]
-        private string currencySearchText;
-        [ObservableProperty]
-        private int stageID;
-        [ObservableProperty]
-        private bool isShowInfo;
-        [ObservableProperty]
-        private bool isContinueEnabled;
-        [ObservableProperty]
-        private bool isBackEnabled;
-        [ObservableProperty]
-        private bool isEmailEnabled = true;
-        [ObservableProperty]
-        private bool isBackButtonVisible;
+        public partial FamilyUserAccount FamilyAccount { get; set; }
 
         [ObservableProperty]
-        private Color bvStage1;
-        [ObservableProperty]
-        private Color bvStage2;
-        [ObservableProperty]
-        private Color bvStage3;
-        [ObservableProperty]
-        private Color bvStage4;
-        [ObservableProperty]
-        private Color bvStage5;
-        [ObservableProperty]
-        private Color bvStage6;
-        [ObservableProperty]
-        private Color bvStage7;
-        [ObservableProperty]
-        private Color bvStage8;
-        [ObservableProperty]
-        private Color bvStage9;
+        public partial Budgets Budget { get; set; }
 
         [ObservableProperty]
-        private bool isStageVisible1;
-        [ObservableProperty]
-        private bool isStageVisible2;
-        [ObservableProperty]
-        private bool isStageVisible3;
-        [ObservableProperty]
-        private bool isStageVisible4;
-        [ObservableProperty]
-        private bool isStageVisible5;
-        [ObservableProperty]
-        private bool isStageVisible6;
-        [ObservableProperty]
-        private bool isStageVisible7;
-        [ObservableProperty]
-        private bool isStageVisible8;
-        [ObservableProperty]
-        private bool isStageVisible9;
+        public partial int AccountID { get; set; }
 
         [ObservableProperty]
-        private List<lut_CurrencySymbol> currencySearchResults;
-        [ObservableProperty]
-        private lut_CurrencySymbol selectedCurrencySymbol;
-        [ObservableProperty]
-        private bool searchVisible = false;
-        [ObservableProperty]
-        private List<lut_CurrencyPlacement> currencyPlacements;
-        [ObservableProperty]
-        private lut_CurrencyPlacement selectedCurrencyPlacement;
-        [ObservableProperty]
-        private List<lut_DateFormat> dateFormats;
-        [ObservableProperty]
-        private List<lut_BudgetTimeZone> timeZones;
-        [ObservableProperty]
-        private lut_DateFormat selectedDateFormats;
-        [ObservableProperty]
-        private List<lut_NumberFormat> numberFormats;
-        [ObservableProperty]
-        private lut_NumberFormat selectedNumberFormats;
-        [ObservableProperty]
-        private lut_BudgetTimeZone selectedTimeZone;
-        [ObservableProperty]
-        private bool isBorrowPay;
-        [ObservableProperty]
-        private BudgetSettings budgetSettings;
+        public partial string? NavigatedFrom { get; set; }
 
         [ObservableProperty]
-        private bool isEmailExistsVisible = true;
-        [ObservableProperty]
-        private string isEmailExistsText;
-        [ObservableProperty]
-        private bool isEmailValid = true;
-        [ObservableProperty]
-        private string isEmailValidText;
-        [ObservableProperty]
-        private bool isNameValid = true;
-        [ObservableProperty]
-        private string isNameValidText;
-        [ObservableProperty]
-        private bool isBudgetNameValid = true;
-        [ObservableProperty]
-        private string isBudgetNameValidText;
+        public partial string InfoTitle { get; set; }
 
         [ObservableProperty]
-        private SfAvatarView profilePicture = new SfAvatarView();
-        [ObservableProperty]
-        public BorderlessPicker switchBudgetPicker;
-        [ObservableProperty]
-        private List<Budgets> userBudgets;
+        public partial string Stage { get; set; }
 
         [ObservableProperty]
-        private string profilePictureString;
-        [ObservableProperty]
-        private string everynthDuration;
-        [ObservableProperty]
-        private string everynthValue;
-        [ObservableProperty]
-        private string payDayTypeText;
-        [ObservableProperty]
-        private string workingDaysValue;
-        [ObservableProperty]
-        private string ofEveryMonthValue;
-        [ObservableProperty]
-        private string lastOfTheMonthDuration;
+        public partial string AccountEmail { get; set; }
 
         [ObservableProperty]
-        private List<Bills> bills;
+        public partial string AccountName { get; set; }
+
         [ObservableProperty]
-        private List<Savings> savings;
+        public partial string CurrencySearchText { get; set; }
+
         [ObservableProperty]
-        private List<Savings> envelopes;
+        public partial int StageID { get; set; }
+
         [ObservableProperty]
-        private List<IncomeEvents> incomes;
+        public partial bool IsShowInfo { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsContinueEnabled { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsBackEnabled { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsEmailEnabled { get; set; } = true;
+
+        [ObservableProperty]
+        public partial bool IsBackButtonVisible { get; set; }
+
+        [ObservableProperty]
+        public partial Color BvStage1 { get; set; }
+
+        [ObservableProperty]
+        public partial Color BvStage2 { get; set; }
+
+        [ObservableProperty]
+        public partial Color BvStage3 { get; set; }
+
+        [ObservableProperty]
+        public partial Color BvStage4 { get; set; }
+
+        [ObservableProperty]
+        public partial Color BvStage5 { get; set; }
+
+        [ObservableProperty]
+        public partial Color BvStage6 { get; set; }
+
+        [ObservableProperty]
+        public partial Color BvStage7 { get; set; }
+
+        [ObservableProperty]
+        public partial Color BvStage8 { get; set; }
+
+        [ObservableProperty]
+        public partial Color BvStage9 { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsStageVisible1 { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsStageVisible2 { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsStageVisible3 { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsStageVisible4 { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsStageVisible5 { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsStageVisible6 { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsStageVisible7 { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsStageVisible8 { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsStageVisible9 { get; set; }
+
+        [ObservableProperty]
+        public partial List<lut_CurrencySymbol> CurrencySearchResults { get; set; }
+
+        [ObservableProperty]
+        public partial lut_CurrencySymbol SelectedCurrencySymbol { get; set; }
+
+        [ObservableProperty]
+        public partial bool SearchVisible { get; set; } = false;
+
+        [ObservableProperty]
+        public partial List<lut_CurrencyPlacement> CurrencyPlacements { get; set; }
+
+        [ObservableProperty]
+        public partial lut_CurrencyPlacement SelectedCurrencyPlacement { get; set; }
+
+        [ObservableProperty]
+        public partial List<lut_DateFormat> DateFormats { get; set; }
+
+        [ObservableProperty]
+        public partial List<lut_BudgetTimeZone> TimeZones { get; set; }
+
+        [ObservableProperty]
+        public partial lut_DateFormat SelectedDateFormats { get; set; }
+
+        [ObservableProperty]
+        public partial List<lut_NumberFormat> NumberFormats { get; set; }
+
+        [ObservableProperty]
+        public partial lut_NumberFormat SelectedNumberFormats { get; set; }
+
+        [ObservableProperty]
+        public partial lut_BudgetTimeZone SelectedTimeZone { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsBorrowPay { get; set; }
+
+        [ObservableProperty]
+        public partial BudgetSettings BudgetSettings { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsEmailExistsVisible { get; set; } = true;
+
+        [ObservableProperty]
+        public partial string IsEmailExistsText { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsEmailValid { get; set; } = true;
+
+        [ObservableProperty]
+        public partial string IsEmailValidText { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsNameValid { get; set; } = true;
+
+        [ObservableProperty]
+        public partial string IsNameValidText { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsBudgetNameValid { get; set; } = true;
+
+        [ObservableProperty]
+        public partial string IsBudgetNameValidText { get; set; }
+
+        [ObservableProperty]
+        public partial SfAvatarView ProfilePicture { get; set; } = new SfAvatarView();
+
+        [ObservableProperty]
+        public partial BorderlessPicker SwitchBudgetPicker { get; set; }
+
+        [ObservableProperty]
+        public partial List<Budgets> UserBudgets { get; set; }
+
+        [ObservableProperty]
+        public partial string ProfilePictureString { get; set; }
+
+        [ObservableProperty]
+        public partial string EverynthDuration { get; set; }
+
+        [ObservableProperty]
+        public partial string EverynthValue { get; set; }
+
+        [ObservableProperty]
+        public partial string PayDayTypeText { get; set; }
+
+        [ObservableProperty]
+        public partial string WorkingDaysValue { get; set; }
+
+        [ObservableProperty]
+        public partial string OfEveryMonthValue { get; set; }
+
+        [ObservableProperty]
+        public partial string LastOfTheMonthDuration { get; set; }
+
+        [ObservableProperty]
+        public partial List<Bills> Bills { get; set; }
+
+        [ObservableProperty]
+        public partial List<Savings> Savings { get; set; }
+
+        [ObservableProperty]
+        public partial List<Savings> Envelopes { get; set; }
+
+        [ObservableProperty]
+        public partial List<IncomeEvents> Incomes { get; set; }
+
 
 
 

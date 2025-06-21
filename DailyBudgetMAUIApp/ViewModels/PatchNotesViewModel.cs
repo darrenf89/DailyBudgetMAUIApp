@@ -16,7 +16,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
 
         [ObservableProperty]
-        private List<PatchNote> patchNotes = new List<PatchNote>();
+        public partial List<PatchNote> PatchNotes { get; set; } = new List<PatchNote>();
 
         public PatchNotesViewModel(IProductTools pt, IRestDataService ds)
         {

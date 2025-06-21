@@ -7,83 +7,83 @@ namespace DailyBudgetMAUIApp.Models
     public partial class Budgets : ObservableObject
     {
         [ObservableProperty]
-        private int  budgetID;
+        public partial int  BudgetID { get; set; }
         [ObservableProperty]
-        private string?  budgetName;
+        public partial string?  BudgetName { get; set; }
         [ObservableProperty]
-        private DateTime  budgetCreatedOn = DateTime.UtcNow;
+        public partial DateTime BudgetCreatedOn { get; set; } = DateTime.UtcNow;
         [ObservableProperty]
-        private decimal?  bankBalance ;
+        public partial decimal?  BankBalance  { get; set; }
         [ObservableProperty]
-        private decimal?  moneyAvailableBalance ;
+        public partial decimal?  MoneyAvailableBalance  { get; set; }
         [ObservableProperty]
-        private decimal?  leftToSpendBalance ;        
+        public partial decimal?  LeftToSpendBalance  { get; set; }        
         [ObservableProperty]
-        private decimal? plusStashSpendBalance;
+        public partial decimal? PlusStashSpendBalance { get; set; }
         [ObservableProperty]
-        private DateTime?  nextIncomePayday ;
+        public partial DateTime?  NextIncomePayday  { get; set; }
         [ObservableProperty]
-        private DateTime?  nextIncomePaydayCalculated ;
+        public partial DateTime?  NextIncomePaydayCalculated  { get; set; }
         [ObservableProperty]
-        private decimal?  paydayAmount ;
+        public partial decimal?  PaydayAmount  { get; set; }
         [ObservableProperty]
-        private string?  paydayType ;
+        public partial string?  PaydayType  { get; set; }
         [ObservableProperty]
-        private int?  paydayValue ;
+        public partial int?  PaydayValue  { get; set; }
         [ObservableProperty]
-        private string?  paydayDuration ;
+        public partial string?  PaydayDuration  { get; set; }
         [ObservableProperty]
-        private bool  isCreated ;
+        public partial bool  IsCreated  { get; set; }
         [ObservableProperty]
-        private bool isMultipleAccounts;
+        public partial bool IsMultipleAccounts { get; set; }
         [ObservableProperty]
-        private DateTime  lastUpdated ;
+        public partial DateTime  LastUpdated  { get; set; }
         [ObservableProperty]
-        private List<IncomeEvents>  incomeEvents  = new List<IncomeEvents>();
+        public partial List<IncomeEvents> IncomeEvents { get; set; } = new List<IncomeEvents>();
         [ObservableProperty]
-        private List<Savings>  savings  = new List<Savings>();
+        public partial List<Savings> Savings { get; set; } = new List<Savings>();
         [ObservableProperty]
-        private List<Transactions>  transactions  = new List<Transactions>();
+        public partial List<Transactions> Transactions { get; set; } = new List<Transactions>();
         [ObservableProperty]
-        private List<Categories>  categories  = new List<Categories>();
+        public partial List<Categories> Categories { get; set; } = new List<Categories>();
         [ObservableProperty]
-        private List<Bills>  bills  = new List<Bills>();
+        public partial List<Bills> Bills { get; set; } = new List<Bills>();
         [ObservableProperty]
-        private List<PayPeriodStats>  payPeriodStats  = new List<PayPeriodStats>();
+        public partial List<PayPeriodStats> PayPeriodStats { get; set; } = new List<PayPeriodStats>();
         [ObservableProperty]
-        private List<BudgetHstoryLastPeriod>  budgetHistory  = new List<BudgetHstoryLastPeriod>();
+        public partial List<BudgetHstoryLastPeriod> BudgetHistory { get; set; } = new List<BudgetHstoryLastPeriod>();
         [ObservableProperty]
-        private List<BankAccounts>? bankAccounts;
+        public partial List<BankAccounts>? BankAccounts { get; set; }
         [ObservableProperty]
-        private string?  currencyType ;
+        public partial string?  CurrencyType  { get; set; }
         [ObservableProperty]
-        private int?  aproxDaysBetweenPay  = 30;
+        public partial int? AproxDaysBetweenPay { get; set; } = 30;
         [ObservableProperty]
-        private DateTime  budgetValuesLastUpdated  = DateTime.UtcNow;
+        public partial DateTime BudgetValuesLastUpdated { get; set; } = DateTime.UtcNow;
         [ObservableProperty]
-        private decimal  dailySavingOutgoing ;
+        public partial decimal  DailySavingOutgoing  { get; set; }
         [ObservableProperty]
-        private decimal  dailyBillOutgoing ;
+        public partial decimal  DailyBillOutgoing  { get; set; }
         [ObservableProperty]
-        private decimal  leftToSpendDailyAmount ;
+        public partial decimal  LeftToSpendDailyAmount  { get; set; }
         [ObservableProperty]
-        private decimal?  startDayDailyAmount ;
+        public partial decimal?  StartDayDailyAmount  { get; set; }
         [ObservableProperty]
-        private ErrorClass?  error  = null;
+        public partial ErrorClass? Error { get; set; } = null;
         [ObservableProperty]
-        private int  stage = 1;
+        public partial int Stage { get; set; } = 1;
         [ObservableProperty]
-        private int  sharedUserID = 0;
+        public partial int SharedUserID { get; set; } = 0;
         [ObservableProperty]
-        private bool  isSharedValidated;
+        public partial bool  IsSharedValidated { get; set; }
         [ObservableProperty]
-        private string  budgetType = "Basic";
+        public partial string BudgetType { get; set; } = "Basic";
         [ObservableProperty]
-        private AccountInfo  accountInfo = new AccountInfo();
+        public partial AccountInfo AccountInfo { get; set; } = new AccountInfo();
         [ObservableProperty]
-        private bool  isBorrowPay = true;
+        public partial bool IsBorrowPay { get; set; } = true;
         [ObservableProperty]
-        private decimal  currentActiveIncome = 0;
+        public partial decimal CurrentActiveIncome { get; set; } = 0;
 
     }
 
@@ -107,21 +107,21 @@ namespace DailyBudgetMAUIApp.Models
     public partial class EnvelopeStats : ObservableObject
     {
         [ObservableProperty]
-        private int  numberOfEnvelopes;
+        public partial int NumberOfEnvelopes { get; set; }
         [ObservableProperty]
-        private string  envelopeTotalString;
+        public partial string  EnvelopeTotalString { get; set; }
         [ObservableProperty]
-        private string  envelopeCurrentString;
+        public partial string  EnvelopeCurrentString { get; set; }
         [ObservableProperty]
-        private string  amountPerDayString;
+        public partial string  AmountPerDayString { get; set; }
         [ObservableProperty]
-        private decimal  envelopeTotal;
+        public partial decimal  EnvelopeTotal { get; set; }
         [ObservableProperty]
-        private decimal  envelopeCurrent;
+        public partial decimal  EnvelopeCurrent { get; set; }
         [ObservableProperty]
-        private decimal  amountPerDay;
+        public partial decimal  AmountPerDay { get; set; }
         [ObservableProperty]
-        private int  daysLeftToSpend;
+        public partial int  DaysLeftToSpend { get; set; }
 
         public EnvelopeStats(List<Savings> Savings)
         {

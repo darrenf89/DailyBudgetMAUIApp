@@ -10,35 +10,50 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class ViewCategoryViewModel : BaseViewModel
     {
         [ObservableProperty]
-        private IndexableObservableCollection<Categories>  categories = new IndexableObservableCollection<Categories>();
+        public partial IndexableObservableCollection<Categories> Categories { get; set; } = new IndexableObservableCollection<Categories>();
+
         [ObservableProperty]
-        private ObservableCollection<ChartClass>  categoriesChart = new ObservableCollection<ChartClass>();
+        public partial ObservableCollection<ChartClass> CategoriesChart { get; set; } = new ObservableCollection<ChartClass>();
+
         [ObservableProperty]
-        private double  screenWidth;
+        public partial double ScreenWidth { get; set; }
+
         [ObservableProperty]
-        private double  screenHeight;
+        public partial double ScreenHeight { get; set; }
+
         [ObservableProperty]
-        private List<Brush>  chartBrushes = new List<Brush>();
+        public partial List<Brush> ChartBrushes { get; set; } = new List<Brush>();
+
         [ObservableProperty]
-        private double  chartContentHeight;
+        public partial double ChartContentHeight { get; set; }
+
         [ObservableProperty]
-        private double  chartContentWidth;
+        public partial double ChartContentWidth { get; set; }
+
         [ObservableProperty]
-        private double  tabContentWidth;
+        public partial double TabContentWidth { get; set; }
+
         [ObservableProperty]
-        private double  maxChartContentHeight;
+        public partial double MaxChartContentHeight { get; set; }
+
         [ObservableProperty]
-        private string  chartTitle;
+        public partial string ChartTitle { get; set; }
+
         [ObservableProperty]
-        private bool  chartUpdating;
+        public partial bool ChartUpdating { get; set; }
+
         [ObservableProperty]
-        private bool  isPlaying;
+        public partial bool IsPlaying { get; set; }
+
         [ObservableProperty]
-        private ObservableCollection<string>  payPeriods = new ObservableCollection<string>();
+        public partial ObservableCollection<string> PayPeriods { get; set; } = new ObservableCollection<string>();
+
         [ObservableProperty]
-        private int  selectedIndex = 1;
+        public partial int SelectedIndex { get; set; } = 1;
+
         [ObservableProperty]
-        private int  headerCatId;
+        public partial int HeaderCatId { get; set; }
+
 
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;

@@ -5,55 +5,55 @@ namespace DailyBudgetMAUIApp.Models
     public partial class Bills : ObservableObject
     {
         [ObservableProperty]
-        private int billID;
+        public partial int BillID { get; set; }
 
         [ObservableProperty]
-        public string? billName;
+        public partial string? BillName { get; set; }
 
         [ObservableProperty]
-        public string? billType;
+        public partial string? BillType { get; set; }
 
         [ObservableProperty]
-        public int? billValue;
+        public partial int? BillValue { get; set; }
 
         [ObservableProperty]
-        public string? billDuration;
+        public partial string? BillDuration { get; set; }
 
         [ObservableProperty]
-        public decimal? billAmount;
+        public partial decimal? BillAmount { get; set; }
 
         [ObservableProperty]
-        public DateTime? billDueDate;
+        public partial DateTime? BillDueDate { get; set; }
 
         [ObservableProperty]
-        public decimal billCurrentBalance;
+        public partial decimal BillCurrentBalance { get; set; }
 
         [ObservableProperty]
-        public decimal billBalanceAtLastPayDay;
+        public partial decimal BillBalanceAtLastPayDay { get; set; }
 
         [ObservableProperty]
-        public bool? isRecuring;
+        public partial bool? IsRecuring { get; set; }
 
         [ObservableProperty]
-        public DateTime lastUpdatedDate;
+        public partial DateTime LastUpdatedDate { get; set; }
 
         [ObservableProperty]
-        public bool isClosed;
+        public partial bool IsClosed { get; set; }
 
         [ObservableProperty]
-        public decimal? regularBillValue;
+        public partial decimal? RegularBillValue { get; set; }
 
         [ObservableProperty]
-        public string billPayee;
+        public partial string BillPayee { get; set; }
 
         [ObservableProperty]
-        public string? category = "";
+        public partial string? Category { get; set; } = "";
 
         [ObservableProperty]
-        public int? categoryID = 0;
+        public partial int? CategoryID { get; set; } = 0;
 
         [ObservableProperty]
-        public int? accountID;
+        public partial int? AccountID { get; set; }
 
     }
 }

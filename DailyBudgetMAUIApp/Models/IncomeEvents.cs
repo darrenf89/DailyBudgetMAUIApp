@@ -1,35 +1,47 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class IncomeEvents : ObservableObject
     {
         [ObservableProperty]
-        private int  incomeEventID;
-        [ObservableProperty]
-        private decimal  incomeAmount;
-        [ObservableProperty]
-        private string  incomeName  = "";
-        [ObservableProperty]
-        private DateTime  incomeActiveDate  = DateTime.UtcNow;
-        [ObservableProperty]
-        private DateTime  dateOfIncomeEvent  = DateTime.UtcNow;
-        [ObservableProperty]
-        private bool  isRecurringIncome;
-        [ObservableProperty]
-        private string?  recurringIncomeType;
-        [ObservableProperty]
-        private int?  recurringIncomeValue;
-        [ObservableProperty]
-        private string?  recurringIncomeDuration;
-        [ObservableProperty]
-        private bool  isClosed;
-        [ObservableProperty]
-        private bool?  isInstantActive;
-        [ObservableProperty]
-        private bool?  isIncomeAddedToBalance  = false;
-        [ObservableProperty]
-        public int? accountID;        
+        public partial int IncomeEventID { get; set; }
 
+        [ObservableProperty]
+        public partial decimal IncomeAmount { get; set; }
+
+        [ObservableProperty]
+        public partial string IncomeName { get; set; } = "";
+
+        [ObservableProperty]
+        public partial DateTime IncomeActiveDate { get; set; } = DateTime.UtcNow;
+
+        [ObservableProperty]
+        public partial DateTime DateOfIncomeEvent { get; set; } = DateTime.UtcNow;
+
+        [ObservableProperty]
+        public partial bool IsRecurringIncome { get; set; }
+
+        [ObservableProperty]
+        public partial string? RecurringIncomeType { get; set; }
+
+        [ObservableProperty]
+        public partial int? RecurringIncomeValue { get; set; }
+
+        [ObservableProperty]
+        public partial string? RecurringIncomeDuration { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsClosed { get; set; }
+
+        [ObservableProperty]
+        public partial bool? IsInstantActive { get; set; }
+
+        [ObservableProperty]
+        public partial bool? IsIncomeAddedToBalance { get; set; } = false;
+
+        [ObservableProperty]
+        public partial int? AccountID { get; set; }
     }
 }

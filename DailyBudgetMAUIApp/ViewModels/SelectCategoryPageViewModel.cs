@@ -16,29 +16,41 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int  budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private int familyAccountID;
+        public partial int FamilyAccountID { get; set; }
+
         [ObservableProperty]
-        private Transactions transaction;
+        public partial Transactions Transaction { get; set; }
+
         [ObservableProperty]
-        private bool  payeeDoesntExists;
+        public partial bool PayeeDoesntExists { get; set; }
+
         [ObservableProperty]
-        private List<Categories>?  categoryList = new List<Categories>();
+        public partial List<Categories>? CategoryList { get; set; } = new List<Categories>();
+
         [ObservableProperty]
-        private List<Categories>?  subCategoryList = new List<Categories>();
+        public partial List<Categories>? SubCategoryList { get; set; } = new List<Categories>();
+
         [ObservableProperty]
-        private List<Categories>?  groupCategoryList = new List<Categories>();
+        public partial List<Categories>? GroupCategoryList { get; set; } = new List<Categories>();
+
         [ObservableProperty]
-        private string  noCategoriesText = "You have not set up any Categories go ahead and do that!";
+        public partial string NoCategoriesText { get; set; } = "You have not set up any Categories go ahead and do that!";
+
         [ObservableProperty]
-        private bool  isFilterShown = false;
+        public partial bool IsFilterShown { get; set; } = false;
+
         [ObservableProperty]
-        private double  sortFilterHeight = 326;
+        public partial double SortFilterHeight { get; set; } = 326;
+
         [ObservableProperty]
-        private Bills bill;
+        public partial Bills Bill { get; set; }
+
         [ObservableProperty]
-        private string pageType;
+        public partial string PageType { get; set; }
+
 
         public double ScreenWidth { get; }
         public double EntryWidth { get; }

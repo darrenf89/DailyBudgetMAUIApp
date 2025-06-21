@@ -35,7 +35,7 @@ public partial class FamilyAccountsView : BasePage
 
             _vm.IsPageBusy = true;
             await _vm.OnLoad();
-            if(_vm.familyUserAccounts.Count > 0)
+            if(_vm.FamilyUserAccounts.Count > 0)
             {
                 vslPckrSwitchBudget.Content = _vm.SwitchBudgetPicker;
                 _vm.IsPageBusy = false;

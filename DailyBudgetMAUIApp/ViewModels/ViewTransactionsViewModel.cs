@@ -12,51 +12,74 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private decimal  runningTotal;
+        public partial decimal RunningTotal { get; set; }
+
         [ObservableProperty]
-        private ChartClass  payPeriodTransactions;
+        public partial ChartClass PayPeriodTransactions { get; set; }
+
         [ObservableProperty]
-        private ObservableCollection<Transactions>  transactions = new ObservableCollection<Transactions>();
+        public partial ObservableCollection<Transactions> Transactions { get; set; } = new ObservableCollection<Transactions>();
+
         [ObservableProperty]
-        private int  currentOffset = 0;
+        public partial int CurrentOffset { get; set; } = 0;
+
         [ObservableProperty]
-        private Budgets  budget;
+        public partial Budgets Budget { get; set; }
+
         [ObservableProperty]
-        private int  maxNumberOfTransactions;
+        public partial int MaxNumberOfTransactions { get; set; }
+
         [ObservableProperty]
-        private decimal  balanceAfterPending;
+        public partial decimal BalanceAfterPending { get; set; }
+
         [ObservableProperty]
-        private double  chartContentHeight;
+        public partial double ChartContentHeight { get; set; }
+
         [ObservableProperty]
-        private double  chartContentWidth;
+        public partial double ChartContentWidth { get; set; }
+
         [ObservableProperty]
-        private double  maxChartContentHeight;
+        public partial double MaxChartContentHeight { get; set; }
+
         [ObservableProperty]
-        private double  sFListHeight;
+        public partial double SFListHeight { get; set; }
+
         [ObservableProperty]
-        private double  screenWidth;
+        public partial double ScreenWidth { get; set; }
+
         [ObservableProperty]
-        private double  screenHeight;
+        public partial double ScreenHeight { get; set; }
+
         [ObservableProperty]
-        private double  zeroAmount = 0;
+        public partial double ZeroAmount { get; set; } = 0;
+
         [ObservableProperty]
-        private double  maxYValue = 0;
+        public partial double MaxYValue { get; set; } = 0;
+
         [ObservableProperty]
-        private double  yInterval = 0;
+        public partial double YInterval { get; set; } = 0;
+
         [ObservableProperty]
-        private string  scrollDirection;
+        public partial string ScrollDirection { get; set; }
+
         [ObservableProperty]
-        private int  scrollCount;
+        public partial int ScrollCount { get; set; }
+
         [ObservableProperty]
-        private ObservableCollection<ChartClass>  transactionChart = new ObservableCollection<ChartClass>();
+        public partial ObservableCollection<ChartClass> TransactionChart { get; set; } = new ObservableCollection<ChartClass>();
+
         [ObservableProperty]
-        private ObservableCollection<ChartClass>  billChart = new ObservableCollection<ChartClass>();
+        public partial ObservableCollection<ChartClass> BillChart { get; set; } = new ObservableCollection<ChartClass>();
+
         [ObservableProperty]
-        private ObservableCollection<ChartClass>  savingsChart = new ObservableCollection<ChartClass>();
+        public partial ObservableCollection<ChartClass> SavingsChart { get; set; } = new ObservableCollection<ChartClass>();
+
         [ObservableProperty]
-        private ObservableCollection<ChartClass>  envelopeChart = new ObservableCollection<ChartClass>();
+        public partial ObservableCollection<ChartClass> EnvelopeChart { get; set; } = new ObservableCollection<ChartClass>();
+
         [ObservableProperty]
-        private ObservableCollection<Brush>  chartBrushes = new ObservableCollection<Brush>();
+        public partial ObservableCollection<Brush> ChartBrushes { get; set; } = new ObservableCollection<Brush>();
+
 
         public ViewTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {

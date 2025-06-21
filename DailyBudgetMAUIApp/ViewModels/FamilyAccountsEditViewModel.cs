@@ -19,76 +19,107 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        public BorderlessPicker switchBudgetPicker;
-        [ObservableProperty]
-        public BorderlessPicker switchParentBudgetPicker;
-        [ObservableProperty]
-        public List<FamilyUserAccount> familyUserAccounts = new List<FamilyUserAccount>();
-        [ObservableProperty]
-        public FamilyUserAccount familyUserAccount;
-        [ObservableProperty]
-        public Budgets budget;
-        [ObservableProperty]
-        public int familyAccountID;
+        public partial BorderlessPicker SwitchBudgetPicker { get; set; }
 
         [ObservableProperty]
-        private ObservableCollection<Transactions> recentTransactions = new ObservableCollection<Transactions>();
+        public partial BorderlessPicker SwitchParentBudgetPicker { get; set; }
 
         [ObservableProperty]
-        private double borderWidth;
-        [ObservableProperty]
-        private double progressBarWidthRequest;
-        [ObservableProperty]
-        private double signOutButtonWidth;
-        [ObservableProperty]
-        private double screenWidth;
+        public partial List<FamilyUserAccount> FamilyUserAccounts { get; set; } = new List<FamilyUserAccount>();
 
         [ObservableProperty]
-        private bool validatorPayDay;
+        public partial FamilyUserAccount FamilyUserAccount { get; set; }
+
         [ObservableProperty]
-        private bool validatorPayDayAmount;
+        public partial Budgets Budget { get; set; }
+
         [ObservableProperty]
-        private string payDayTypeText;
+        public partial int FamilyAccountID { get; set; }
+
         [ObservableProperty]
-        private bool validatorPayType;
+        public partial ObservableCollection<Transactions> RecentTransactions { get; set; } = new ObservableCollection<Transactions>();
+
         [ObservableProperty]
-        private bool isMultipleAccounts;
+        public partial double BorderWidth { get; set; }
+
         [ObservableProperty]
-        private bool hasPayDayTypeTextChanged;
+        public partial double ProgressBarWidthRequest { get; set; }
+
         [ObservableProperty]
-        private bool hasPayDayOptionsChanged;
+        public partial double SignOutButtonWidth { get; set; }
+
         [ObservableProperty]
-        private string everyNthDuration;
+        public partial double ScreenWidth { get; set; }
+
         [ObservableProperty]
-        private string everyNthValue;
+        public partial bool ValidatorPayDay { get; set; }
+
         [ObservableProperty]
-        private bool validatorEveryNthDuration;
+        public partial bool ValidatorPayDayAmount { get; set; }
+
         [ObservableProperty]
-        private string workingDaysValue;
+        public partial string PayDayTypeText { get; set; }
+
         [ObservableProperty]
-        private bool validatorWorkingDayDuration;
+        public partial bool ValidatorPayType { get; set; }
+
         [ObservableProperty]
-        private string everyMonthValue;
+        public partial bool IsMultipleAccounts { get; set; }
+
         [ObservableProperty]
-        private bool validatorOfEveryMonthDuration;
+        public partial bool HasPayDayTypeTextChanged { get; set; }
+
         [ObservableProperty]
-        private string lastOfTheMonthDuration;
+        public partial bool HasPayDayOptionsChanged { get; set; }
+
         [ObservableProperty]
-        private decimal payAmount;
+        public partial string EveryNthDuration { get; set; }
+
         [ObservableProperty]
-        private string payAmountString;
+        public partial string EveryNthValue { get; set; }
+
         [ObservableProperty]
-        private int payAmountCursorPosition;
+        public partial bool ValidatorEveryNthDuration { get; set; }
+
         [ObservableProperty]
-        private bool hasPayAmountChanged;
+        public partial string WorkingDaysValue { get; set; }
+
         [ObservableProperty]
-        private bool hasAssignedBudgetChanged;
+        public partial bool ValidatorWorkingDayDuration { get; set; }
+
         [ObservableProperty]
-        private DateTime payDayDate;
+        public partial string EveryMonthValue { get; set; }
+
         [ObservableProperty]
-        private bool hasPayDayDateChanged;
+        public partial bool ValidatorOfEveryMonthDuration { get; set; }
+
         [ObservableProperty]
-        private List<Budgets> userBudgets;
+        public partial string LastOfTheMonthDuration { get; set; }
+
+        [ObservableProperty]
+        public partial decimal PayAmount { get; set; }
+
+        [ObservableProperty]
+        public partial string PayAmountString { get; set; }
+
+        [ObservableProperty]
+        public partial int PayAmountCursorPosition { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasPayAmountChanged { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasAssignedBudgetChanged { get; set; }
+
+        [ObservableProperty]
+        public partial DateTime PayDayDate { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasPayDayDateChanged { get; set; }
+
+        [ObservableProperty]
+        public partial List<Budgets> UserBudgets { get; set; }
+
 
         public FamilyAccountsEditViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -96,7 +127,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             _ds = ds;
 
             Title = "Allowance Details";
-            borderWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 20;
+            BorderWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 20;
             ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             ProgressBarWidthRequest = ScreenWidth - 85;
             SignOutButtonWidth = ScreenWidth - 60;

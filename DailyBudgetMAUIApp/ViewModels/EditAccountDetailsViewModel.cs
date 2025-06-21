@@ -16,15 +16,20 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private UserDetailsModel user;
+        public partial UserDetailsModel User { get; set; }
+
         [ObservableProperty]
-        private string currentSubStatus;
+        public partial string CurrentSubStatus { get; set; }
+
         [ObservableProperty]
-        private string subscriptionStatus;
+        public partial string SubscriptionStatus { get; set; }
+
         [ObservableProperty]
-        private string versionNumber;
+        public partial string VersionNumber { get; set; }
+
         [ObservableProperty]
-        private FamilyUserAccount familyUser;
+        public partial FamilyUserAccount FamilyUser { get; set; }
+
 
         public EditAccountDetailsViewModel(IProductTools pt, IRestDataService ds)
         {

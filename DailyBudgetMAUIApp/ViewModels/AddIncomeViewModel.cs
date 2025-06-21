@@ -19,25 +19,35 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int  budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private int  incomeID;
+        public partial int IncomeID { get; set; }
+
         [ObservableProperty]
-        private int familyAccountID;
+        public partial int FamilyAccountID { get; set; }
+
         [ObservableProperty]
-        private IncomeEvents  income;
+        public partial IncomeEvents Income { get; set; }
+
         [ObservableProperty]
-        private bool  isPageValid;
+        public partial bool IsPageValid { get; set; }
+
         [ObservableProperty]
-        private DateTime  minimumDate = DateTime.UtcNow.Date.AddDays(1);
+        public partial DateTime MinimumDate { get; set; } = DateTime.UtcNow.Date.AddDays(1);
+
         [ObservableProperty]
-        private string  navigatedFrom;
+        public partial string NavigatedFrom { get; set; }
+
         [ObservableProperty]
-        private bool isMultipleAccounts;
+        public partial bool IsMultipleAccounts { get; set; }
+
         [ObservableProperty]
-        private List<BankAccounts> bankAccounts;
+        public partial List<BankAccounts> BankAccounts { get; set; }
+
         [ObservableProperty]
-        private BankAccounts? selectedBankAccount;
+        public partial BankAccounts? SelectedBankAccount { get; set; }
+
 
         public string IncomeTypeText { get; set; } = "";
         public string IncomeActiveText { get; set; } = "";

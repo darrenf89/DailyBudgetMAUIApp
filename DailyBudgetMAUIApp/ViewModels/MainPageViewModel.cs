@@ -25,88 +25,128 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IAppRating _ar;
 
         [ObservableProperty]
-        private int  defaultBudgetID;
-        [ObservableProperty]
-        private bool isMainPageBusy = false;
-        [ObservableProperty]
-        private Budgets  defaultBudget = new Budgets();
-        [ObservableProperty]
-        private List<Savings> carouselSavings;
-        [ObservableProperty]
-        private List<Savings> envelopes;
-        [ObservableProperty]
-        private List<Bills> carouselBills;
-        [ObservableProperty]
-        private List<IncomeEvents> carouselIncomes;
-        [ObservableProperty]
-        private List<Categories> categoryList;
-        [ObservableProperty]
-        private Transactions pendingQuickTransaction;
+        public partial int DefaultBudgetID { get; set; }
 
         [ObservableProperty]
-        private bool  isBudgetCreated;
+        public partial bool IsMainPageBusy { get; set; } = false;
+
         [ObservableProperty]
-        private bool isPreviousBudget;
+        public partial Budgets DefaultBudget { get; set; } = new Budgets();
+
         [ObservableProperty]
-        private bool  isRefreshing;
+        public partial List<Savings> CarouselSavings { get; set; }
+
         [ObservableProperty]
-        private string  snackBar;
+        public partial List<Savings> Envelopes { get; set; }
+
         [ObservableProperty]
-        private int  snackID;
+        public partial List<Bills> CarouselBills { get; set; }
+
         [ObservableProperty]
-        private double  progressBarWidthRequest;
+        public partial List<IncomeEvents> CarouselIncomes { get; set; }
+
         [ObservableProperty]
-        private double  progressBarCarWidthRequest;
+        public partial List<Categories> CategoryList { get; set; }
+
         [ObservableProperty]
-        private EnvelopeStats  envelopeStats;
+        public partial Transactions PendingQuickTransaction { get; set; }
+
         [ObservableProperty]
-        private double  signOutButtonWidth;
+        public partial bool IsBudgetCreated { get; set; }
+
         [ObservableProperty]
-        private double  screenWidth;
+        public partial bool IsPreviousBudget { get; set; }
+
         [ObservableProperty]
-        private SfCarousel  savingCarousel;
+        public partial bool IsRefreshing { get; set; }
+
         [ObservableProperty]
-        private SfCarousel  billCarousel;
+        public partial string SnackBar { get; set; }
+
         [ObservableProperty]
-        private SfCarousel  incomeCarousel;
+        public partial int SnackID { get; set; }
+
         [ObservableProperty]
-        private ObservableCollection<Transactions>  recentTransactions = new ObservableCollection<Transactions>();
+        public partial double ProgressBarWidthRequest { get; set; }
+
         [ObservableProperty]
-        private double  recentTransactionsHeight = 452;
+        public partial double ProgressBarCarWidthRequest { get; set; }
+
         [ObservableProperty]
-        private decimal  maxBankBalance = 0;
+        public partial EnvelopeStats EnvelopeStats { get; set; }
+
         [ObservableProperty]
-        private decimal  transactionAmount;
+        public partial double SignOutButtonWidth { get; set; }
+
         [ObservableProperty]
-        private double  quickTransactionWidth;
+        public partial double ScreenWidth { get; set; }
+
         [ObservableProperty]
-        private double  quickTransactionInputWidth;
+        public partial SfCarousel SavingCarousel { get; set; }
+
         [ObservableProperty]
-        private decimal  futureDailySpend;
+        public partial SfCarousel BillCarousel { get; set; }
+
         [ObservableProperty]
-        private List<Payees>  payees = new List<Payees>();
+        public partial SfCarousel IncomeCarousel { get; set; }
+
         [ObservableProperty]
-        private List<Brush>  chartBrushes = new List<Brush>();
+        public partial ObservableCollection<Transactions> RecentTransactions { get; set; } = new ObservableCollection<Transactions>();
+
         [ObservableProperty]
-        private bool  payeeChartVisible = true;
+        public partial double RecentTransactionsHeight { get; set; } = 452;
+
         [ObservableProperty]
-        private bool  categoryChartVisible = true;
+        public partial decimal MaxBankBalance { get; set; } = 0;
+
         [ObservableProperty]
-        private bool isUnreadMessage;
+        public partial decimal TransactionAmount { get; set; }
+
         [ObservableProperty]
-        private bool isQuickTransaction;
+        public partial double QuickTransactionWidth { get; set; }
+
         [ObservableProperty]
-        private bool isTopStickyVisible;
+        public partial double QuickTransactionInputWidth { get; set; }
+
         [ObservableProperty]
-        private List<Budgets> quickTransactionBudgets = new List<Budgets>();
+        public partial decimal FutureDailySpend { get; set; }
+
         [ObservableProperty]
-        private Budgets selectedQuickTransactionBudget;        
+        public partial List<Payees> Payees { get; set; } = new List<Payees>();
+
         [ObservableProperty]
-        private string quickTransactionAmount;
+        public partial List<Brush> ChartBrushes { get; set; } = new List<Brush>();
+
         [ObservableProperty]
-        private int numberPendingQuickTransactions;
+        public partial bool PayeeChartVisible { get; set; } = true;
+
         [ObservableProperty]
-        private ObservableCollection<SchedulerAppointment>  eventList = new ObservableCollection<SchedulerAppointment>();
+        public partial bool CategoryChartVisible { get; set; } = true;
+
+        [ObservableProperty]
+        public partial bool IsUnreadMessage { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsQuickTransaction { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsTopStickyVisible { get; set; }
+
+        [ObservableProperty]
+        public partial List<Budgets> QuickTransactionBudgets { get; set; } = new List<Budgets>();
+
+        [ObservableProperty]
+        public partial Budgets SelectedQuickTransactionBudget { get; set; }
+
+        [ObservableProperty]
+        public partial string QuickTransactionAmount { get; set; }
+
+        [ObservableProperty]
+        public partial int NumberPendingQuickTransactions { get; set; }
+
+        [ObservableProperty]
+        public partial ObservableCollection<SchedulerAppointment> EventList { get; set; } = new ObservableCollection<SchedulerAppointment>();
+
 
         public delegate void ReloadPageAction();
         public event ReloadPageAction ReloadPage;

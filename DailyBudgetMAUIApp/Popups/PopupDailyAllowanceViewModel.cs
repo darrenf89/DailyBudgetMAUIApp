@@ -18,14 +18,17 @@ namespace DailyBudgetMAUIApp.ViewModels
         public DateTime OriginalDate { get; set; }
 
         [ObservableProperty]
-        public Budgets budget;
+        public partial Budgets Budget { get; set; }
 
         [ObservableProperty]
-        public string nickName;
+        public partial string NickName { get; set; }
+
         [ObservableProperty]
-        public string textOne;
+        public partial string TextOne { get; set; }
+
         [ObservableProperty]
-        public string textTwo;
+        public partial string TextTwo { get; set; }
+
 
         public PopupDailyAllowanceViewModel()
         {

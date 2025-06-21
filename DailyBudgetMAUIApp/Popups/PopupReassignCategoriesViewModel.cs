@@ -21,15 +21,20 @@ namespace DailyBudgetMAUIApp.ViewModels
         public double MaxHeight { get; }
 
         [ObservableProperty]
-        private List<Categories> categories = new List<Categories>();
+        public partial List<Categories> Categories { get; set; } = new List<Categories>();
+
         [ObservableProperty]
-        private Dictionary<string, int> reAssignCategories = new Dictionary<string, int>();
+        public partial Dictionary<string, int> ReAssignCategories { get; set; } = new Dictionary<string, int>();
+
         [ObservableProperty]
-        private int headerCatID;
+        public partial int HeaderCatID { get; set; }
+
         [ObservableProperty]
-        private List<string> selectedReAssignCat = new List<string>();
+        public partial List<string> SelectedReAssignCat { get; set; } = new List<string>();
+
         [ObservableProperty]
-        private List<string> ddlCategories = new List<string>();
+        public partial List<string> DdlCategories { get; set; } = new List<string>();
+
 
         public PopupReassignCategoriesViewModel(Dictionary<string, int> InputReAssignCategories, int InputHeaderCatID, List<Categories> InputCategories, IRestDataService ds, IProductTools pt)
         {

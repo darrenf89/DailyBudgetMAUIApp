@@ -18,53 +18,71 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        public BorderlessPicker switchBudgetPicker;
-        [ObservableProperty]
-        public List<FamilyUserAccount> familyUserAccounts = new List<FamilyUserAccount>();
-        [ObservableProperty]
-        public FamilyUserAccount familyUserAccount;
-        [ObservableProperty]
-        public Budgets budget;
-        [ObservableProperty]
-        public int familyAccountID;
+        public partial BorderlessPicker SwitchBudgetPicker { get; set; }
 
         [ObservableProperty]
-        private List<Savings> carouselSavings;
-        [ObservableProperty]
-        private List<Savings> carouselEnvelopes;
-        [ObservableProperty]
-        private List<Bills> carouselBills;
-        [ObservableProperty]
-        private List<IncomeEvents> carouselIncomes;
-        [ObservableProperty]
-        private ObservableCollection<Transactions> recentTransactions = new ObservableCollection<Transactions>();
+        public partial List<FamilyUserAccount> FamilyUserAccounts { get; set; } = new List<FamilyUserAccount>();
 
         [ObservableProperty]
-        private bool isBillVisible;
-        [ObservableProperty]
-        private bool isSavingVisible;
-        [ObservableProperty]
-        private bool isEnvelopeVisible;
-        [ObservableProperty]
-        private bool isIncomeVisible;
-        [ObservableProperty]
-        private bool isTransactionVisible;
-        [ObservableProperty]
-        private bool isBudgetVisible = true;
+        public partial FamilyUserAccount FamilyUserAccount { get; set; }
 
         [ObservableProperty]
-        private double recentTransactionsHeight = 452;
-        [ObservableProperty]
-        private double borderWidth;
-        [ObservableProperty]
-        private double progressBarWidthRequest;
-        [ObservableProperty]
-        private double signOutButtonWidth;
-        [ObservableProperty]
-        private double screenWidth;
+        public partial Budgets Budget { get; set; }
 
         [ObservableProperty]
-        private decimal maxBankBalance = 0;
+        public partial int FamilyAccountID { get; set; }
+
+        [ObservableProperty]
+        public partial List<Savings> CarouselSavings { get; set; }
+
+        [ObservableProperty]
+        public partial List<Savings> CarouselEnvelopes { get; set; }
+
+        [ObservableProperty]
+        public partial List<Bills> CarouselBills { get; set; }
+
+        [ObservableProperty]
+        public partial List<IncomeEvents> CarouselIncomes { get; set; }
+
+        [ObservableProperty]
+        public partial ObservableCollection<Transactions> RecentTransactions { get; set; } = new ObservableCollection<Transactions>();
+
+        [ObservableProperty]
+        public partial bool IsBillVisible { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsSavingVisible { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsEnvelopeVisible { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsIncomeVisible { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsTransactionVisible { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsBudgetVisible { get; set; } = true;
+
+        [ObservableProperty]
+        public partial double RecentTransactionsHeight { get; set; } = 452;
+
+        [ObservableProperty]
+        public partial double BorderWidth { get; set; }
+
+        [ObservableProperty]
+        public partial double ProgressBarWidthRequest { get; set; }
+
+        [ObservableProperty]
+        public partial double SignOutButtonWidth { get; set; }
+
+        [ObservableProperty]
+        public partial double ScreenWidth { get; set; }
+
+        [ObservableProperty]
+        public partial decimal MaxBankBalance { get; set; } = 0;
+
 
         public FamilyAccountsViewViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -72,7 +90,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             _ds = ds;
 
             Title = "Family Account Details";
-            borderWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 20;
+            BorderWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 20;
             ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             ProgressBarWidthRequest = ScreenWidth - 85;
         }

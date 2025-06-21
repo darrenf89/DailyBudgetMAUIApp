@@ -24,31 +24,44 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly FilePickerFileType FileTypes;
 
         [ObservableProperty]
-        public string email = (App.IsFamilyAccount ? App.FamilyUserDetails.Email : App.UserDetails.Email);
+        public partial string Email { get; set; } = (App.IsFamilyAccount ? App.FamilyUserDetails.Email : App.UserDetails.Email);
+
         [ObservableProperty]
-        public string phoneNumber;
+        public partial string PhoneNumber { get; set; }
+
         [ObservableProperty]
-        public string inquiryType;
+        public partial string InquiryType { get; set; }
+
         [ObservableProperty]
-        public string details;
+        public partial string Details { get; set; }
+
         [ObservableProperty]
-        public string fileName;
+        public partial string FileName { get; set; }
+
         [ObservableProperty]
-        public string charactersRemaining = "1000 characters remaining";
+        public partial string CharactersRemaining { get; set; } = "1000 characters remaining";
+
         [ObservableProperty]
-        public bool isFileUpload;
+        public partial bool IsFileUpload { get; set; }
+
         [ObservableProperty]
-        public bool isAgree;
+        public partial bool IsAgree { get; set; }
+
         [ObservableProperty]
-        public bool isDetailsInValid;
+        public partial bool IsDetailsInValid { get; set; }
+
         [ObservableProperty]
-        public bool isAgreeInValid;
+        public partial bool IsAgreeInValid { get; set; }
+
         [ObservableProperty]
-        public bool isCategoryInValid;
+        public partial bool IsCategoryInValid { get; set; }
+
         [ObservableProperty]
-        public bool isUploadInValid;
+        public partial bool IsUploadInValid { get; set; }
+
         [ObservableProperty]
-        public FileResult uploadFile;
+        public partial FileResult UploadFile { get; set; }
+
 
         public PopUpContactUsViewModel(IProductTools pt, IRestDataService ds)
         {

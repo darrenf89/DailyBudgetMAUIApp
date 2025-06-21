@@ -14,29 +14,41 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private FilterModel  filters;
+        public partial FilterModel Filters { get; set; }
+
         [ObservableProperty]
-        private ObservableCollection<Transactions>  transactions = new ObservableCollection<Transactions>();
+        public partial ObservableCollection<Transactions> Transactions { get; set; } = new ObservableCollection<Transactions>();
+
         [ObservableProperty]
-        private List<Transactions>  loadedTransactions = new List<Transactions>();
+        public partial List<Transactions> LoadedTransactions { get; set; } = new List<Transactions>();
+
         [ObservableProperty]
-        private Budgets  budget;
+        public partial Budgets Budget { get; set; }
+
         [ObservableProperty]
-        private double  sFListHeight;
+        public partial double SFListHeight { get; set; }
+
         [ObservableProperty]
-        private double  screenWidth;
+        public partial double ScreenWidth { get; set; }
+
         [ObservableProperty]
-        private double  screenHeight;
+        public partial double ScreenHeight { get; set; }
+
         [ObservableProperty]
-        private string  totalSpendTypeHeader;
+        public partial string TotalSpendTypeHeader { get; set; }
+
         [ObservableProperty]
-        private decimal  totalSpend;
+        public partial decimal TotalSpend { get; set; }
+
         [ObservableProperty]
-        private int budgetID = 0;
+        public partial int BudgetID { get; set; } = 0;
+
         [ObservableProperty]
-        private int currentOffset = 0;
+        public partial int CurrentOffset { get; set; } = 0;
+
         [ObservableProperty]
-        private int maxNumberOfTransactions;
+        public partial int MaxNumberOfTransactions { get; set; }
+
 
         public ViewFilteredTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -79,6 +91,10 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 TotalSpendTypeHeader = "Total payee/s spend";
                 Title = $"{Filters.PayeeFilter[0]}";
+                if(string.IsNullOrEmpty(Title))
+                {
+                    Title = "Unassigned";
+                }
             }
             else
             {

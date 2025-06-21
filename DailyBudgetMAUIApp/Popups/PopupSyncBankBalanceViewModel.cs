@@ -15,12 +15,13 @@ namespace DailyBudgetMAUIApp.ViewModels
         public double ButtonThreeWidth { get; }
 
         public decimal OriginalAmount { get; set; }
-        [ObservableProperty]
-        public decimal amount;
-
 
         [ObservableProperty]
-        public Budgets budget;
+        public partial decimal Amount { get; set; }
+
+        [ObservableProperty]
+        public partial Budgets Budget { get; set; }
+
 
         public PopupSyncBankBalanceViewModel()
         {

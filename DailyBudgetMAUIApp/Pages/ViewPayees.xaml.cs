@@ -440,6 +440,11 @@ public partial class ViewPayees : BasePage
 
                 await Task.Delay(1000);
 
+                if(payee.Payee == "Unassigned")
+                {
+                    payee.Payee = "";
+                }
+
                 FilterModel Filters = new FilterModel
                 {
                     PayeeFilter = new List<string>

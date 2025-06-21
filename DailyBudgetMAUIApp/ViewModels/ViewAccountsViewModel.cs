@@ -17,13 +17,17 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
 
         [ObservableProperty]
-        private List<BankAccounts> bankAccounts = new List<BankAccounts>();
+        public partial List<BankAccounts> BankAccounts { get; set; } = new List<BankAccounts>();
+
         [ObservableProperty]
-        private double signOutButtonWidth;
+        public partial double SignOutButtonWidth { get; set; }
+
         [ObservableProperty]
-        private string bankBalance;
+        public partial string BankBalance { get; set; }
+
         [ObservableProperty]
-        private int accountCount;
+        public partial int AccountCount { get; set; }
+
 
         public ViewAccountsViewModel(IProductTools pt, IRestDataService ds)
         {

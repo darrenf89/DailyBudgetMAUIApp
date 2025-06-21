@@ -15,9 +15,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private double signOutButtonWidth;
+        public partial double SignOutButtonWidth { get; set; }
+
         [ObservableProperty]
-        private List<FamilyUserAccount> familyAccounts;
+        public partial List<FamilyUserAccount> FamilyAccounts { get; set; }
+
 
         public FamilyAccountsManageViewModel(IProductTools pt, IRestDataService ds)
         {

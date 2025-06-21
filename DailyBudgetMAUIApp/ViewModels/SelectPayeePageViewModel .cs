@@ -18,25 +18,35 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int  budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private int familyAccountID;
+        public partial int FamilyAccountID { get; set; }
+
         [ObservableProperty]
-        private Transactions  transaction = new Transactions();
+        public partial Transactions Transaction { get; set; } = new Transactions();
+
         [ObservableProperty]
-        private Bills  bill = new Bills();
+        public partial Bills Bill { get; set; } = new Bills();
+
         [ObservableProperty]
-        private bool  payeeDoesntExists;
+        public partial bool PayeeDoesntExists { get; set; }
+
         [ObservableProperty]
-        private List<string>?  payeeList = new List<string>();
+        public partial List<string>? PayeeList { get; set; } = new List<string>();
+
         [ObservableProperty]
-        private string  filteredListEmptyText = "You have not set up any Payee's go ahead and do that!";
+        public partial string FilteredListEmptyText { get; set; } = "You have not set up any Payee's go ahead and do that!";
+
         [ObservableProperty]
-        private string  selectedPayee;
+        public partial string SelectedPayee { get; set; }
+
         [ObservableProperty]
-        private string  pageType;
+        public partial string PageType { get; set; }
+
         [ObservableProperty]
-        private string payeeName;
+        public partial string PayeeName { get; set; }
+
 
 
         public double ScreenWidth { get; }
