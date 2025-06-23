@@ -1,10 +1,9 @@
 ﻿using Android.App;
-using Firebase.Messaging;
 using DailyBudgetMAUIApp.DataServices;
 using DailySpendWebApp.Models;
 using AndroidX.Core.App;
 using Android.Content;
-using Android.Gms.Extensions;
+using Firebase.Messaging;
 
 
 namespace DailyBudgetMAUIApp.Platforms.Android.Services
@@ -39,7 +38,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
 
             if (success)
             {
-                RestDataService _ds = new RestDataService();
+                IRestDataService _ds = IPlatformApplication.Current.Services.GetService<IRestDataService>();
 
                 FirebaseDevices NewDevice = new FirebaseDevices
                 {
@@ -52,8 +51,8 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
                 {
                     if (App.UserDetails.UserID != 0)
                     {
-                        NewDevice.UserAccountID = App.UserDetails.UserID;
-                        NewDevice.LoginExpiryDate = App.UserDetails.SessionExpiry;
+                        NewDevice.UserAccountID = (App.IsFamilyAccount ? App.FamilyUserDetails.UniqueUserID : App.UserDetails.UniqueUserID);
+                        NewDevice.LoginExpiryDate = (App.IsFamilyAccount ? App.FamilyUserDetails.SessionExpiry : App.UserDetails.SessionExpiry);
                     };
                 }
                 else
@@ -62,7 +61,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
                     NewDevice.LoginExpiryDate = DateTime.UtcNow;
                 }
 
-                NewDevice = _ds.RegisterNewFirebaseDevice(NewDevice).Result;
+                NewDevice = await _ds.RegisterNewFirebaseDevice(NewDevice);
 
                 await SecureStorage.Default.SetAsync("FirebaseToken", token);
                 await SecureStorage.Default.SetAsync("FirebaseID", NewDevice.FirebaseDeviceID.ToString());
@@ -124,7 +123,7 @@ namespace DailyBudgetMAUIApp.Platforms.Android.Services
                         .SetContentTitle(title)
                         .SetContentText(messageBody)
                         .SetSmallIcon(Resource.Mipmap.appicon)
-                        .SetChannelId(MainActivity.Channel_ID)
+                        .SetChannelId(MainActivity.Support_Channel_ID)
                         .SetContentIntent(pendingIntent)
                         .SetPriority(1);
                     break;

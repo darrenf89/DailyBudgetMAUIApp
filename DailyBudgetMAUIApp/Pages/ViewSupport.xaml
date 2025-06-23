@@ -59,7 +59,7 @@
                     </Grid>
                 </Border>
             </Grid>
-            <Button Command="{Binding CloseSupportCommand}" Text="Close Support" Margin="0,0,20,0" IsVisible="{Binding IsOpen}" HorizontalOptions="End" TextColor="White" BackgroundColor="{StaticResource Success}" WidthRequest="140"  HeightRequest="32" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontFamily="OpenSansSemibold">
+            <Button Command="{Binding CloseSupportCommand}" Text="Close Support" Margin="0,0,20,0" IsVisible="{Binding IsOpen}" HorizontalOptions="End" TextColor="White" BackgroundColor="{StaticResource Danger}" WidthRequest="140"  HeightRequest="32" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontFamily="OpenSansSemibold">
 
             </Button>
         </VerticalStackLayout>

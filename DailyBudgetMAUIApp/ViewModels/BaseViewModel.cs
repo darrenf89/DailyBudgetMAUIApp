@@ -9,13 +9,17 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class BaseViewModel : ObservableObject
     {
         [ObservableProperty]
-        private bool  isPageBusy = false;
+        public partial bool IsPageBusy { get; set; } = false;
+
         [ObservableProperty]
-        private bool  isButtonBusy;
+        public partial bool IsButtonBusy { get; set; }
+
         [ObservableProperty]
-        private string  title;
+        public partial string Title { get; set; }
+
         [ObservableProperty]
-        private bool isPremiumAccount = App.IsPremiumAccount;
+        public partial bool IsPremiumAccount { get; set; } = App.IsPremiumAccount;
+
 
         public BaseViewModel()
         {
@@ -53,7 +57,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpNoNetwork(new PopUpNoNetworkViewModel());
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(1);

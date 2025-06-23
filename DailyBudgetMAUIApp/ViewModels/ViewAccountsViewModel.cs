@@ -17,13 +17,17 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
 
         [ObservableProperty]
-        private List<BankAccounts> bankAccounts = new List<BankAccounts>();
+        public partial List<BankAccounts> BankAccounts { get; set; } = new List<BankAccounts>();
+
         [ObservableProperty]
-        private double signOutButtonWidth;
+        public partial double SignOutButtonWidth { get; set; }
+
         [ObservableProperty]
-        private string bankBalance;
+        public partial string BankBalance { get; set; }
+
         [ObservableProperty]
-        private int accountCount;
+        public partial int AccountCount { get; set; }
+
 
         public ViewAccountsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -93,7 +97,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     Transactions T = new Transactions
@@ -168,7 +172,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 BankAccounts Account = (BankAccounts)parameter;
                 var popup = new PopupMoveAccountBalance(Account, this.BankAccounts, new PopupMoveAccountBalanceViewModel(), _pt, _ds);
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                 await Task.Delay(100);
                 if (result.ToString() == "OK")
                 {

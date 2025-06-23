@@ -12,51 +12,74 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private decimal  runningTotal;
+        public partial decimal RunningTotal { get; set; }
+
         [ObservableProperty]
-        private ChartClass  payPeriodTransactions;
+        public partial ChartClass PayPeriodTransactions { get; set; }
+
         [ObservableProperty]
-        private ObservableCollection<Transactions>  transactions = new ObservableCollection<Transactions>();
+        public partial ObservableCollection<Transactions> Transactions { get; set; } = new ObservableCollection<Transactions>();
+
         [ObservableProperty]
-        private int  currentOffset = 0;
+        public partial int CurrentOffset { get; set; } = 0;
+
         [ObservableProperty]
-        private Budgets  budget;
+        public partial Budgets Budget { get; set; }
+
         [ObservableProperty]
-        private int  maxNumberOfTransactions;
+        public partial int MaxNumberOfTransactions { get; set; }
+
         [ObservableProperty]
-        private decimal  balanceAfterPending;
+        public partial decimal BalanceAfterPending { get; set; }
+
         [ObservableProperty]
-        private double  chartContentHeight;
+        public partial double ChartContentHeight { get; set; }
+
         [ObservableProperty]
-        private double  chartContentWidth;
+        public partial double ChartContentWidth { get; set; }
+
         [ObservableProperty]
-        private double  maxChartContentHeight;
+        public partial double MaxChartContentHeight { get; set; }
+
         [ObservableProperty]
-        private double  sFListHeight;
+        public partial double SFListHeight { get; set; }
+
         [ObservableProperty]
-        private double  screenWidth;
+        public partial double ScreenWidth { get; set; }
+
         [ObservableProperty]
-        private double  screenHeight;
+        public partial double ScreenHeight { get; set; }
+
         [ObservableProperty]
-        private double  zeroAmount = 0;
+        public partial double ZeroAmount { get; set; } = 0;
+
         [ObservableProperty]
-        private double  maxYValue = 0;
+        public partial double MaxYValue { get; set; } = 0;
+
         [ObservableProperty]
-        private double  yInterval = 0;
+        public partial double YInterval { get; set; } = 0;
+
         [ObservableProperty]
-        private string  scrollDirection;
+        public partial string ScrollDirection { get; set; }
+
         [ObservableProperty]
-        private int  scrollCount;
+        public partial int ScrollCount { get; set; }
+
         [ObservableProperty]
-        private List<ChartClass>  transactionChart = new List<ChartClass>();
+        public partial ObservableCollection<ChartClass> TransactionChart { get; set; } = new ObservableCollection<ChartClass>();
+
         [ObservableProperty]
-        private List<ChartClass>  billChart = new List<ChartClass>();
+        public partial ObservableCollection<ChartClass> BillChart { get; set; } = new ObservableCollection<ChartClass>();
+
         [ObservableProperty]
-        private List<ChartClass>  savingsChart = new List<ChartClass>();
+        public partial ObservableCollection<ChartClass> SavingsChart { get; set; } = new ObservableCollection<ChartClass>();
+
         [ObservableProperty]
-        private List<ChartClass>  envelopeChart = new List<ChartClass>();
+        public partial ObservableCollection<ChartClass> EnvelopeChart { get; set; } = new ObservableCollection<ChartClass>();
+
         [ObservableProperty]
-        private List<Brush>  chartBrushes = new List<Brush>();
+        public partial ObservableCollection<Brush> ChartBrushes { get; set; } = new ObservableCollection<Brush>();
+
 
         public ViewTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -69,15 +92,18 @@ namespace DailyBudgetMAUIApp.ViewModels
             ChartContentHeight = ScreenHeight * 0.25;
             MaxChartContentHeight = ChartContentHeight + 10;
             SFListHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 389;
+        }
 
+        public async Task OnLoad()
+        {
             Title = $"Check Your Transactions {App.UserDetails.NickName}";
-            Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
+            Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
             RunningTotal = Budget.BankBalance.GetValueOrDefault();
             BalanceAfterPending = Budget.BankBalance.GetValueOrDefault();
             MaxNumberOfTransactions = Budget.AccountInfo.NumberOfTransactions;
 
             List<Transactions> LoadTransactions = new List<Transactions>();
-            LoadTransactions = _ds.GetCurrentPayPeriodTransactions(App.DefaultBudgetID, "ViewTransactions").Result;
+            LoadTransactions = await _ds.GetCurrentPayPeriodTransactions(App.DefaultBudgetID, "ViewTransactions");
 
             foreach (Transactions T in LoadTransactions)
             {
@@ -111,7 +137,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             CurrentOffset = Transactions.Count();
 
-            LoadChartData(LoadTransactions);
+            await LoadChartData(LoadTransactions);
             LoadChartBrushed();
         }
 
@@ -123,15 +149,24 @@ namespace DailyBudgetMAUIApp.ViewModels
             Application.Current.Resources.TryGetValue("PrimaryLightBrush", out var PrimaryLightBrush);
             Application.Current.Resources.TryGetValue("PrimaryLightLightBrush", out var PrimaryLightLightBrush);
 
-
-            ChartBrushes = App.ChartBrush;
+            foreach (Brush B in App.ChartBrush)
+            {
+                if (B is SolidColorBrush solidColorBrush)
+                {
+                    if (solidColorBrush.Color == Colors.Transparent)
+                    {
+                        continue;
+                    }
+                }
+                ChartBrushes.Add(B);
+            }
         }
 
-        private void LoadChartData(List<Transactions> Transactions)
+        private async Task LoadChartData(List<Transactions> Transactions)
         {
             if(Transactions == null || Transactions.Count == 0)
             {
-                List<Transactions> NewTransactions = LoadMoreTransactions().Result;
+                List<Transactions> NewTransactions = await LoadMoreTransactions();
                 Transactions.AddRange(NewTransactions);;
             }
 
@@ -147,7 +182,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 while (EarliestTransaction.TransactionDate > FirstDate.AddDays(-1))
                 {
-                    List<Transactions> NewTransactions = LoadMoreTransactions().Result;
+                    List<Transactions> NewTransactions = await LoadMoreTransactions();
                     if (NewTransactions.Count() == 0)
                     {
                         break;

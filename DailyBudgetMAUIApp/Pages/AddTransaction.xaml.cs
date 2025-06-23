@@ -30,6 +30,31 @@ public partial class AddTransaction : BasePage
 
     }
 
+    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+        }
+
+        _vm.IsPageBusy = false;
+
+        await Task.Delay(500);
+        base.OnNavigatingFrom(args);
+    }
+
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+
+        if (Navigation.NavigationStack.Count > 1)
+        {
+            Shell.SetTabBarIsVisible(this, false);
+        }
+    }
+
     private async void Content_Loaded(object sender, EventArgs e)
     {
         if (App.CurrentPopUp != null)
@@ -113,7 +138,7 @@ public partial class AddTransaction : BasePage
             {
                 if(_vm.Transaction == null)
                 {
-                    _vm.Transaction = _ds.GetTransactionFromID(_vm.TransactionID).Result;
+                    _vm.Transaction = await _ds.GetTransactionFromID(_vm.TransactionID);
                 }            
                 _vm.Title = $"Update your transaction!";
 
@@ -305,7 +330,7 @@ public partial class AddTransaction : BasePage
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     if(!_vm.IsMultipleAccounts)
@@ -313,7 +338,8 @@ public partial class AddTransaction : BasePage
                         _vm.Transaction.AccountID = null;
                     }
 
-                    _vm.Transaction = _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID).Result;
+                    _vm.Transaction.IsQuickTransaction = false;
+                    _vm.Transaction = await _ds.SaveNewTransaction(_vm.Transaction, _vm.BudgetID);
                     if (_vm.Transaction.TransactionID != 0)
                     {
                         if(!_vm.IsPremiumAccount)
@@ -380,7 +406,7 @@ public partial class AddTransaction : BasePage
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     if (!_vm.IsMultipleAccounts)
@@ -388,7 +414,8 @@ public partial class AddTransaction : BasePage
                         _vm.Transaction.AccountID = null;
                     }
 
-                    string status = _ds.UpdateTransaction(_vm.Transaction).Result;
+                    _vm.Transaction.IsQuickTransaction = false;
+                    string status = await _ds.UpdateTransaction(_vm.Transaction);
                     if (status == "OK")
                     {
                         if (_vm.RedirectTo == "ViewTransactions")
@@ -428,17 +455,9 @@ public partial class AddTransaction : BasePage
         {
             ClearAllValidators();
 
-            decimal TransactionAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entTransactionAmount.Text = TransactionAmount.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entTransactionAmount.CursorPosition > position)
-            {
-                entTransactionAmount.CursorPosition = entTransactionAmount.Text.Length;
-            }
-            if(_vm.Transaction != null)
-            {
-                _vm.Transaction.TransactionAmount = TransactionAmount;
-            }
+            decimal TransactionAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entTransactionAmount);
+
+            _vm.Transaction.TransactionAmount = TransactionAmount;
             
         }
         catch (Exception ex)
@@ -657,27 +676,6 @@ public partial class AddTransaction : BasePage
         {
             _pt.HandleException(ex, "AddTransaction", "edtNotes_TextChanged");
         }
-    }
-
-    static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
-    {
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
-        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
-
-        //Switch Color Animation
-        Color fromSwitchColor = e.IsToggled ? (Color)Primary : (Color)Gray400;
-        Color toSwitchColor = e.IsToggled ? (Color)Gray400 : (Color)Primary;
-
-        //BackGroundColor Animation
-        Color fromColor = e.IsToggled ? (Color)Tertiary : (Color)PrimaryLight;
-        Color toColor = e.IsToggled ? (Color)PrimaryLight : (Color)Tertiary;
-
-        double t = e.Percentage * 0.01;
-
-        customSwitch.KnobBackgroundColor = ColorAnimationUtil.ColorAnimation(fromSwitchColor, toSwitchColor, t);
-        customSwitch.BackgroundColor = ColorAnimationUtil.ColorAnimation(fromColor, toColor, t);
     }
 
     private async void SaveTransaction_Clicked(object sender, EventArgs e)

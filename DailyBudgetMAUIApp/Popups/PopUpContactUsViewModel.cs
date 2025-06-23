@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Helpers;
 using DailyBudgetMAUIApp.Models;
 using Microsoft.Maui.Storage;
 
@@ -23,31 +24,44 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly FilePickerFileType FileTypes;
 
         [ObservableProperty]
-        public string email = App.UserDetails.Email;
+        public partial string Email { get; set; } = (App.IsFamilyAccount ? App.FamilyUserDetails.Email : App.UserDetails.Email);
+
         [ObservableProperty]
-        public string phoneNumber;
+        public partial string PhoneNumber { get; set; }
+
         [ObservableProperty]
-        public string inquiryType;
+        public partial string InquiryType { get; set; }
+
         [ObservableProperty]
-        public string details;
+        public partial string Details { get; set; }
+
         [ObservableProperty]
-        public string fileName;
+        public partial string FileName { get; set; }
+
         [ObservableProperty]
-        public string charactersRemaining = "1000 characters remaining";
+        public partial string CharactersRemaining { get; set; } = "1000 characters remaining";
+
         [ObservableProperty]
-        public bool isFileUpload;
+        public partial bool IsFileUpload { get; set; }
+
         [ObservableProperty]
-        public bool isAgree;
+        public partial bool IsAgree { get; set; }
+
         [ObservableProperty]
-        public bool isDetailsInValid;
+        public partial bool IsDetailsInValid { get; set; }
+
         [ObservableProperty]
-        public bool isAgreeInValid;
+        public partial bool IsAgreeInValid { get; set; }
+
         [ObservableProperty]
-        public bool isCategoryInValid;
+        public partial bool IsCategoryInValid { get; set; }
+
         [ObservableProperty]
-        public bool isUploadInValid;
+        public partial bool IsUploadInValid { get; set; }
+
         [ObservableProperty]
-        public FileResult uploadFile;
+        public partial FileResult UploadFile { get; set; }
+
 
         public PopUpContactUsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -68,7 +82,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
 
         }
-        
+
         [RelayCommand]
         public async Task CreateSupportRequest()
         {
@@ -77,48 +91,48 @@ namespace DailyBudgetMAUIApp.ViewModels
                 if (string.IsNullOrWhiteSpace(InquiryType))
                 {
                     IsCategoryInValid = true;
-                    return;                 
+                    return;
                 }
 
-                if(string.IsNullOrWhiteSpace(Details) || Details.Length < 80)
+                if (string.IsNullOrWhiteSpace(Details) || Details.Length < 80)
                 {
                     IsDetailsInValid = true;
-                    return;                 
+                    return;
                 }
 
                 if (!IsAgree)
                 {
                     IsAgreeInValid = true;
                     return;
-                }                
+                }
 
                 CustomerSupport Support = new CustomerSupport
                 {
                     Details = Details,
                     PhoneNumber = PhoneNumber,
-                    Type = InquiryType,                    
+                    Type = InquiryType,
                     Whenadded = DateTime.UtcNow,
                     IsClosed = false,
                     Replys = new List<CustomerSupportMessage>()
                 };
 
-                if(UploadFile is not null)
+                if (UploadFile is not null)
                 {
                     Support.FileName = UploadFile.FileName;
                     string FileLocation = await _ds.SaveSupportFile(UploadFile);
                     Support.FileLocation = FileLocation;
                 }
 
-                Support = await _ds.CreateSupport(App.UserDetails.UserID, Support);
+                Support = await _ds.CreateSupport(App.IsFamilyAccount ? App.FamilyUserDetails.UniqueUserID : App.UserDetails.UniqueUserID, Support);
 
-                if (Support.SupportID == 0) 
+                if (Support.SupportID == 0)
                 {
                     WeakReferenceMessenger.Default.Send(new ClosePopupMessage(false, 0));
                 }
                 else
                 {
                     WeakReferenceMessenger.Default.Send(new ClosePopupMessage(true, Support.SupportID));
-                }                
+                }
 
             }
             catch (Exception ex)
@@ -143,7 +157,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 if (UploadFile is null) return;
 
-                if (UploadFile.OpenReadAsync().Result.Length < 3000000)
+                if (await _pt.GetFileLengthAsync(UploadFile) < 3000000)
                 {
 
                 }
@@ -193,26 +207,37 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         partial void OnUploadFileChanged(FileResult oldValue, FileResult newValue)
         {
-            if(newValue is not null)
+            if (newValue is not null)
             {
                 IsFileUpload = true;
                 IsUploadInValid = false;
 
-                long sizeInBytes = UploadFile.OpenReadAsync().Result.Length;
-                string FileSize = "";
-
-                if (sizeInBytes >= 1024 * 1024)
-                    FileSize = $"{sizeInBytes / (1024 * 1024.0):F2} MB";
-                else if (sizeInBytes >= 1024)
-                    FileSize = $"{sizeInBytes / 1024.0:F2} KB";
-                else
-                    FileSize = $"{sizeInBytes} bytes";
-
-                FileName = $"Uploaded {newValue.FileName} ({FileSize})";
+                HandleFileUploadAsync(newValue).FireAndForgetSafeAsync();
             }
             else
             {
                 IsFileUpload = false;
+            }
+        }
+
+        // Async helper method for handling file upload
+        private async Task HandleFileUploadAsync(FileResult newValue)
+        {
+            try
+            {
+                long sizeInBytes = await _pt.GetFileLengthAsync(newValue);
+                string fileSize = sizeInBytes >= 1024 * 1024
+                    ? $"{sizeInBytes / (1024 * 1024.0):F2} MB"
+                    : sizeInBytes >= 1024
+                        ? $"{sizeInBytes / 1024.0:F2} KB"
+                        : $"{sizeInBytes} bytes";
+
+                FileName = $"Uploaded {newValue.FileName} ({fileSize})";
+            }
+            catch (Exception ex)
+            {
+                // Log the error or handle it as needed
+                Console.WriteLine($"Error while processing file: {ex.Message}");
             }
         }
     }

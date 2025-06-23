@@ -4,6 +4,7 @@ using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Popups;
 using DailyBudgetMAUIApp.ViewModels;
 using Microsoft.Maui.Layouts;
+using Plugin.LocalNotification;
 using Plugin.Maui.AppRating;
 using Syncfusion.Maui.Core;
 
@@ -12,47 +13,6 @@ namespace DailyBudgetMAUIApp.Pages;
 
 public partial class EditAccountDetails : BasePage
 {
-    public string _updatedAvatar = "";
-    public string UpdatedAvatar
-    {
-        get => _updatedAvatar;
-        set
-        {
-            if (_updatedAvatar != value)
-            {
-                _updatedAvatar = value;
-                bool Success = Enum.TryParse(value, out AvatarCharacter Avatar);
-                if (Success)
-                {
-                    ProfilePicture.ContentType = ContentType.AvatarCharacter;
-                    ProfilePicture.AvatarCharacter = Avatar;
-                    int Number = Convert.ToInt32(value[value.Length - 1]);
-                    Math.DivRem(Number, 8, out int index);
-                    ProfilePicture.Background = App.ChartColor[index];
-                }
-                else
-                {
-                    ProfilePicture.AvatarCharacter = AvatarCharacter.Avatar1;
-                    ProfilePicture.Background = App.ChartColor[1];
-                }
-            }
-        }
-    }
-
-    public Stream _profilePicStream;
-    public Stream ProfilePicStream
-    {
-        get => _profilePicStream;
-        set
-        {
-            if (_profilePicStream != value)
-            {
-                _profilePicStream = value;
-                ProfilePicture.ContentType = ContentType.Custom;
-                ProfilePicture.ImageSource = ImageSource.FromStream(() => ProfilePicStream);
-            }
-        }
-    }
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
     public double ScreenHeight { get; set; }
@@ -83,34 +43,16 @@ public partial class EditAccountDetails : BasePage
         {
             base.OnAppearing();
 
-            TopBV.WidthRequest = ScreenWidth;
             MainAbs.WidthRequest = ScreenWidth;
             MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
             MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
 
             await _vm.OnLoad();
 
-            if (_vm.User.ProfilePicture.Contains("Avatar"))
+            if(App.IsFamilyAccount)
             {
-                ProfilePicture.ContentType = ContentType.AvatarCharacter;
-                bool Success = Enum.TryParse(_vm.User.ProfilePicture, out AvatarCharacter Avatar);
-                if (Success)
-                {
-                    ProfilePicture.AvatarCharacter = Avatar;
-                    int Number = Convert.ToInt32(_vm.User.ProfilePicture[_vm.User.ProfilePicture.Length - 1]);
-                    Math.DivRem(Number, 8, out int index);
-                    ProfilePicture.Background = App.ChartColor[index];
-                }
-                else
-                {
-                    ProfilePicture.AvatarCharacter = AvatarCharacter.Avatar1;
-                    ProfilePicture.Background = App.ChartColor[1];
-                }
-            }
-            else
-            {
-                ProfilePicStream = await _vm.GetUserProfilePictureStream(App.UserDetails.UserID);
-            }
+                ViewSubDetails.IsVisible = false;
+            }            
 
             if (App.CurrentPopUp != null)
             {
@@ -146,7 +88,7 @@ public partial class EditAccountDetails : BasePage
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Unable to open the subscription page.", "OK");
+                    await Application.Current.Windows[0].Page.DisplayAlert("Error", "Unable to open the subscription page.", "OK");
                 }
             }
 
@@ -169,7 +111,7 @@ public partial class EditAccountDetails : BasePage
             }
             else
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
+                await Application.Current.Windows[0].Page.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
             }
         }
         catch (Exception ex)
@@ -192,7 +134,7 @@ public partial class EditAccountDetails : BasePage
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
+                    await Application.Current.Windows[0].Page.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
                 }
             }
             catch (Exception ex)
@@ -285,8 +227,14 @@ public partial class EditAccountDetails : BasePage
     {
         try
         {
-            var page = new LoadingPage();
-            await Application.Current.MainPage.Navigation.PushModalAsync(page);
+            if (App.CurrentPopUp == null)
+            {
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
+            }
+
+            await Task.Delay(1);
 
             if (Preferences.ContainsKey(nameof(App.UserDetails)))
             {
@@ -298,12 +246,26 @@ public partial class EditAccountDetails : BasePage
                 Preferences.Remove(nameof(App.DefaultBudgetID));
             }
 
+            if (Preferences.ContainsKey(nameof(App.IsFamilyAccount)))
+            {
+                Preferences.Remove(nameof(App.IsFamilyAccount));
+            }
+
+            if (Preferences.ContainsKey("IsTopStickyVisible"))
+            {
+                Preferences.Remove("IsTopStickyVisible");
+            }
+
+            if (await SecureStorage.Default.GetAsync("Session") != null)
+            {
+                SecureStorage.Default.Remove("Session");
+            }
+
             App.DefaultBudgetID = 0;
             App.DefaultBudget = null;
 
             Application.Current!.MainPage = new AppShell();
-
-            await Application.Current.MainPage.Navigation.PopModalAsync();
+            LocalNotificationCenter.Current.CancelAll();
             await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
         }
         catch (Exception ex)
@@ -317,8 +279,8 @@ public partial class EditAccountDetails : BasePage
         try
         {
 
-            var popup = new PopUpContactUs(new PopUpContactUsViewModel(_pt, new RestDataService()));            
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var popup = new PopUpContactUs(new PopUpContactUsViewModel(_pt, IPlatformApplication.Current.Services.GetService<IRestDataService>()));            
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             if (result is int)
             {
 
@@ -358,7 +320,7 @@ public partial class EditAccountDetails : BasePage
             }
             else
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
+                await Application.Current.Windows[0].Page.DisplayAlert("Error", "Sorry we weren't able to open the dBudget web site. You can visit us at www.dbudgeting.com", "OK");
             }
         }
         catch (Exception ex)

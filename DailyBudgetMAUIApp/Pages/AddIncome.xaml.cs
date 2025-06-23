@@ -26,6 +26,32 @@ public partial class AddIncome : BasePage
 
     }
 
+    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+        }
+
+        _vm.IsPageBusy = false;
+
+        await Task.Delay(500);
+        base.OnNavigatingFrom(args);
+    }
+
+
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+
+        if (Navigation.NavigationStack.Count > 1)
+        {
+            Shell.SetTabBarIsVisible(this, false);
+        }
+    }
+
     async protected override void OnAppearing()
     {
         try
@@ -45,7 +71,7 @@ public partial class AddIncome : BasePage
             }
             else
             {
-                _vm.Income = _ds.GetIncomeFromID(_vm.IncomeID).Result;
+                _vm.Income = await _ds.GetIncomeFromID(_vm.IncomeID);
                 btnUpdateIncome.IsVisible = true;
                 _vm.Title = $"Update Income {_vm.Income.IncomeName}";
                 SelectIncomeType.IsVisible = false;
@@ -496,13 +522,8 @@ public partial class AddIncome : BasePage
     {
         try
         {
-            decimal IncomeAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entIncomeAmount.CursorPosition > position)
-            {
-                entIncomeAmount.CursorPosition = entIncomeAmount.Text.Length;
-            }
+            decimal IncomeAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entIncomeAmount);
+
             _vm.Income.IncomeAmount = IncomeAmount;
         }
         catch (Exception ex)
@@ -518,7 +539,7 @@ public partial class AddIncome : BasePage
         string Description = "Every income needs a name, we will refer to it by the name you give it and this will make it easier to identify!";
         string DescriptionSub = "Call it something useful or call it something silly up to you really!";
         var popup = new PopUpPageSingleInput("Income Name", Description, DescriptionSub, "Enter an Income name!", _vm.Income.IncomeName, new PopUpPageSingleInputViewModel());
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
         if (result != null || (string)result != "")
         {

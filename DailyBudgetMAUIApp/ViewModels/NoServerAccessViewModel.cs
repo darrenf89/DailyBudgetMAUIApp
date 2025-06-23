@@ -11,21 +11,29 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class NoServerAccessViewModel : BaseViewModel
     {
         [ObservableProperty]
-        private string txtSubHeading = "";
+        public partial string TxtSubHeading { get; set; } = "";
+
         [ObservableProperty]
-        private string txtButton = ""; 
+        public partial string TxtButton { get; set; } = "";
+
         [ObservableProperty]
-        private string txtConnectionStatus = ""; 
+        public partial string TxtConnectionStatus { get; set; } = "";
+
         [ObservableProperty]
-        private Color colorConnectionStatus;        
+        public partial Color ColorConnectionStatus { get; set; }
+
         [ObservableProperty]
-        private bool btnIsEnabled;        
+        public partial bool BtnIsEnabled { get; set; }
+
         [ObservableProperty]
-        private bool aIIsVisible;
+        public partial bool AIIsVisible { get; set; }
+
         [ObservableProperty]
-        private int countdownNumber = 14;
+        public partial int CountdownNumber { get; set; } = 14;
+
         [ObservableProperty]
-        private string countdownString = "Please wait another 30 seconds";
+        public partial string CountdownString { get; set; } = "Please wait another 30 seconds";
+
 
         private IDispatcherTimer Timer;
         private IDispatcherTimer CountDownTimer;

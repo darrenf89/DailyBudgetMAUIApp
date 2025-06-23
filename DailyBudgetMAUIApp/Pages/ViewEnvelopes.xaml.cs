@@ -3,7 +3,6 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Popups;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -22,14 +21,31 @@ public partial class ViewEnvelopes : BasePage
         InitializeComponent();
     }
 
+    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+        }
+
+        _vm.IsPageBusy = false;
+
+        await Task.Delay(500);
+        base.OnNavigatingFrom(args);
+    }
+
+
     protected async override void OnAppearing()
     {
         try
         {
+            _vm.IsPageBusy = true;
             base.OnAppearing();
 
-            _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-            List<Savings> S = _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID).Result;
+            _vm.Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
+            List<Savings> S = await _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID);
 
             _vm.EnvelopeBalance = 0;
             _vm.EnvelopeTotal = 0;
@@ -54,6 +70,7 @@ public partial class ViewEnvelopes : BasePage
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+            _vm.IsPageBusy = true;
         }
         catch (Exception ex)
         {
@@ -75,7 +92,7 @@ public partial class ViewEnvelopes : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
@@ -100,7 +117,7 @@ public partial class ViewEnvelopes : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}//{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=ViewEnvelopes");
@@ -125,7 +142,7 @@ public partial class ViewEnvelopes : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 string SpendType = "EnvelopeSaving";
@@ -181,12 +198,12 @@ public partial class ViewEnvelopes : BasePage
         try
         {
             var Saving = (Savings)e.Parameter;
-            var popup = new PopupMoveBalance(App.DefaultBudget, "Saving", Saving.SavingID, false, new PopupMoveBalanceViewModel(), new ProductTools(new RestDataService()), new RestDataService());
+            var popup = new PopupMoveBalance(App.DefaultBudget, "Saving", Saving.SavingID, false, new PopupMoveBalanceViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
             await Task.Delay(100);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             if (result.ToString() == "OK")
             {
-                List<Savings> S = _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID).Result;
+                List<Savings> S = await _ds.GetBudgetEnvelopeSaving(App.DefaultBudgetID);
 
                 _vm.EnvelopeBalance = 0;
                 _vm.EnvelopeTotal = 0;
@@ -201,7 +218,8 @@ public partial class ViewEnvelopes : BasePage
                     _vm.Savings.Add(saving);
                 }
 
-                App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                App.DefaultBudget = Budget;
             }
         }
         catch (Exception ex)
@@ -222,7 +240,7 @@ public partial class ViewEnvelopes : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}//{nameof(AddSaving)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewEnvelopes");

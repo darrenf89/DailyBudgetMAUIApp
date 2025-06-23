@@ -24,12 +24,39 @@ public partial class ViewIncomes : BasePage
 
     }
 
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+
+        if (Navigation.NavigationStack.Count > 1)
+        {
+            Shell.SetTabBarIsVisible(this, false);
+        }
+    }
+
+    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+        }
+
+        _vm.IsPageBusy = false;
+
+        await Task.Delay(500);
+        base.OnNavigatingFrom(args);
+    }
+
+
     protected async override void OnAppearing()
     {
         try
         {
-            _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-            List<IncomeEvents> I = _ds.GetBudgetIncomes(App.DefaultBudgetID, "ViewIncomes").Result;
+            _vm.IsPageBusy = true;
+            _vm.Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
+            List<IncomeEvents> I = await _ds.GetBudgetIncomes(App.DefaultBudgetID, "ViewIncomes");
 
             _vm.BalanceExtraPeriodIncome = _vm.Budget.BankBalance.GetValueOrDefault() + _vm.Budget.CurrentActiveIncome;
 
@@ -49,6 +76,7 @@ public partial class ViewIncomes : BasePage
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {
@@ -64,7 +92,7 @@ public partial class ViewIncomes : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
@@ -89,7 +117,7 @@ public partial class ViewIncomes : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}/{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=ViewIncomes");
@@ -139,7 +167,7 @@ public partial class ViewIncomes : BasePage
             string Description = "Update extra income due date!";
             string DescriptionSub = "extra income not due when you expected? You can update the due date to any date in the future!";
             var popup = new PopUpPageVariableInput("Income due date", Description, DescriptionSub, "", Income.DateOfIncomeEvent, "DateTime", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if(!string.IsNullOrEmpty(result.ToString()))
             {
@@ -174,7 +202,7 @@ public partial class ViewIncomes : BasePage
             string Description = "Update income amount!";
             string DescriptionSub = "Income not as much as you expected, you can update the income amount and we will do the rest!";
             var popup = new PopUpPageVariableInput("Outgoing amount", Description, DescriptionSub, "", Income.IncomeAmount, "Currency", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if (!string.IsNullOrEmpty(result.ToString()))
             {
@@ -212,7 +240,7 @@ public partial class ViewIncomes : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}//{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewIncomes");

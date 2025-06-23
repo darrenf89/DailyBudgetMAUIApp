@@ -101,7 +101,7 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Task.Delay(500);
@@ -113,7 +113,7 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
                 CategoryName = entCategoryName.Text
             };
 
-            NewCat = _ds.AddNewSubCategory(App.DefaultBudgetID, NewCat).Result;
+            NewCat = await _ds.AddNewSubCategory(App.DefaultBudgetID, NewCat);
 
             entCategoryName.IsEnabled = false;
             entCategoryName.IsEnabled = true;

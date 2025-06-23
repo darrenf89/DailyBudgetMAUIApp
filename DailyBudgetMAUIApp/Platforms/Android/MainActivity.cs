@@ -1,18 +1,20 @@
 ﻿using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
-using Android.Content;
-using DailyBudgetMAUIApp.DataServices;
-using Plugin.MauiMTAdmob;
-using static Android.Provider.Settings;
-using AndroidApp = Android.App.Application;
-using Setting = Android.Provider.Settings;
-using Plugin.MauiMTAdmob.Extra;
-using static Microsoft.Maui.ApplicationModel.Platform;
-using MAUISample.Platforms.Android;
-using Intent = Android.Content.Intent;
 using Android.Provider;
 using Android.Runtime;
+using DailyBudgetMAUIApp.DataServices;
+using MAUISample.Platforms.Android;
+using Microsoft.Maui.Controls;
+using Plugin.LocalNotification;
+using Plugin.MauiMTAdmob;
+using Plugin.MauiMTAdmob.Extra;
+using static Android.Provider.Settings;
+using static Microsoft.Maui.ApplicationModel.Platform;
+using AndroidApp = Android.App.Application;
+using Intent = Android.Content.Intent;
+using Setting = Android.Provider.Settings;
 
 
 namespace DailyBudgetMAUIApp;
@@ -26,8 +28,10 @@ public class MainActivity : MauiAppCompatActivity
 {
     internal static readonly string Channel_ID = "ShareBudget";
     internal static readonly string Support_Channel_ID = "CustomerSupport";
+    internal static readonly string Schedule_Channel_ID = "EventSchedule";
     internal static readonly int NotificationID = 101;
     Intent intent;
+
     protected override void OnCreate(Bundle savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
@@ -59,13 +63,14 @@ public class MainActivity : MauiAppCompatActivity
         CrossMauiMTAdmob.Current.OnConsentFormLoadSuccess += (sender, args) => {
             
         };
-
     }
 
     protected async override void OnResume()
     {
         base.OnResume();
         Platform.OnResume(this);
+
+        var _pt = IPlatformApplication.Current.Services.GetService<IProductTools>();
 
         if (Intent.Extras != null)
         {
@@ -90,16 +95,24 @@ public class MainActivity : MauiAppCompatActivity
                         }
                         Preferences.Set("NavigationID", NavigationID);
                     }
-
-                    IProductTools pt = new ProductTools(new RestDataService());
-                    await pt.NavigateFromPendingIntent(Preferences.Get("NavigationType", ""));
+                    
+                    await _pt.NavigateFromPendingIntent(Preferences.Get("NavigationType", ""));
                     Intent.RemoveExtra(key);
                 }
             }
-        }        
+        }
+
+        await _pt.UpdateNotificationPermission();
 
         CreateNotificationChannel();
         CrossMauiMTAdmob.Current.OnResume();
+    }
+
+    protected override void OnPause()
+    {
+        var _pt = IPlatformApplication.Current.Services.GetService<ILogService>();
+        _pt.CopyLogFileToExternalAsync();
+        base.OnPause();
     }
 
     protected override void OnNewIntent(Android.Content.Intent intent)
@@ -137,10 +150,12 @@ public class MainActivity : MauiAppCompatActivity
         {
             var channel = new NotificationChannel(Channel_ID, "Share budget notifications", NotificationImportance.Default);
             var supportChannel = new NotificationChannel(Support_Channel_ID, "Support Inquiry notifications", NotificationImportance.High);
+            var ScheduleChannelID = new NotificationChannel(Schedule_Channel_ID, "Events schedule notifications", NotificationImportance.Default);
 
             var notificationManager = (NotificationManager)GetSystemService(Android.Content.Context.NotificationService);
             notificationManager.CreateNotificationChannel(channel);            
             notificationManager.CreateNotificationChannel(supportChannel);
+            notificationManager.CreateNotificationChannel(ScheduleChannelID);
         }
     }
 }

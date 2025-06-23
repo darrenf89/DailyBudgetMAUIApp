@@ -1,39 +1,53 @@
 ﻿using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using static Java.Lang.ProcessBuilder;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     [QueryProperty(nameof(IncomeID), nameof(IncomeID))]
     [QueryProperty(nameof(NavigatedFrom), nameof(NavigatedFrom))]
+    [QueryProperty(nameof(FamilyAccountID), nameof(FamilyAccountID))]
     public partial class AddIncomeViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int  budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private int  incomeID;
+        public partial int IncomeID { get; set; }
+
         [ObservableProperty]
-        private IncomeEvents  income;
+        public partial int FamilyAccountID { get; set; }
+
         [ObservableProperty]
-        private bool  isPageValid;
+        public partial IncomeEvents Income { get; set; }
+
         [ObservableProperty]
-        private DateTime  minimumDate = DateTime.UtcNow.Date.AddDays(1);
+        public partial bool IsPageValid { get; set; }
+
         [ObservableProperty]
-        private string  navigatedFrom;
+        public partial DateTime MinimumDate { get; set; } = DateTime.UtcNow.Date.AddDays(1);
+
         [ObservableProperty]
-        private bool isMultipleAccounts;
+        public partial string NavigatedFrom { get; set; }
+
         [ObservableProperty]
-        private List<BankAccounts> bankAccounts;
+        public partial bool IsMultipleAccounts { get; set; }
+
         [ObservableProperty]
-        private BankAccounts? selectedBankAccount;
+        public partial List<BankAccounts> BankAccounts { get; set; }
+
+        [ObservableProperty]
+        public partial BankAccounts? SelectedBankAccount { get; set; }
+
 
         public string IncomeTypeText { get; set; } = "";
         public string IncomeActiveText { get; set; } = "";
@@ -50,14 +64,14 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        public async void ChangeIncomeName()
+        public async Task ChangeIncomeName()
         {
             try
             {
                 string Description = "Every income needs a name, we will refer to it by the name you give it and this will make it easier to identify!";
                 string DescriptionSub = "Call it something useful or call it something silly up to you really!";
                 var popup = new PopUpPageSingleInput("Income Name", Description, DescriptionSub, "Enter an Income name!", Income.IncomeName, new PopUpPageSingleInputViewModel());
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if (result != null || (string)result != "")
                 {
@@ -72,7 +86,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        public async void BackButton()
+        public async Task BackButton()
         {
             try
             {
@@ -82,10 +96,21 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                }
+                else if (NavigatedFrom == "CreateNewFamilyAccount")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Incomes", false);
                 }
                 else if (NavigatedFrom == "ViewIncomes")
                 {
@@ -93,9 +118,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
                 }
                 else
@@ -112,7 +137,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public async void AddIncome()
         {
 
-            string SuccessCheck = _ds.SaveNewIncome(Income, BudgetID).Result;
+            string SuccessCheck = await _ds.SaveNewIncome(Income, BudgetID);
             if (SuccessCheck == "OK")
             {
                 if (NavigatedFrom == "CreateNewBudget")
@@ -121,10 +146,21 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                }
+                else if (NavigatedFrom == "CreateNewFamilyAccount")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Incomes", false);
                 }
                 else if (NavigatedFrom == "ViewIncomes")
                 {
@@ -132,9 +168,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
                 }
                 else
@@ -148,7 +184,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public async void UpdateIncome()
         {
 
-            string SuccessCheck = _ds.UpdateIncome(Income).Result;
+            string SuccessCheck = await _ds.UpdateIncome(Income);
             if (SuccessCheck == "OK")
             {
                 if (NavigatedFrom == "CreateNewBudget")
@@ -157,10 +193,21 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Extra Income");
+                }
+                else if (NavigatedFrom == "CreateNewFamilyAccount")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Incomes", false);
                 }
                 else if (NavigatedFrom == "ViewIncomes")
                 {
@@ -168,9 +215,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"//{nameof(ViewIncomes)}");
                 }
                 else

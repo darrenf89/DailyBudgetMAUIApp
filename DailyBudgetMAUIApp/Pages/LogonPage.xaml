@@ -8,228 +8,244 @@
              xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"             
              Shell.FlyoutBehavior="Disabled"
              Shell.TabBarIsVisible="False"
-             Shell.NavBarIsVisible = "False">
-    <ScrollView>
-        <Grid>
-            <Image Source="logonbackgroundorange.jpg"
-                   Aspect="AspectFill" />  
-            <VerticalStackLayout VerticalOptions="Start">
-                <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,50,0,180">
-                    <Image Source="colorlogonobackground.png" Aspect="AspectFill" ></Image>
-                </Border>
-                <Border Style="{StaticResource FrameWhiteStandardContent}">
-                    <VerticalStackLayout HorizontalOptions="Fill" >
-                        <Label Text="Welcome!" 
+             Shell.NavBarIsVisible = "False" >
+    <Grid>
+        <Image Source="logonbackgroundorange.jpg"
+               Aspect="AspectFill"
+               Grid.Row="0"
+               Grid.Column="0" />
+        <ScrollView x:Name="LP">
+            <Grid>
+                <VerticalStackLayout VerticalOptions="Start">
+                    <Border Style="{StaticResource PictureFrame300Rectangle}" Margin="0,50,0,180">
+                        <Image Source="colorlogonobackground.png"  ></Image>
+                    </Border>
+                    <Border Style="{StaticResource FrameWhiteStandardContent}">
+                        <VerticalStackLayout HorizontalOptions="Fill" >
+                            <Label Text="Welcome!" 
                                 TextColor="{DynamicResource Primary}" 
                                 FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" 
                                 HorizontalOptions="Center" 
                                 FontAttributes="Bold"
                                 Margin="0,10,0,2"/>
-                        <Label Text="Login and continue the daily grind to freedom!" 
+                            <Label Text="Login and continue the daily grind to freedom!" 
                                 TextColor="{DynamicResource Primary}" 
                                 FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" 
                                 HorizontalOptions="Center" />
-                        <Border Stroke="{DynamicResource Tertiary}" 
+                            <Border Stroke="{DynamicResource Tertiary}" 
                                 WidthRequest="280"
                                 HeightRequest="2"
                                 Margin="0,20,0,30" 
                                 StrokeThickness="1"/>
-                        <VerticalStackLayout>
-                            <Border Padding="10,5,10,5" Margin="0,5,0,15" IsVisible="{Binding EmailValidatedSuccess}" Background="{StaticResource SuccessLight}" StrokeShape="RoundRectangle 3" Stroke="{StaticResource SuccessBrush}" StrokeThickness="1">
-                                <Label LineBreakMode="WordWrap" VerticalOptions="Center">
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <Span Text="Congrats!" TextColor="{StaticResource Success}" FontAttributes="Bold"/>
-                                            <Span Text=" You have verified your email, you can now login to your account" TextColor="{StaticResource Success}"/>
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
-                            </Border>
-                            <Border Padding="10,5,10,5" Margin="0,5,0,15" IsVisible="{Binding ResetPasswordSuccess}" Background="{StaticResource SuccessLight}" StrokeShape="RoundRectangle 3" Stroke="{StaticResource SuccessBrush}" StrokeThickness="1">
-                                <Label LineBreakMode="WordWrap" VerticalOptions="Center">
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <Span Text="Congrats!" TextColor="{StaticResource Success}" FontAttributes="Bold"/>
-                                            <Span Text=" You have reset your password, you can now loging" TextColor="{StaticResource Success}"/>
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
-                            </Border>
-                            <Border Padding="10,5,10,5" Margin="0,5,0,15" IsVisible="{Binding ResetPasswordFail}" Background="{StaticResource DangerLight}" StrokeShape="RoundRectangle 3" Stroke="{StaticResource DangerBrush}" StrokeThickness="1">
-                                <Label LineBreakMode="WordWrap" VerticalOptions="Center">
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <Span Text="Opps that didnt work!" TextColor="{StaticResource Danger}" FontAttributes="Bold"/>
-                                            <Span Text=" Please try again if you want to reset your password" TextColor="{StaticResource Danger}"/>
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
-                            </Border>
-                        </VerticalStackLayout>                            
-                        <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Start">
-                            <VerticalStackLayout Margin="0,0,0,15">
-                                <Border Style="{StaticResource FrameLogonStandardContent}">
-                                    <handlers:BorderlessEntry Text="{Binding Email}"
+                            <VerticalStackLayout>
+                                <Border Padding="10,5,10,5" Margin="0,5,0,15" IsVisible="{Binding EmailValidatedSuccess}" Background="{StaticResource SuccessLight}" StrokeShape="RoundRectangle 3" Stroke="{StaticResource SuccessBrush}" StrokeThickness="1">
+                                    <Label LineBreakMode="WordWrap" VerticalOptions="Center">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Congrats!" TextColor="{StaticResource Success}" FontAttributes="Bold"/>
+                                                <Span Text=" You have verified your email, you can now login to your account" TextColor="{StaticResource Success}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </Border>
+                                <Border Padding="10,5,10,5" Margin="0,5,0,15" IsVisible="{Binding ResetPasswordSuccess}" Background="{StaticResource SuccessLight}" StrokeShape="RoundRectangle 3" Stroke="{StaticResource SuccessBrush}" StrokeThickness="1">
+                                    <Label LineBreakMode="WordWrap" VerticalOptions="Center">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Congrats!" TextColor="{StaticResource Success}" FontAttributes="Bold"/>
+                                                <Span Text=" You have reset your password, you can now loging" TextColor="{StaticResource Success}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </Border>
+                                <Border Padding="10,5,10,5" Margin="0,5,0,15" IsVisible="{Binding ResetPasswordFail}" Background="{StaticResource DangerLight}" StrokeShape="RoundRectangle 3" Stroke="{StaticResource DangerBrush}" StrokeThickness="1">
+                                    <Label LineBreakMode="WordWrap" VerticalOptions="Center">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Opps that didnt work!" TextColor="{StaticResource Danger}" FontAttributes="Bold"/>
+                                                <Span Text=" Please try again if you want to reset your password" TextColor="{StaticResource Danger}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </Border>
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Start">
+                                <VerticalStackLayout Margin="0,0,0,15">
+                                    <Border Style="{StaticResource FrameLogonStandardContent}">
+                                        <handlers:BorderlessEntry Text="{Binding Email}"
                                        Placeholder="Enter an Email address!"
                                        Keyboard="Text" 
                                        Style="{StaticResource LogonEntry}"
                                        MaxLength="40">
-                                        <Entry.Behaviors>
-                                            <xct:EmailValidationBehavior 
-                                            Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused"
-                                            IsValid="{Binding EmailValid}" />
-                                            <xct:TextValidationBehavior
+                                            <Entry.Behaviors>
+                                                <xct:EmailValidationBehavior  x:Name="EmailValid"
+                                            Flags="ValidateOnUnfocused,ForceMakeValidWhenFocused"
+                                            IsValid="{Binding EmailValid}" 
+                                            BindingContext="{Binding BindingContext, Source={x:Reference LP}, x:DataType=LogonPageViewModel}" />
+                                                <xct:TextValidationBehavior x:Name="EmailRequired"
                                             MinimumLength="1"
-                                            Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused"
-                                            IsValid="{Binding EmailRequired}" />
-                                        </Entry.Behaviors>
-                                    </handlers:BorderlessEntry>
-                                </Border>
-                                <HorizontalStackLayout 
+                                            Flags="ValidateOnUnfocused,ForceMakeValidWhenFocused"
+                                            IsValid="{Binding EmailRequired}"
+                                            BindingContext="{Binding BindingContext, Source={x:Reference LP}, x:DataType=LogonPageViewModel}" />
+                                            </Entry.Behaviors>
+                                        </handlers:BorderlessEntry>
+                                    </Border>
+                                    <HorizontalStackLayout 
                                 IsVisible="{Binding EmailRequired, Converter={StaticResource BoolConverter}}"                                                 
                                 Margin="20,0,0,0">
-                                    <Image>
-                                        <Image.Source>
-                                            <FontImageSource 
+                                        <Image>
+                                            <Image.Source>
+                                                <FontImageSource 
                                             FontFamily="MaterialDesignIcons"                                                         
                                             Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}"                                                         
                                             Size="15"                                                          
                                             Color="{DynamicResource Danger}"/>
-                                        </Image.Source>
-                                    </Image>
-                                    <Label Text="Please let us know your email, pretty please!"
+                                            </Image.Source>
+                                        </Image>
+                                        <Label Text="Please let us know your email, pretty please!"
                                    Style="{StaticResource ErrorMessage}"/>
-                                </HorizontalStackLayout>
-                                <HorizontalStackLayout                                    
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout                                    
                                 IsVisible="{Binding EmailValid, Converter={StaticResource BoolConverter}}"
                                 Margin="20,0,0,0">
-                                    <Image>
-                                        <Image.Source>
-                                            <FontImageSource 
+                                        <Image>
+                                            <Image.Source>
+                                                <FontImageSource 
                                             FontFamily="MaterialDesignIcons"                                                         
                                             Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}"                                                         
                                             Size="15"                                                          
                                             Color="{DynamicResource Danger}"/>
-                                        </Image.Source>
-                                    </Image>
-                                    <Label Text="You have to enter a valid email ... or else!!" 
+                                            </Image.Source>
+                                        </Image>
+                                        <Label Text="You have to enter a valid email ... or else!!" 
                                    Style="{StaticResource ErrorMessage}"/>
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
-                            <Image Margin="15,0,0,15">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons"
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <Image Margin="15,0,0,15">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons"
                                     Glyph="{x:Static helpers:MaterialDesignIconsFonts.Email}"
                                     Size="25" 
                                     Color="{DynamicResource Primary}"/>
-                                </Image.Source>
-                            </Image>
-                        </HorizontalStackLayout>
-                        <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Start">
-                            <VerticalStackLayout Margin="0,0,0,15">
-                                <Border Style="{StaticResource FrameLogonStandardContent}">
-                                    <handlers:BorderlessEntry Text="{Binding Password}"
+                                    </Image.Source>
+                                </Image>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Start">
+                                <VerticalStackLayout Margin="0,0,0,15">
+                                    <Border Style="{StaticResource FrameLogonStandardContent}">
+                                        <handlers:BorderlessEntry x:Name="entPassword" Text="{Binding Password}"
                                    Placeholder="Please enter a password!"
                                    Keyboard="Text"
                                    IsPassword="True"
                                    Style="{StaticResource LogonEntry}">
-                                        <Entry.Behaviors>
-                                            <xct:TextValidationBehavior
+                                            <Entry.Behaviors>
+                                                <xct:TextValidationBehavior  x:Name="PasswordRequired"
                                             MinimumLength="1"
-                                            Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused"
-                                            IsValid="{Binding PasswordRequired}" />
-                                        </Entry.Behaviors>
-                                    </handlers:BorderlessEntry>
-                                </Border>
-                                <HorizontalStackLayout 
+                                            Flags="ValidateOnUnfocused,ForceMakeValidWhenFocused"
+                                            IsValid="{Binding PasswordRequired}"
+                                            BindingContext="{Binding BindingContext, Source={x:Reference LP}, x:DataType=LogonPageViewModel}" />
+                                            </Entry.Behaviors>
+                                        </handlers:BorderlessEntry>
+                                    </Border>
+                                    <HorizontalStackLayout 
                                 IsVisible="{Binding PasswordRequired, Converter={StaticResource BoolConverter}}"
                                 Margin="20,0,0,0">
-                                    <Image>
-                                        <Image.Source>
-                                            <FontImageSource 
+                                        <Image>
+                                            <Image.Source>
+                                                <FontImageSource 
                                             FontFamily="MaterialDesignIcons"                                                         
                                             Glyph="{x:Static helpers:MaterialDesignIconsFonts.Error}"                                                         
                                             Size="15"                                                          
                                             Color="{DynamicResource Danger}"/>
-                                        </Image.Source>
-                                    </Image>
-                                    <Label Text="Come on ... you must know you need a password!"                                   
+                                            </Image.Source>
+                                        </Image>
+                                        <Label Text="Come on ... you must know you need a password!"                                   
                                        Style="{StaticResource ErrorMessage}"/>
-                                </HorizontalStackLayout>                                
-                            </VerticalStackLayout>
-                            <Image Margin="15,0,0,15">
-                                <Image.Source>
-                                    <FontImageSource FontFamily="MaterialDesignIcons"
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <Image Margin="15,0,0,15">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialDesignIcons"
                                     Glyph="{x:Static helpers:MaterialDesignIconsFonts.Vpn_key}"
                                     Size="25" 
                                     Color="{DynamicResource Primary}"/>
-                                </Image.Source>
-                            </Image>
-                        </HorizontalStackLayout>
-                        <VerticalStackLayout Margin="0,0,0,5">
-                            <HorizontalStackLayout HorizontalOptions="End" VerticalOptions="Center">
-                                <Label Text="Reset Password"
+                                    </Image.Source>
+                                </Image>
+                            </HorizontalStackLayout>
+                            <VerticalStackLayout Margin="0,0,0,5">
+                                <HorizontalStackLayout HorizontalOptions="End" VerticalOptions="Center">
+                                    <Label Text="Reset Password"
                                         TextColor="{DynamicResource Primary}"
                                         TextDecorations="Underline"
                                         FontAttributes="Bold"
                                         FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}">
-                                    <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding ResetPasswordCommand}"/>
-                                    </Label.GestureRecognizers>
-                                </Label>
-                            </HorizontalStackLayout>
-                        </VerticalStackLayout>
-                        <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="0,0,0,10">
-                            <CheckBox IsChecked="{Binding RememberMe}"/>
-                            <Label Text="Remember Me!"
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding ResetPasswordCommand}"/>
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="20" Margin="0,0,0,10">
+                                <CheckBox IsChecked="{Binding RememberMe}"/>
+                                <Label Text="Remember Me!"
                                    VerticalOptions="Center"
                                    TextColor="{DynamicResource Gray400}"
                                    FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"
                                    Padding="0" />
-                        </HorizontalStackLayout>
-                        <Button Text="Sign in"
+                            </HorizontalStackLayout>
+                            <Button Text="Sign in"
                                 TextColor="White"
                                 WidthRequest="180" 
                                 Style="{StaticResource PrimaryButton}" 
                                 Command="{Binding LoginCommand}">
-                            <Button.ImageSource>
-                                <FontImageSource 
+                                <Button.ImageSource>
+                                    <FontImageSource 
                                      FontFamily="MaterialDesignIcons"
                                      Glyph="{x:Static helpers:MaterialDesignIconsFonts.Lock_open}"
                                      Size="20" />
-                            </Button.ImageSource>
-                        </Button>
-                        <Label Text="Or sign in using your social media" 
+                                </Button.ImageSource>
+                            </Button>
+                            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Margin="0,20,0,20">
+                                <Label Text="Looking for a family account, " FontAttributes="Bold"  FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}">
+                                </Label>
+                                <Label Text="Click Here!" TextColor="{DynamicResource Primary}" TextDecorations="Underline" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding NavigateFamilySignPageCommand}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </HorizontalStackLayout>
+                            <!--<Label Text="Or sign in using your social media" 
                                 TextColor="{DynamicResource Primary}" 
                                 FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"
                                 FontAttributes="Bold"
                                 HorizontalOptions="Center"
                                 Margin="0,25,0,15"/>
-                        <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20">
-                            <Image Source="fb_icon_325x325.png" WidthRequest="35"/>
-                            <Image Source="google.png" WidthRequest="35"/>
-                            <Image Source="twitter.png" WidthRequest="35"/>
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
-                <VerticalStackLayout Margin="0,40,0,0">
-                    <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                        <Label Text="Need an Account? "
+                            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20">
+                                <Image Source="fb_icon_325x325.png" WidthRequest="35"/>
+                                <Image Source="google.png" WidthRequest="35"/>
+                                <Image Source="twitter.png" WidthRequest="35"/>
+                            </HorizontalStackLayout>-->
+                        </VerticalStackLayout>
+                    </Border>
+                    <VerticalStackLayout Margin="0,40,0,0">
+                        <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                            <Label Text="Need an Account? "
                                 FontAttributes="Bold" 
                                 FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}">
-                        </Label>
-                        <Label Text="Register"
+                            </Label>
+                            <Label Text="Register"
                                 TextColor="{DynamicResource Primary}"
                                 TextDecorations="Underline"
                                 FontAttributes="Bold"
                                 FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding NavigateRegisterCommand}"/>
-                            </Label.GestureRecognizers>
-                        </Label>
-                    </HorizontalStackLayout>
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding NavigateRegisterCommand}"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
-            </VerticalStackLayout>
-        </Grid>
-    </ScrollView>
+            </Grid>
+        </ScrollView>
+    </Grid>
 </local:BasePage>

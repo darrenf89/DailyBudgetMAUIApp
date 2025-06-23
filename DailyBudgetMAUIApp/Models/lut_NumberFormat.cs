@@ -1,19 +1,22 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class lut_NumberFormat : ObservableObject
     {
         [ObservableProperty]
-        public int  id;
+        public partial int Id { get; set; }
+
         [ObservableProperty]
-        public int  currencyDecimalDigitsID;
+        public partial int CurrencyDecimalDigitsID { get; set; }
+
         [ObservableProperty]
-        public int  currencyDecimalSeparatorID;
+        public partial int CurrencyDecimalSeparatorID { get; set; }
+
         [ObservableProperty]
-        public int  currencyGroupSeparatorID;
+        public partial int CurrencyGroupSeparatorID { get; set; }
+
         [ObservableProperty]
-        public string  numberFormat = "";
+        public partial string NumberFormat { get; set; } = "";
     }
 }

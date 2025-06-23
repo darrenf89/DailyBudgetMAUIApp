@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Helpers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
 using System.Globalization;
@@ -19,130 +20,191 @@ namespace DailyBudgetMAUIApp.ViewModels
         public VerticalStackLayout BtnApply { get; set; }
 
         [ObservableProperty]
-        private List<lut_CurrencySymbol> currencySearchResults;
-        [ObservableProperty]
-        private lut_CurrencySymbol selectedCurrencySymbol;
-        [ObservableProperty]
-        private bool hasCurrencySymbolChanged;
-        [ObservableProperty]
-        private bool searchVisible = false;
-        [ObservableProperty]
-        private List<lut_CurrencyPlacement> currencyPlacements;
-        [ObservableProperty]
-        private lut_CurrencyPlacement selectedCurrencyPlacement;
-        [ObservableProperty]
-        private bool hasCurrencyPlacementChanged;
-        [ObservableProperty]
-        private List<lut_DateFormat> dateFormats;
-        [ObservableProperty]
-        private List<lut_BudgetTimeZone> timeZones;
-        [ObservableProperty]
-        private lut_DateFormat selectedDateFormats;
-        [ObservableProperty]
-        private bool hasDateFormatChanged;
-        [ObservableProperty]
-        private List<lut_NumberFormat> numberFormats;
-        [ObservableProperty]
-        private lut_NumberFormat selectedNumberFormats;
-        [ObservableProperty]
-        private bool hasNumberFormatsChanged;
-        [ObservableProperty]
-        private lut_BudgetTimeZone selectedTimeZone;
-        [ObservableProperty]
-        private bool hasTimeZoneChanged;
-        [ObservableProperty]
-        private bool isBorrowPay;
-        [ObservableProperty]
-        private BudgetSettings budgetSettings;
-        [ObservableProperty]
-        private Budgets budget;
-        [ObservableProperty]
-        private string currentTime;
-        [ObservableProperty]
-        private CultureInfo timeCultureInfo = new CultureInfo("en-gb");
-        [ObservableProperty]
-        private string currencySettingValue;
-        [ObservableProperty]
-        private CultureInfo currencyCultureInfo = new CultureInfo("en-gb");
-        [ObservableProperty]
-        private string payDaySettings;
-        [ObservableProperty]
-        private decimal payAmount;
-        [ObservableProperty]
-        private string payAmountString;
-        [ObservableProperty]
-        private int payAmountCursorPosition;
-        [ObservableProperty]
-        private bool hasPayAmountChanged;
-        [ObservableProperty]
-        private DateTime payDayDate;
-        [ObservableProperty]
-        private bool hasPayDayDateChanged;
-        [ObservableProperty]
-        private bool hasPageLoaded;
-        [ObservableProperty]
-        private bool validatorPayDay;
-        [ObservableProperty]
-        private bool validatorPayDayAmount;
-        [ObservableProperty]
-        private string payDayTypeText;
-        [ObservableProperty]
-        private bool validatorPayType;
-        [ObservableProperty]
-        private bool hasPayDayTypeTextChanged;
-        [ObservableProperty]
-        private bool hasPayDayOptionsChanged;
-        [ObservableProperty]
-        private string everyNthDuration;
-        [ObservableProperty]
-        private string everyNthValue;
-        [ObservableProperty]
-        private bool validatorEveryNthDuration;
-        [ObservableProperty]
-        private string workingDaysValue;
-        [ObservableProperty]
-        private bool validatorWorkingDayDuration;
-        [ObservableProperty]
-        private string everyMonthValue;
-        [ObservableProperty]
-        private bool validatorOfEveryMonthDuration;
-        [ObservableProperty]
-        private string lastOfTheMonthDuration;
-        [ObservableProperty]
-        private string payDayTwoSettings;
-        [ObservableProperty]
-        private bool hasBorrowPayChanged;
-        [ObservableProperty]
-        private bool isMultipleAccounts;
+        public partial List<lut_CurrencySymbol> CurrencySearchResults { get; set; }
 
+        [ObservableProperty]
+        public partial lut_CurrencySymbol SelectedCurrencySymbol { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasCurrencySymbolChanged { get; set; }
+
+        [ObservableProperty]
+        public partial bool SearchVisible { get; set; } = false;
+
+        [ObservableProperty]
+        public partial List<lut_CurrencyPlacement> CurrencyPlacements { get; set; }
+
+        [ObservableProperty]
+        public partial lut_CurrencyPlacement SelectedCurrencyPlacement { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasCurrencyPlacementChanged { get; set; }
+
+        [ObservableProperty]
+        public partial List<lut_DateFormat> DateFormats { get; set; }
+
+        [ObservableProperty]
+        public partial List<lut_BudgetTimeZone> TimeZones { get; set; }
+
+        [ObservableProperty]
+        public partial lut_DateFormat SelectedDateFormats { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasDateFormatChanged { get; set; }
+
+        [ObservableProperty]
+        public partial List<lut_NumberFormat> NumberFormats { get; set; }
+
+        [ObservableProperty]
+        public partial lut_NumberFormat SelectedNumberFormats { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasNumberFormatsChanged { get; set; }
+
+        [ObservableProperty]
+        public partial lut_BudgetTimeZone SelectedTimeZone { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasTimeZoneChanged { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsBorrowPay { get; set; }
+
+        [ObservableProperty]
+        public partial BudgetSettings BudgetSettings { get; set; }
+
+        [ObservableProperty]
+        public partial Budgets Budget { get; set; }
+
+        [ObservableProperty]
+        public partial string CurrentTime { get; set; }
+
+        [ObservableProperty]
+        public partial CultureInfo TimeCultureInfo { get; set; } = new CultureInfo("en-gb");
+
+        [ObservableProperty]
+        public partial string CurrencySettingValue { get; set; }
+
+        [ObservableProperty]
+        public partial CultureInfo CurrencyCultureInfo { get; set; } = new CultureInfo("en-gb");
+
+        [ObservableProperty]
+        public partial string PayDaySettings { get; set; }
+
+        [ObservableProperty]
+        public partial decimal PayAmount { get; set; }
+
+        [ObservableProperty]
+        public partial string PayAmountString { get; set; }
+
+        [ObservableProperty]
+        public partial int PayAmountCursorPosition { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasPayAmountChanged { get; set; }
+
+        [ObservableProperty]
+        public partial DateTime PayDayDate { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasPayDayDateChanged { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasPageLoaded { get; set; }
+
+        [ObservableProperty]
+        public partial bool ValidatorPayDay { get; set; }
+
+        [ObservableProperty]
+        public partial bool ValidatorPayDayAmount { get; set; }
+
+        [ObservableProperty]
+        public partial string PayDayTypeText { get; set; }
+
+        [ObservableProperty]
+        public partial bool ValidatorPayType { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasPayDayTypeTextChanged { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasPayDayOptionsChanged { get; set; }
+
+        [ObservableProperty]
+        public partial string EveryNthDuration { get; set; }
+
+        [ObservableProperty]
+        public partial string EveryNthValue { get; set; }
+
+        [ObservableProperty]
+        public partial bool ValidatorEveryNthDuration { get; set; }
+
+        [ObservableProperty]
+        public partial string WorkingDaysValue { get; set; }
+
+        [ObservableProperty]
+        public partial bool ValidatorWorkingDayDuration { get; set; }
+
+        [ObservableProperty]
+        public partial string EveryMonthValue { get; set; }
+
+        [ObservableProperty]
+        public partial bool ValidatorOfEveryMonthDuration { get; set; }
+
+        [ObservableProperty]
+        public partial string LastOfTheMonthDuration { get; set; }
+
+        [ObservableProperty]
+        public partial string PayDayTwoSettings { get; set; }
+
+        [ObservableProperty]
+        public partial bool HasBorrowPayChanged { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsMultipleAccounts { get; set; }
+
+        [ObservableProperty]
+        public partial string CurrencySearchText { get; set; }
+
+
+
+        [RelayCommand]
+        public async Task IsBorrowPayToggledCommand()
+        {
+            HasBorrowPayChanged = true;
+        }
 
         public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds)
         {
             _pt = pt;
             _ds = ds;
-
-            CurrencyPlacements = _ds.GetCurrencyPlacements("").Result;
-            DateFormats = _ds.GetDateFormatsByString("").Result;
-            NumberFormats = _ds.GetNumberFormats().Result;
-            TimeZones = _ds.GetBudgetTimeZones("").Result;
         }      
         
         public async Task OnLoad()
         {
+            Title = "Edit your budget's settings";
+            CurrencyPlacements = await _ds.GetCurrencyPlacements("");
+            DateFormats = await _ds.GetDateFormatsByString("");
+            NumberFormats = await _ds.GetNumberFormats();
+            TimeZones = await _ds.GetBudgetTimeZones("");
 
-            BudgetSettings = _ds.GetBudgetSettings(App.DefaultBudgetID).Result;
-            Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
+            BudgetSettings = await _ds.GetBudgetSettings(App.DefaultBudgetID);
+            Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
 
-            SelectedCurrencySymbol = _ds.GetCurrencySymbols(BudgetSettings.CurrencySymbol.ToString()).Result[0];
-            SelectedCurrencyPlacement = _ds.GetCurrencyPlacements(BudgetSettings.CurrencyPattern.ToString()).Result[0];
-            SelectedDateFormats = _ds.GetDateFormatsById(BudgetSettings.ShortDatePattern ?? 1, BudgetSettings.DateSeperator ?? 1).Result;
-            SelectedNumberFormats = _ds.GetNumberFormatsById(BudgetSettings.CurrencyDecimalDigits ?? 2, BudgetSettings.CurrencyDecimalSeparator ?? 2, BudgetSettings.CurrencyGroupSeparator ?? 1).Result;
-            SelectedTimeZone = _ds.GetTimeZoneById(BudgetSettings.TimeZone.GetValueOrDefault()).Result;
+            SelectedCurrencySymbol = (await _ds.GetCurrencySymbols(BudgetSettings.CurrencySymbol.ToString()))[0];
+            SelectedCurrencyPlacement = (await _ds.GetCurrencyPlacements(BudgetSettings.CurrencyPattern.ToString()))[0];
+            SelectedDateFormats = await _ds.GetDateFormatsById(BudgetSettings.ShortDatePattern ?? 1, BudgetSettings.DateSeperator ?? 1);
+            SelectedNumberFormats = await _ds.GetNumberFormatsById(
+                BudgetSettings.CurrencyDecimalDigits ?? 2,
+                BudgetSettings.CurrencyDecimalSeparator ?? 2,
+                BudgetSettings.CurrencyGroupSeparator ?? 1
+            );
+            SelectedTimeZone = await _ds.GetTimeZoneById(BudgetSettings.TimeZone.GetValueOrDefault());
 
-            TimeCultureInfo.DateTimeFormat.ShortDatePattern = _ds.GetShortDatePatternById(SelectedDateFormats.ShortDatePatternID).Result.ShortDatePattern;
-            TimeCultureInfo.DateTimeFormat.DateSeparator = _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID).Result.DateSeperator;
+            TimeCultureInfo.DateTimeFormat.ShortDatePattern = (await _ds.GetShortDatePatternById(SelectedDateFormats.ShortDatePatternID)).ShortDatePattern;
+            TimeCultureInfo.DateTimeFormat.DateSeparator = (await _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID)).DateSeperator;
 
-            UpdateCurrencySettingValue();
+            await UpdateCurrencySettingValue();
 
             PayAmount = Budget.PaydayAmount ?? 0;
             PayAmountString = PayAmount.ToString("c", CultureInfo.CurrentCulture);
@@ -248,7 +310,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                         BudgetUpdate.Add(IsMultipleAccountsPatch);
                         await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
                     }
-                    App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                    var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                    App.DefaultBudget = Budget;
                 }
             }
             catch (Exception ex)
@@ -439,22 +502,27 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        private void UpdateCurrencySettingValue()
+        private async Task UpdateCurrencySettingValue()
         {
             if(SelectedNumberFormats != null && SelectedCurrencyPlacement != null && SelectedCurrencySymbol != null)
             {
                 CurrencyCultureInfo.NumberFormat.CurrencySymbol = SelectedCurrencySymbol.CurrencySymbol;
-                if(SelectedNumberFormats.CurrencyDecimalSeparatorID != 0)
+                if (SelectedNumberFormats.CurrencyDecimalSeparatorID != 0)
                 {
-                    CurrencyCultureInfo.NumberFormat.CurrencyDecimalSeparator = _ds.GetCurrencyDecimalSeparatorById(SelectedNumberFormats.CurrencyDecimalSeparatorID).Result.CurrencyDecimalSeparator;
+                    var decimalSeparatorResult = await _ds.GetCurrencyDecimalSeparatorById(SelectedNumberFormats.CurrencyDecimalSeparatorID);
+                    CurrencyCultureInfo.NumberFormat.CurrencyDecimalSeparator = decimalSeparatorResult.CurrencyDecimalSeparator;
                 }
+
                 if (SelectedNumberFormats.CurrencyGroupSeparatorID != 0)
                 {
-                    CurrencyCultureInfo.NumberFormat.CurrencyGroupSeparator = _ds.GetCurrencyGroupSeparatorById(SelectedNumberFormats.CurrencyGroupSeparatorID).Result.CurrencyGroupSeparator;
+                    var groupSeparatorResult = await _ds.GetCurrencyGroupSeparatorById(SelectedNumberFormats.CurrencyGroupSeparatorID);
+                    CurrencyCultureInfo.NumberFormat.CurrencyGroupSeparator = groupSeparatorResult.CurrencyGroupSeparator;
                 }
-                if(SelectedNumberFormats.CurrencyDecimalDigitsID != 0)
+
+                if (SelectedNumberFormats.CurrencyDecimalDigitsID != 0)
                 {
-                    CurrencyCultureInfo.NumberFormat.CurrencyDecimalDigits = Convert.ToInt32(_ds.GetCurrencyDecimalDigitsById(SelectedNumberFormats.CurrencyDecimalDigitsID).Result.currencyDecimalDigits);
+                    var decimalDigitsResult = await _ds.GetCurrencyDecimalDigitsById(SelectedNumberFormats.CurrencyDecimalDigitsID);
+                    CurrencyCultureInfo.NumberFormat.CurrencyDecimalDigits = Convert.ToInt32(decimalDigitsResult.CurrencyDecimalDigits);
                 }
                 CurrencyCultureInfo.NumberFormat.CurrencyPositivePattern = SelectedCurrencyPlacement.CurrencyPositivePatternRef;
             }
@@ -467,7 +535,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             try
             {
                 HasNumberFormatsChanged = true;
-                UpdateCurrencySettingValue();
+                UpdateCurrencySettingValue().FireAndForgetSafeAsync();
             }
             catch (Exception ex)
             {
@@ -501,7 +569,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        partial void OnSelectedDateFormatsChanged(lut_DateFormat value)
+        async partial void OnSelectedDateFormatsChanged(lut_DateFormat value)
         {
             try
             {
@@ -511,12 +579,12 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                     TimeCultureInfo.DateTimeFormat.ShortDatePattern = SelectedDateFormats.DateFormat;
                     TimeCultureInfo.DateTimeFormat.LongDatePattern = SelectedDateFormats.DateFormat + " HH:mm:ss";
-                    TimeCultureInfo.DateTimeFormat.DateSeparator = _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID).Result.DateSeperator;
+                    TimeCultureInfo.DateTimeFormat.DateSeparator = (await _ds.GetDateSeperatorById(SelectedDateFormats.DateSeperatorID)).DateSeperator; 
                 }
             }
             catch (Exception ex)
             {
-                _pt.HandleException(ex, "EditBudgetSettings", "OnSelectedDateFormatsChanged");
+                await _pt.HandleException(ex, "EditBudgetSettings", "OnSelectedDateFormatsChanged");
             }
 
         }
@@ -526,10 +594,10 @@ namespace DailyBudgetMAUIApp.ViewModels
             HasTimeZoneChanged = true;
         }
         
-        public void ChangeSelectedCurrency()
+        public async Task ChangeSelectedCurrency()
         {
             SearchVisible = true;
-            CurrencySearchResults = _ds.GetCurrencySymbols("").Result;
+            CurrencySearchResults = await _ds.GetCurrencySymbols("");
         }
 
         [RelayCommand]
@@ -540,7 +608,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 string Description = "Every budget needs a name, let us know how you'd like your budget to be known so we can use this to identify it for you in the future.";
                 string DescriptionSub = "Call it something useful or call it something silly up to you really!";
                 var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", Budget.BudgetName, new PopUpPageSingleInputViewModel());
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if (result != null || (string)result != "")
                 {
@@ -567,12 +635,11 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        [RelayCommand]
-        async Task CurrencySearch(string query)
+        async partial void OnCurrencySearchTextChanged(string value)
         {
             try
             {
-                CurrencySearchResults = await _ds.GetCurrencySymbols(query);
+                CurrencySearchResults = await _ds.GetCurrencySymbols(value);
             }
             catch (Exception ex)
             {
@@ -585,27 +652,22 @@ namespace DailyBudgetMAUIApp.ViewModels
                 }
                 else
                 {
-                    await _pt.HandleException(ex, "EditBudgetSettings", "CurrencySearch");
+                    await _pt.HandleException(ex, "CreateNewFamilyAccounts", "CurrencySearch");
                 }
             }
         }
 
-        
-
-        [RelayCommand]
-        private void CurrencySymbolSelected(lut_CurrencySymbol item)
+        async partial void OnSelectedCurrencySymbolChanged(lut_CurrencySymbol oldValue, lut_CurrencySymbol newValue)
         {
             try
             {
-                SelectedCurrencySymbol = item;
                 SearchVisible = false;
                 CurrencySearchResults = null;
             }
             catch (Exception ex)
             {
-                _pt.HandleException(ex, "EditBudgetSettings", "CurrencySymbolSelected");
+                await _pt.HandleException(ex, "CreateNewFamilyAccounts", "CurrencySymbolSelected");
             }
-
         }
 
         [RelayCommand]
@@ -617,7 +679,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(500);
@@ -651,14 +713,14 @@ namespace DailyBudgetMAUIApp.ViewModels
             try
             {
 
-                bool EditBudget = await Application.Current.MainPage.DisplayAlert($"Update settings?", $"Are you sure you want to update your budgets settings?", "Yes", "No");
+                bool EditBudget = await Application.Current.Windows[0].Page.DisplayAlert($"Update settings?", $"Are you sure you want to update your budgets settings?", "Yes", "No");
                 if (EditBudget)
                 {
                     if (App.CurrentPopUp == null)
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     await Task.Delay(100);
@@ -916,7 +978,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                var BudgetName = await Application.Current.MainPage.DisplayPromptAsync($"Are you sure you want to delete {App.DefaultBudget.BudgetName} budget?", $"Deleting the budget is permanent, enter the budget name to delete the budget", "Ok", "Cancel");
+                var BudgetName = await Application.Current.Windows[0].Page.DisplayPromptAsync($"Are you sure you want to delete {App.DefaultBudget.BudgetName} budget?", $"Deleting the budget is permanent, enter the budget name to delete the budget", "Ok", "Cancel");
                 if (BudgetName != null)
                 {
                     if (string.Equals(BudgetName, App.DefaultBudget.BudgetName, StringComparison.OrdinalIgnoreCase))
@@ -926,12 +988,12 @@ namespace DailyBudgetMAUIApp.ViewModels
                         string result = await _ds.DeleteBudget(App.DefaultBudgetID, App.UserDetails.UserID);
                         if (result == "LastBudget")
                         {
-                            await Application.Current.MainPage.DisplayAlert($"You can't delete this!", $"You can't delete this budget as it is your last budget and you must have at least one budget on the app", "Ok");
+                            await Application.Current.Windows[0].Page.DisplayAlert($"You can't delete this!", $"You can't delete this budget as it is your last budget and you must have at least one budget on the app", "Ok");
 
                         }
                         else if (result == "SharedBudget")
                         {
-                            await Application.Current.MainPage.DisplayAlert($"This is a shared budget!", $"You can't delete a budget that you didn't create, someone kindly shared it with you so don't try and delete it", "Ok");
+                            await Application.Current.Windows[0].Page.DisplayAlert($"This is a shared budget!", $"You can't delete a budget that you didn't create, someone kindly shared it with you so don't try and delete it", "Ok");
 
                         }
                         else
@@ -940,7 +1002,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                             App.DefaultBudgetID = Budgets[0].BudgetID;
                             App.DefaultBudget = Budgets[0];
-                            BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+                            BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(App.DefaultBudgetID);
                             App.CurrentSettings = Settings;
 
                             if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
@@ -974,12 +1036,44 @@ namespace DailyBudgetMAUIApp.ViewModels
                         }
                     
                     }
+                    else
+                    {
+                         await Application.Current.Windows[0].Page.DisplayAlert($"Incorrect Budget Name", "Please check the budget name that was entered and confirm it is correct!", "Ok, thanks");
+                    }
 
                 }
             }
             catch (Exception ex)
             {
                 await _pt.HandleException(ex, "EditBudgetSettings", "DeleteBudget");
+            }
+        }
+
+        [RelayCommand]
+        private async Task GoToBorrowPayVideos()
+        {
+            try
+            {
+                List<string> SubTitle = new List<string>{
+                    "",
+                    "",
+                    "",
+                    "",
+                };
+
+                List<string> Info = new List<string>{
+                    "Effectively managing your bill payments is essential for maintaining financial stability. dBudget offers two distinct methods for handling bill payments, each designed to accommodate different budgeting preferences and financial situations.",
+                    "\"Cover Bills When Paid\" method aligns with the common practice of paying bills as income is received. When you get paid, dBudget allocates funds to cover bills up to that payday and any bills due within the current budget cycle. Bills due outside the budget cycle accrue their balance daily from your bank balance, but the funds don't transfer until the next payday. This approach mirrors real-life bill payment habits and helps prevent your daily spending allowance from appearing negative. However, careful if the next pay day doesn't come on time you might not have the money in your account to cover all your bills.",
+                    "\"Cover Bills From Balance Every Day\" method involves allocating funds to fully cover each bill for the upcoming period upon receiving your paycheck. Daily, the allocated amounts are deducted from your available balance and transferred into the bill balance THEN AND THERE! This strategy ensures that bills are entirely covered before their due dates, providing clarity on financial obligations. However, it necessitates having sufficient funds available upfront, which may not be feasible for everyone. Additionally, this approach can make your daily spending allowance appear lower than it actually is, potentially affecting budgeting flexibility.",
+                    "If accumulating the necessary funds to cover bills upfront is challenging, it's advisable to use the \"Cover Bills When Paid\" option. This method aligns with typical financial practices and provides a more accurate reflection of your daily spending capacity. As you work towards building savings, you might consider transitioning to the \"Cover Bills From Balance Every Day\" method for enhanced financial predictability.",
+                };
+
+                var popup = new PopupInfo("Bill accrual", SubTitle, Info);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "CreateNewBudget", "GoToBorrowPayVideos");
             }
         }
 
@@ -1007,5 +1101,29 @@ namespace DailyBudgetMAUIApp.ViewModels
                 IsBorrowPay = true;
             }
         }
+
+
+        [RelayCommand]
+        public async Task BackButton()
+        {
+            try
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
+                await Task.Delay(1);
+
+                await Shell.Current.GoToAsync($"//{(App.IsFamilyAccount ? nameof(FamilyAccountMainPage) : nameof(MainPage))}");
+
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewBudgets", "BackButton");
+            }
+        }
+
     }
 }

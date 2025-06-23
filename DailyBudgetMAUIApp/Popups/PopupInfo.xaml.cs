@@ -7,6 +7,7 @@ public partial class PopupInfo : Popup
     public double ScreenWidth { get; }
     public double ScreenHeight { get; }
     public double PopupWidth { get; }
+    public double PopupHeight { get; }
     public double ButtonOneWidth { get; }
     public PopupInfo(string Title, List<string> SubTitles, List<string> Info)
     {
@@ -15,6 +16,7 @@ public partial class PopupInfo : Popup
         ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         PopupWidth = ScreenWidth -  30;
+        PopupHeight = ScreenHeight -  360;
         ButtonOneWidth = ((PopupWidth - 100) / 2);
 
         lblTitle.Text = Title;
@@ -26,7 +28,7 @@ public partial class PopupInfo : Popup
         {
             Margin = new Thickness(0, 0, 0, 5),
             WidthRequest = PopupWidth,
-            VerticalOptions = LayoutOptions.Center
+            VerticalOptions = LayoutOptions.Start
         };
 
         int i = 0;
@@ -48,7 +50,7 @@ public partial class PopupInfo : Popup
                     FontAttributes = FontAttributes.Bold,
                     TextColor = (Color)Gray900,
                     Margin = new Thickness(0, 0, 0, 10),
-                    HorizontalTextAlignment = TextAlignment.Center
+                    HorizontalTextAlignment = TextAlignment.Start
                 };
 
                 VerticalLayout.Add(Subtitle);
@@ -59,7 +61,8 @@ public partial class PopupInfo : Popup
                 Text = details,
                 FontSize = 12,
                 TextColor = (Color)Gray700,
-                LineBreakMode = LineBreakMode.WordWrap
+                LineBreakMode = LineBreakMode.WordWrap,
+                HorizontalTextAlignment = TextAlignment.Justify
             };
 
             i++;
@@ -69,7 +72,18 @@ public partial class PopupInfo : Popup
 
         }
 
-        Parent.Add(VertLayout);
+        var ScrollLayout = new ScrollView
+        {
+            Margin = new Thickness(0, 0, 0, 0),
+            WidthRequest = PopupWidth,
+            VerticalOptions = LayoutOptions.Center,
+            MaximumHeightRequest = PopupHeight - 180,
+            MinimumHeightRequest = PopupHeight - 360
+        };
+
+        ScrollLayout.Content = VertLayout;
+
+        Parent.Add(ScrollLayout);
 
         BindingContext = this;
     }

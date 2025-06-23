@@ -4,8 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
-using System.Diagnostics;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -17,43 +15,65 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private string? navigatedFrom;
+        public partial string? NavigatedFrom { get; set; }
+
         [ObservableProperty]
-        private int budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private BudgetSettings budgetSettings;
+        public partial BudgetSettings BudgetSettings { get; set; }
+
         [ObservableProperty]
-        private Budgets budget;        
+        public partial Budgets Budget { get; set; }
+
         [ObservableProperty]
-        private string budgetName;
+        public partial string BudgetName { get; set; }
+
         [ObservableProperty]
-        private string _stage = "Budget Settings";
+        public partial string Stage { get; set; } = "Budget Settings";
+
         public double StageWidth { get; }
         public double AcceptTermsWidth { get; }
+
         [ObservableProperty]
-        private List<lut_CurrencySymbol> currencySearchResults;
+        public partial List<lut_CurrencySymbol> CurrencySearchResults { get; set; }
+
         [ObservableProperty]
-        private lut_CurrencySymbol selectedCurrencySymbol;
+        public partial lut_CurrencySymbol SelectedCurrencySymbol { get; set; }
+
         [ObservableProperty]
-        private bool searchVisible = false;
+        public partial bool SearchVisible { get; set; } = false;
+
         [ObservableProperty]
-        private List<lut_CurrencyPlacement> currencyPlacements;
+        public partial List<lut_CurrencyPlacement> CurrencyPlacements { get; set; }
+
         [ObservableProperty]
-        private lut_CurrencyPlacement selectedCurrencyPlacement;
+        public partial lut_CurrencyPlacement SelectedCurrencyPlacement { get; set; }
+
         [ObservableProperty]
-        private List<lut_DateFormat> dateFormats;
+        public partial List<lut_DateFormat> DateFormats { get; set; }
+
         [ObservableProperty]
-        private List<lut_BudgetTimeZone> timeZones;
+        public partial List<lut_BudgetTimeZone> TimeZones { get; set; }
+
         [ObservableProperty]
-        private lut_DateFormat selectedDateFormats;
+        public partial lut_DateFormat SelectedDateFormats { get; set; }
+
         [ObservableProperty]
-        private List<lut_NumberFormat> numberFormats;
+        public partial List<lut_NumberFormat> NumberFormats { get; set; }
+
         [ObservableProperty]
-        private lut_NumberFormat selectedNumberFormats;
+        public partial lut_NumberFormat SelectedNumberFormats { get; set; }
+
         [ObservableProperty]
-        private lut_BudgetTimeZone selectedTimeZone;
+        public partial lut_BudgetTimeZone SelectedTimeZone { get; set; }
+
         [ObservableProperty]
-        private bool isBorrowPay;
+        public partial bool IsBorrowPay { get; set; }
+
+        [ObservableProperty]
+        public partial string CurrencySearchText { get; set; }
+
 
         public string PayDayTypeText { get; set; }
         public string PayAmountText { get; set; }
@@ -77,22 +97,17 @@ namespace DailyBudgetMAUIApp.ViewModels
             _ds = ds;
             StageWidth = (((DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 52) / 5);
             AcceptTermsWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 80;
-            CurrencyPlacements = _ds.GetCurrencyPlacements("").Result;
-            DateFormats = _ds.GetDateFormatsByString("").Result;
-            NumberFormats = _ds.GetNumberFormats().Result;
-            TimeZones = _ds.GetBudgetTimeZones("").Result;
-
         }
 
         [RelayCommand]
-        async void ChangeBudgetName()
+        async Task ChangeBudgetName()
         {
             try
             {
                 string Description = "Every budget needs a name, let us know how you'd like your budget to be known so we can use this to identify it for you in the future.";
                 string DescriptionSub = "Call it something useful or call it something silly up to you really!";
                 var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", Budget.BudgetName , new PopUpPageSingleInputViewModel());
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if (result != null || (string)result != "")
                 {
@@ -108,16 +123,15 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
-        [RelayCommand]
-        async void CurrencySearch(string query)
+        async partial void OnCurrencySearchTextChanged(string value)
         {
             try
-            {            
-                CurrencySearchResults = _ds.GetCurrencySymbols(query).Result;
+            {
+                CurrencySearchResults = await _ds.GetCurrencySymbols(value);
             }
             catch (Exception ex)
             {
-                if(ex.Message == "One or more errors occurred. (No currencies found)")
+                if (ex.Message == "One or more errors occurred. (No currencies found)")
                 {
                     lut_CurrencySymbol cs = new lut_CurrencySymbol();
                     cs.Code = "No results please, try again!";
@@ -126,27 +140,54 @@ namespace DailyBudgetMAUIApp.ViewModels
                 }
                 else
                 {
-                    await _pt.HandleException(ex, "CreateNewBudget", "CurrencySearch");
+                    await _pt.HandleException(ex, "CreateNewFamilyAccounts", "CurrencySearch");
                 }
             }
         }
 
         [RelayCommand]
-        private void GoToBorrowPayVideos()
+        private async Task GoToBorrowPayVideos()
         {
+            try
+            {
+                List<string> SubTitle = new List<string>{
+                    "",
+                    "",
+                    "",
+                    "",
+                };
 
+                List<string> Info = new List<string>{
+                    "Effectively managing your bill payments is essential for maintaining financial stability. dBudget offers two distinct methods for handling bill payments, each designed to accommodate different budgeting preferences and financial situations.",
+                    "\"Cover Bills When Paid\" method aligns with the common practice of paying bills as income is received. When you get paid, dBudget allocates funds to cover bills up to that payday and any bills due within the current budget cycle. Bills due outside the budget cycle accrue their balance daily from your bank balance, but the funds don't transfer until the next payday. This approach mirrors real-life bill payment habits and helps prevent your daily spending allowance from appearing negative. However, careful if the next pay day doesn't come on time you might not have the money in your account to cover all your bills.",
+                    "\"Cover Bills From Balance Every Day\" method involves allocating funds to fully cover each bill for the upcoming period upon receiving your paycheck. Daily, the allocated amounts are deducted from your available balance and transferred into the bill balance THEN AND THERE! This strategy ensures that bills are entirely covered before their due dates, providing clarity on financial obligations. However, it necessitates having sufficient funds available upfront, which may not be feasible for everyone. Additionally, this approach can make your daily spending allowance appear lower than it actually is, potentially affecting budgeting flexibility.",
+                    "If accumulating the necessary funds to cover bills upfront is challenging, it's advisable to use the \"Cover Bills When Paid\" option. This method aligns with typical financial practices and provides a more accurate reflection of your daily spending capacity. As you work towards building savings, you might consider transitioning to the \"Cover Bills From Balance Every Day\" method for enhanced financial predictability.",
+                };
+
+                var popup = new PopupInfo("Bill accrual", SubTitle, Info);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "CreateNewBudget", "GoToBorrowPayVideos");
+            }
+        }
+
+        async partial void OnSelectedCurrencySymbolChanged(lut_CurrencySymbol oldValue, lut_CurrencySymbol newValue)
+        {
+            try
+            {
+                SearchVisible = false;
+                CurrencySearchResults = null;
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "CreateNewFamilyAccounts", "CurrencySymbolSelected");
+            }
         }
 
         [RelayCommand]
-        private void CurrencySymbolSelected(lut_CurrencySymbol item)
-        {
-            SelectedCurrencySymbol = item;
-            SearchVisible = false;
-            CurrencySearchResults = null;
-        }
-
-        [RelayCommand]
-        async void ContinueSettings()
+        async Task ContinueSettings()
         {
             try
             {
@@ -208,6 +249,8 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 await _ds.UpdateBudgetSettings(BudgetID, BudgetSettings);
 
+
+
                 App.CurrentSettings.IsUpdatedFlag = true;
 
                 if(Budget.Stage == 2)
@@ -230,19 +273,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                 bool UpdateBudgetFlag = false;
 
                 decimal Balance = (decimal)_pt.FormatCurrencyNumber(BankBalanceText);
-
-                if (IsBorrowPay != Budget.IsBorrowPay)
-                {
-                    UpdateBudgetFlag = true;
-                    Budget.IsBorrowPay = IsBorrowPay;
-                    PatchDoc IsBorrow = new PatchDoc
-                    {
-                        op = "replace",
-                        path = "/IsBorrowPay",
-                        value = Budget.IsBorrowPay
-                    };
-                    BudgetUpdate.Add(IsBorrow);
-                }
 
                 if (Balance != Budget.BankBalance)
                 {
@@ -408,7 +438,20 @@ namespace DailyBudgetMAUIApp.ViewModels
                 break;
             case "Budget Outgoings":
 
-                if(Budget.Stage == 4)
+                if (IsBorrowPay != Budget.IsBorrowPay)
+                {
+                    UpdateBudgetFlag = true;
+                    Budget.IsBorrowPay = IsBorrowPay;
+                    PatchDoc IsBorrow = new PatchDoc
+                    {
+                        op = "replace",
+                        path = "/IsBorrowPay",
+                        value = Budget.IsBorrowPay
+                    };
+                    BudgetUpdate.Add(IsBorrow);
+                }
+
+                if (Budget.Stage == 4)
                 {
                     PatchDoc BudgetIsCreated = new PatchDoc
                     {
@@ -421,7 +464,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     await _ds.PatchBudget(BudgetID, BudgetUpdate);
                 }
                 break;
-            case "Budget Savings":
+            case "Budget Bills":
 
                 if(Budget.Stage == 5)
                 {
@@ -481,7 +524,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 break;
             }
 
-            Budget = _ds.GetBudgetDetailsAsync(BudgetID, "Full").Result;
+            Budget = await _ds.GetBudgetDetailsAsync(BudgetID, "Full");
 
         }
     }

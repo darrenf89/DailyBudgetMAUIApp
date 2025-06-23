@@ -1,17 +1,20 @@
-﻿
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class UserAddDetails : ObservableObject
     {
         [ObservableProperty]
-        public int iD;        
+        public partial int ID { get; set; }
+
         [ObservableProperty]
-        public int userID;     
+        public partial int UserID { get; set; }
+
         [ObservableProperty]
-        public DateTime lastViewed;     
+        public partial DateTime LastViewed { get; set; }
+
         [ObservableProperty]
-        public int numberOfViews;
+        public partial int NumberOfViews { get; set; }
     }
 }

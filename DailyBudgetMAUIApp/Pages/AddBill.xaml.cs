@@ -15,7 +15,8 @@ public partial class AddBill : BasePage
     private readonly AddBillViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    public AddBill(AddBillViewModel viewModel, IProductTools pt, IRestDataService ds)
+    private readonly IKeyboardService _ks;
+    public AddBill(AddBillViewModel viewModel, IProductTools pt, IRestDataService ds, IKeyboardService ks)
 	{
 		InitializeComponent();
 
@@ -23,9 +24,26 @@ public partial class AddBill : BasePage
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
+        _ks = ks;
 
         dtpckBillDueDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(1);
     }
+
+    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+        }
+
+        _vm.IsPageBusy = false;
+
+        await Task.Delay(500);
+        base.OnNavigatingFrom(args);
+    }
+
 
     async protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
@@ -34,10 +52,14 @@ public partial class AddBill : BasePage
         _vm.NavigatedFrom = "";
     }
 
-    async protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
-
         base.OnNavigatedTo(args);
+
+        if (Navigation.NavigationStack.Count > 1)
+        {
+            Shell.SetTabBarIsVisible(this, false);
+        }
     }
 
     async protected override void OnAppearing()
@@ -79,7 +101,7 @@ public partial class AddBill : BasePage
                 _vm.BillPayee = "";
                 _vm.BillCategory = "";
             }
-            else if (string.Equals(_vm.NavigatedFrom, "CreateNewBudget", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewBills", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(_vm.NavigatedFrom, "CreateNewBudget", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "ViewBills", StringComparison.OrdinalIgnoreCase) || string.Equals(_vm.NavigatedFrom, "CreateNewFamilyAccount", StringComparison.OrdinalIgnoreCase))
             {
                 _vm.RedirectTo = _vm.NavigatedFrom;
             }
@@ -111,7 +133,7 @@ public partial class AddBill : BasePage
             {
                 if(_vm.Bill is null)
                 {
-                    _vm.Bill = _ds.GetBillFromID(_vm.BillID).Result;
+                    _vm.Bill = await _ds.GetBillFromID(_vm.BillID);
                 }
                 _vm.Title = $"Update Outgoing {_vm.Bill.BillName}";
                 btnUpdateBill.IsVisible = true;
@@ -196,7 +218,7 @@ public partial class AddBill : BasePage
     private void LoadExistingBill()
     {
         SelectBillType.IsVisible = false;
-        if (_vm.Bill.IsRecuring)
+        if (_vm.Bill.IsRecuring.GetValueOrDefault())
         {
             BillTypeSelected.IsVisible = true;
             lblSelectedBillTitle.Text = "You are adding a recurring outgoing";
@@ -282,13 +304,8 @@ public partial class AddBill : BasePage
         {
             ClearAllValidators();
 
-            decimal AmountDue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entAmountDue.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entAmountDue.CursorPosition > position)
-            {
-                entAmountDue.CursorPosition = entAmountDue.Text.Length;
-            }
+            decimal AmountDue = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entAmountDue);
+
             _vm.Bill.BillAmount = AmountDue;
 
             lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
@@ -305,13 +322,8 @@ public partial class AddBill : BasePage
         {
             ClearAllValidators();
 
-            decimal CurrentSaved = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entCurrentSaved.Text = CurrentSaved.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrentSaved.CursorPosition > position)
-            {
-                entCurrentSaved.CursorPosition = entCurrentSaved.Text.Length;
-            }
+            decimal CurrentSaved = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entCurrentSaved);
+
             _vm.Bill.BillCurrentBalance = CurrentSaved;
 
             lblRegularBillValue.Text = _vm.CalculateRegularBillValue();
@@ -646,7 +658,7 @@ public partial class AddBill : BasePage
         string Description = "Every outgoing needs a name, we will refer to it by the name you give it and will make it easier to identify!";
         string DescriptionSub = "Call it something useful or call it something silly up to you really!";
         var popup = new PopUpPageSingleInput("Outgoing Name", Description, DescriptionSub, "Enter an outgoing name!", _vm.Bill.BillName, new PopUpPageSingleInputViewModel());
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
         if (result != null || (string)result != "")
         {
@@ -902,7 +914,7 @@ public partial class AddBill : BasePage
             {
                 _vm.Bill.BillPayee = "";
             }
-            await Shell.Current.GoToAsync($"/{nameof(SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
+            await Shell.Current.GoToAsync($"/{nameof(SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Bill{(_vm.FamilyAccountID > 0 ? $"&FamilyAccountID={_vm.FamilyAccountID}" : "")}",
                 new Dictionary<string, object>
                 {
                     ["Bill"] = _vm.Bill
@@ -916,14 +928,7 @@ public partial class AddBill : BasePage
 
     private void HideKeyBoard()
     {
-        entAmountDue.IsEnabled = false;
-        entAmountDue.IsEnabled = true;
-        entCurrentSaved.IsEnabled = false;
-        entCurrentSaved.IsEnabled = true;
-        entEverynthValue.IsEnabled = false;
-        entEverynthValue.IsEnabled = true;
-        entOfEveryMonthValue.IsEnabled = false;
-        entOfEveryMonthValue.IsEnabled = true;
+        _ks.HideKeyboard();
     }
 
     private async void SelectCategory_Tapped(object sender, TappedEventArgs e)
@@ -940,7 +945,7 @@ public partial class AddBill : BasePage
                 _vm.Bill.Category = "";
             }
 
-            await Shell.Current.GoToAsync($"/{nameof(SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Bill",
+            await Shell.Current.GoToAsync($"/{nameof(SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Bill{(_vm.FamilyAccountID > 0 ? $"&FamilyAccountID={_vm.FamilyAccountID}" : "")}",
                 new Dictionary<string, object>
                 {
                     ["Bill"] = _vm.Bill

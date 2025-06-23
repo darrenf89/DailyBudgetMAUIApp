@@ -11,29 +11,42 @@ namespace DailyBudgetMAUIApp.ViewModels
     [QueryProperty(nameof(Bill), nameof(Bill))]
     [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     [QueryProperty(nameof(PageType), nameof(PageType))]
+    [QueryProperty(nameof(FamilyAccountID), nameof(FamilyAccountID))]
     public partial class SelectPayeePageViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int  budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private Transactions  transaction = new Transactions();
+        public partial int FamilyAccountID { get; set; }
+
         [ObservableProperty]
-        private Bills  bill = new Bills();
+        public partial Transactions Transaction { get; set; } = new Transactions();
+
         [ObservableProperty]
-        private bool  payeeDoesntExists;
+        public partial Bills Bill { get; set; } = new Bills();
+
         [ObservableProperty]
-        private List<string>?  payeeList = new List<string>();
+        public partial bool PayeeDoesntExists { get; set; }
+
         [ObservableProperty]
-        private string  filteredListEmptyText = "You have not set up any Payee's go ahead and do that!";
+        public partial List<string>? PayeeList { get; set; } = new List<string>();
+
         [ObservableProperty]
-        private string  selectedPayee;
+        public partial string FilteredListEmptyText { get; set; } = "You have not set up any Payee's go ahead and do that!";
+
         [ObservableProperty]
-        private string  pageType;
+        public partial string SelectedPayee { get; set; }
+
         [ObservableProperty]
-        private string payeeName;
+        public partial string PageType { get; set; }
+
+        [ObservableProperty]
+        public partial string PayeeName { get; set; }
+
 
 
         public double ScreenWidth { get; }
@@ -56,7 +69,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        private async void ClosePayee(object obj)
+        private async Task ClosePayee(object obj)
         {
             try
             {
@@ -64,7 +77,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(500);

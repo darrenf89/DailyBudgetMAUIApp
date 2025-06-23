@@ -43,7 +43,7 @@
                                         <Border.Shadow>
                                             <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
                                         </Border.Shadow>
-                                        <Image Aspect="AspectFill" WidthRequest="20" HeightRequest="20">
+                                        <Image  WidthRequest="20" HeightRequest="20">
                                             <Image.Source>
                                                 <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Account_balance}" Color="{DynamicResource Primary}" />
                                             </Image.Source>

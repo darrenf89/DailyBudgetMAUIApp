@@ -71,7 +71,7 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             if (App.CurrentBottomSheet != null)
@@ -107,7 +107,7 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
             }
 
             string[] EnvelopeList = EnvelopeSavings.Keys.ToArray();
-            var SelectEnvelope = await Application.Current.MainPage.DisplayActionSheet($"Select which stash you want to pay from!", "Cancel", null, EnvelopeList);
+            var SelectEnvelope = await Application.Current.Windows[0].Page.DisplayActionSheet($"Select which stash you want to pay from!", "Cancel", null, EnvelopeList);
             if (SelectEnvelope == "Cancel")
             {
 
@@ -119,7 +119,7 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 string SpendType = "EnvelopeSaving";

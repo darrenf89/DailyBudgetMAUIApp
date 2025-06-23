@@ -1,23 +1,29 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class ShareBudgetRequest : ObservableObject
     {
         [ObservableProperty]
-        public int  sharedBudgetRequestID;
-        [ObservableProperty]
-        public int  sharedBudgetID;
-        [ObservableProperty]
-        public int  sharedWithUserAccountID;
-        [ObservableProperty]
-        public string?  sharedWithUserEmail;
-        [ObservableProperty]
-        public string?  sharedByUserEmail;
-        [ObservableProperty]
-        public bool  isVerified;
-        [ObservableProperty]
-        public DateTime  requestInitiated = DateTime.UtcNow;
+        public partial int SharedBudgetRequestID { get; set; }
 
+        [ObservableProperty]
+        public partial int SharedBudgetID { get; set; }
+
+        [ObservableProperty]
+        public partial int SharedWithUserAccountID { get; set; }
+
+        [ObservableProperty]
+        public partial string? SharedWithUserEmail { get; set; }
+
+        [ObservableProperty]
+        public partial string? SharedByUserEmail { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsVerified { get; set; }
+
+        [ObservableProperty]
+        public partial DateTime RequestInitiated { get; set; } = DateTime.UtcNow;
     }
 }

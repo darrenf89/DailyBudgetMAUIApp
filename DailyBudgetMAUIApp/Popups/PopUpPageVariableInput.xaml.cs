@@ -13,8 +13,8 @@ public partial class PopUpPageVariableInput : Popup
 
     public PopUpPageVariableInput(string Title, string Description, string DescriptionSub, string Placeholder, object Input, string Type, PopUpPageVariableInputViewModel viewModel)
     {
-        _pt = new ProductTools(new RestDataService());
-        _ds = new RestDataService();
+        _pt = IPlatformApplication.Current.Services.GetService<IProductTools>();
+        _ds = IPlatformApplication.Current.Services.GetService<IRestDataService>();
 
         InitializeComponent();
 
@@ -107,13 +107,8 @@ public partial class PopUpPageVariableInput : Popup
 
     private void txtCurrencyInput_TextChanged(object sender, TextChangedEventArgs e)
     {       
-        decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entCurrencyInput.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrencyInput.CursorPosition > position)
-        {
-            entCurrencyInput.CursorPosition = entCurrencyInput.Text.Length;
-        }
+        decimal Amount = (decimal)_pt.FormatEntryNumber(sender, e, entCurrencyInput);
+
         _vm.DecimalInput = Amount;
     }
 }

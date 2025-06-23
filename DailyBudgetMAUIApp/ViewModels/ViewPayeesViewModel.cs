@@ -9,45 +9,56 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class ViewPayeesViewModel : BaseViewModel
     {
         [ObservableProperty]
-        private IndexableObservableCollection<Payees>  payees = new IndexableObservableCollection<Payees>();
-        [ObservableProperty]
-        private ObservableCollection<ChartClass>  payeesChart = new ObservableCollection<ChartClass>();
-        [ObservableProperty]
-        private double  screenWidth;
-        [ObservableProperty]
-        private double  screenHeight;
-        [ObservableProperty]
-        private List<Brush>  chartBrushes = new List<Brush>();
-        [ObservableProperty]
-        private double  chartContentHeight;
-        [ObservableProperty]
-        private double  chartContentWidth;
-        [ObservableProperty]
-        private double  tabContentWidth;
-        [ObservableProperty]
-        private double  maxChartContentHeight;
-        [ObservableProperty]
-        private string  chartTitle;
-        [ObservableProperty]
-        private bool  chartUpdating;
-        [ObservableProperty]
-        private bool  isPlaying;
-        [ObservableProperty]
-        private List<string>  payPeriods = new List<string>();
-        [ObservableProperty]
-        private int  selectedIndex = 1;
-        [ObservableProperty]
-        private int  headerCatId;
-        [ObservableProperty]
-        private string?  oldPayeeName;
+        public partial IndexableObservableCollection<Payees> Payees { get; set; } = new IndexableObservableCollection<Payees>();
 
-        private readonly IProductTools _pt;
-        private readonly IRestDataService _ds;
-        
-        public ViewPayeesViewModel(IProductTools pt, IRestDataService ds)
+        [ObservableProperty]
+        public partial ObservableCollection<ChartClass> PayeesChart { get; set; } = new ObservableCollection<ChartClass>();
+
+        [ObservableProperty]
+        public partial double ScreenWidth { get; set; }
+
+        [ObservableProperty]
+        public partial double ScreenHeight { get; set; }
+
+        [ObservableProperty]
+        public partial List<Brush> ChartBrushes { get; set; } = new List<Brush>();
+
+        [ObservableProperty]
+        public partial double ChartContentHeight { get; set; }
+
+        [ObservableProperty]
+        public partial double ChartContentWidth { get; set; }
+
+        [ObservableProperty]
+        public partial double TabContentWidth { get; set; }
+
+        [ObservableProperty]
+        public partial double MaxChartContentHeight { get; set; }
+
+        [ObservableProperty]
+        public partial string ChartTitle { get; set; }
+
+        [ObservableProperty]
+        public partial bool ChartUpdating { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsPlaying { get; set; }
+
+        [ObservableProperty]
+        public partial ObservableCollection<string> PayPeriods { get; set; } = new ObservableCollection<string>();
+
+        [ObservableProperty]
+        public partial int SelectedIndex { get; set; } = 1;
+
+        [ObservableProperty]
+        public partial int HeaderCatId { get; set; }
+
+        [ObservableProperty]
+        public partial string? OldPayeeName { get; set; }
+
+
+        public ViewPayeesViewModel()
         {
-            _ds = ds;
-            _pt = pt;
 
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             ScreenWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density);

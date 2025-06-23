@@ -15,15 +15,20 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
 
         [ObservableProperty]
-        private List<CustomerSupport> supports = new List<CustomerSupport>();
+        public partial List<CustomerSupport> Supports { get; set; } = new List<CustomerSupport>();
+
         [ObservableProperty]
-        private ObservableCollection<CustomerSupport> filteredSupports = new ObservableCollection<CustomerSupport>();
+        public partial ObservableCollection<CustomerSupport> FilteredSupports { get; set; } = new ObservableCollection<CustomerSupport>();
+
         [ObservableProperty]
-        private double signOutButtonWidth;
+        public partial double SignOutButtonWidth { get; set; }
+
         [ObservableProperty]
-        private string openClosedFilter = "none";
+        public partial string OpenClosedFilter { get; set; } = "none";
+
         [ObservableProperty]
-        private string readUnreadFilter = "none";
+        public partial string ReadUnreadFilter { get; set; } = "none";
+
 
         public ViewSupportsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -37,7 +42,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         public async Task GetSupports()
         {
-            this.Supports = await _ds.GetSupports(App.UserDetails.UserID, "ViewSupports");
+            this.Supports = await _ds.GetSupports(App.IsFamilyAccount ? App.FamilyUserDetails.UniqueUserID : App.UserDetails.UniqueUserID, "ViewSupports");
             foreach(CustomerSupport C in Supports)
             {
                 C.IsUnreadMessages = C.Replys.Any(c => !c.IsRead);
@@ -112,7 +117,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             try
             {
                 var popup = new PopUpContactUs(new PopUpContactUsViewModel(_pt, _ds));
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
                 if (result is int)
                 {
 

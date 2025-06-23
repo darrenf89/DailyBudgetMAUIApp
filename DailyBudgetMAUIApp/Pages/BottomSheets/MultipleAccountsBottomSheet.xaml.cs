@@ -414,7 +414,7 @@ public partial class MultipleAccountsBottomSheet : BottomSheet, INotifyPropertyC
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(1);
@@ -450,7 +450,8 @@ public partial class MultipleAccountsBottomSheet : BottomSheet, INotifyPropertyC
                 }
 
                 await _ds.ReCalculateBudget(App.DefaultBudgetID);
-                App.DefaultBudget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full").Result;
+                var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                App.DefaultBudget = Budget;
 
                 try
                 {

@@ -3,28 +3,22 @@
                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                 x:Class="DailyBudgetMAUIApp.Pages.EditBudgetSettings"
                 xmlns:local="clr-namespace:DailyBudgetMAUIApp"
-                xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
                 xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
                 xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
                 xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
                 xmlns:checkBox="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
-                xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+                xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+                xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"                
+                Shell.TabBarIsVisible="False"
+                Shell.NavBarIsVisible="True"
+                Shell.FlyoutBehavior="Flyout"
+                droid:NavigationBar.Color="{StaticResource PrimaryDark}"
+                droid:NavigationBar.Style="LightContent"
+                Title="{Binding Title}">
     <VerticalStackLayout x:Name="AllContent">
         <AbsoluteLayout x:Name="MainAbs">
-            <HorizontalStackLayout AbsoluteLayout.LayoutBounds="1,0" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,15,10,0">
-                <Label TextColor="{StaticResource Info}" Text="Close" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
-                <Image Background="{DynamicResource White}" Margin="5,0,0,0" VerticalOptions="End">
-                    <Image.Source>
-                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Close}" Size="16" Color="{DynamicResource Info}"/>
-                    </Image.Source>
-                </Image>
-                <HorizontalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding CloseSettingsCommand}" CommandParameter="{Binding .}"/>
-                </HorizontalStackLayout.GestureRecognizers>
-            </HorizontalStackLayout>
             <Grid x:Name="MainVSL" AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,0,0,0" RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
                 <VerticalStackLayout Grid.Column="0" Grid.Row="0">
-                    <BoxView x:Name="TopBV" HeightRequest="9" Color="{DynamicResource InfoLL}" HorizontalOptions="Center" Margin="0,0,0,10"/>
                     <Label CharacterSpacing="1.5" Margin="20,10,0,0" HorizontalOptions="Start" VerticalOptions="Center" x:Name="lblTitle" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
                     <HorizontalStackLayout Margin="20,0,0,0">
                         <Label CharacterSpacing="1" Text="{Binding Budget.BudgetName}" HorizontalOptions="Start" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Tertiary}" />
@@ -60,23 +54,21 @@
                                 <Label Text="Currency Symbol" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,10"/>
                                 <VerticalStackLayout x:Name="CurrencySearchBarLayout" IsVisible="{Binding SearchVisible}">
                                     <Border Style="{StaticResource StandardInputBorder}" Padding="0" Margin="5,0,0,0" Stroke="{StaticResource Info}">
-                                        <SearchBar x:Name="CurrencySearch" TextColor="{DynamicResource Gray900}" Margin="0" VerticalOptions="Center" HeightRequest="38">
-                                            <SearchBar.Behaviors>
-                                                <xct:EventToCommandBehavior Command="{Binding CurrencySearchCommand}" EventName="TextChanged" CommandParameter="{Binding Text, Source={x:Reference CurrencySearch}}"/>
-                                            </SearchBar.Behaviors>
+                                        <SearchBar x:Name="CurrencySearch" TextColor="{DynamicResource Gray900}" Margin="0" VerticalOptions="Center" HeightRequest="38" Text="{Binding CurrencySearchText}">
                                         </SearchBar>
                                     </Border>
                                     <Border Style="{StaticResource StandardInputBorder}" Padding="0"  Stroke="{StaticResource Info}" Margin="5,20,0,20">
-                                        <ListView ItemsSource="{Binding CurrencySearchResults}" SelectionMode="Single" SelectedItem="{Binding SelectedCurrencySymbol}" HeightRequest="200"  SeparatorColor="{DynamicResource Info}" Margin="10,10,10,10">
-                                            <ListView.ItemTemplate>
+                                        <CollectionView ItemsSource="{Binding CurrencySearchResults}" SelectionMode="Single" SelectedItem="{Binding SelectedCurrencySymbol}" HeightRequest="200" Margin="10">
+                                            <CollectionView.ItemTemplate>
                                                 <DataTemplate>
-                                                    <TextCell Text="{Binding CurrencySymbol}" Detail="{Binding Code}" DetailColor="{DynamicResource Gray900}" TextColor="{DynamicResource PrimaryDark}"/>
+                                                    <Grid Padding="5" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*">
+                                                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding CurrencySymbol}" TextColor="{DynamicResource PrimaryDark}" Margin="0,0,0,2"/>
+                                                        <Label Grid.Row="1" Grid.Column="0" Text="{Binding Code}" TextColor="{DynamicResource Gray900}" Margin="0,0,0,2"/>
+                                                        <BoxView HeightRequest="1" Grid.Row="3" Grid.Column="0" Color="{StaticResource Gray100}"></BoxView>
+                                                    </Grid>
                                                 </DataTemplate>
-                                            </ListView.ItemTemplate>
-                                            <ListView.Behaviors>
-                                                <xct:EventToCommandBehavior EventName="ItemSelected" Command="{Binding CurrencySymbolSelectedCommand}" EventArgsConverter="{StaticResource SelectedItemEventArgsConverter}"/>
-                                            </ListView.Behaviors>
-                                        </ListView>
+                                            </CollectionView.ItemTemplate>
+                                        </CollectionView>
                                     </Border>
                                 </VerticalStackLayout>
                                 <Border x:Name="CurrencySearchResultLayout" Style="{StaticResource StandardInputBorder}" IsVisible="{Binding SearchVisible, Converter={StaticResource BoolConverter}}" Margin="5,0,0,20" Stroke="{StaticResource Info}">
@@ -128,8 +120,8 @@
                                 </Border>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
-                        <BoxView HeightRequest="1" Grid.Row="3" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
-                        <VerticalStackLayout Grid.Row="6" Grid.Column="0" Margin="8,0,20,0">
+                        <BoxView HeightRequest="1" Grid.Row="3" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5" />
+                        <VerticalStackLayout Grid.Row="6" Grid.Column="0" Margin="8,0,20,0" x:Name="PayDaySettings">
                             <Grid VerticalOptions="Center" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
                                 <Label Grid.Column="1" Grid.Row="0" Text="Pay Day Settings" Margin="15,5,0,0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
                                 <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,5,5,0">
@@ -303,7 +295,7 @@
                                 </VerticalStackLayout>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
-                        <BoxView HeightRequest="1" Grid.Row="5" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
+                        <BoxView HeightRequest="1" Grid.Row="5" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5" x:Name="PayDaySettingsBV"/>
                         <VerticalStackLayout Grid.Row="4" Grid.Column="0" Margin="8,0,20,0">
                             <Grid VerticalOptions="Center" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
                                 <Label Grid.Column="1" Grid.Row="0" Text="Toggle Options" Margin="15,5,0,0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
@@ -319,16 +311,28 @@
                             <VerticalStackLayout Margin="10,5,10,0" x:Name="BudgetToggleSetting" HorizontalOptions="Fill">
                                 <Label Text="Outgoings accrual?" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
                                 <Grid ColumnDefinitions="60,*" Margin="5,0,0,10" HeightRequest="40">
-                                    <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsBorrowPay}" SwitchPanUpdate="CustomSwitch_SwitchPanUpdate"/>
+                                    <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsBorrowPay}" ToggledCommand="{Binding IsBorrowPayToggledCommand }"/>
                                     <HorizontalStackLayout VerticalOptions="Center" Grid.Column="1" HorizontalOptions="Start">
                                         <Label HorizontalOptions="Start" Text="{Binding IsBorrowPay, Converter={StaticResource IsBorrowPayTextConverter}}" TextColor="{StaticResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
                                     </HorizontalStackLayout>
                                 </Grid>
+                                <Label Margin="5,0,0,10">
+                                    <Label.FormattedText Padding="0,5,0,0" >
+                                        <FormattedString>
+                                            <Span Text="To find out how changing this setting will affect how we calculate your budget " TextColor="{StaticResource Gray700}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"/>
+                                            <Span Text="read more here" TextColor="{StaticResource Info}"  TextDecorations="Underline" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold">
+                                                <Span.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding GoToBorrowPayVideosCommand}"/>
+                                                </Span.GestureRecognizers>
+                                            </Span>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
                             </VerticalStackLayout>
                             <VerticalStackLayout Margin="10,5,10,0" x:Name="MultipleAccountsToggle" HorizontalOptions="Fill" IsVisible="{Binding IsPremiumAccount}">
                                 <Label Text="Use Multiple Accounts?" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{DynamicResource Gray900}" Padding="5,0,0,5"/>
                                 <Grid ColumnDefinitions="60,*" Margin="5,0,0,10" HeightRequest="40">
-                                    <switch:CustomSwitch Grid.Column="0" Style="{DynamicResource AddTransactionSwitch}" IsToggled="{Binding IsMultipleAccounts}" SwitchPanUpdate="MultipleAccountsToggle_Toggled"/>
+                                    <handlers:CustomSwitch Grid.Column="0" IsToggled="{Binding IsMultipleAccounts}" />
                                     <Label VerticalOptions="Center" Grid.Column="1" LineBreakMode="WordWrap" HorizontalOptions="Start" IsVisible="{Binding IsMultipleAccounts}" Text="Support multiple accounts, each with its own individual balance." TextColor="{StaticResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
                                     <Label VerticalOptions="Center" Grid.Column="1" LineBreakMode="WordWrap" HorizontalOptions="Start" IsVisible="{Binding IsMultipleAccounts, Converter={StaticResource BoolConverter}}" Text="Maintain a single value representing your bank balance." TextColor="{StaticResource Info}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Padding="10,0,0,0"/>
                                 </Grid>
@@ -337,9 +341,9 @@
                         <BoxView HeightRequest="1" Grid.Row="7" Grid.Column="0" Color="{DynamicResource InfoLL}" Margin="0,5,0,5"/>
                     </Grid>
                 </ScrollView>
-                <VerticalStackLayout x:Name="BtnApply" Grid.Column="0" Grid.Row="2" Margin="0,0,0,25">
+                <VerticalStackLayout x:Name="BtnApply" Grid.Column="0" Grid.Row="2" Margin="0,0,0,100">
                     <Button Command="{Binding SaveBudgetSettingsCommand}" Padding="0,10,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" x:Name="SaveCategory" Text="Save budget settings" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Info}" Margin="10,0,10,0" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
-                    <Button Command="{Binding DeleteBudgetCommand}" Padding="0,10,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Delete budget" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Danger}" Margin="10,10,10,0" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
+                    <Button x:Name="DeleteBudget" Command="{Binding DeleteBudgetCommand}" Padding="0,10,0,10" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Text="Delete budget" FontFamily="OpenSansSemibold" CharacterSpacing="1.5" BackgroundColor="{StaticResource Danger}" Margin="10,10,10,0" CornerRadius="2" Style="{StaticResource TitleButtons}" TextColor="White"/>
                 </VerticalStackLayout>
             </Grid>
         </AbsoluteLayout>

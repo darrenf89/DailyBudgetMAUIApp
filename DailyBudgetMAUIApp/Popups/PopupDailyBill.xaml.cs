@@ -67,13 +67,7 @@ public partial class PopupDailyBill : Popup
     {
         try
         {
-            decimal BillAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entBillAmount.CursorPosition > position)
-            {
-                entBillAmount.CursorPosition = entBillAmount.Text.Length;
-            }
+            decimal BillAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entBillAmount);
 
             _vm.Bill.BillAmount = BillAmount;
         }

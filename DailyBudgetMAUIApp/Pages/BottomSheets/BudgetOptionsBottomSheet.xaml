@@ -10,7 +10,7 @@
                    x:DataType="the49:BottomSheet">
     <VerticalStackLayout x:Name="MainVSL">
         <BoxView WidthRequest="60" HeightRequest="6" Color="{DynamicResource Primary}" HorizontalOptions="Center" Margin="0,10,0,10"/>
-        <Label FontAutoScalingEnabled="False" Margin="0,10,0,30" HorizontalOptions="Center" VerticalOptions="Center" x:Name="lblBudgetName" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
+        <Label FontAutoScalingEnabled="False" Margin="0,10,0,30" HorizontalOptions="Center" VerticalOptions="Center" HorizontalTextAlignment="Center" x:Name="lblBudgetName" FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" />
         <ScrollView x:Name="MainScrollView" VerticalScrollBarVisibility="Default">
             <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto" x:Name="grdShareBudget" Padding="16,0,16,0">
                 <VerticalStackLayout Grid.Column="0" Grid.Row="1" Margin="0,0,0,20">
@@ -35,7 +35,7 @@
                 <VerticalStackLayout Grid.Column="0" Grid.Row="0" Margin="0,0,0,20">
                     <Label FontAutoScalingEnabled="False" Margin="0,0,0,40" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="2" FontSize="{Binding Source=Subtitle, Converter={StaticResource StringToSizeConverter}}" FontFamily="OpenSansSemibold" TextColor="{DynamicResource Primary}" Text="Edit Budget"/>
                     <FlexLayout Wrap="Wrap" AlignItems="Start" JustifyContent="SpaceBetween" Margin="0,0,0,15">
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10">
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" x:Name="EditPayInfobrd">
                             <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
                                 <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
                                     <Image.Source>
@@ -152,6 +152,12 @@
                                 <TapGestureRecognizer x:Name="DeactivateMultipleAccounts" Tapped="DeactivateMultipleAccounts_Tapped" />
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="BudgetEditFillOne" IsVisible="False">
+
+                        </VerticalStackLayout> 
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="BudgetEditFillTwo" IsVisible="False">
+
+                        </VerticalStackLayout>                        
                     </FlexLayout>
                     <BoxView Color="{StaticResource Secondary}" Margin="20,0,20,0" HeightRequest="2"/>
                 </VerticalStackLayout>
@@ -171,7 +177,7 @@
                                 <TapGestureRecognizer x:Name="UserSettings" Tapped="UserSettings_Tapped" />
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10">
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" x:Name="CreateNewBudgetbrd" >
                             <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
                                 <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
                                     <Image.Source>
@@ -210,7 +216,7 @@
                                 <TapGestureRecognizer x:Name="UpgradeSubscription" Tapped="UpgradeSubscription_Tapped" />
                             </VerticalStackLayout.GestureRecognizers>
                         </VerticalStackLayout>
-                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100">
+                        <VerticalStackLayout VerticalOptions="Center" Margin="0,0,0,10" WidthRequest="100" x:Name="SwitchBudgetbrd">
                             <Border Margin="0,0,0,5" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40" Stroke="{StaticResource SecondaryBrush}" StrokeThickness="2" StrokeShape="RoundRectangle 20">
                                 <Image VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="Transparent">
                                     <Image.Source>

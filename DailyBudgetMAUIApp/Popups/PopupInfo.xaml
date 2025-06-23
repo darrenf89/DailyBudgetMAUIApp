@@ -8,23 +8,23 @@
            CanBeDismissedByTappingOutsideOfPopup="False"
            Color="#80000000">
     <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent">
-        <Border BackgroundColor="{DynamicResource White}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 4" Margin="0,180,0,0">
+        <Border BackgroundColor="{DynamicResource White}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" MaximumHeightRequest="{Binding PopupHeight}" StrokeShape="RoundRectangle 4" Margin="0,180,0,0">
             <VerticalStackLayout>
                 <VerticalStackLayout x:Name="Parent">
                     <Label 
-                        x:Name="lblTitle"
-                        FontAttributes="Bold"
-                        FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}"
-                        VerticalOptions="Center" 
-                        HorizontalOptions="Center"
-                        FontFamily="OpenSansSemibold"
-                        TextColor="{DynamicResource Primary}"
-                        Margin="0,5,0,20"/>
+                    x:Name="lblTitle"
+                    FontAttributes="Bold"
+                    FontSize="{Binding Source=Title, Converter={StaticResource StringToSizeConverter}}"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Center"
+                    FontFamily="OpenSansSemibold"
+                    TextColor="{DynamicResource Primary}"
+                    Margin="0,5,0,20"/>
                 </VerticalStackLayout>
-                <Grid Margin="20,5,20,20" RowDefinitions="*" ColumnDefinitions="*,20,*" >
+                <Grid Margin="20,5,20,20" RowDefinitions="*" ColumnDefinitions="*,20,*" VerticalOptions="End">
                     <Button WidthRequest="{Binding ButtonOneWidth}" HeightRequest="30" Grid.Row="0" Grid.Column="2" Margin="0" x:Name="btnFinsih" Text="Ok" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Clicked="Close_Popup" HorizontalOptions="Center" BackgroundColor="{StaticResource Primary}" TextColor="White" Padding="15,0"/>
                 </Grid>
-            </VerticalStackLayout>           
+            </VerticalStackLayout>                
         </Border>
     </VerticalStackLayout>
 </xct:Popup>

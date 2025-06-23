@@ -9,10 +9,14 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<bool> CheckNetworkConnection();
         public Task<bool> CheckConnectionStrengthAsync();
         public Task<string> PatchUserAccount(int UserID, List<PatchDoc> PatchDoc);
+        public Task<string> PatchFamilyUserAccount(int UserID, List<PatchDoc> PatchDoc);
+        public Task<string> ConfirmFamilyAccountSetUp(int UserID);
         public Task<UserDetailsModel> RegisterNewUserAsync(RegisterModel User);
         public Task<string> GetUserSaltAsync(string UserEmail);
+        public Task<string> GetFamilyUserSaltAsync(string UserEmail);
         public string LogoutUserAsync(RegisterModel User);
         public Task<UserDetailsModel> GetUserDetailsAsync(string UserEmail);
+        public Task<FamilyUserAccount> GetFamilyUserDetailsAsync(string UserEmail);
         public Task<UserAddDetails> GetUserAddDetails(int UserID);
         public Task<string> DowngradeUserAccount(int UserID);
         public Task<string> PostUserAddDetails(UserAddDetails User);
@@ -30,6 +34,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> DeleteBudget(int BudgetID, int UserID);        
         public Task<string> ReCalculateBudget(int BudgetID);
         public Task<string> DeleteUserAccount(int UserID);
+        public Task<string> DeleteFamilyUserAccount(int UserID);
         public Task<List<lut_CurrencySymbol>> GetCurrencySymbols(string SearchQuery);
         public Task<List<lut_CurrencyPlacement>> GetCurrencyPlacements(string SearchQuery);
         public Task<List<lut_BudgetTimeZone>> GetBudgetTimeZones(string SearchQuery);
@@ -59,6 +64,8 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> UpdateSaving(Savings Saving);
         public Task<string> PatchSaving(int SavingID, List<PatchDoc> PatchDoc);
         public Task<string> DeleteSaving(int SavingID);
+        public Task<string> UnPauseSaving(int SavingID, int BudgetID);
+        public Task<string> PauseSaving(int SavingID, int BudgetID);
         public Task<List<Savings>> GetAllBudgetSavings(int BudgetID);
         public Task<IncomeEvents> GetIncomeFromID(int IncomeID);
         public Task<string> SaveNewIncome(IncomeEvents income, int BudgetID);
@@ -82,7 +89,9 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<string> CreateNewOtpCode(int UserID, string OTPType);
         public Task<string> CreateNewOtpCodeShareBudget(int UserID, int ShareBudgetID);
         public Task<string> ValidateOTPCodeEmail(OTP UserOTP);
+        public Task<string> ValidateOTPCodeFamilyAccount(OTP UserOTP);
         public Task<int> GetUserIdFromEmail(string UserEmail);
+        public Task<int> GetUserIdFamilyAccountFromEmail(string UserEmail);
         public Task<List<string>> GetPayeeList(int BudgetID);
         public Task<List<Payees>> GetPayeeListFull(int BudgetID);
         public Task<Categories> GetPayeeLastCategory(int BudgetID, string PayeeName);
@@ -122,5 +131,19 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task<BankAccounts> UpdateBankAccounts(int BudgetID, BankAccounts Account);
         public Task<string> DeleteBankAccounts(int BudgetID);        
         public Task<string> DeleteBankAccount(int ID);
+        public Task<SessionDetails> RefreshSession(SessionDetails Details);
+        public Task<SessionDetails> CreateSession(AuthDetails Details);
+        public Task<string?> FamilyAccountEmailValid(string Email, int UserID);
+        public Task<FamilyUserAccount> SetUpNewFamilyAccount(FamilyUserAccount User);
+        public Task<List<FamilyUserAccount>> GetUserFamilyAccounts(int UserID);
+        public Task<List<FamilyUserAccount>> GetBudgetFamilyUserAccounts(int UserID);
+        public Task<FamilyUserAccount> GetFamilyUserAccount(int UserID);
+        public Task<FamilyUserAccount> FinaliseFamilyAccount(FamilyUserAccount User);
+        public Task<List<Transactions>> GetPendingQuickTransactions(int BudgetID);
+        public Task<bool> CheckIsAllowanceProcessedParent(FamilyUserBudgetsAllowance familyUserBudgetsAllowance);
+        public Task<FamilyUserBudgetsAllowance> ProcessFamilyBudgetAllowance(FamilyUserBudgetsAllowance familyUserBudgetsAllowance);
+        public Task<List<FamilyUserBudgetsAllowance>> GetUnprocessedAllowancePayments(int BudgetID);
+        public Task<FamilyUserBudgetsAllowance> AddParentTransactionBudgetAllowance(int AllowancePaymentID);
+
     }
 }

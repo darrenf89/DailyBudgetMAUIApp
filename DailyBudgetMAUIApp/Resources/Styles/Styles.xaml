@@ -5,7 +5,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:converters="clr-namespace:DailyBudgetMAUIApp.Converters"
-    xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
     xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
     >
 
@@ -13,18 +12,29 @@
     <xct:IsStringNullOrEmptyConverter x:Key="IsStringNullOrEmptyConverter" />
     <xct:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
     <xct:IsStringNotNullOrWhiteSpaceConverter x:Key="IsStringNotNullOrWhiteSpaceConverter" />
+    <converters:SavingProgressBarMax x:Key="SavingProgressBarMax" />
+    <converters:SavingProgressBarMaxString x:Key="SavingProgressBarMaxString" />
     <xct:IsStringNullOrWhiteSpaceConverter x:Key="IsStringNullOrWhiteSpaceConverter" />
     <xct:SelectedItemEventArgsConverter x:Key="SelectedItemEventArgsConverter" />
+    <converters:NewSavingTypeHeaderConverter x:Key="NewSavingTypeHeaderConverter" />
     <converters:IsBudgetSharedBudgetToBool x:Key="IsBudgetSharedBudgetToBool" />
+    <converters:SavingTypeToString x:Key="SavingTypeToString" />
     <converters:IsBudgetNotSharedBudgetToBool x:Key="IsBudgetNotSharedBudgetToBool" />
+    <converters:LeftToSpendDailyAmountHideShow x:Key="LeftToSpendDailyAmountHideShow" />
+    <converters:RecurringBillDetails x:Key="RecurringBillDetails"/>
+    <converters:IsSavingsBuilder x:Key="IsSavingsBuilder"/>
+    <converters:IsNotSavingsBuilder x:Key="IsNotSavingsBuilder"/>
+    <converters:IsSavingsTargetAmount x:Key="IsSavingsTargetAmount"/>
+    <converters:IsSavingsTargetDate x:Key="IsSavingsTargetDate"/>
+    <converters:SavingToGlyph x:Key="SavingToGlyph"/>
+    <converters:BillToGlyph x:Key="BillToGlyph"/>
+    <converters:LeftToSpendBalanceHideShow x:Key="LeftToSpendBalanceHideShow" />
+    <converters:IncomeTypeConverter x:Key="IncomeTypeConverter"/>
+    <converters:RecurringIncomeDetails x:Key="RecurringIncomeDetails"/>
     <converters:IsBudgetShareRequestToBool x:Key="IsBudgetShareRequestToBool" />
     <converters:DecimalToCurrencyString x:Key="DecimalToCurrencyString" />
     <converters:GreaterLessZeroColorLight x:Key="GreaterLessZeroColorLight" />
     <converters:GreaterLessZeroColor x:Key="GreaterLessZeroColor" />
-    <converters:LeftToSpendDailyAmountHideShow x:Key="LeftToSpendDailyAmountHideShow" />
-    <converters:LeftToSpendBalanceHideShow x:Key="LeftToSpendBalanceHideShow" />
-    <converters:SavingProgressBarMax x:Key="SavingProgressBarMax" />
-    <converters:SavingProgressBarMaxString x:Key="SavingProgressBarMaxString" />
     <converters:SavingTypeConverter x:Key="SavingTypeConverter" />
     <converters:DateToNumberOfDays x:Key="DateToNumberOfDays" />
     <converters:BoolToColor x:Key="BoolToColor" />
@@ -40,17 +50,10 @@
     <converters:EventTypeToString x:Key="EventTypeToString" />
     <converters:PayeeText x:Key="PayeeText" />
     <converters:SavingsTypeToText x:Key="SavingsTypeToText"/>
-    <converters:IsSavingsBuilder x:Key="IsSavingsBuilder"/>
-    <converters:IsSavingsTargetAmount x:Key="IsSavingsTargetAmount"/>
-    <converters:IsSavingsTargetDate x:Key="IsSavingsTargetDate"/>
-    <converters:SavingToGlyph x:Key="SavingToGlyph"/>
-    <converters:RecurringBillDetails x:Key="RecurringBillDetails"/>
+    <converters:SavingsNameToText x:Key="SavingsNameToText"/>
     <converters:BillDueDate x:Key="BillDueDate"/>
     <converters:BillTypeConverter x:Key="BillTypeConverter"/>
-    <converters:BillToGlyph x:Key="BillToGlyph"/>
     <converters:IsBorrowPayTextConverter x:Key="IsBorrowPayTextConverter"/>
-    <converters:IncomeTypeConverter x:Key="IncomeTypeConverter"/>
-    <converters:RecurringIncomeDetails x:Key="RecurringIncomeDetails"/>
     <converters:IconNameConverter x:Key="IconNameConverter"/>
     <converters:CategoryIDToBool x:Key="CategoryIDToBool"/>
     <converters:CategoryIDToColor x:Key="CategoryIDToColor"/>
@@ -68,7 +71,9 @@
     <converters:MessageAlignmentConverter x:Key="MessageAlignmentConverter"/>
     <converters:CustomerMessageColorConverter x:Key="CustomerMessageColorConverter"/>
     <converters:ReverseMessageAlignmentConverter x:Key="ReverseMessageAlignmentConverter"/>
-    <converters:BoolToColorDisabledReverse x:Key="BoolToColorDisabledReverse"/>    
+    <converters:BoolToColorDisabledReverse x:Key="BoolToColorDisabledReverse"/>
+    <converters:TransactionToDetailsString x:Key="TransactionToDetailsString"/>
+    <converters:BudgetPayPeriodDetails x:Key="BudgetPayPeriodDetails"/>    
     
     <Style TargetType="Label" x:Key="ErrorMessage">
         <Setter Property="TextColor" Value="{DynamicResource Danger}"/>
@@ -105,7 +110,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource SecondaryLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -117,7 +122,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource TertiaryLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -129,7 +134,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource SuccessLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -141,7 +146,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource SuccessLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -153,7 +158,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource DangerLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -165,7 +170,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource DangerLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -177,7 +182,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource InfoLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -189,7 +194,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource WarningLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -201,7 +206,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource PrimaryLightLight}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -213,7 +218,7 @@
         <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource White}"/> 
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="20" Opacity="0.95" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.95" />
         </Setter>
     </Style>
 
@@ -225,7 +230,7 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="10" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Black}" Offset="0,0" Radius="5" Opacity="0.2" />
         </Setter>
     </Style>
 
@@ -255,7 +260,7 @@
         <Setter Property="HeightRequest" Value="170"/>
         <Setter Property="WidthRequest" Value="170"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Gray900Brush}" Offset="0,0" Radius="20" Opacity="0.95" />
+            <Shadow Brush="{DynamicResource Gray900Brush}" Offset="0,0" Radius="5" Opacity="0.95" />
         </Setter>
     </Style>
 
@@ -266,7 +271,7 @@
         <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Gray900}" Offset="0,0" Opacity="0.95" Radius="20" />
+            <Shadow Brush="{DynamicResource Gray900}" Offset="0,0" Opacity="0.95" Radius="5" />
         </Setter>
     </Style>
     
@@ -279,7 +284,7 @@
         <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Gray900}" Offset="0,0" Radius="20" Opacity="0.95" />
+            <Shadow Brush="{DynamicResource Gray900}" Offset="0,0" Radius="5" Opacity="0.95" />
         </Setter>
     </Style>
 
@@ -291,7 +296,7 @@
         <Setter Property="StrokeThickness" Value="1.5"/>
         <Setter Property="Background" Value="{DynamicResource White}"/>
         <Setter Property="Shadow">
-            <Shadow Brush="{DynamicResource Tertiary}" Offset="0,0" Radius="20" Opacity="0.95" />
+            <Shadow Brush="{DynamicResource Tertiary}" Offset="0,0" Radius="5" Opacity="0.95" />
         </Setter>
     </Style>
 
@@ -746,7 +751,7 @@
         <Setter Property="Padding" Value="0"/>
         <Setter Property="CornerRadius" Value="5"/>
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{DynamicResource Primary}"/>
+        <Setter Property="TextColor" Value="{DynamicResource Info}"/>
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
@@ -1110,19 +1115,11 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Frame">
-        <Setter Property="HasShadow" Value="False" />
-        <Setter Property="BorderColor" Value="{StaticResource Gray200}" />
-        <Setter Property="CornerRadius" Value="8" />
-    </Style>
-
     <Style TargetType="ImageButton">
         <Setter Property="Opacity" Value="1" />
         <Setter Property="BorderColor" Value="Transparent"/>
         <Setter Property="BorderWidth" Value="0"/>
         <Setter Property="CornerRadius" Value="0"/>
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -1311,23 +1308,6 @@
 
     <Style TargetType="SwipeItem">
         <Setter Property="BackgroundColor" Value="{StaticResource White}" />
-    </Style>
-
-    <Style TargetType="switch:CustomSwitch" x:Key="AddTransactionSwitch">
-        <Setter Property="KnobWidth" Value="24" />
-        <Setter Property="WidthRequest" Value="45" />
-        <Setter Property="KnobHeight" Value="24" />
-        <Setter Property="KnobLimit" Value="Boundary" />
-        <Setter Property="HeightRequest" Value="28" />
-        <Setter Property="HorizontalOptions" Value="Start" />
-        <Setter Property="VerticalOptions" Value="Center" />
-        <Setter Property="KnobBackgroundColor" Value="#fafafa" />
-        <Setter Property="StrokeShape" Value="RoundRectangle 15" />
-        <Setter Property="KnobStrokeShape" Value="RoundRectangle 12"/>
-        <Setter Property="BackgroundColor" Value="{StaticResource TertiaryLight}"/>
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="HorizontalKnobMargin" Value="2"/>
     </Style>
 
     <Style TargetType="Switch" x:Key="DateSwitch">

@@ -1,4 +1,3 @@
-using CommunityToolkit.Maui.Core.Extensions;
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
@@ -77,8 +76,10 @@ public partial class ViewPayees : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
             base.OnAppearing();
             await LoadData();
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {
@@ -124,9 +125,6 @@ public partial class ViewPayees : BasePage
                 _vm.PayPeriods.Add($"{SP.FromDate: dd MMM} to {SP.ToDate: dd MMM}");
             }
         }
-
-        listView.RefreshView();
-        listView.RefreshItem();
 
         if (App.CurrentPopUp != null)
         {
@@ -233,7 +231,7 @@ public partial class ViewPayees : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
@@ -332,12 +330,12 @@ public partial class ViewPayees : BasePage
         {
             Payees payee = (Payees)e.Parameter;
 
-            bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete payee?", $"Are you sure you want to Delete {payee.Payee}?", "Yes", "No!");
+            bool Delete = await Application.Current.Windows[0].Page.DisplayAlert($"Delete payee?", $"Are you sure you want to Delete {payee.Payee}?", "Yes", "No!");
             if (Delete)
             {
                 List<string> Payees = await _ds.GetPayeeList(App.DefaultBudgetID);
                 string[] PayeeList = Payees.ToArray();
-                var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
+                var reassign = await Application.Current.Windows[0].Page.DisplayActionSheet($"Do you want to reassign this payees transactions?", "Cancel", "No", PayeeList);
                 if(reassign == "Cancel")
                 {
 
@@ -361,8 +359,6 @@ public partial class ViewPayees : BasePage
                     _vm.PayeesChart.RemoveAt(index);
                 }
 
-                listView.RefreshView();
-                listView.RefreshItem();
             }
         }
         catch (Exception ex)
@@ -379,8 +375,6 @@ public partial class ViewPayees : BasePage
             {        
                 Payees payee = (Payees)e.Parameter;
                 payee.IsEditMode = true;
-
-                listView.RefreshItem();
 
                 _vm.OldPayeeName = payee.Payee;
 
@@ -413,8 +407,6 @@ public partial class ViewPayees : BasePage
 
             payee.IsEditMode = false;
 
-            listView.RefreshItem();
-
             var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
             var EntryList = Entries.ToList();
             foreach (BorderlessEntry ent in EntryList)
@@ -444,9 +436,14 @@ public partial class ViewPayees : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
 
                 await Task.Delay(1000);
+
+                if(payee.Payee == "Unassigned")
+                {
+                    payee.Payee = "";
+                }
 
                 FilterModel Filters = new FilterModel
                 {

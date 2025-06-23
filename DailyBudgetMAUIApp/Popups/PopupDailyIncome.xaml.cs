@@ -37,13 +37,7 @@ public partial class PopupDailyIncome : Popup
 
     void IncomeAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal IncomeAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entIncomeAmount.Text = IncomeAmount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entIncomeAmount.CursorPosition > position)
-        {
-            entIncomeAmount.CursorPosition = entIncomeAmount.Text.Length;
-        }
+        decimal IncomeAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entIncomeAmount);
 
         _vm.Income.IncomeAmount = IncomeAmount;
     }

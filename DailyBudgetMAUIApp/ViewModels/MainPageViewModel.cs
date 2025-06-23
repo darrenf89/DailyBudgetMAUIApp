@@ -1,18 +1,16 @@
-using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Popups;
-using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.Pages;
+using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Syncfusion.Maui.Carousel;
-using System.Collections.ObjectModel;
-using Syncfusion.Maui.Scheduler;
-using DailyBudgetMAUIApp.Handlers;
-using CommunityToolkit.Maui.Views;
-using Plugin.Maui.AppRating;
-using Plugin.MauiMTAdmob;
-using System.Globalization;
 using CommunityToolkit.Mvvm.Messaging;
+using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.Pages;
+using Plugin.Maui.AppRating;
+using Syncfusion.Maui.Carousel;
+using Syncfusion.Maui.Scheduler;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using static DailyBudgetMAUIApp.Pages.ViewAccounts;
 
 
@@ -20,84 +18,135 @@ namespace DailyBudgetMAUIApp.ViewModels
 {
     [QueryProperty(nameof(SnackBar), nameof(SnackBar))]
     [QueryProperty(nameof(SnackID), nameof(SnackID))]
-    public partial class MainPageViewModel : BaseViewModel  
+    public partial class MainPageViewModel : BaseViewModel
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
         private readonly IAppRating _ar;
 
         [ObservableProperty]
-        private int  defaultBudgetID;
+        public partial int DefaultBudgetID { get; set; }
 
         [ObservableProperty]
-        private Budgets  defaultBudget = new Budgets();
+        public partial bool IsMainPageBusy { get; set; } = false;
 
         [ObservableProperty]
-        private bool  isBudgetCreated;
+        public partial Budgets DefaultBudget { get; set; } = new Budgets();
+
         [ObservableProperty]
-        private bool isPreviousBudget;
+        public partial List<Savings> CarouselSavings { get; set; }
+
         [ObservableProperty]
-        private bool  isRefreshing;
+        public partial List<Savings> Envelopes { get; set; }
+
         [ObservableProperty]
-        private string  snackBar;
+        public partial List<Bills> CarouselBills { get; set; }
+
         [ObservableProperty]
-        private int  snackID;
+        public partial List<IncomeEvents> CarouselIncomes { get; set; }
+
         [ObservableProperty]
-        private double  progressBarWidthRequest;
+        public partial List<Categories> CategoryList { get; set; }
+
         [ObservableProperty]
-        private double  progressBarCarWidthRequest;
+        public partial Transactions PendingQuickTransaction { get; set; }
+
         [ObservableProperty]
-        private EnvelopeStats  envelopeStats;
+        public partial bool IsBudgetCreated { get; set; }
+
         [ObservableProperty]
-        private double  signOutButtonWidth;
+        public partial bool IsPreviousBudget { get; set; }
+
         [ObservableProperty]
-        private double  screenWidth;
+        public partial bool IsRefreshing { get; set; }
+
         [ObservableProperty]
-        private SfCarousel  savingCarousel;
+        public partial string SnackBar { get; set; }
+
         [ObservableProperty]
-        private SfCarousel  billCarousel;
+        public partial int SnackID { get; set; }
+
         [ObservableProperty]
-        private SfCarousel  incomeCarousel;
+        public partial double ProgressBarWidthRequest { get; set; }
+
         [ObservableProperty]
-        private ObservableCollection<Transactions>  recentTransactions = new ObservableCollection<Transactions>();
+        public partial double ProgressBarCarWidthRequest { get; set; }
+
         [ObservableProperty]
-        private double  recentTransactionsHeight = 452;
+        public partial EnvelopeStats EnvelopeStats { get; set; }
+
         [ObservableProperty]
-        private decimal  maxBankBalance = 0;
+        public partial double SignOutButtonWidth { get; set; }
+
         [ObservableProperty]
-        private decimal  transactionAmount;
+        public partial double ScreenWidth { get; set; }
+
         [ObservableProperty]
-        private double  quickTransactionWidth;
+        public partial SfCarousel SavingCarousel { get; set; }
+
         [ObservableProperty]
-        private double  quickTransactionInputWidth;
+        public partial SfCarousel BillCarousel { get; set; }
+
         [ObservableProperty]
-        private decimal  futureDailySpend;
+        public partial SfCarousel IncomeCarousel { get; set; }
+
         [ObservableProperty]
-        private int  currentPayeeOffset = 0;
+        public partial ObservableCollection<Transactions> RecentTransactions { get; set; } = new ObservableCollection<Transactions>();
+
         [ObservableProperty]
-        private List<Payees>  payees = new List<Payees>();
+        public partial double RecentTransactionsHeight { get; set; } = 452;
+
         [ObservableProperty]
-        private ObservableCollection<ChartClass>  categoriesChart = new ObservableCollection<ChartClass>();
+        public partial decimal MaxBankBalance { get; set; } = 0;
+
         [ObservableProperty]
-        private ObservableCollection<ChartClass>  payeesChart = new ObservableCollection<ChartClass>();
+        public partial decimal TransactionAmount { get; set; }
+
         [ObservableProperty]
-        private List<Brush>  chartBrushes = new List<Brush>();
+        public partial double QuickTransactionWidth { get; set; }
+
         [ObservableProperty]
-        private bool  payeeChartVisible = true;
+        public partial double QuickTransactionInputWidth { get; set; }
+
         [ObservableProperty]
-        private bool  categoryChartVisible = true;
+        public partial decimal FutureDailySpend { get; set; }
+
         [ObservableProperty]
-        private bool isUnreadMessage;
+        public partial List<Payees> Payees { get; set; } = new List<Payees>();
+
         [ObservableProperty]
-        private bool isQuickTransaction;
+        public partial List<Brush> ChartBrushes { get; set; } = new List<Brush>();
+
         [ObservableProperty]
-        private List<Budgets> quickTransactionBudgets = new List<Budgets>();
+        public partial bool PayeeChartVisible { get; set; } = true;
+
         [ObservableProperty]
-        private Budgets selectedQuickTransactionBudget;        
+        public partial bool CategoryChartVisible { get; set; } = true;
+
         [ObservableProperty]
-        private string quickTransactionAmount;
+        public partial bool IsUnreadMessage { get; set; }
+
         [ObservableProperty]
-        private ObservableCollection<SchedulerAppointment>  eventList = new ObservableCollection<SchedulerAppointment>();
+        public partial bool IsQuickTransaction { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsTopStickyVisible { get; set; }
+
+        [ObservableProperty]
+        public partial List<Budgets> QuickTransactionBudgets { get; set; } = new List<Budgets>();
+
+        [ObservableProperty]
+        public partial Budgets SelectedQuickTransactionBudget { get; set; }
+
+        [ObservableProperty]
+        public partial string QuickTransactionAmount { get; set; }
+
+        [ObservableProperty]
+        public partial int NumberPendingQuickTransactions { get; set; }
+
+        [ObservableProperty]
+        public partial ObservableCollection<SchedulerAppointment> EventList { get; set; } = new ObservableCollection<SchedulerAppointment>();
+
 
         public delegate void ReloadPageAction();
         public event ReloadPageAction ReloadPage;
@@ -116,6 +165,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             ProgressBarCarWidthRequest = ScreenWidth - 115;
 
             ChartBrushes = App.ChartBrush;
+
         }
 
 
@@ -158,7 +208,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                     CategoryID = null,
                     IsTransacted = true,
                     SavingsSpendType = null,
-                    EventType = "Transaction"                    
+                    EventType = "Transaction",
+                    IsQuickTransaction = true
                 };
 
                 await _pt.MakeSnackBar("Processing transaction", null, null, new TimeSpan(0, 0, 10), "Success");
@@ -186,30 +237,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async Task GoToAccountSettings(object obj)
-        {
-            try
-            {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
-
-                await Task.Delay(500);
-
-                EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()));
-
-                await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
-            }
-            catch (Exception ex)
-            {
-                await _pt.HandleException(ex, "MainPage", "GoToAccountSettings");
-            }
-        }
-
-        [RelayCommand]
         async Task NavigateViewSupports()
         {
             try
@@ -218,7 +245,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"{nameof(ViewSupports)}");
@@ -239,46 +266,15 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
-                await Task.Delay(500);
-
-                EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(new ProductTools(new RestDataService()), new RestDataService()), new ProductTools(new RestDataService()));
-
-                await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
+                await Shell.Current.GoToAsync($"//{nameof(ViewBudgets)}");
             }
             catch (Exception ex)
             {
                 await _pt.HandleException(ex, "MainPage", "GoToBudgetSettings");
             }
-        }
-
-        [RelayCommand]
-        async Task GoToAccountDetails(object obj)
-        {
-            try
-            {
-                CrossMauiMTAdmob.Current.InitialiseAndShowConsentForm();
-
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
-                }
-
-                await Task.Delay(500);
-
-                EditAccountDetails page = new EditAccountDetails(new EditAccountDetailsViewModel(_pt, _ds), _pt, _ar);
-
-                await Application.Current.MainPage.Navigation.PushModalAsync(page, true);
-            }
-            catch (Exception ex)
-            {
-                await _pt.HandleException(ex, "MainPage", "GoToAccountDetails");
-            }
-
         }
 
         [RelayCommand]
@@ -338,11 +334,15 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                var page = new LoadingPage();
-                await Application.Current.MainPage.Navigation.PushModalAsync(page);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
 
-                await Application.Current.MainPage.Navigation.PopModalAsync();
-                await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
+                await Task.Delay(1);
+                await Shell.Current.GoToAsync($"/{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
             }
             catch (Exception ex)
             {
@@ -356,8 +356,14 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                var page = new LoadingPage();
-                await Application.Current.MainPage.Navigation.PushModalAsync(page);
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(1);
 
                 if (Preferences.ContainsKey(nameof(App.UserDetails)))
                 {
@@ -369,12 +375,15 @@ namespace DailyBudgetMAUIApp.ViewModels
                     Preferences.Remove(nameof(App.DefaultBudgetID));
                 }
 
+                if (Preferences.ContainsKey(nameof(App.IsFamilyAccount)))
+                {
+                    Preferences.Remove(nameof(App.IsFamilyAccount));
+                }
+
                 App.DefaultBudgetID = 0;
                 App.DefaultBudget = null;
 
                 Application.Current!.MainPage = new AppShell();
-
-                await Application.Current.MainPage.Navigation.PopModalAsync();
                 await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
             }
             catch (Exception ex)
@@ -388,7 +397,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Full").Result;
+                DefaultBudget = await _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Full");
 
                 App.DefaultBudget = DefaultBudget;
                 IsBudgetCreated = App.DefaultBudget.IsCreated;
@@ -411,12 +420,112 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                int PreviousBudgetID = _ds.GetUserDetailsAsync(App.UserDetails.Email).Result.PreviousDefaultBudgetID;
+                var UserDetails = await _ds.GetUserDetailsAsync(App.UserDetails.Email);
+                int PreviousBudgetID = UserDetails.PreviousDefaultBudgetID;
                 await _pt.ChangeDefaultBudget(App.UserDetails.UserID, PreviousBudgetID, true);
             }
             catch (Exception ex)
             {
                 await _pt.HandleException(ex, "MainPage", "SwapBudget");
+            }
+        }
+
+
+        [RelayCommand]
+        async Task SpendEnvelope(object obj)
+        {
+            try
+            {
+                if (obj is not Savings Saving)
+                {
+                    return;
+                }
+
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    await Task.Delay(1);
+                }
+
+                string SpendType = "EnvelopeSaving";
+                Transactions T = new Transactions
+                {
+                    IsSpendFromSavings = true,
+                    SavingID = Saving.SavingID,
+                    SavingName = Saving.SavingsName,
+                    SavingsSpendType = SpendType,
+                    EventType = "Envelope",
+                    TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow)
+                };
+
+                await Shell.Current.GoToAsync($"/{nameof(AddTransaction)}?BudgetID={App.DefaultBudget.BudgetID}&NavigatedFrom=ViewMainPage&TransactionID=0",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = T
+                    });
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "SpendEnvelope");
+            }
+        }
+
+        [RelayCommand]
+        async Task EditEnvelope(object obj)
+        {
+            try
+            {
+                if(obj is not Savings Saving)
+                {
+                    return;
+                }
+
+                bool result = await Shell.Current.DisplayAlert($"Edit {Saving.SavingsName}?", $"Are you sure you want to edit {Saving.SavingsName}?", "Yes", "Cancel");
+
+                if (result)
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                        await Task.Delay(1);
+                    }
+
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}//{nameof(AddSaving)}?BudgetID={DefaultBudget.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=MainPage");
+                }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "EditEnvelope");
+            }
+        }
+
+        [RelayCommand]
+        async Task AddNewEnvelope()
+        {
+            try
+            {
+                bool result = await Shell.Current.DisplayAlert($"Add new envelope?", $"Are you sure you want to add a new envelope?", "Yes", "Cancel");
+
+                if (result)
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                        await Task.Delay(1);
+                    }
+
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(AddSaving)}?SavingType=Envelope");
+                }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "AddNewEnvelope");
             }
         }
 
@@ -429,13 +538,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Task.Delay(500);
 
                 await _ds.ReCalculateBudget(App.DefaultBudgetID);
-                App.DefaultBudget = _ds.GetBudgetDetailsAsync(DefaultBudgetID, "Full").Result;
+                var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                App.DefaultBudget = Budget;
                 DefaultBudget = App.DefaultBudget;
                 ReloadPage?.Invoke();
             }
@@ -445,5 +555,31 @@ namespace DailyBudgetMAUIApp.ViewModels
             }
         }
 
+        [RelayCommand]
+        async Task EditQuickTransaction(Transactions T)
+        {
+            try
+            {
+                if (App.CurrentPopUp == null)
+                {
+                    var PopUp = new PopUpPage();
+                    App.CurrentPopUp = PopUp;
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                }
+
+                await Task.Delay(1);
+
+                await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={T.TransactionID}&NavigatedFrom=ViewMainPage",
+                    new Dictionary<string, object>
+                    {
+                        ["Transaction"] = T
+                    });
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "MainPage", "EditQuickTransaction");
+            }
+        }
+        
     }
 }

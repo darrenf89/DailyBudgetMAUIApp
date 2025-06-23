@@ -1,16 +1,13 @@
- using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DailyBudgetMAUIApp.Models
 {
-
     public partial class lut_CurrencyDecimalDigits : ObservableObject
     {
         [ObservableProperty]
-        public int  id;
+        public partial int Id { get; set; }
+
         [ObservableProperty]
-        public string currencyDecimalDigits;
+        public partial string CurrencyDecimalDigits { get; set; }
     }
-
 }
-
-

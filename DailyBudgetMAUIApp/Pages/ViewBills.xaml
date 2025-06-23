@@ -36,15 +36,21 @@
             <BoxView HeightRequest="8" Color="{StaticResource White}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"/>
         </Grid>
         <ScrollView Grid.Row="1" Grid.Column="0">
-            <StackLayout BindableLayout.ItemsSource="{Binding Bills}" >
+            <StackLayout BindableLayout.ItemsSource="{Binding Bills}" x:Name="listView">
                 <BindableLayout.EmptyView>
-                    <VerticalStackLayout VerticalOptions="Start" BackgroundColor="{StaticResource White}" Margin="20">
-                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0,0,0,10">
-                            <Image.Source>
-                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="35"  Color="{DynamicResource PrimaryDark}" />
-                            </Image.Source>
-                        </Image>
-                        <Label Text="You don't have any outgoings, to start saving click add new outgoing now!" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray900}" />
+                    <VerticalStackLayout>
+                        <VerticalStackLayout VerticalOptions="Start" BackgroundColor="{StaticResource White}" Margin="20" IsVisible="{Binding BindingContext.IsPageBusy,Source={x:Reference Name=listView}, Converter={StaticResource BoolConverter}}">
+                            <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0,0,0,10">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="35"  Color="{DynamicResource PrimaryDark}" />
+                                </Image.Source>
+                            </Image>
+                            <Label Text="You don't have any outgoings, to start saving click add new outgoing now!" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray900}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout IsVisible="{Binding BindingContext.IsPageBusy,Source={x:Reference Name=listView}}">
+                            <Label Text="Loading Outgoings" Margin="0,40,0,20" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray900}" />
+                            <ActivityIndicator IsRunning="{Binding BindingContext.IsPageBusy,Source={x:Reference Name=listView}}" VerticalOptions="Center" HorizontalOptions="Center" Margin="0" Color="{DynamicResource Primary}" Scale="1.2"/>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </BindableLayout.EmptyView>
                 <BindableLayout.ItemTemplate>

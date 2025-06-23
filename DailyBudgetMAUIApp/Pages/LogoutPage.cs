@@ -1,5 +1,7 @@
 namespace DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Popups;
+using Plugin.LocalNotification;
+
 public class LogoutPage : ContentPage
 {
 	public LogoutPage()
@@ -17,6 +19,39 @@ public class LogoutPage : ContentPage
         if (Preferences.ContainsKey(nameof(App.DefaultBudgetID)))
         {
             Preferences.Remove(nameof(App.DefaultBudgetID));
+        }
+
+        if (Preferences.ContainsKey(nameof(App.IsFamilyAccount)))
+        {
+            Preferences.Remove(nameof(App.IsFamilyAccount));
+        }
+
+        if (await SecureStorage.Default.GetAsync("Session") != null)
+        {
+            SecureStorage.Default.Remove("Session");
+        }
+
+        if (Preferences.ContainsKey("IsTopStickyVisible"))
+        {
+            Preferences.Remove("IsTopStickyVisible");
+        }
+
+        App.DefaultBudgetID = 0;
+        App.DefaultBudget = null;
+
+        Application.Current!.MainPage = new AppShell();
+        LocalNotificationCenter.Current.CancelAll();
+
+        if (App.CurrentPopUp != null)
+        {
+            await App.CurrentPopUp.CloseAsync();
+            App.CurrentPopUp = null;
+        }
+
+        if (App.CurrentBottomSheet != null)
+        {
+            await App.CurrentBottomSheet.DismissAsync();
+            App.CurrentBottomSheet = null;
         }
 
         await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");

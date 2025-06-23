@@ -87,8 +87,8 @@
                             <Entry.Behaviors>
                                 <xct:TextValidationBehavior
                                     MinimumLength="1"
-                                    Flags="ValidateOnUnfocusing, ForceMakeValidWhenFocused, ValidateOnValueChanged"
-                                    IsValid="{Binding ReturnDataRequired}" />
+                                    Flags="ValidateOnUnfocused, ForceMakeValidWhenFocused, ValidateOnValueChanged"
+                                    IsValid="{Binding ReturnDataRequired}" BindingContext="{Binding BindingContext, Source={x:Reference AbsLayout}, x:DataType=PopUpPageSingleInputViewModel}" />
                             </Entry.Behaviors>
                         </Entry>
                         <HorizontalStackLayout 

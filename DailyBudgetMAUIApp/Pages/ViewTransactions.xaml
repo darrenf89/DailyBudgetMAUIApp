@@ -112,12 +112,18 @@
             <sfList:SfListView SwipeOffset="128" HeightRequest="{Binding SFListHeight}" SelectionMode="None" x:Name="listView" AllowSwiping="True" AutoFitMode="DynamicHeight" LoadMoreOption="Auto" LoadMoreCommand="{Binding LoadMoreItemsCommand}" LoadMoreCommandParameter="{Binding Source={x:Reference listView}}" ItemsSource="{Binding Transactions}">
                 <sfList:SfListView.EmptyView>
                     <VerticalStackLayout VerticalOptions="Start" HeightRequest="2000" BackgroundColor="{StaticResource White}">
-                        <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0,40,0,0">
-                            <Image.Source>
-                                <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="42"  Color="{DynamicResource PrimaryDark}" />
-                            </Image.Source>
-                        </Image>
-                        <Label Text="No Transactions Found" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Primary}" />
+                        <VerticalStackLayout IsVisible="{Binding BindingContext.IsPageBusy,Source={x:Reference Name=listView}, Converter={StaticResource BoolConverter}}">
+                            <Image HorizontalOptions="Center" VerticalOptions="Center" Margin="0,40,0,0">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Sentiment_dissatisfied}" Size="42"  Color="{DynamicResource PrimaryDark}" />
+                                </Image.Source>
+                            </Image>
+                            <Label Text="No Transactions Found" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray900}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout IsVisible="{Binding BindingContext.IsPageBusy,Source={x:Reference Name=listView}}">
+                            <Label Text="Loading Transactions" Margin="0,40,0,20" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource Gray900}" />
+                            <ActivityIndicator IsRunning="{Binding BindingContext.IsPageBusy,Source={x:Reference Name=listView}}" VerticalOptions="Center" HorizontalOptions="Center" Margin="0" Color="{DynamicResource Primary}" Scale="1.2"/>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </sfList:SfListView.EmptyView>
                 <sfList:SfListView.StartSwipeTemplate>
@@ -149,7 +155,7 @@
                     </DataTemplate>
                 </sfList:SfListView.StartSwipeTemplate>
                 <sfList:SfListView.GroupHeaderTemplate>
-                    <DataTemplate x:Name="GroupHeaderTemplate" x:Key="GroupHeaderTemplate" >
+                    <DataTemplate x:Name="GroupHeaderTemplate">
                         <ViewCell>
                             <ViewCell.View>
                                 <Grid BackgroundColor="{StaticResource Primary}" Grid.ColumnDefinitions="*">
@@ -168,7 +174,7 @@
                                         <Grid BackgroundColor="{Binding IsTransacted,Converter={StaticResource BoolToColorDisabled}}" Grid.Row="0" Grid.Column="0" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,*" >
                                             <Border BackgroundColor="White" Margin="15,0,0,0" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" HeightRequest="24" WidthRequest="24" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
                                                 <Border.Shadow>
-                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+                                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
                                                 </Border.Shadow>
                                                 <Image  HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="12" Source="{Binding EventType, Converter={StaticResource TransactionTypePngConverter}}"/>
                                             </Border>

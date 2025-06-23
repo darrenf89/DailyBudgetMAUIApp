@@ -1,21 +1,16 @@
-﻿using DailyBudgetMAUIApp.DataServices;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.Messaging;
+using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
-using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Handlers;
-using CommunityToolkit.Maui.Views;
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
+using Plugin.LocalNotification;
 using System.Globalization;
 using The49.Maui.BottomSheet;
-using Syncfusion.Maui.Carousel;
-using DailyBudgetMAUIApp.Converters;
-using Syncfusion.Maui.ProgressBar;
-using Microsoft.Maui.Controls.Shapes;
-using CommunityToolkit.Maui.Extensions;
-using Syncfusion.Maui.Scheduler;
-using CommunityToolkit.Mvvm.Messaging;
 using static DailyBudgetMAUIApp.Pages.ViewAccounts;
 
 
@@ -37,29 +32,6 @@ public partial class MainPage : BasePage
 
         this.BindingContext = viewModel;
         _vm = viewModel;
-    }
-
-    protected async override void OnNavigatedTo(NavigatedToEventArgs args)
-    {
-        base.OnNavigatedTo(args);
-        _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
-
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
-        }
-
-        _vm.ReloadPage += async () =>
-        {
-            await LoadMainDashboardContent();
-
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
-        };
     }
 
     private async Task UpdateDefaultBudget()
@@ -92,12 +64,43 @@ public partial class MainPage : BasePage
         await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
     }
 
+    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+        }
+
+        _vm.IsMainPageBusy = false;
+
+        await Task.Delay(1000);
+        base.OnNavigatingFrom(args);
+    }
+
     protected async override void OnAppearing()
-    {        
+    {
+
+
         try
-        {            
+        {
+            if (App.IsFamilyAccount)
+            {
+                await Shell.Current.GoToAsync($"//{nameof(FamilyAccountMainPage)}");
+                return;
+            }
+
+            _vm.IsMainPageBusy = true;
+            if (App.IsBudgetUpdated)
+            {
+                _vm.DefaultBudget = App.DefaultBudget;
+                App.IsBudgetUpdated = false;
+            }
+
             base.OnAppearing();
-            ProcessSnackBar();
+
+            await ProcessSnackBar();
 
             _vm.DefaultBudget = null;
             _vm.DefaultBudgetID = Preferences.Get(nameof(App.DefaultBudgetID), 1);
@@ -109,7 +112,8 @@ public partial class MainPage : BasePage
             if (App.DefaultBudget == null || App.DefaultBudget.BudgetID == 0)
             {
 
-                App.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+                var Budget = await _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full");
+                App.DefaultBudget = Budget;
                 if (App.DefaultBudget.Error != null)
                 {
                     if (App.DefaultBudget.Error.ErrorMessage == "Budget Not found")
@@ -122,9 +126,10 @@ public partial class MainPage : BasePage
             {
                 if (App.SessionLastUpdate == default(DateTime))
                 {
-                    App.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+                    var Budget = await _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full");
+                    App.DefaultBudget = Budget;
 
-                    if(App.DefaultBudget.Error != null)
+                    if (App.DefaultBudget.Error != null)
                     {
                         if (App.DefaultBudget.Error.ErrorMessage == "Budget Not found")
                         {
@@ -136,7 +141,7 @@ public partial class MainPage : BasePage
                 {
                     if (DateTime.UtcNow.Subtract(App.SessionLastUpdate) > new TimeSpan(0, 0, 3, 0))
                     {
-                        DateTime? LastUpdated = _ds.GetBudgetLastUpdatedAsync(_vm.DefaultBudgetID).Result;
+                        DateTime? LastUpdated = await _ds.GetBudgetLastUpdatedAsync(_vm.DefaultBudgetID);
                         if(LastUpdated is null)
                         {
                             return;
@@ -144,7 +149,8 @@ public partial class MainPage : BasePage
                         if (App.SessionLastUpdate < LastUpdated)
                         {
 
-                            App.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+                            var Budget = await _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full");
+                            App.DefaultBudget = Budget;
                             if (App.DefaultBudget.Error != null)
                             {
                                 if (App.DefaultBudget.Error.ErrorMessage == "Budget Not found")
@@ -159,7 +165,7 @@ public partial class MainPage : BasePage
 
             if (App.DefaultBudgetID != 0)
             {
-                BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+                BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(App.DefaultBudgetID);
                 App.CurrentSettings = Settings;
 
                 _pt.SetCultureInfo(App.CurrentSettings);
@@ -176,7 +182,8 @@ public partial class MainPage : BasePage
 
             if (App.DefaultBudget.IsCreated)
             {
-                App.DefaultBudget = await _pt.BudgetDailyCycle(App.DefaultBudget);
+                var Budget = await _pt.BudgetDailyCycle(App.DefaultBudget);
+                App.DefaultBudget = Budget;
                 _vm.DefaultBudget = App.DefaultBudget;
             }
 
@@ -191,11 +198,41 @@ public partial class MainPage : BasePage
             await LoadMainDashboardContent();
             await RegisterForWeakMessages();
 
+            _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
+
+            DateTime PermissionRequestExpiry = new();
+            if (Preferences.ContainsKey(nameof(PermissionRequestExpiry)))
+            {
+                PermissionRequestExpiry = Preferences.Get(nameof(PermissionRequestExpiry), new DateTime());
+            }
+
+            if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false && DateTime.UtcNow > PermissionRequestExpiry)
+            {
+                bool IsNotificationEnabled = await LocalNotificationCenter.Current.RequestNotificationPermission();
+                if (!IsNotificationEnabled)
+                {
+                    Preferences.Set(nameof(PermissionRequestExpiry), DateTime.UtcNow.AddDays(60));
+                }
+            }
+
+            _vm.ReloadPage += async () =>
+            {
+                await LoadMainDashboardContent();
+
+                if (App.CurrentPopUp != null)
+                {
+                    await App.CurrentPopUp.CloseAsync();
+                    App.CurrentPopUp = null;
+                }
+            };
+
             if (App.CurrentPopUp != null)
             {
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+
+            _vm.IsMainPageBusy = false;
         }
         catch (Exception ex)
         {
@@ -207,6 +244,7 @@ public partial class MainPage : BasePage
     {
         WeakReferenceMessenger.Default.UnregisterAll(this);
         base.OnNavigatedFrom(args);
+        
     }
 
     private async Task RegisterForWeakMessages()
@@ -223,15 +261,16 @@ public partial class MainPage : BasePage
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
                 }
 
                 await Task.Delay(1);
 
                 await _ds.ReCalculateBudget(App.DefaultBudgetID);
-                App.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
-                _vm.DefaultBudget = App.DefaultBudget;
+                var Budget = await _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full");
+                App.DefaultBudget = Budget;
+                _vm.DefaultBudget = Budget;
 
                 if (!m._isBackground)
                 {
@@ -256,6 +295,17 @@ public partial class MainPage : BasePage
 
     private async Task LoadMainDashboardContent()
     {
+        if (Preferences.ContainsKey(nameof(_vm.IsTopStickyVisible)))
+        {
+            _vm.IsTopStickyVisible = Preferences.Get(nameof(_vm.IsTopStickyVisible), true);
+        }
+        else
+        {
+            _vm.IsTopStickyVisible = true;
+        }
+
+        TopStickyGrid.HeightRequest = _vm.IsTopStickyVisible ? 80 : 0;
+
         if (_pt.GetBudgetLocalTime(DateTime.UtcNow).Hour > 12)
         {
             _vm.Title = $"Good Afternoon {App.UserDetails.NickName}!";
@@ -280,39 +330,31 @@ public partial class MainPage : BasePage
                 brdYourEnvelopes.IsVisible = true;
             }
 
-            SavingCarousel.Children.Clear();
-            SavingCarouselIdent.Children.Clear();
-            if (_vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).ToList().Count() != 0)
+            _vm.Envelopes = _vm.DefaultBudget.Savings.Where(s => !s.IsRegularSaving).ToList();
+            _vm.CarouselSavings = _vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).ToList();
+            if (_vm.CarouselSavings.Any())
             {
                 absSaving.IsVisible = true;
-                _vm.SavingCarousel = await CreateSavingCarousel();
-                SavingCarousel.Children.Add(_vm.SavingCarousel);
             }
             else
             {
                 absSaving.IsVisible = false;
             }
 
-            BillCarousel.Children.Clear();
-            BillCarouselIdent.Children.Clear();
-            if (_vm.DefaultBudget.Bills.Count() != 0)
+            _vm.CarouselBills = _vm.DefaultBudget.Bills;
+            if (_vm.CarouselBills.Any())
             {
                 absBill.IsVisible = true;
-                _vm.BillCarousel = await CreateBillCarousel();
-                BillCarousel.Children.Add(_vm.BillCarousel);
             }
             else
             {
                 absBill.IsVisible = false;
             }
 
-            IncomeCarousel.Children.Clear();
-            IncomeCarouselIdent.Children.Clear();
-            if (_vm.DefaultBudget.IncomeEvents.Any())
+            _vm.CarouselIncomes = _vm.DefaultBudget.IncomeEvents;
+            if (_vm.CarouselIncomes.Any())
             {
                 absIncome.IsVisible = true;
-                _vm.IncomeCarousel = await CreateIncomeCarousel();
-                IncomeCarousel.Children.Add(_vm.IncomeCarousel);
             }
             else
             {
@@ -330,12 +372,14 @@ public partial class MainPage : BasePage
                 }
             }
 
-
             _vm.MaxBankBalance = _vm.DefaultBudget.BankBalance.GetValueOrDefault();
             _vm.MaxBankBalance += _vm.DefaultBudget.CurrentActiveIncome;
+            LeftToSpendBalanceProgress.SecondaryProgress = (double)_vm.DefaultBudget.MoneyAvailableBalance;
+            LeftToSpendBalanceProgress.SetProgress((double)_vm.DefaultBudget.LeftToSpendBalance, 3000, Easing.CubicInOut);
+            PlusStashSpendBalanceProgress.SecondaryProgress = (double)_vm.DefaultBudget.MoneyAvailableBalance;
+            PlusStashSpendBalanceProgress.SetProgress((double)_vm.DefaultBudget.PlusStashSpendBalance, 3000, Easing.CubicInOut);
 
             decimal Amount = 0;
-            //entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
 
             int Days = (int)Math.Ceiling((_vm.DefaultBudget.NextIncomePayday.GetValueOrDefault().Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
             if (Days == 1)
@@ -347,521 +391,55 @@ public partial class MainPage : BasePage
                 _vm.FutureDailySpend = (decimal)(_vm.DefaultBudget.LeftToSpendBalance.GetValueOrDefault() / (Days - 1));
             }
 
-            List<Categories> CategoryList = await _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID);
-            await LoadCategoryChartData(CategoryList, false);
+            _vm.CategoryList = await _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID);
+            var PayeeList = await _ds.GetPayeeListFull(App.DefaultBudgetID);
+            _vm.Payees = PayeeList.OrderByDescending(p => p.PayeeSpendAllTime).ToList();
 
-            _vm.Payees = await _ds.GetPayeeListFull(App.DefaultBudgetID);
-            _vm.Payees = _vm.Payees.OrderByDescending(p => p.PayeeSpendAllTime).ToList();
-            _vm.CurrentPayeeOffset = 0;
             _vm.IsUnreadMessage = _vm.DefaultBudget.AccountInfo.NumberUnreadMessages > 0;
-            await LoadPayeeChartData();
-            await LoadBudgetCalendar();
-        }
-    }
 
-    private async Task LoadBudgetCalendar()
-    {
-        Application.Current.Resources.TryGetValue("White", out var White);
-        Application.Current.Resources.TryGetValue("Success", out var Success);
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
-        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
+            Application.Current.Resources.TryGetValue("Success", out var Success);
+            Application.Current.Resources.TryGetValue("Danger", out var Danger);
 
-        _vm.EventList.Clear();
-
-        DateTime MaxDate = DateTime.UtcNow.AddMonths(1);
-        DateTime BudgetDate = _vm.DefaultBudget.NextIncomePayday.GetValueOrDefault();
-
-        Scheduler.HeaderView.TextStyle = new SchedulerTextStyle
-        {
-            TextColor = (Color)Primary,
-            FontSize = 25,
-            FontFamily = "OpenSansSemibold"
-            
-        };
-
-        Scheduler.MinimumDateTime = DateTime.UtcNow;
-        Scheduler.MaximumDateTime = MaxDate;
-
-        while (BudgetDate < MaxDate.AddDays(30))
-        {
-            SchedulerAppointment PayDay = new SchedulerAppointment
+            Color LabelColor;
+            if (_vm.DefaultBudget.LeftToSpendDailyAmount > 0)
             {
-                StartTime = BudgetDate.Date,
-                EndTime = BudgetDate.Date.AddMinutes(1439),
-                Subject = $"Getting paid {_vm.DefaultBudget.PaydayAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)}",
-                IsReadOnly = true,
-                Background = (Color)Success,
-                TextColor = (Color)White,
-                Notes = "PayDay",
-                Id = 0
-            };
-
-            _vm.EventList.Add(PayDay);
-
-            foreach (Savings saving in _vm.DefaultBudget.Savings.Where(s => !s.IsRegularSaving))
-            {
-                SchedulerAppointment EnvelopeEvent = new SchedulerAppointment
-                {
-                    StartTime = BudgetDate.Date,
-                    EndTime = BudgetDate.Date.AddMinutes(1439),
-                    Subject = $"Putting {saving.PeriodSavingValue.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} away for {saving.SavingsName}",
-                    IsReadOnly = true,
-                    Background = App.ChartColor[2],
-                    TextColor = (Color)White,
-                    Notes = "Envelope",
-                    Id = saving.SavingID
-                };
-
-                _vm.EventList.Add(EnvelopeEvent);
+                LabelColor = (Color)Success;
             }
-
-            BudgetDate = _pt.CalculateNextDate(BudgetDate, _vm.DefaultBudget.PaydayType, _vm.DefaultBudget.PaydayValue.GetValueOrDefault(), _vm.DefaultBudget.PaydayDuration);
-        }
-
-        foreach (Transactions transaction in _vm.DefaultBudget.Transactions.Where(s => !s.IsTransacted))
-        {
-            SchedulerAppointment TransactionEvent = new SchedulerAppointment
+            else
             {
-                StartTime = transaction.TransactionDate.GetValueOrDefault().Date,
-                EndTime = transaction.TransactionDate.GetValueOrDefault().Date.AddMinutes(1439),
-                Subject = $"Future Transaction",
-                IsReadOnly = true,
-                Background = App.ChartColor[5],
-                TextColor = (Color)White,
-                Notes = "Transaction",
-                Id = transaction.TransactionID
-            };
-
-            _vm.EventList.Add(TransactionEvent);
-        }
-
-        foreach (Savings saving in _vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving))
-        {
-            if (saving.SavingsType != "SavingsBuilder")
-            {
-                SchedulerAppointment SavingEvent = new SchedulerAppointment
-                {
-                    StartTime = saving.GoalDate.GetValueOrDefault().Date,
-                    EndTime = saving.GoalDate.GetValueOrDefault().Date.AddMinutes(1439),
-                    Subject = $"Saving {saving.SavingsGoal.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} for {saving.SavingsName}",
-                    IsReadOnly = true,
-                    Background = App.ChartColor[1],
-                    TextColor = (Color)White,
-                    Notes = "Saving",
-                    Id = saving.SavingID
-                };
-
-                _vm.EventList.Add(SavingEvent);
+                LabelColor = (Color)Danger;
             }
-        }
-
-        foreach (Bills bill in _vm.DefaultBudget.Bills)
-        {
-            DateTime BillDate = bill.BillDueDate.GetValueOrDefault();
-
-            while (BillDate <= MaxDate)
-            {
-                SchedulerAppointment BillEvent = new SchedulerAppointment
-                {
-                    StartTime = BillDate.Date,
-                    EndTime = BillDate.Date.AddMinutes(1439),
-                    Subject = $"{bill.BillAmount.GetValueOrDefault().ToString("c", CultureInfo.CurrentCulture)} outgoing for {bill.BillName}",
-                    IsReadOnly = true,
-                    Background = App.ChartColor[3],
-                    TextColor = (Color)White,
-                    Notes = "Bill",
-                    Id = bill.BillID
-                };
-
-                _vm.EventList.Add(BillEvent);
-
-                if (bill.IsRecuring)
-                {
-                    BillDate = _pt.CalculateNextDate(BillDate, bill.BillType, bill.BillValue.GetValueOrDefault(), bill.BillDuration);
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-
-        foreach (IncomeEvents income in _vm.DefaultBudget.IncomeEvents)
-        {
-            DateTime IncomeDate = income.DateOfIncomeEvent;
-
-            while (IncomeDate <= MaxDate)
-            {
-                SchedulerAppointment IncomeEvent = new SchedulerAppointment
-                {
-                    StartTime = IncomeDate.Date,
-                    EndTime = IncomeDate.Date.AddMinutes(1439),
-                    Subject = $"{income.IncomeAmount.ToString("c", CultureInfo.CurrentCulture)} income for {income.IncomeName}",
-                    IsReadOnly = true,
-                    Background = App.ChartColor[4],
-                    TextColor = (Color)White,
-                    Notes = "Income",
-                    Id = income.IncomeEventID
-                };
-
-                _vm.EventList.Add(IncomeEvent);
-
-                if (income.IsRecurringIncome)
-                {
-                    IncomeDate = _pt.CalculateNextDate(IncomeDate, income.RecurringIncomeType, income.RecurringIncomeValue.GetValueOrDefault(), income.RecurringIncomeDuration);
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-
-    }
-
-    private async Task LoadPayeeChartData()
-    {
-        Application.Current.Resources.TryGetValue("PrimaryBrush", out var PrimaryBrush);
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("White", out var White);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
-
-        _vm.PayeesChart.Clear();
-        PayeeLegend.Children.Clear();
-        PreviousNextPayee.Children.Clear();
-
-        int MaxIndex = _vm.CurrentPayeeOffset + 8 >= _vm.Payees.Count() ? _vm.Payees.Count() - _vm.CurrentPayeeOffset : 8;
-
-        List<Payees> Payees = _vm.Payees.GetRange(_vm.CurrentPayeeOffset, MaxIndex);
-
-        int i = 0;
-        decimal TotalValue = 0;
-        foreach (Payees payee in Payees)
-        {
-            ChartClass Value = new ChartClass
-            {
-                XAxesString = payee.Payee,
-                YAxesDouble = (double)payee.PayeeSpendPayPeriod
-            };
-
-            TotalValue += payee.PayeeSpendPayPeriod;
-
-            _vm.PayeesChart.Add(Value);
-
-            Border border = new Border
-            {
-                BackgroundColor = App.ChartColor[i],
-                Stroke = (Brush)PrimaryBrush,
-                StrokeThickness = 1,
-                StrokeShape = new RoundRectangle
-                {
-                    CornerRadius = new CornerRadius(4)
-                },
-                Margin = new Thickness(0, 2, 10, 2),
-                Padding = new Thickness(10, 0, 0, 0)
-            };
 
             Label label = new Label
             {
-                Text = payee.Payee,
-                TextColor = (Color)White,
-                FontSize = 16,
-                Padding = new Thickness(0, 8, 0, 8)
-            };
-
-            border.Content = label;
-
-            TapGestureRecognizer TapGesture = new TapGestureRecognizer();
-
-            TapGesture.NumberOfTapsRequired = 1;
-            TapGesture.Tapped += async (s, e) =>
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
-                await Task.Delay(1000);
-                FilterModel Filters = new FilterModel
-                {
-                    PayeeFilter = new List<string>
-                        {
-                            payee.Payee
-                        }
-                };
-
-                await Shell.Current.GoToAsync($"/{nameof(ViewFilteredTransactions)}",
-                    new Dictionary<string, object>
-                    {
-                        ["Filters"] = Filters
-                    });
-                return;
-            };
-
-            border.GestureRecognizers.Add(TapGesture);
-            PayeeLegend.Children.Add(border);
-
-            i++;
-        }
-
-        if(TotalValue == 0)
-        {
-            _vm.PayeeChartVisible = false;
-        }
-        else
-        {
-            _vm.PayeeChartVisible = true;
-        }
-
-        if(_vm.CurrentPayeeOffset >= 8)
-        {
-            HorizontalStackLayout HSLPrevious = new HorizontalStackLayout
-            {
-                Padding = new Thickness(10,0,0,5)
-            };
-
-            Image PreviousImage = new Image
-            {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
-                VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.Start,
-                Margin = new Thickness(0,0,10,0),
-                ZIndex = 999,
-                Source = new FontImageSource
-                {
-                    FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue5c4",
-                    Size = 25,
-                    Color = (Color)Tertiary,
-                }
-            };
-
-            TapGestureRecognizer PreviousImageTapGesture = new TapGestureRecognizer();
-            PreviousImageTapGesture.NumberOfTapsRequired = 1;
-            PreviousImageTapGesture.Tapped += async (s, e) =>
-            {
-                _vm.CurrentPayeeOffset -= 8;
-                await LoadPayeeChartData();
-            };
-
-            HSLPrevious.GestureRecognizers.Add(PreviousImageTapGesture);
-            HSLPrevious.Children.Add(PreviousImage);
-
-            Label PreviousLabel = new Label
-            {
-                Text = "Previous",
-                VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.Start,
-                TextColor = (Color)Tertiary,
-                FontSize = 18,
-                Padding = new Thickness(0),
-                Margin = new Thickness(0),
-                FontAttributes = FontAttributes.Bold
-            };
-
-            HSLPrevious.Children.Add(PreviousLabel);
-            PreviousNextPayee.Add(HSLPrevious, 0, 0);
-        }
-
-        if(_vm.CurrentPayeeOffset + 8 < _vm.Payees.Count())
-        {
-            HorizontalStackLayout HSLNext = new HorizontalStackLayout
-            {
+                Text = _vm.DefaultBudget.LeftToSpendDailyAmount.ToString("c", CultureInfo.CurrentCulture),
                 Padding = new Thickness(0, 0, 0, 5),
-                HorizontalOptions = LayoutOptions.End,
-                VerticalOptions = LayoutOptions.Center
-            };
-
-            Image NextImage = new Image
-            {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
+                TextColor = LabelColor,
                 VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.End,
-                Margin = new Thickness(10, 0, 10, 0),
-                ZIndex = 999,
-                Source = new FontImageSource
-                {
-                    FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue5c8",
-                    Size = 25,
-                    Color = (Color)Tertiary,
-                }
-            };
-
-            TapGestureRecognizer NextImageTapGesture = new TapGestureRecognizer();
-            NextImageTapGesture.NumberOfTapsRequired = 1;
-            NextImageTapGesture.Tapped += async (s, e) =>
-            {
-                _vm.CurrentPayeeOffset += 8;
-                await LoadPayeeChartData();
-            };
-
-            HSLNext.GestureRecognizers.Add(NextImageTapGesture);
-            
-
-            Label NextLabel = new Label
-            {
-                Text = "Next",
-                VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.End,
-                TextColor = (Color)Tertiary,
-                FontSize = 18,
-                Padding = new Thickness(0),
                 Margin = new Thickness(0),
+                FontSize = 16,
                 FontAttributes = FontAttributes.Bold
             };
 
-            HSLNext.Children.Add(NextLabel);
-            HSLNext.Children.Add(NextImage);
+            MainSFGaugeAnnotation.Content = label;
+            MainSFGaugeRadialAxis.Maximum = (double)_vm.DefaultBudget.StartDayDailyAmount;
+            MainSFGaugeRadialRange.EndValue = (double)_vm.DefaultBudget.LeftToSpendDailyAmount;
 
-            PreviousNextPayee.Add(HSLNext, 1, 0);
-        }
-    }
-
-    private async Task LoadCategoryChartData(List<Categories> CategoryList, bool IsBackButton)
-    {
-        Application.Current.Resources.TryGetValue("PrimaryBrush", out var PrimaryBrush);
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("White", out var White);
-
-        _vm.CategoriesChart.Clear();
-        CategoryLegend.Children.Clear();
-
-        if(IsBackButton)
-        {
-            Image image = new Image
+            _vm.NumberPendingQuickTransactions = _vm.DefaultBudget.AccountInfo.NumberPendingQuickTransactions;
+            if (App.IsPremiumAccount && _vm.DefaultBudget.AccountInfo.NumberPendingQuickTransactions > 0 )
             {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
-                VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.Start,
-                Margin = new Thickness(0, 2, 0, 2),
-                ZIndex = 999,
-                Source = new FontImageSource
-                {
-                    FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue31b",
-                    Size = 32,
-                    Color = (Color)Primary,
-                }
-            };
-
-            TapGestureRecognizer ImageTapGesture = new TapGestureRecognizer();
-            ImageTapGesture.NumberOfTapsRequired = 1;
-            ImageTapGesture.Tapped += async (s, e) =>
+                PendingTransactionBorder.IsVisible = true;
+                var TransactionList = await _ds.GetPendingQuickTransactions(App.DefaultBudgetID);
+                _vm.PendingQuickTransaction = TransactionList.OrderByDescending(t => t.TransactionDate).FirstOrDefault();
+            }
+            else
             {
-                List<Categories> CategoryList = _ds.GetAllHeaderCategoryDetailsFull(App.DefaultBudgetID).Result;
-                await LoadCategoryChartData(CategoryList, false);
-            };
-
-            image.GestureRecognizers.Add(ImageTapGesture);
-            CategoryLegend.Children.Add(image);
-        }
-
-        int i = 0;
-        decimal TotalValue = 0;
-        foreach (Categories cat in CategoryList)
-        {
-            if ((IsBackButton && cat.IsSubCategory) || !IsBackButton)
-            {
-                ChartClass Value = new ChartClass
-                {
-                    XAxesString = cat.CategoryName,
-                    YAxesDouble = (double)cat.CategorySpendPayPeriod
-                };
-
-                TotalValue += cat.CategorySpendPayPeriod;
-
-                _vm.CategoriesChart.Add(Value);
-
-                Border border = new Border
-                {
-                    BackgroundColor = App.ChartColor[i],
-                    Stroke = (Brush)PrimaryBrush,
-                    StrokeThickness = 1,
-                    StrokeShape = new RoundRectangle
-                    {
-                        CornerRadius = new CornerRadius(4)
-                    },
-                    Margin = new Thickness(0, 2, 10, 2),
-                    Padding = new Thickness(10, 0, 0, 0)
-                };
-
-                Label label = new Label
-                {
-                    Text = cat.CategoryName,
-                    TextColor = (Color)White,
-                    FontSize = 16,
-                    Padding = new Thickness(0, 8, 0, 8)
-                };
-
-                border.Content = label;
-
-                TapGestureRecognizer TapGesture = new TapGestureRecognizer();
-
-                if (cat.IsSubCategory)
-                {
-                    TapGesture.NumberOfTapsRequired = 1;
-                    TapGesture.Tapped += async (s, e) =>
-                    {
-                        var PopUp = new PopUpPage();
-                        App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
-                        await Task.Delay(1000);
-                        FilterModel Filters = new FilterModel
-                        {
-                            CategoryFilter = new List<int>
-                            {
-                                cat.CategoryID
-                            }
-                        };
-
-                        await Shell.Current.GoToAsync($"/{nameof(ViewFilteredTransactions)}",
-                            new Dictionary<string, object>
-                            {
-                                ["Filters"] = Filters
-                            });
-                        return;
-                    };
-                }
-                else
-                {
-                    TapGesture.NumberOfTapsRequired = 1;
-                    TapGesture.Tapped += async (s, e) =>
-                    {
-                        List<Categories> CategoryList = _ds.GetHeaderCategoryDetailsFull(cat.CategoryID, App.DefaultBudgetID).Result;
-                        await LoadCategoryChartData(CategoryList, true);
-                    };
-                }
-
-                border.GestureRecognizers.Add(TapGesture);
-
-                CategoryLegend.Children.Add(border);
-                i++;
+                PendingTransactionBorder.IsVisible = false;
             }
         }
-
-        if (TotalValue == 0)
-        {
-            _vm.CategoryChartVisible = false;
-        }
-        else
-        {
-            _vm.CategoryChartVisible = true;
-        }
     }
 
-    void TransactionAmount_Changed(object sender, TextChangedEventArgs e)
-    {
-        //decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        //entTransactionAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-        //int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        //if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entTransactionAmount.CursorPosition > position)
-        //{
-        //    entTransactionAmount.CursorPosition = entTransactionAmount.Text.Length;
-        //}
-        //_vm.TransactionAmount = Amount;
-    }
-
-    private async void ProcessSnackBar()
+    private async Task ProcessSnackBar()
     {
         string text;
         string actionButtonText;
@@ -987,7 +565,7 @@ public partial class MainPage : BasePage
                     actionButtonText = "Ok";
                     action = async () =>
                     {
-                        source.Cancel();
+                        await source.CancelAsync();
                     };
                     duration = TimeSpan.FromSeconds(10);
 
@@ -1001,7 +579,7 @@ public partial class MainPage : BasePage
                     actionButtonText = "Ok";
                     action = async () =>
                     {
-                        source.Cancel();
+                        await source.CancelAsync();
                     };
                     duration = TimeSpan.FromSeconds(10);
 
@@ -1015,13 +593,13 @@ public partial class MainPage : BasePage
                     actionButtonText = "Ok";
                     action = async () =>
                     {
-                        source.Cancel();
+                        await source.CancelAsync();
                     };
                     duration = TimeSpan.FromSeconds(10);
 
                     await Snackbar.Make(text, action, actionButtonText, duration, snackbarInfoOptions).Show();
 
-                    BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+                    BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(App.DefaultBudgetID);
                     App.CurrentSettings = Settings;
                     _pt.SetCultureInfo(App.CurrentSettings);
 
@@ -1032,7 +610,7 @@ public partial class MainPage : BasePage
                     actionButtonText = "Ok";
                     action = async () =>
                     {
-                        source.Cancel();
+                        await source.CancelAsync();
                     };
                     duration = TimeSpan.FromSeconds(10);
 
@@ -1047,7 +625,7 @@ public partial class MainPage : BasePage
             _vm.SnackBar = "";
             _vm.SnackID = 0;
 
-            _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+            _vm.DefaultBudget = await _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full");
 
             App.DefaultBudget = _vm.DefaultBudget;
             _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
@@ -1102,7 +680,7 @@ public partial class MainPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
@@ -1128,7 +706,7 @@ public partial class MainPage : BasePage
         }
     }
 
-    private void ShareBudget_Tapped(object sender, TappedEventArgs e)
+    private async void ShareBudget_Tapped(object sender, TappedEventArgs e)
     {
         try
         {
@@ -1153,11 +731,11 @@ public partial class MainPage : BasePage
             page.CornerRadius = 30;
 
             App.CurrentBottomSheet = page;
-            page.ShowAsync();
+            await page.ShowAsync();
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "MainPage", "ShareBudget_Tapped");
+            await _pt.HandleException(ex, "MainPage", "ShareBudget_Tapped");
         }
     }
 
@@ -1172,13 +750,14 @@ public partial class MainPage : BasePage
         try
         {
             var popup = new PopUpOTP(_vm.DefaultBudget.AccountInfo.BudgetShareRequestID, new PopUpOTPViewModel(_ds, _pt), "ShareBudget", _pt, _ds);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            App.CurrentPopUp = popup;
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if ((string)result.ToString() != "User Closed")
             {
                 ShareBudgetRequest BudgetRequest = (ShareBudgetRequest)result;
 
-                bool DefaultBudgetYesNo = await Application.Current.MainPage.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
+                bool DefaultBudgetYesNo = await Application.Current.Windows[0].Page.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
 
                 if (DefaultBudgetYesNo)
                 {
@@ -1201,7 +780,7 @@ public partial class MainPage : BasePage
 
     }
 
-    private void YourTransactionsOption_Tapped(object sender, TappedEventArgs e)
+    private async void YourTransactionsOption_Tapped(object sender, TappedEventArgs e)
     {
         try
         {
@@ -1217,16 +796,16 @@ public partial class MainPage : BasePage
 
             App.CurrentBottomSheet = page;
 
-            page.ShowAsync();
+            await page.ShowAsync();
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "MainPage", "YourTransactionsOption_Tapped");
+            await _pt.HandleException(ex, "MainPage", "YourTransactionsOption_Tapped");
         }
     }
 
 
-    private void BudgetMoreOptions_Tapped(object sender, TappedEventArgs e)
+    private async void BudgetMoreOptions_Tapped(object sender, TappedEventArgs e)
     {
         try
         {
@@ -1242,15 +821,15 @@ public partial class MainPage : BasePage
 
             App.CurrentBottomSheet = page;
 
-            page.ShowAsync();
+            await page.ShowAsync();
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "MainPage", "BudgetMoreOptions_Tapped");
+            await _pt.HandleException(ex, "MainPage", "BudgetMoreOptions_Tapped");
         }
     }
 
-    private void EnvelopeSavingsMoreOptions_Tapped(object sender, TappedEventArgs e)
+    private async void EnvelopeSavingsMoreOptions_Tapped(object sender, TappedEventArgs e)
     {
         try
         {
@@ -1266,1161 +845,43 @@ public partial class MainPage : BasePage
 
             App.CurrentBottomSheet = page;
 
-            page.ShowAsync();
+            await page.ShowAsync();
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "MainPage", "EnvelopeSavingsMoreOptions_Tapped");
+            await _pt.HandleException(ex, "MainPage", "EnvelopeSavingsMoreOptions_Tapped");
         }
 
     }
 
-    private async Task<SfCarousel> CreateSavingCarousel()
+    private async Task RefreshView_Refreshing(object sender, EventArgs e)
     {
-        Application.Current.Resources.TryGetValue("White", out var White);
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
-        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
-        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
-        Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
-        Application.Current.Resources.TryGetValue("Success", out var Success);
-        Application.Current.Resources.TryGetValue("PrimaryBrush", out var PrimaryBrush);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-
-        DataTemplate dt = new DataTemplate(() =>
-        {
-            Border border = new Border
-            {
-                Stroke = (Brush)PrimaryBrush,
-                StrokeThickness = 2,
-                StrokeShape = new RoundRectangle
-                {
-                    CornerRadius = new CornerRadius(4)
-                },
-                BackgroundColor = (Color)White
-            };
-
-            Grid grid = new Grid
-            {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
-                Padding = new Thickness(0),
-                Margin = new Thickness(0),
-                ColumnDefinitions =
-                {
-                    new ColumnDefinition{Width = new GridLength(45)},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)-50)},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)+50)}
-                },
-                RowDefinitions =
-                {
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)}
-                }
-
-            };
-
-            Image ClickImage = new Image
-            {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
-                VerticalOptions = LayoutOptions.Start,
-                HorizontalOptions = LayoutOptions.End,
-                Margin = new Thickness(5, 5, 5, 0),
-                ZIndex = 999,
-                Source = new FontImageSource
-                {
-                    FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue25d",
-                    Size = 40,
-                    Color = (Color)Primary,
-                }
-            };
-
-            TapGestureRecognizer TapGesture = new TapGestureRecognizer();
-            TapGesture.NumberOfTapsRequired = 1;
-            TapGesture.Tapped += (s, e) =>
-            {
-                SavingsMoreOptions_Tapped(s, e);
-            };
-
-            ClickImage.GestureRecognizers.Add(TapGesture);
-
-            //grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
-
-
-            Image image = new Image
-            {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
-                VerticalOptions = LayoutOptions.Start,
-                HorizontalOptions = LayoutOptions.Start,
-                Margin = new Thickness(10, 15, 0, 0),
-                //Source = ImageSource.FromFile("saving.svg"),
-                Source = new FontImageSource
-                {
-                    FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue2eb",
-                    Size = 45,
-                    Color = (Color)Primary,
-                },
-                Aspect = Aspect.AspectFill,
-                WidthRequest = 28
-            };
-            grid.AddWithSpan(image, 0, 0, 6, 1);
-
-            Label lblTitle = new Label
-            {
-                FontAttributes = FontAttributes.Bold,
-                FontSize = 21,
-                Padding = new Thickness(10, 5, 0, 0),
-                TextColor = (Color)Primary,
-                Margin = new Thickness(0)
-            };
-            lblTitle.SetBinding(Label.TextProperty, "SavingsName");
-            grid.AddWithSpan(lblTitle, 0, 1, 1, 2);
-
-            Label lblSavingType = new Label
-            {
-                FontSize = 14,
-                Padding = new Thickness(10, 0, 0, 0),
-                TextColor = (Color)Tertiary,
-                Margin = new Thickness(0),
-                CharacterSpacing = 0
-            };
-            lblSavingType.SetBinding(Label.TextProperty, "SavingsType", BindingMode.Default, new SavingTypeConverter());
-            grid.AddWithSpan(lblSavingType, 1, 1, 1, 2);
-
-            Label lblCurrentBalance = new Label
-            {
-                FontSize = 16,
-                Padding = new Thickness(10, 10, 0, 0),
-                TextColor = (Color)Gray900,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-                Margin = new Thickness(0)
-            };
-            lblCurrentBalance.SetBinding(Label.TextProperty, "CurrentBalance", BindingMode.Default, new DecimalToCurrencyString());
-            grid.Add(lblCurrentBalance, 1, 2);
-
-            Label lblBalance = new Label
-            {
-                FontSize = 14,
-                Padding = new Thickness(10, 0, 0, 10),
-                TextColor = (Color)Gray400,
-                CharacterSpacing = 0,
-                Text = "Current Saving Balance",
-                Margin = new Thickness(0)
-            };
-            grid.AddWithSpan(lblBalance, 3, 1, 1, 2);
-
-            SfLinearProgressBar ProgressBar = new SfLinearProgressBar
-            {
-                HorizontalOptions = LayoutOptions.Start,
-                WidthRequest = _vm.ProgressBarCarWidthRequest,
-                TrackFill = (Color)Gray100,
-                ProgressFill = (Color)Success,
-                TrackHeight = 10,
-                TrackCornerRadius = 5,
-                ProgressCornerRadius = 5,
-                ProgressHeight = 10,
-                Margin = new Thickness(10, 0, 10, 5),
-                Minimum = 0
-            };
-            ProgressBar.SetBinding(SfLinearProgressBar.MaximumProperty, ".", BindingMode.Default, new SavingProgressBarMax());
-            ProgressBar.SetBinding(SfLinearProgressBar.ProgressProperty, "CurrentBalance");
-            grid.AddWithSpan(ProgressBar, 4, 1, 1, 2);
-
-            Label lblSavingGoalText = new Label
-            {
-                FontSize = 12,
-                Padding = new Thickness(10, 0, 10, 0),
-                TextColor = (Color)Tertiary,
-                CharacterSpacing = 0,
-                HorizontalTextAlignment = TextAlignment.End,
-                Text = "Saving Goal"
-            };
-            grid.AddWithSpan(lblSavingGoalText, 5, 2, 1, 1);
-
-            Label SavingProgressBarMaxString = new Label
-            {
-                FontSize = 12,
-                Padding = new Thickness(10, 0, 10, 5),
-                TextColor = (Color)Gray900,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-                HorizontalTextAlignment = TextAlignment.End
-            };
-            SavingProgressBarMaxString.SetBinding(Label.TextProperty, ".", BindingMode.Default, new SavingProgressBarMaxString());
-            grid.Add(SavingProgressBarMaxString, 2, 6);
-
-            BoxView bv = new BoxView
-            {
-                Color = (Color)Gray100,
-                HeightRequest = 2,
-                Margin = new Thickness(10, 5, 10, 10)
-            };
-            grid.AddWithSpan(bv, 7, 1, 1, 2);
-
-            HorizontalStackLayout hsl1 = new HorizontalStackLayout
-            {
-                Margin = new Thickness(10, 0, 10, 0)
-            };
-
-            Label labelOne = new Label
-            {
-                Text = "Daily Saving Amount | ",
-                TextColor = (Color)Info,
-                FontSize = 12,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0
-            };
-            hsl1.Children.Add(labelOne);
-
-            Label labelTwo = new Label
-            {
-                TextColor = (Color)Gray900,
-                FontSize = 14,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-
-            };
-            labelTwo.SetBinding(Label.TextProperty, ".", BindingMode.Default, new RegularSavingValueString());
-
-            hsl1.Children.Add(labelTwo);
-            grid.AddWithSpan(hsl1, 8, 1, 1, 2);
-
-            HorizontalStackLayout hsl2 = new HorizontalStackLayout
-            {
-                Margin = new Thickness(10, 0, 10, 0)
-            };
-
-            Label labelThree = new Label
-            {
-                Text = "Saving Goal Date | ",
-                TextColor = (Color)Info,
-                FontSize = 12,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0
-            };
-            hsl2.Children.Add(labelThree);
-
-            Label labelFour = new Label
-            {
-                TextColor = (Color)Gray900,
-                FontSize = 14,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-            };
-            labelFour.SetBinding(Label.TextProperty, ".", BindingMode.Default, new SavingGoalDateString());
-
-            hsl2.Children.Add(labelFour);
-            grid.AddWithSpan(hsl2, 9, 1, 1, 2);
-
-
-            border.Content = grid;
-
-            return border;
-        });
-
-        SfCarousel sc = new SfCarousel
-        {
-            ScaleOffset = (float)0.9,
-            RotationAngle = 20,
-            Duration = 1000,
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.Center,
-            WidthRequest = _vm.SignOutButtonWidth + 10,
-            ItemWidth = (int)Math.Ceiling(_vm.SignOutButtonWidth) - 10,
-            ItemHeight = 250,
-            ItemSpacing = 20
-        };
-
-        sc.ItemTemplate = dt;
-        sc.ItemsSource = _vm.DefaultBudget.Savings.Where(s => s.IsRegularSaving).Take(7).ToList();
-
-
-        if (sc.ItemsSource.Any())
-        {
-            if ((sc.ItemsSource.Count() % 2) == 0)
-            {
-                sc.SelectedIndex = (sc.ItemsSource.Count() / 2) - 1;
-            }
-            else
-            {
-                sc.SelectedIndex = (sc.ItemsSource.Count() / 2);
-            }
-        }
-
-        sc.SwipeStarted += async (s, e) =>
-        {
-            await CarouselSwipeStarted(s, e);
-        };
-
-        sc.SwipeEnded += async (s, e) =>
-        {
-            await CarouselSwipeEnded(s, e);
-        };
-
-        for (int i = 0; i < sc.ItemsSource.Count(); i++)
-        {
-            Border button = new Border
-            {
-                HeightRequest = 10,
-                WidthRequest = 10,
-                Margin = new Thickness(2, 0, 2, 0),
-                StrokeThickness = 0,
-                StrokeShape = new RoundRectangle
-                {
-                    CornerRadius = new CornerRadius(5)
-                }
-            };
-
-            if (i == sc.SelectedIndex)
-            {
-                button.BackgroundColor = (Color)PrimaryLight;
-            }
-            else
-            {
-                button.BackgroundColor = (Color)Gray100;
-            }
-
-            SavingCarouselIdent.Children.Add(button);
-
-
-        }
-
-        return sc;
+        await LoadMainDashboardContent();
     }
 
-    private async Task<SfCarousel> CreateBillCarousel()
-    {
-        Application.Current.Resources.TryGetValue("White", out var White);
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
-        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
-        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
-        Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
-        Application.Current.Resources.TryGetValue("Success", out var Success);
-        Application.Current.Resources.TryGetValue("PrimaryBrush", out var PrimaryBrush);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-
-        DataTemplate dt = new DataTemplate(() =>
-        {
-            Border border = new Border
-            {
-                Stroke = (Brush)PrimaryBrush,
-                StrokeThickness = 2,
-                StrokeShape = new RoundRectangle
-                {
-                    CornerRadius = new CornerRadius(4)
-                },
-                BackgroundColor = (Color)White
-            };
-
-            Grid grid = new Grid
-            {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
-                Padding = new Thickness(0),
-                Margin = new Thickness(0),
-                ColumnDefinitions =
-                {
-                    new ColumnDefinition{Width = new GridLength(45)},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)-50)},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)+50)}
-                },
-                RowDefinitions =
-                {
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)}
-                }
-                
-            };
-
-            Image ClickImage = new Image
-            {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
-                VerticalOptions = LayoutOptions.Start,
-                HorizontalOptions = LayoutOptions.End,
-                Margin = new Thickness(5, 5, 5, 0),
-                ZIndex = 999,
-                Source = new FontImageSource
-                {
-                    FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue25d",
-                    Size = 40,
-                    Color = (Color)Primary,                    
-                }
-            };
-
-            TapGestureRecognizer TapGesture = new TapGestureRecognizer();
-            TapGesture.NumberOfTapsRequired = 1;
-            TapGesture.Tapped += (s, e) =>
-            {
-                SavingsMoreOptions_Tapped(s,e);
-            };
-            
-            ClickImage.GestureRecognizers.Add(TapGesture);
-
-            //grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
-
-
-            Image image = new Image
-            {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
-                VerticalOptions = LayoutOptions.Start,
-                HorizontalOptions = LayoutOptions.Start,
-                Margin = new Thickness(10,15,0,0),
-                //Source = ImageSource.FromFile("saving.svg"),
-                Source = new FontImageSource
-                {
-                    FontFamily = "MaterialDesignIcons",
-                    Glyph = "\uef6e",
-                    Size = 45,
-                    Color = (Color)Primary,                    
-                },
-                Aspect = Aspect.AspectFill,
-                WidthRequest = 28
-            };
-            grid.AddWithSpan(image,0,0,6,1);
-
-            Label lblTitle = new Label
-            {
-                FontAttributes = FontAttributes.Bold,
-                FontSize = 21,
-                Padding = new Thickness(10,5,0,0),
-                TextColor = (Color)Primary,
-                Margin = new Thickness(0)
-            };
-            lblTitle.SetBinding(Label.TextProperty, "BillName");
-            grid.AddWithSpan(lblTitle, 0, 1, 1, 2);
-
-            Label lblSavingType = new Label
-            {
-                FontSize = 14,
-                Padding = new Thickness(10, 0, 0, 0),
-                TextColor = (Color)Tertiary,
-                Margin = new Thickness(0),
-                CharacterSpacing = 0
-            };
-            lblSavingType.SetBinding(Label.TextProperty, "IsRecuring", BindingMode.Default,new BillTypeConverter());
-            grid.AddWithSpan(lblSavingType, 1, 1, 1, 2);
-
-            Label lblCurrentBalance = new Label
-            {
-                FontSize = 16,
-                Padding = new Thickness(10, 10, 0, 0),
-                TextColor = (Color)Gray900,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-                Margin = new Thickness(0)
-            };
-            lblCurrentBalance.SetBinding(Label.TextProperty, "BillCurrentBalance", BindingMode.Default, new DecimalToCurrencyString());
-            grid.Add(lblCurrentBalance, 1, 2);
-
-            Label lblBalance = new Label
-            {
-                FontSize = 14,
-                Padding = new Thickness(10, 0, 0, 10),
-                TextColor = (Color)Gray400,
-                CharacterSpacing = 0,
-                Text = "Current Balance",
-                Margin = new Thickness(0)
-            };
-            grid.AddWithSpan(lblBalance, 3, 1,1,2);
-
-            SfLinearProgressBar ProgressBar = new SfLinearProgressBar
-            {
-                HorizontalOptions = LayoutOptions.Start,
-                WidthRequest = _vm.ProgressBarCarWidthRequest,
-                TrackFill = (Color)Gray100,
-                ProgressFill = (Color)Success,
-                TrackHeight = 10,
-                TrackCornerRadius = 5,
-                ProgressCornerRadius = 5,
-                ProgressHeight = 10,
-                Margin = new Thickness(10,0,10,5),
-                Minimum = 0
-            };
-            ProgressBar.SetBinding(SfLinearProgressBar.MaximumProperty, "BillAmount");
-            ProgressBar.SetBinding(SfLinearProgressBar.ProgressProperty, "BillCurrentBalance");
-            grid.AddWithSpan(ProgressBar, 4, 1, 1, 2);
-
-            Label lblSavingGoalText = new Label
-            {
-                FontSize = 12,
-                Padding = new Thickness(10, 0, 10, 0),
-                TextColor = (Color)Tertiary,
-                CharacterSpacing = 0,
-                HorizontalTextAlignment = TextAlignment.End,
-                Text = "Outgoing Amount Due"
-            };
-            grid.AddWithSpan(lblSavingGoalText, 5, 2, 1, 1);
-
-            Label SavingProgressBarMaxString = new Label
-            {
-                FontSize = 12,
-                Padding = new Thickness(10, 0, 10, 5),
-                TextColor = (Color)Gray900,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-                HorizontalTextAlignment = TextAlignment.End
-            };
-            SavingProgressBarMaxString.SetBinding(Label.TextProperty, "BillAmount", BindingMode.Default, new DecimalToCurrencyString());
-            grid.Add(SavingProgressBarMaxString, 2, 6);
-
-            BoxView bv = new BoxView
-            {
-                Color = (Color)Gray100,
-                HeightRequest = 2,
-                Margin = new Thickness(10, 5, 10, 10)
-            };
-            grid.AddWithSpan(bv, 7, 1,1,2);
-
-            HorizontalStackLayout hsl1 = new HorizontalStackLayout
-            {
-                Margin = new Thickness(10, 0, 10, 0)
-            };
-
-            Label labelOne = new Label
-            {
-                Text = "Due Date | ",
-                TextColor = (Color)Info,
-                FontSize = 12,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0
-            };
-            hsl1.Children.Add(labelOne);
-
-            Label labelTwo = new Label
-            {                
-                TextColor = (Color)Gray900,
-                FontSize = 14,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-
-            };
-            labelTwo.SetBinding(Label.TextProperty, "BillDueDate", BindingMode.Default, new BillDueDate());
-
-            hsl1.Children.Add(labelTwo);
-
-            grid.AddWithSpan(hsl1, 9, 1, 1, 2);
-
-            HorizontalStackLayout hsl2 = new HorizontalStackLayout
-            {
-                Margin = new Thickness(10, 0, 10, 0)
-            };
-
-            Label labelThree = new Label
-            {
-                Text = "Daily Amount Put Away | ",
-                TextColor = (Color)Info,
-                FontSize = 12,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0
-            };
-            hsl2.Children.Add(labelThree);
-
-            Label labelFour = new Label
-            {
-                TextColor = (Color)Gray900,
-                FontSize = 14,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-            };
-            labelFour.SetBinding(Label.TextProperty, "RegularBillValue", BindingMode.Default, new DecimalToCurrencyString());
-
-            hsl2.Children.Add(labelFour);            
-            grid.AddWithSpan(hsl2, 10, 1, 1, 2);
-
-            HorizontalStackLayout hsl3 = new HorizontalStackLayout
-            {
-                Margin = new Thickness(10, 0, 10, 0)
-            };
-
-            Label labelFive= new Label
-            {
-                Text = "Recurring Details | ",
-                TextColor = (Color)Info,
-                FontSize = 12,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0
-            };
-            hsl3.Children.Add(labelFive);
-
-            Label labelSix = new Label
-            {
-                TextColor = (Color)Gray900,
-                FontSize = 14,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-            };
-            labelSix.SetBinding(Label.TextProperty, ".", BindingMode.Default, new RecurringBillDetails());
-
-            hsl3.Children.Add(labelSix);
-            grid.AddWithSpan(hsl3, 8, 1, 1, 2);
-
-            hsl3.SetBinding(HorizontalStackLayout.IsVisibleProperty, "IsRecuring");
-
-            border.Content = grid;
-
-            return border;
-        });
-
-        SfCarousel sc = new SfCarousel
-        {
-            ScaleOffset = (float)0.9,
-            RotationAngle = 20,
-            Duration = 1000,
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.Center,
-            WidthRequest = _vm.SignOutButtonWidth + 10,
-            ItemWidth = (int)Math.Ceiling(_vm.SignOutButtonWidth) - 10,
-            ItemHeight = 270,
-            ItemSpacing = 20
-        };
-
-        sc.ItemTemplate = dt;
-        sc.ItemsSource = _vm.DefaultBudget.Bills;
-
-
-        if (sc.ItemsSource.Any())
-        {
-            if((sc.ItemsSource.Count() % 2) == 0)
-            {
-                sc.SelectedIndex = (sc.ItemsSource.Count() / 2) - 1;
-            }
-            else
-            {
-                sc.SelectedIndex = (sc.ItemsSource.Count() / 2);
-            }            
-        }
-
-        sc.SwipeStarted += async (s, e)  =>
-        {
-            await BillCarouselSwipeStarted(s,e);
-        };
-
-        sc.SwipeEnded += async (s, e) =>
-        {
-            await BillCarouselSwipeEnded(s,e);
-        };
-
-        for (int i = 0; i < sc.ItemsSource.Count(); i++)
-        {
-            Border button = new Border
-            {
-                HeightRequest = 10,
-                WidthRequest = 10,
-                Margin = new Thickness(2, 0, 2, 0),
-                StrokeThickness = 0,
-                StrokeShape = new RoundRectangle
-                {
-                    CornerRadius = new CornerRadius(5)
-                }
-            };
-
-            if(i == sc.SelectedIndex)
-            {
-                button.BackgroundColor = (Color)PrimaryLight;
-            }
-            else
-            {
-                button.BackgroundColor = (Color)Gray100;
-            }
-
-            BillCarouselIdent.Children.Add(button);            
-
-        }
-
-        return sc;
-    }
-
-    private async Task<SfCarousel> CreateIncomeCarousel()
-    {
-        Application.Current.Resources.TryGetValue("White", out var White);
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
-        Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
-        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
-        Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
-        Application.Current.Resources.TryGetValue("Success", out var Success);
-        Application.Current.Resources.TryGetValue("PrimaryBrush", out var PrimaryBrush);
-        Application.Current.Resources.TryGetValue("Info", out var Info);
-
-        DataTemplate dt = new DataTemplate(() =>
-        {
-            Border border = new Border
-            {
-                Stroke = (Brush)PrimaryBrush,
-                StrokeThickness = 2,
-                StrokeShape = new RoundRectangle
-                {
-                    CornerRadius = new CornerRadius(4)
-                },
-                BackgroundColor = (Color)White
-            };
-
-            Grid grid = new Grid
-            {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
-                Padding = new Thickness(0),
-                Margin = new Thickness(0),
-                ColumnDefinitions =
-                {
-                    new ColumnDefinition{Width = new GridLength(45)},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)-50)},
-                    new ColumnDefinition{Width = new GridLength(((_vm.SignOutButtonWidth - 65)/2)+50)}
-                },
-                RowDefinitions =
-                {
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)},
-                    new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)}
-
-                }
-
-            };
-
-            Image ClickImage = new Image
-            {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
-                VerticalOptions = LayoutOptions.Start,
-                HorizontalOptions = LayoutOptions.End,
-                Margin = new Thickness(5, 5, 5, 0),
-                ZIndex = 999,
-                Source = new FontImageSource
-                {
-                    FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue25d",
-                    Size = 40,
-                    Color = (Color)Primary,
-                }
-            };
-
-            TapGestureRecognizer TapGesture = new TapGestureRecognizer();
-            TapGesture.NumberOfTapsRequired = 1;
-            TapGesture.Tapped += (s, e) =>
-            {
-                SavingsMoreOptions_Tapped(s, e);
-            };
-
-            ClickImage.GestureRecognizers.Add(TapGesture);
-
-            //grid.AddWithSpan(ClickImage, 0, 2, 2, 1);
-
-
-            Image image = new Image
-            {
-                BackgroundColor = Color.FromArgb("#00FFFFFF"),
-                VerticalOptions = LayoutOptions.Start,
-                HorizontalOptions = LayoutOptions.Start,
-                Margin = new Thickness(10, 15, 0, 0),
-                //Source = ImageSource.FromFile("saving.svg"),
-                Source = new FontImageSource
-                {
-                    FontFamily = "MaterialDesignIcons",
-                    Glyph = "\ue8e5",
-                    Size = 45,
-                    Color = (Color)Primary,
-                },
-                Aspect = Aspect.AspectFill,
-                WidthRequest = 28
-            };
-            grid.AddWithSpan(image, 0, 0, 6, 1);
-
-            Label lblTitle = new Label
-            {
-                FontAttributes = FontAttributes.Bold,
-                FontSize = 21,
-                Padding = new Thickness(10, 5, 0, 0),
-                TextColor = (Color)Primary,
-                Margin = new Thickness(0)
-            };
-            lblTitle.SetBinding(Label.TextProperty, "IncomeName");
-            grid.AddWithSpan(lblTitle, 0, 1, 1, 2);
-
-            Label lblSavingType = new Label
-            {
-                FontSize = 14,
-                Padding = new Thickness(10, 0, 0, 0),
-                TextColor = (Color)Tertiary,
-                Margin = new Thickness(0),
-                CharacterSpacing = 0
-            };
-            lblSavingType.SetBinding(Label.TextProperty, ".", BindingMode.Default, new IncomeTypeConverter());
-            grid.AddWithSpan(lblSavingType, 1, 1, 1, 2);
-
-            Label lblCurrentBalance = new Label
-            {
-                FontSize = 16,
-                Padding = new Thickness(10, 10, 0, 0),
-                TextColor = (Color)Gray900,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-                Margin = new Thickness(0)
-            };
-            lblCurrentBalance.SetBinding(Label.TextProperty, "IncomeAmount", BindingMode.Default, new DecimalToCurrencyString());
-            grid.Add(lblCurrentBalance, 1, 2);
-
-            Label lblBalance = new Label
-            {
-                FontSize = 14,
-                Padding = new Thickness(10, 0, 0, 10),
-                TextColor = (Color)Gray400,
-                CharacterSpacing = 0,
-                Text = "Extra Income Amount",
-                Margin = new Thickness(0)
-            };
-            grid.AddWithSpan(lblBalance, 3, 1, 1, 2);
-
-
-            BoxView bv = new BoxView
-            {
-                Color = (Color)Gray100,
-                HeightRequest = 2,
-                Margin = new Thickness(10, 5, 10, 10)
-            };
-            grid.AddWithSpan(bv, 4, 1, 1, 2);
-
-            HorizontalStackLayout hsl1 = new HorizontalStackLayout
-            {
-                Margin = new Thickness(10, 0, 10, 0)
-            };
-
-            Label labelOne = new Label
-            {
-                Text = "Due Date | ",
-                TextColor = (Color)Info,
-                FontSize = 12,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0
-            };
-            hsl1.Children.Add(labelOne);
-
-            Label labelTwo = new Label
-            {
-                TextColor = (Color)Gray900,
-                FontSize = 14,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-
-            };
-            labelTwo.SetBinding(Label.TextProperty, "DateOfIncomeEvent", BindingMode.Default, new BillDueDate());
-
-            hsl1.Children.Add(labelTwo);
-
-            grid.AddWithSpan(hsl1, 5, 1, 1, 2);
-
-            HorizontalStackLayout hsl2 = new HorizontalStackLayout
-            {
-                Margin = new Thickness(10, 0, 10, 0)
-            };
-
-            Label labelThree = new Label
-            {
-                Text = "Number Of Days To Income | ",
-                TextColor = (Color)Info,
-                FontSize = 12,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0
-            };
-            hsl2.Children.Add(labelThree);
-
-            Label labelFour = new Label
-            {
-                TextColor = (Color)Gray900,
-                FontSize = 14,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-            };
-            labelFour.SetBinding(Label.TextProperty, "DateOfIncomeEvent", BindingMode.Default, new DateToNumberOfDays());
-
-            hsl2.Children.Add(labelFour);
-            grid.AddWithSpan(hsl2, 6, 1, 1, 2);
-
-            HorizontalStackLayout hsl3 = new HorizontalStackLayout
-            {
-                Margin = new Thickness(10, 0, 10, 0)
-            };
-
-            Label labelFive = new Label
-            {
-                Text = "Recurring Details | ",
-                TextColor = (Color)Info,
-                FontSize = 12,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0
-            };
-            hsl3.Children.Add(labelFive);
-
-            Label labelSix = new Label
-            {
-                TextColor = (Color)Gray900,
-                FontSize = 14,
-                VerticalOptions = LayoutOptions.Center,
-                CharacterSpacing = 0,
-                FontAttributes = FontAttributes.Bold,
-            };
-            labelSix.SetBinding(Label.TextProperty, ".", BindingMode.Default, new RecurringIncomeDetails());
-
-            hsl3.Children.Add(labelSix);
-            grid.AddWithSpan(hsl3, 7, 1, 1, 2);
-
-            hsl3.SetBinding(HorizontalStackLayout.IsVisibleProperty, "IsRecurringIncome");
-
-            border.Content = grid;
-
-            return border;
-        });
-
-        SfCarousel sc = new SfCarousel
-        {
-            ScaleOffset = (float)0.9,
-            RotationAngle = 20,
-            Duration = 1000,
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.Center,
-            WidthRequest = _vm.SignOutButtonWidth + 10,
-            ItemWidth = (int)Math.Ceiling(_vm.SignOutButtonWidth) - 10,
-            ItemHeight = 215,
-            ItemSpacing = 20
-        };
-
-        sc.ItemTemplate = dt;
-        sc.ItemsSource = _vm.DefaultBudget.IncomeEvents;
-
-
-        if (sc.ItemsSource.Any())
-        {
-            if ((sc.ItemsSource.Count() % 2) == 0)
-            {
-                sc.SelectedIndex = (sc.ItemsSource.Count() / 2) - 1;
-            }
-            else
-            {
-                sc.SelectedIndex = (sc.ItemsSource.Count() / 2);
-            }
-        }
-
-        sc.SwipeStarted += async (s, e) =>
-        {
-            await IncomeCarouselSwipeStarted(s, e);
-        };
-
-        sc.SwipeEnded += async (s, e) =>
-        {
-            await IncomeCarouselSwipeEnded(s, e);
-        };
-
-        for (int i = 0; i < sc.ItemsSource.Count(); i++)
-        {
-            Border button = new Border
-            {
-                HeightRequest = 10,
-                WidthRequest = 10,
-                Margin = new Thickness(2, 0, 2, 0),
-                StrokeThickness = 0,
-                StrokeShape = new RoundRectangle
-                {
-                    CornerRadius = new CornerRadius(5)
-                }
-            };
-
-            if (i == sc.SelectedIndex)
-            {
-                button.BackgroundColor = (Color)PrimaryLight;
-            }
-            else
-            {
-                button.BackgroundColor = (Color)Gray100;
-            }
-
-            IncomeCarouselIdent.Children.Add(button);
-
-        }
-
-        return sc;
-    }
-
-    private async Task IncomeCarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
+    private async void ViewFamilyAccountsManage_Tapped(object sender, TappedEventArgs e)
     {
         try
         {
-            Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
-
-            var Carousel = (SfCarousel)Sender;
-            var Elements = IncomeCarouselIdent.GetVisualTreeDescendants();
-
-            int Index = (Carousel.SelectedIndex * 2) + 1;
-
-            Border button = (Border)Elements[Index];
-            await button.BackgroundColorTo((Color)Gray100, 16, 500, Easing.CubicIn);
-        }
-        catch (Exception ex)
-        {
-            await _pt.HandleException(ex, "MainPage", "IncomeCarouselSwipeStarted");
-        }
-
-    }
-    private async Task IncomeCarouselSwipeEnded(object Sender, EventArgs Event)
-    {
-        try
-        {
-            Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-
-            var Carousel = (SfCarousel)Sender;
-            var Elements = IncomeCarouselIdent.GetVisualTreeDescendants();
-
-            int Index = (Carousel.SelectedIndex * 2) + 1;
-
-            Border button = (Border)Elements[Index];
-            await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
-        }
-        catch (Exception ex)
-        {
-            await _pt.HandleException(ex, "MainPage", "IncomeCarouselSwipeEnded");
-        }
-    }
-
-    private async Task CarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
-    {
-        try
-        {
-            Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
-
-            var Carousel = (SfCarousel)Sender;
-            var Elements = SavingCarouselIdent.GetVisualTreeDescendants();
-
-            int Index = (Carousel.SelectedIndex * 2) + 1;
-
-            Border button = (Border)Elements[Index];
-            await button.BackgroundColorTo((Color)Gray100,16,500,Easing.CubicIn);
-
-        }
-        catch (Exception ex)
-        {
-           await _pt.HandleException(ex, "MainPage", "CarouselSwipeStarted");
-        }
-
-    }
-
-    private async Task CarouselSwipeEnded(object Sender, EventArgs Event)
-    {
-        try
-        {
-            Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-
-            var Carousel = (SfCarousel)Sender;
-            var Elements = SavingCarouselIdent.GetVisualTreeDescendants();
-
-            int Index = (Carousel.SelectedIndex * 2) + 1;
-
-            Border button = (Border)Elements[Index];
-            await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
-        }
-        catch (Exception ex)
-        {
-            await _pt.HandleException(ex, "MainPage", "CarouselSwipeEnded");
-        }
-    }
-    private async Task BillCarouselSwipeStarted(object Sender, Syncfusion.Maui.Core.Carousel.SwipeStartedEventArgs Event)
-    {
-        try
-        {
-            Application.Current.Resources.TryGetValue("Gray100", out var Gray100);
-
-            var Carousel = (SfCarousel)Sender;
-            var Elements = BillCarouselIdent.GetVisualTreeDescendants();
-
-            int Index = (Carousel.SelectedIndex * 2) + 1;
-
-            Border button = (Border)Elements[Index];
-            await button.BackgroundColorTo((Color)Gray100, 16, 500, Easing.CubicIn);
-        }
-        catch (Exception ex)
-        {
-            await _pt.HandleException(ex, "MainPage", "BillCarouselSwipeStarted");
-        }
-    }
-
-    private async Task BillCarouselSwipeEnded(object Sender, EventArgs Event)
-    {
-        try
-        {
-            Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-
-            var Carousel = (SfCarousel)Sender;
-            var Elements = BillCarouselIdent.GetVisualTreeDescendants();
-
-            int Index = (Carousel.SelectedIndex * 2) + 1;
-
-            Border button = (Border)Elements[Index];
-            await button.BackgroundColorTo((Color)PrimaryLight, 16, 500, Easing.CubicIn);
-        }
-        catch (Exception ex)
-        {
-            await _pt.HandleException(ex, "MainPage", "BillCarouselSwipeEnded");
-        }
-    }
-    private void RefreshView_Refreshing(object sender, EventArgs e)
-    {
-        LoadMainDashboardContent();
-    }
-
-    private void SavingsMoreOptions_Tapped(object sender, TappedEventArgs e)
-    {
-        try
-        {
-            EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(_ds, _pt);
-
-            page.Detents = new DetentsCollection()
+            if (App.CurrentPopUp == null)
             {
-                new FixedContentDetent()
-            };
+                var PopUp = new PopUpPage();
+                App.CurrentPopUp = PopUp;
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
+            }
 
-            page.HasBackdrop = true;
-            page.CornerRadius = 0;
+            if (App.CurrentBottomSheet != null)
+            {
+                await App.CurrentBottomSheet.DismissAsync();
+                App.CurrentBottomSheet = null;
+            }
 
-            App.CurrentBottomSheet = page;
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.FamilyAccountsManage)}");
 
-            page.ShowAsync();
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "MainPage", "SavingsMoreOptions_Tapped");
+           await _pt.HandleException(ex, "MainPage", "ViewFamilyAccountsManage_Tapped");
         }
 
     }
@@ -2433,7 +894,7 @@ public partial class MainPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             if (App.CurrentBottomSheet != null)
@@ -2457,7 +918,7 @@ public partial class MainPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewBills)}");
@@ -2477,7 +938,7 @@ public partial class MainPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
@@ -2526,7 +987,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
+            bool EditTransaction = await Application.Current.Windows[0].Page.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
             if (EditTransaction)
             {
                 Transactions T = (Transactions)e.Parameter;
@@ -2547,7 +1008,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
+            bool DeleteTransaction = await Application.Current.Windows[0].Page.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
             if (DeleteTransaction)
             {
                 Transactions transaction = (Transactions)e.Parameter;
@@ -2565,7 +1026,7 @@ public partial class MainPage : BasePage
                 LVTransactions.RefreshView();
 
 
-                _vm.DefaultBudget = _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full").Result;
+                _vm.DefaultBudget = await _ds.GetBudgetDetailsAsync(_vm.DefaultBudgetID, "Full");
 
                 App.DefaultBudget = _vm.DefaultBudget;
                 _vm.IsBudgetCreated = App.DefaultBudget.IsCreated;
@@ -2644,7 +1105,7 @@ public partial class MainPage : BasePage
             _vm.SnackBar = "Transaction Added";
             _vm.SnackID = T.TransactionID;
 
-            ProcessSnackBar();
+            await ProcessSnackBar();
         }
         catch (Exception ex)
         {
@@ -2658,11 +1119,12 @@ public partial class MainPage : BasePage
         try
         {
             var popup = new PopupMoveBalance(App.DefaultBudget, "Budget", 0, true, new PopupMoveBalanceViewModel(), _pt, _ds);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
             await Task.Delay(100);
             if (result.ToString() == "OK")
             {
-                App.DefaultBudget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+                App.DefaultBudget = Budget;
             }
         }
         catch (Exception ex)
@@ -2671,7 +1133,7 @@ public partial class MainPage : BasePage
         }
     }
 
-    private void CategoryOptions_Tapped(object sender, TappedEventArgs e)
+    private async void CategoryOptions_Tapped(object sender, TappedEventArgs e)
     {
         try
         {
@@ -2687,15 +1149,15 @@ public partial class MainPage : BasePage
 
             App.CurrentBottomSheet = page;
 
-            page.ShowAsync();
+            await page.ShowAsync();
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "MainPage", "CategoryOptions_Tapped");
+            await _pt.HandleException(ex, "MainPage", "CategoryOptions_Tapped");
         }
     }
 
-    private void PayeeOptions_Tapped(object sender, TappedEventArgs e)
+    private async void PayeeOptions_Tapped(object sender, TappedEventArgs e)
     {
         try
         {
@@ -2711,11 +1173,11 @@ public partial class MainPage : BasePage
 
             App.CurrentBottomSheet = page;
 
-            page.ShowAsync();
+            await page.ShowAsync();
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "MainPage", "PayeeOptions_Tapped");
+            await _pt.HandleException(ex, "MainPage", "PayeeOptions_Tapped");
         }
     }
 
@@ -2746,9 +1208,9 @@ public partial class MainPage : BasePage
 
             if (UploadFile is null) return;
 
-            if (UploadFile.OpenReadAsync().Result.Length < 3000000)
+            if (await _pt.GetFileLengthAsync(UploadFile) < 3000000)
             {
-                await _ds.UploadUserProfilePicture(App.UserDetails.UserID, UploadFile);
+                await _ds.UploadUserProfilePicture((App.IsFamilyAccount ? App.FamilyUserDetails.UniqueUserID : App.UserDetails.UniqueUserID), UploadFile);
             }
             else
             {
@@ -2762,14 +1224,104 @@ public partial class MainPage : BasePage
 
     }
 
-    private void QuickTransaction_TextChanged(object sender, TextChangedEventArgs e)
+    private async void QuickTransaction_TextChanged(object sender, TextChangedEventArgs e)
     {
-        decimal AmountDue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entQuickTransaction.Text = AmountDue.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entQuickTransaction.CursorPosition > position)
+        try
         {
-            entQuickTransaction.CursorPosition = entQuickTransaction.Text.Length;
+            _pt.FormatEntryNumber(sender, e, entQuickTransaction);
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "QuickTransaction_TextChanged");
+        }
+
+    }
+
+    async void OnQuickTransactionSwiped(object sender, SwipedEventArgs e)
+    {
+        try
+        {
+            double targetX = e.Direction == SwipeDirection.Left ? -400 : 400;
+
+            await Task.WhenAll(
+                QuickTransactionBorder.FadeTo(0.3, 250, Easing.CubicOut),
+                QuickTransactionBorder.TranslateTo(targetX, 0, 500, Easing.CubicOut),
+                UpdatePendingTransactions()
+            );
+
+            await Task.Delay(500);
+            QuickTransactionBorder.Opacity = 1;
+            QuickTransactionBorder.TranslationX = 0;
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "OnQuickTransactionSwiped");
+        }
+
+    }
+
+    async Task UpdatePendingTransactions()
+    {
+        _vm.NumberPendingQuickTransactions = _vm.NumberPendingQuickTransactions - 1;
+        var Transaction = await _ds.GetTransactionFromID(_vm.PendingQuickTransaction.TransactionID);
+        Transaction.IsQuickTransaction = false;
+        await _ds.UpdateTransaction(Transaction);        
+
+        if (App.IsPremiumAccount && _vm.NumberPendingQuickTransactions > 0)
+        {
+            PendingTransactionBorder.IsVisible = true;
+            var TransactionList = await _ds.GetPendingQuickTransactions(App.DefaultBudgetID);
+            _vm.PendingQuickTransaction = TransactionList.OrderByDescending(t => t.TransactionDate).FirstOrDefault();
+        }
+        else
+        {
+            PendingTransactionBorder.IsVisible = false;
+        }        
+    }
+
+    async void TopSticky_Swiped(object sender, SwipedEventArgs e)
+    {
+        try
+        {
+            if(e.Direction == SwipeDirection.Up)
+            {
+                await Task.WhenAll(
+                    TopSticky.FadeTo(0, 500, Easing.CubicIn),
+                    TopSticky.TranslateTo(0, -TopSticky.Height, 500, Easing.CubicIn)                    
+                );
+
+                TopStickyGrid.HeightRequest = 0;
+                _vm.IsTopStickyVisible = false;
+
+                if (Preferences.ContainsKey(nameof(_vm.IsTopStickyVisible)))
+                {
+                    Preferences.Remove(nameof(_vm.IsTopStickyVisible));
+                }
+
+                Preferences.Set(nameof(_vm.IsTopStickyVisible), _vm.IsTopStickyVisible);
+
+            }
+            else if(e.Direction == SwipeDirection.Down)
+            {
+                TopStickyGrid.HeightRequest = 80;
+                _vm.IsTopStickyVisible = true;
+
+                await Task.WhenAll(
+                    TopSticky.TranslateTo(0, 0, 500, Easing.CubicOut),
+                    TopSticky.FadeTo(1, 500, Easing.CubicOut)
+                );
+
+                if (Preferences.ContainsKey(nameof(_vm.IsTopStickyVisible)))
+                {
+                    Preferences.Remove(nameof(_vm.IsTopStickyVisible));
+                }
+
+                Preferences.Set(nameof(_vm.IsTopStickyVisible), _vm.IsTopStickyVisible);
+            }
+        }
+        catch (Exception ex)
+        {
+            await _pt.HandleException(ex, "MainPage", "TopSticky_Swiped");
         }
     }
 }

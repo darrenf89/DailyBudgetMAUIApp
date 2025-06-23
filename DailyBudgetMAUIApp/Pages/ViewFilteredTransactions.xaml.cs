@@ -28,6 +28,8 @@ public partial class ViewFilteredTransactions : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
+            await Task.Delay(1);
             base.OnAppearing();
             listView.ItemTapped += ListView_ItemTapped;
             listView.DataSource.SortDescriptors.Add(new SortDescriptor { PropertyName = "TransactionDate", Direction = ListSortDirection.Descending });
@@ -51,6 +53,9 @@ public partial class ViewFilteredTransactions : BasePage
             });
 
             _vm.OnAppearing();
+        
+            _vm.IsPageBusy = false;
+            await Task.Delay(1);
 
             if (App.CurrentPopUp != null)
             {
@@ -108,7 +113,7 @@ public partial class ViewFilteredTransactions : BasePage
         {
             Transactions T = (Transactions)e.Parameter;
 
-            bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
+            bool EditTransaction = await Application.Current.Windows[0].Page.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
             if (EditTransaction)
             {
                 await Shell.Current.GoToAsync($"/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={T.TransactionID}&NavigatedFrom=ViewTransactions",
@@ -130,7 +135,7 @@ public partial class ViewFilteredTransactions : BasePage
         {
             Transactions T = (Transactions)e.Parameter;
 
-            bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
+            bool DeleteTransaction = await Application.Current.Windows[0].Page.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
             if (DeleteTransaction)
             {
                 await _ds.DeleteTransaction(T.TransactionID);

@@ -11,9 +11,11 @@ namespace DailyBudgetMAUIApp.ViewModels
     public partial class ErrorPageViewModel : BaseViewModel
     {
         [ObservableProperty]
-        private ErrorLog _error;
+        public partial ErrorLog Error { get; set; }
+
         [ObservableProperty]
-        private string txtErrorMessage = "";
+        public partial string TxtErrorMessage { get; set; } = "";
+
 
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
@@ -24,10 +26,14 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void GoToLandingPage()
+        async Task GoToLandingPage()
         {
             try
             {
+                if(App.IsFamilyAccount && App.FamilyUserDetails is not null && App.FamilyUserDetails.SessionExpiry > DateTime.UtcNow)
+                {
+                    await Shell.Current.GoToAsync($"//{nameof(FamilyAccountMainPage)}");
+                }
                 if (App.UserDetails is not null && App.UserDetails.SessionExpiry > DateTime.UtcNow)
                 {
                     await Shell.Current.GoToAsync($"//{nameof(MainPage)}");

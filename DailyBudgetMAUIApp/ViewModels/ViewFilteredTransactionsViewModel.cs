@@ -1,32 +1,54 @@
-﻿using DailyBudgetMAUIApp.DataServices;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
     [QueryProperty(nameof(Filters), nameof(Filters))]
+    [QueryProperty(nameof(BudgetID), nameof(BudgetID))]
     public partial class ViewFilteredTransactionsViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private FilterModel  filters;
+        public partial FilterModel Filters { get; set; }
+
         [ObservableProperty]
-        private ObservableCollection<Transactions>  transactions = new ObservableCollection<Transactions>();
+        public partial ObservableCollection<Transactions> Transactions { get; set; } = new ObservableCollection<Transactions>();
+
         [ObservableProperty]
-        private Budgets  budget;
+        public partial List<Transactions> LoadedTransactions { get; set; } = new List<Transactions>();
+
         [ObservableProperty]
-        private double  sFListHeight;
+        public partial Budgets Budget { get; set; }
+
         [ObservableProperty]
-        private double  screenWidth;
+        public partial double SFListHeight { get; set; }
+
         [ObservableProperty]
-        private double  screenHeight;
+        public partial double ScreenWidth { get; set; }
+
         [ObservableProperty]
-        private string  totalSpendTypeHeader;
+        public partial double ScreenHeight { get; set; }
+
         [ObservableProperty]
-        private decimal  totalSpend;
+        public partial string TotalSpendTypeHeader { get; set; }
+
+        [ObservableProperty]
+        public partial decimal TotalSpend { get; set; }
+
+        [ObservableProperty]
+        public partial int BudgetID { get; set; } = 0;
+
+        [ObservableProperty]
+        public partial int CurrentOffset { get; set; } = 0;
+
+        [ObservableProperty]
+        public partial int MaxNumberOfTransactions { get; set; }
+
 
         public ViewFilteredTransactionsViewModel(IProductTools pt, IRestDataService ds)
         {
@@ -35,22 +57,29 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             ScreenWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density);
-            SFListHeight = ScreenHeight - App.NavBarHeight - App.StatusBarHeight - 37;
+            SFListHeight = ScreenHeight - App.NavBarHeight - App.StatusBarHeight - 113;
         }
 
         public async void OnAppearing()
         {
-            
-            if(Filters.SavingFilter != null)
+            CurrentOffset = 0;
+            var FilterBudgetID = BudgetID == 0 ? App.DefaultBudgetID : BudgetID;
+
+            Budget = await _ds.GetBudgetDetailsAsync(FilterBudgetID, "Limited");
+            LoadedTransactions = await _ds.GetFilteredTransactions(FilterBudgetID, Filters, "ViewFilterTransactions");
+            LoadedTransactions = LoadedTransactions.OrderByDescending(t => t.TransactionDate).ToList();
+            MaxNumberOfTransactions = LoadedTransactions.Count;
+
+            if (Filters.SavingFilter != null)
             {
                 TotalSpendTypeHeader = "Total saving/s spend";
-                Savings Saving = _ds.GetSavingFromID(Filters.SavingFilter[0]).Result;
+                Savings Saving = await _ds.GetSavingFromID(Filters.SavingFilter[0]);
                 Title = $"{Saving.SavingsName}";
             }
             else if(Filters.CategoryFilter != null)
             {
                 TotalSpendTypeHeader = "Total category/s spend";
-                Categories Category = _ds.GetCategoryFromID(Filters.CategoryFilter[0]).Result;
+                Categories Category = await _ds.GetCategoryFromID(Filters.CategoryFilter[0]);
                 Title = $"{Category.CategoryName}";
             }
             else if (Filters.TransactionEventTypeFilter != null)
@@ -62,19 +91,61 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 TotalSpendTypeHeader = "Total payee/s spend";
                 Title = $"{Filters.PayeeFilter[0]}";
-            }            
-
-            Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-            List<Transactions> LoadTransactions = _ds.GetFilteredTransactions(App.DefaultBudgetID, Filters, "ViewFilterTransactions").Result;
-
-            foreach (Transactions T in LoadTransactions)
+                if(string.IsNullOrEmpty(Title))
+                {
+                    Title = "Unassigned";
+                }
+            }
+            else
             {
-                TotalSpend += T.TransactionAmount.GetValueOrDefault();
-                Transactions.Add(T);
+                TotalSpendTypeHeader = $"Total Spend";
+                Title = $"{Budget.BudgetName}";
             }
 
+            foreach (Transactions T in LoadedTransactions)
+            {
+                TotalSpend += T.TransactionAmount.GetValueOrDefault();
+            }
+
+            var NextStep = CurrentOffset + 5 > MaxNumberOfTransactions ? MaxNumberOfTransactions : CurrentOffset + 5;
+            for (int i = CurrentOffset; i <= NextStep - 1; i ++)
+            {
+                Transactions.Add(LoadedTransactions[i]);
+            }
+            CurrentOffset = NextStep;          
         }
 
+        [RelayCommand]
+        async Task LoadMoreItems(object obj)
+        {
+            try
+            {
+                if (Transactions.Count() < MaxNumberOfTransactions)
+                {
+                    var listView = obj as Syncfusion.Maui.ListView.SfListView;
+                    listView.IsLazyLoading = true;                    
+
+                    await LoadMoreTransactions();
+
+                    listView.IsLazyLoading = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "ViewFilteredTransactions", "LoadMoreItems");
+            }
+        }
+
+        private async Task LoadMoreTransactions()
+        {
+            await Task.Delay(1000);
+            var NextStep = CurrentOffset + 5 > MaxNumberOfTransactions ? MaxNumberOfTransactions : CurrentOffset + 5;
+            for (int i = CurrentOffset; i <= NextStep - 1; i++)
+            {
+                Transactions.Add(LoadedTransactions[i]);
+            }
+            CurrentOffset = NextStep;
+        }
     }
 }
 

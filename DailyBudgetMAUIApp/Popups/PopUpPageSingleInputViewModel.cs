@@ -15,11 +15,14 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ObservableProperty]
-        private bool returnDataRequired;
+        public partial bool ReturnDataRequired { get; set; }
+
         [ObservableProperty]
-        private bool isSubDesc;        
+        public partial bool IsSubDesc { get; set; }
+
         [ObservableProperty]
-        private string returnData;
+        public partial string ReturnData { get; set; }
+
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
         public double PopupWidth { get; }

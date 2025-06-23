@@ -123,8 +123,8 @@ namespace DailyBudgetMAUIApp
                 string jsonRequest = System.Text.Json.JsonSerializer.Serialize<ErrorLog>(NewLog, _jsonSerialiserOptions);
                 StringContent request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = _httpClient.PostAsync($"{_url}/error/adderrorlogentry", request).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
+                HttpResponseMessage response = await _httpClient.PostAsync($"{_url}/error/adderrorlogentry", request);
+                string content = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {

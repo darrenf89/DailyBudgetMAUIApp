@@ -1,13 +1,13 @@
+using CommunityToolkit.Maui.Behaviors;
 using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
 
 public partial class LogonPage : BasePage
-{
-	public LogonPage(LogonPageViewModel viewModel)
+{    
+    public LogonPage(LogonPageViewModel viewModel)
 	{
-		InitializeComponent();
+        InitializeComponent();
 		this.BindingContext = viewModel;
-
     }
 }

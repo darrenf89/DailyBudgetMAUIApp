@@ -79,10 +79,37 @@ public partial class ViewTransactions : BasePage
         ListViewScrollBar.Scrolled += ListViewScrollView_Scrolled;
     }
 
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+
+        if (Navigation.NavigationStack.Count > 1)
+        {
+            Shell.SetTabBarIsVisible(this, false);
+        }
+    }
+
+    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+        }
+
+        _vm.IsPageBusy = false;
+
+        await Task.Delay(500);
+        base.OnNavigatingFrom(args);
+    }
+
     protected async override void OnAppearing()
     {
         try
         {
+            _vm.IsPageBusy = true;
+            await _vm.OnLoad();
             base.OnAppearing();
 
             AbsMain.SetLayoutBounds(vslChart, new Rect(0, 0, _vm.ScreenWidth, _vm.ChartContentHeight + 10));
@@ -93,6 +120,7 @@ public partial class ViewTransactions : BasePage
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {
@@ -108,7 +136,7 @@ public partial class ViewTransactions : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
@@ -170,7 +198,7 @@ public partial class ViewTransactions : BasePage
         {
             Transactions T = (Transactions)e.Parameter;
 
-            bool EditTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
+            bool EditTransaction = await Application.Current.Windows[0].Page.DisplayAlert($"Are your sure?", $"Are you sure you want to Edit this transaction?", "Yes, continue", "No Thanks!");
             if (EditTransaction)
             {
                 await Shell.Current.GoToAsync($"{nameof(ViewTransactions)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={T.TransactionID}&NavigatedFrom=ViewTransactions",
@@ -192,7 +220,7 @@ public partial class ViewTransactions : BasePage
         {
             Transactions T = (Transactions)e.Parameter;
 
-            bool DeleteTransaction = await Application.Current.MainPage.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
+            bool DeleteTransaction = await Application.Current.Windows[0].Page.DisplayAlert($"Are your sure?", $"Are you sure you want to Delete this transaction?", "Yes", "No Thanks!");
             if (DeleteTransaction)
             {
                 await _ds.DeleteTransaction(T.TransactionID);
@@ -300,13 +328,7 @@ public partial class ViewTransactions : BasePage
     {
         try
         {
-            decimal Amount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entSearchAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSearchAmount.CursorPosition > position)
-            {
-                entSearchAmount.CursorPosition = entSearchAmount.Text.Length;
-            }
+            decimal Amount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entSearchAmount);
 
             if (listView.DataSource != null)
             {
@@ -421,7 +443,7 @@ public partial class ViewTransactions : BasePage
     {
         try
         {
-            ViewTransactionFilterBottomSheet page = new ViewTransactionFilterBottomSheet(Filters, new ProductTools(new RestDataService()));
+            ViewTransactionFilterBottomSheet page = new ViewTransactionFilterBottomSheet(Filters, IPlatformApplication.Current.Services.GetService<IProductTools>());
 
             page.Detents = new DetentsCollection()
             {            

@@ -11,8 +11,10 @@ namespace DailyBudgetMAUIApp.DataServices
         public RegisterModel CreateUserSecurityDetails(RegisterModel obj);
         public RegisterModel ResetUserPassword(RegisterModel obj);
         public Task HandleException(Exception ex, string page, string Method);
-        public DateTime? GetBudgetLastUpdated(int BudgetID);
+        public Task<DateTime>? GetBudgetLastUpdated(int BudgetID);
         public void ShowPopup(PopUpPage popup);
+        public double FormatBorderlessEntryNumber(object sender, TextChangedEventArgs e, BorderlessEntry entry);
+        public double FormatEntryNumber(object sender, TextChangedEventArgs e, Entry entry);
         public double FormatCurrencyNumber(string input);
         public int FindCurrencyCursorPosition(string input);
         public int GetNumberOfDaysLastWorkingDay(int? NumberOfDaysBefore);
@@ -39,6 +41,7 @@ namespace DailyBudgetMAUIApp.DataServices
         public string TransactTransaction(ref Transactions T, ref Budgets Budget);
         public DateTime GetBudgetLocalTime(DateTime UtcDate);
         public Task NavigateFromPendingIntent(string NavigationID);
+        public Task UpdateNotificationPermission();
         public Task<Picker> SwitchBudget(string page);
         public Task ChangeDefaultBudget(int UserID, int BudgetID, bool Navigate);
         public Task LoadTabBars(string UserSub, DateTime SubExpiry, string BudgetType);
@@ -48,5 +51,6 @@ namespace DailyBudgetMAUIApp.DataServices
         public Task MakeSnackBar(string text, Action? action, string? actionButtonText, TimeSpan duration, string snackBarType);
         public Task PayBillNow(Bills Bill, Budgets budget);
         public Task PayPayDayNow(Budgets budget);
+        public Task<long> GetFileLengthAsync(FileResult fileResult);
     }
 }

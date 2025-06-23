@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DailyBudgetMAUIApp.Handlers.BudgetCategoryChart"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"             
+             x:Name="CustomBudgetCategoryChart">
+    <Grid RowDefinitions="200" ColumnDefinitions="*, *">
+        <Label x:Name="NoTransaction" Grid.Column="0" Grid.Row="0" Text="No transactions for these categories this period" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" HorizontalTextAlignment="Center" Margin="15,0,10,20" HorizontalOptions="Center" VerticalOptions="Center"/>
+        <chart:SfCircularChart x:Name="CircularChart" Grid.Column="0" Grid.Row="0" Margin="5,0,0,20" BackgroundColor="Transparent" >
+            <chart:DoughnutSeries EnableTooltip="True" x:Name="Doughnut" XBindingPath="XAxesString" YBindingPath="YAxesDouble" ShowDataLabels="False" Radius="1"/>
+        </chart:SfCircularChart>
+        <ScrollView Grid.Row="0" Grid.Column="1" Margin="20,10,0,10" >
+            <VerticalStackLayout x:Name="CategoryLegend" >
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentView>

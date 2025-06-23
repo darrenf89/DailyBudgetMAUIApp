@@ -1,20 +1,26 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace DailySpendWebApp.Models
 {
     public partial class FirebaseDevices : ObservableObject
     {
         [ObservableProperty]
-        public int  firebaseDeviceID;
+        public partial int FirebaseDeviceID { get; set; }
+
         [ObservableProperty]
-        public string?  firebaseToken;
+        public partial string? FirebaseToken { get; set; }
+
         [ObservableProperty]
-        public string?  deviceName;
+        public partial string? DeviceName { get; set; }
+
         [ObservableProperty]
-        public string?  deviceModel;
+        public partial string? DeviceModel { get; set; }
+
         [ObservableProperty]
-        public int  userAccountID;
+        public partial int UserAccountID { get; set; }
+
         [ObservableProperty]
-        public DateTime  loginExpiryDate;
+        public partial DateTime LoginExpiryDate { get; set; }
     }
 }

@@ -14,39 +14,57 @@ namespace DailyBudgetMAUIApp.ViewModels
     [QueryProperty(nameof(BillID), nameof(BillID))]
     [QueryProperty(nameof(Bill), nameof(Bill))]
     [QueryProperty(nameof(NavigatedFrom), nameof(NavigatedFrom))]
+    [QueryProperty(nameof(FamilyAccountID), nameof(FamilyAccountID))]
     public partial class AddBillViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int  budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private int  billID;
+        public partial int FamilyAccountID { get; set; }
+
         [ObservableProperty]
-        private Bills  bill;
+        public partial int BillID { get; set; }
+
         [ObservableProperty]
-        private decimal  billOldBalance;
+        public partial Bills Bill { get; set; }
+
         [ObservableProperty]
-        private bool  isPageValid;
+        public partial decimal BillOldBalance { get; set; }
+
         [ObservableProperty]
-        private DateTime  minimumDate = DateTime.UtcNow.Date.AddDays(1);
+        public partial bool IsPageValid { get; set; }
+
         [ObservableProperty]
-        private string  navigatedFrom;
+        public partial DateTime MinimumDate { get; set; } = DateTime.UtcNow.Date.AddDays(1);
+
         [ObservableProperty]
-        private string  billName;
+        public partial string NavigatedFrom { get; set; }
+
         [ObservableProperty]
-        private string  billPayee;
+        public partial string BillName { get; set; }
+
         [ObservableProperty]
-        private string billCategory;
+        public partial string BillPayee { get; set; }
+
         [ObservableProperty]
-        private string redirectTo;
+        public partial string BillCategory { get; set; }
+
         [ObservableProperty]
-        private bool isMultipleAccounts;
+        public partial string RedirectTo { get; set; }
+
         [ObservableProperty]
-        private List<BankAccounts> bankAccounts;
+        public partial bool IsMultipleAccounts { get; set; }
+
         [ObservableProperty]
-        private BankAccounts? selectedBankAccount;
+        public partial List<BankAccounts> BankAccounts { get; set; }
+
+        [ObservableProperty]
+        public partial BankAccounts? SelectedBankAccount { get; set; }
+
 
 
         public string BillTypeText { get; set; } = "";
@@ -67,7 +85,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public async void AddBill()
         {
             Bill.BillBalanceAtLastPayDay = Bill.BillCurrentBalance;
-            string SuccessCheck = _ds.SaveNewBill(Bill,BudgetID).Result;
+            string SuccessCheck = await _ds.SaveNewBill(Bill,BudgetID);
             if(SuccessCheck == "OK")
             {
                 Bill.BillName = "";
@@ -78,9 +96,21 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings", false);
+                }
+                else if (RedirectTo == "CreateNewFamilyAccount")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Outgoings", false);
                 }
                 else if (RedirectTo == "ViewBills")
                 {
@@ -88,9 +118,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
                 }
                 else
@@ -112,7 +142,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 Bill.BillBalanceAtLastPayDay += (Bill.BillCurrentBalance - BillOldBalance);
             }
 
-            string SuccessCheck = _ds.UpdateBill(Bill).Result;
+            string SuccessCheck = await _ds.UpdateBill(Bill);
             if(SuccessCheck == "OK")
             {
                 Bill.BillName = "";
@@ -123,10 +153,21 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                }
+                else if (RedirectTo == "CreateNewFamilyAccount")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Outgoings", false);
                 }
                 else if (RedirectTo == "ViewBills")
                 {
@@ -134,7 +175,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
@@ -159,10 +200,21 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
+                }
+                else if (RedirectTo == "CreateNewFamilyAccount")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Outgoings", false);
                 }
                 else if (RedirectTo == "ViewBills")
                 {
@@ -170,7 +222,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
@@ -194,7 +246,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 string Description = "Every outgoing needs a name, we will refer to it by the name you give it and will make it easier to identify!";
                 string DescriptionSub = "Call it something useful or call it something silly up to you really!";
                 var popup = new PopUpPageSingleInput("Outgoing Name", Description, DescriptionSub, "Enter an outgoing name!", Bill.BillName, new PopUpPageSingleInputViewModel());
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if (result != null || (string)result != "")
                 {

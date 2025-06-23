@@ -1,34 +1,47 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class IncomeEvents : ObservableObject
     {
         [ObservableProperty]
-        private int  incomeEventID;
+        public partial int IncomeEventID { get; set; }
+
         [ObservableProperty]
-        private decimal  incomeAmount;
+        public partial decimal IncomeAmount { get; set; }
+
         [ObservableProperty]
-        private string  incomeName  = "";
+        public partial string IncomeName { get; set; } = "";
+
         [ObservableProperty]
-        private DateTime  incomeActiveDate  = DateTime.UtcNow;
+        public partial DateTime IncomeActiveDate { get; set; } = DateTime.UtcNow;
+
         [ObservableProperty]
-        private DateTime  dateOfIncomeEvent  = DateTime.UtcNow;
+        public partial DateTime DateOfIncomeEvent { get; set; } = DateTime.UtcNow;
+
         [ObservableProperty]
-        private bool  isRecurringIncome;
+        public partial bool IsRecurringIncome { get; set; }
+
         [ObservableProperty]
-        private string?  recurringIncomeType;
+        public partial string? RecurringIncomeType { get; set; }
+
         [ObservableProperty]
-        private int?  recurringIncomeValue;
+        public partial int? RecurringIncomeValue { get; set; }
+
         [ObservableProperty]
-        private string?  recurringIncomeDuration;
+        public partial string? RecurringIncomeDuration { get; set; }
+
         [ObservableProperty]
-        private bool  isClosed;
+        public partial bool IsClosed { get; set; }
+
         [ObservableProperty]
-        private bool?  isInstantActive;
+        public partial bool? IsInstantActive { get; set; }
+
         [ObservableProperty]
-        private bool?  isIncomeAddedToBalance  = false;
+        public partial bool? IsIncomeAddedToBalance { get; set; } = false;
+
         [ObservableProperty]
-        public int? accountID;
+        public partial int? AccountID { get; set; }
     }
 }

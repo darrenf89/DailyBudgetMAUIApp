@@ -1,16 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
+using System.Collections.Generic;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class PatchNote : ObservableObject
     {
         [ObservableProperty]
-        public string title;
+        public partial string Title { get; set; }
+
         [ObservableProperty]
-        public DateTime date;
+        public partial DateTime Date { get; set; }
+
         [ObservableProperty]
-        public string description;
+        public partial string Description { get; set; }
+
         [ObservableProperty]
-        public List<string> changes;
+        public partial List<string> Changes { get; set; }
     }
 }

@@ -67,8 +67,8 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
         ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
         ButtonWidth = ScreenWidth - 40;
 
-        MainScrollView.MaximumHeightRequest = ScreenHeight - App.NavBarHeight - App.StatusBarHeight - 80;
-        MainAbs.HeightRequest = ScreenHeight - App.NavBarHeight - App.StatusBarHeight;
+        MainScrollView.MaximumHeightRequest = ScreenHeight - App.StatusBarHeight - App.NavBarHeight - 201;
+        MainAbs.HeightRequest = ScreenHeight - App.StatusBarHeight;
 
         MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
         MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, AbsoluteLayout.AutoSize));
@@ -76,22 +76,26 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
         MainAbs.SetLayoutBounds(BtnApply, new Rect(0, 1, ScreenWidth, AbsoluteLayout.AutoSize));
 
         lblTitle.Text = $"Filters";
+        Filter = filter;
+        this.PropertyChanged += ViewTransactionFilterBottomSheet_PropertyChanged;
+        Loaded += ViewTransactionFilterBottomSheet_Loaded;
+
+    }
+
+    private async void ViewTransactionFilterBottomSheet_Loaded(object sender, EventArgs e)
+    {
         try
         {
-            Filter = filter;
+            await FillSelectedFilterLists();
 
-            FillSelectedFilterLists();
-
-            LoadFilters();
-
-            this.PropertyChanged += ViewTransactionFilterBottomSheet_PropertyChanged;
+            await LoadFilters();
 
             pckFromDate.Date = DateTime.UtcNow.AddYears(-1);
             pckToDate.Date = DateTime.Now;
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "ViewTransactionFilterBottomSheet");
+            await _pt.HandleException(ex, "ViewTransactionFilterBottomSheet", "ViewTransactionFilterBottomSheet_Loaded");
         }
 
     }
@@ -136,32 +140,34 @@ public partial class ViewTransactionFilterBottomSheet : BottomSheet
 
     }
 
-    private void LoadFilters()
+    private async Task LoadFilters()
     {
-        IRestDataService ds = new RestDataService();
+        IRestDataService ds = IPlatformApplication.Current.Services.GetService<IRestDataService>();
 
         TotalFilters = 2;
         SelectedFilters = 2;
 
-        Payees = ds.GetPayeeList(App.DefaultBudgetID).Result;
+        Payees = await ds.GetPayeeList(App.DefaultBudgetID);
         CreatePayeeButtons();
         TotalFilters += Payees.Count();
 
-        Categories = ds.GetCategories(App.DefaultBudgetID).Result;
+        Categories = await ds.GetCategories(App.DefaultBudgetID);
         CreateCategoryButtons();
         TotalFilters += Categories.Where(c => c.IsSubCategory).Count();
 
-        Savings = ds.GetAllBudgetSavings(App.DefaultBudgetID).Result;
+        Savings = await ds.GetAllBudgetSavings(App.DefaultBudgetID);
         CreateSavingsButtons();
         TotalFilters += Savings.Count();
 
-        EventTypes = ds.GetBudgetEventTypes(App.DefaultBudgetID).Result;
+        EventTypes = await ds.GetBudgetEventTypes(App.DefaultBudgetID);
         CreateEventTypeButtons();
         TotalFilters += EventTypes.Count();
     }
 
-    private void FillSelectedFilterLists()
+    private async Task FillSelectedFilterLists()
     {
+
+        await Task.Delay(1);
         if(Filter != null)
         {
             if(Filter.DateFilter == null)

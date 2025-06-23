@@ -33,9 +33,10 @@ namespace MAUISample.Platforms.Android
 
         public FloatingService()
         {
-            _pt = MauiApplication.Current.Services.GetService<IProductTools>()
+            
+            _pt = IPlatformApplication.Current.Services.GetService<IProductTools>()
                           ?? throw new InvalidOperationException("IProductTools is not registered.");
-            _ds = MauiApplication.Current.Services.GetService<IRestDataService>()
+            _ds = IPlatformApplication.Current.Services.GetService<IRestDataService>()
                           ?? throw new InvalidOperationException("IRestDataService is not registered.");
         }
 

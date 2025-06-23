@@ -18,7 +18,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public DateTime OriginalDate { get; set; }
 
         [ObservableProperty]
-        public Transactions transaction;
+        public partial Transactions Transaction { get; set; }
 
         public PopupDailyTransactionViewModel()
         {

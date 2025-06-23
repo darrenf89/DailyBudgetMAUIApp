@@ -3,9 +3,6 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using IeuanWalker.Maui.Switch;
-using IeuanWalker.Maui.Switch.Events;
-using IeuanWalker.Maui.Switch.Helpers;
 using System.Globalization;
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -26,6 +23,31 @@ public partial class AddSaving : BasePage
        
 	}
 
+    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+        }
+
+        _vm.IsPageBusy = false;
+
+        await Task.Delay(500);
+        base.OnNavigatingFrom(args);
+    }
+
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+
+        if (Navigation.NavigationStack.Count > 1)
+        {
+            Shell.SetTabBarIsVisible(this, false);
+        }
+    }
+
     async protected override void OnAppearing()
     {
         try
@@ -39,9 +61,9 @@ public partial class AddSaving : BasePage
                 _vm.BudgetID = App.DefaultBudgetID;
             }
 
-            _vm.BudgetNextPayDate = _ds.GetBudgetNextIncomePayDayAsync(_vm.BudgetID).Result;
+            _vm.BudgetNextPayDate = await _ds.GetBudgetNextIncomePayDayAsync(_vm.BudgetID);
             _vm.BudgetDaysToNextPay = (int)Math.Ceiling((_vm.BudgetNextPayDate.Date - _pt.GetBudgetLocalTime(DateTime.UtcNow).Date).TotalDays);
-            _vm.BudgetDaysBetweenPay = _ds.GetBudgetDaysBetweenPayDay(_vm.BudgetID).Result;
+            _vm.BudgetDaysBetweenPay = await _ds.GetBudgetDaysBetweenPayDay(_vm.BudgetID);
 
             if (_vm.SavingID == 0)
             {
@@ -49,11 +71,11 @@ public partial class AddSaving : BasePage
                 _vm.Title = "Add a New Saving";
                 btnAddSaving.IsVisible = true;
 
-                if (_vm.NavigatedFrom == "ViewSavings")
+                if (_vm.NavigatedFrom == "ViewSavings" || _vm.NavigatedFrom == "CreateNewFamilyAccountSaving")
                 {
                     _vm.SavingType = "Regular";
                 }
-                else if (_vm.NavigatedFrom == "ViewEnvelopes")
+                else if (_vm.NavigatedFrom == "ViewEnvelopes" || _vm.NavigatedFrom == "CreateNewFamilyAccountEnvelope")
                 {
                     _vm.SavingType = "Envelope";
                 }
@@ -76,7 +98,7 @@ public partial class AddSaving : BasePage
             {
                 if (_vm.SavingID != -1)
                 {
-                    _vm.Saving = _ds.GetSavingFromID(_vm.SavingID).Result;
+                    _vm.Saving = await _ds.GetSavingFromID(_vm.SavingID);
                     _vm.Title = $"Update Saving {_vm.Saving.SavingsName}";
                     btnUpdateSaving.IsVisible = true;
                 }
@@ -165,7 +187,7 @@ public partial class AddSaving : BasePage
         string Description = "Every savings needs a name, we will refer to it by the name you give it and this will make it easier to identify!";
         string DescriptionSub = "Call it something useful or call it something silly up to you really!";
         var popup = new PopUpPageSingleInput("Saving Name", Description, DescriptionSub, "Enter an Saving name!", _vm.Saving.SavingsName, new PopUpPageSingleInputViewModel());
-        var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+        var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
         if (result != null || (string)result != "")
         {
@@ -206,7 +228,7 @@ public partial class AddSaving : BasePage
     {
         try
         {
-            bool result = await DisplayAlert("Savings Reset", "Are you sure you want to Reset " + _vm.Saving.SavingsName, "Yes, continue", "Cancel");
+            bool result = await DisplayAlert("Bills Reset", "Are you sure you want to Reset " + _vm.Saving.SavingsName, "Yes, continue", "Cancel");
             if (result)
             {
                 UpdateDisplaySelection("");
@@ -488,7 +510,7 @@ public partial class AddSaving : BasePage
             SavingTypeSelected.IsVisible = true;
             brdSavingDetails.IsVisible = true;
 
-            lblSelectedSavingTitle.Text = "Creating a Builder Savings";
+            lblSelectedSavingTitle.Text = "Creating a Builder Bills";
             lblSelectedSavingParaOne.Text = "For saving goals without any time or target constraints";
             lblSelectedSavingParaTwo.Text = "Save the same amount each period, as much as you can afford!";
             
@@ -616,40 +638,12 @@ public partial class AddSaving : BasePage
         }
     }
 
-    static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
-    {
-
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
-        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
-
-        //Switch Color Animation
-        Color fromSwitchColor = e.IsToggled ? (Color)Primary : (Color)Gray400;
-        Color toSwitchColor = e.IsToggled ? (Color)Gray400 : (Color)Primary;
-
-        //BackGroundColor Animation
-        Color fromColor = e.IsToggled ? (Color)Tertiary : (Color)PrimaryLight;
-        Color toColor = e.IsToggled ? (Color)PrimaryLight : (Color)Tertiary;
-
-        double t = e.Percentage * 0.01;
-
-        customSwitch.KnobBackgroundColor = ColorAnimationUtil.ColorAnimation(fromSwitchColor, toSwitchColor, t);
-        customSwitch.BackgroundColor = ColorAnimationUtil.ColorAnimation(fromColor, toColor, t);
-
-    }
-
     void SavingTarget_Changed(object sender, TextChangedEventArgs e)
     {
         try
         {
-            decimal SavingTarget = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entSavingTarget.Text = SavingTarget.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingTarget.CursorPosition > position)
-            {
-                entSavingTarget.CursorPosition = entSavingTarget.Text.Length;
-            }
+            decimal SavingTarget = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entSavingTarget);
+
             _vm.Saving.SavingsGoal = SavingTarget;
 
             RecalculateValues("entSavingTarget");
@@ -663,13 +657,8 @@ public partial class AddSaving : BasePage
     {
         try
         {
-            decimal CurrentBalance = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entCurrentBalance.Text = CurrentBalance.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCurrentBalance.CursorPosition > position)
-            {
-                entCurrentBalance.CursorPosition = entCurrentBalance.Text.Length;
-            }
+            decimal CurrentBalance = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entCurrentBalance);
+
             _vm.Saving.CurrentBalance = CurrentBalance;
 
             RecalculateValues("entCurrentBalance");
@@ -696,13 +685,7 @@ public partial class AddSaving : BasePage
     {
         try
         {
-            decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entSavingAmount.Text = SavingValue.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entSavingAmount.CursorPosition > position)
-            {
-                entSavingAmount.CursorPosition = entSavingAmount.Text.Length;
-            }
+            decimal SavingValue = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entSavingAmount);
 
             if (!_vm.Saving.IsRegularSaving)
             {
@@ -735,17 +718,7 @@ public partial class AddSaving : BasePage
     {
         try
         {
-            decimal CalculateAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-            entCalculateAmount.Text = CalculateAmount.ToString("c", CultureInfo.CurrentCulture);
-            if(_vm.ShowCalculator)
-            {
-                int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-                if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entCalculateAmount.CursorPosition > position)
-                {
-                    entCalculateAmount.CursorPosition = entCalculateAmount.Text.Length;
-                }
-            }
-        
+            decimal CalculateAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entCalculateAmount);        
 
             string SelectedDuration = (string)pckrEverynthDuration.SelectedItem ?? "Week";
             decimal DailyAmount = 0;
@@ -790,7 +763,7 @@ public partial class AddSaving : BasePage
             PickerClass SavingPeriodClass = (PickerClass)pckrSavingPeriod.SelectedItem;
             _vm.Saving.DdlSavingsPeriod = SavingPeriodClass.Key;
 
-            decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(entSavingAmount.Text);
+            decimal SavingValue = (decimal)_pt.FormatCurrencyNumber(entSavingAmount.Text ?? "0");
 
             if (_vm.Saving.DdlSavingsPeriod == "PerPayPeriod")
             {
@@ -1147,4 +1120,5 @@ public partial class AddSaving : BasePage
         }
 
     }
+
 }

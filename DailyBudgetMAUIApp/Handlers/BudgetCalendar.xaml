@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DailyBudgetMAUIApp.Handlers.BudgetCalendar"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"             
+             xmlns:scheduler="clr-namespace:Syncfusion.Maui.Scheduler;assembly=Syncfusion.Maui.Scheduler"
+             x:Name="CustomBudgetCalendar">
+    <scheduler:SfScheduler  Margin="5,0,10,0" TodayHighlightBrush="{StaticResource PrimaryDark}" x:Name="Scheduler" View="Agenda" MaximumHeightRequest="230">
+        <scheduler:SfScheduler.HeaderView>
+            <scheduler:SchedulerHeaderView Height="50" Background="White" />
+        </scheduler:SfScheduler.HeaderView>
+        <scheduler:SfScheduler.AgendaView>
+            <scheduler:SchedulerAgendaView>
+                <scheduler:SchedulerAgendaView.MonthHeaderSettings>
+                    <scheduler:SchedulerMonthHeaderSettings Height="0"/>
+                </scheduler:SchedulerAgendaView.MonthHeaderSettings>
+                <scheduler:SchedulerAgendaView.DayHeaderSettings>
+                    <scheduler:SchedulerDayHeaderSettings Background="White"/>
+                </scheduler:SchedulerAgendaView.DayHeaderSettings>
+                <scheduler:SchedulerAgendaView.WeekHeaderSettings>
+                    <scheduler:SchedulerWeekHeaderSettings Height="0"/>
+                </scheduler:SchedulerAgendaView.WeekHeaderSettings>
+            </scheduler:SchedulerAgendaView>
+        </scheduler:SfScheduler.AgendaView>
+    </scheduler:SfScheduler>
+</ContentView>

@@ -17,7 +17,7 @@
             FontAttributes="Bold"
             TextColor="{Binding ColorConnectionStatus}" 
             FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
-        <Image Grid.Column="0" Grid.Row="1" Source="disconnectedpage.png" Aspect="AspectFill" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,100,0,0"/>
+        <Image Grid.Column="0" Grid.Row="1" Source="disconnectedpage.png"  VerticalOptions="Center" HorizontalOptions="Center" Margin="0,100,0,0"/>
         <Label Grid.Column="0" Grid.Row="2" Margin="0,60,0,10"
             Text="Oops, No Internet Connection"
             VerticalOptions="Center" 

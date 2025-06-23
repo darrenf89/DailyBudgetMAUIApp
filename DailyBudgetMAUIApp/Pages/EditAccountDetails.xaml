@@ -4,57 +4,27 @@
             x:Class="DailyBudgetMAUIApp.Pages.EditAccountDetails"
              xmlns:local="clr-namespace:DailyBudgetMAUIApp"
             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-            xmlns:switch="clr-namespace:IeuanWalker.Maui.Switch;assembly=IeuanWalker.Maui.Switch"
             xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
             xmlns:checkBox="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
             xmlns:sfavatar="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
-            xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects">
+            xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
+            xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
+            Shell.TabBarIsVisible="False"
+            Shell.NavBarIsVisible="True"
+            Shell.FlyoutBehavior="Flyout"
+            droid:NavigationBar.Color="{StaticResource PrimaryDark}"
+            droid:NavigationBar.Style="LightContent"
+            Title="{Binding Title}">
     <VerticalStackLayout x:Name="AllContent">
         <AbsoluteLayout x:Name="MainAbs">
-            <HorizontalStackLayout AbsoluteLayout.LayoutBounds="1,0" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,15,10,0">
-                <Label TextColor="{StaticResource Info}" Text="Close" TextDecorations="Underline" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
-                <Image Background="{DynamicResource White}" Margin="5,0,0,0" VerticalOptions="End">
-                    <Image.Source>
-                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Close}" Size="16" Color="{DynamicResource Info}"/>
-                    </Image.Source>
-                </Image>
-                <HorizontalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding CloseSettingsCommand}" CommandParameter="{Binding .}"/>
-                </HorizontalStackLayout.GestureRecognizers>
-            </HorizontalStackLayout>
-            <AbsoluteLayout AbsoluteLayout.LayoutBounds="0.5,0,150,210" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,30,0,0">
-                <ImageButton Command="{Binding ChangeSelectedProfilePicCommand}" Style="{StaticResource TitleButtons}" ZIndex="999" WidthRequest="40" HeightRequest="40" Padding="6" Aspect="Center" CornerRadius="20" VerticalOptions="Center" Margin="5,0,0,0" AbsoluteLayout.LayoutBounds="0.95,0.78" AbsoluteLayout.LayoutFlags="PositionProportional" BackgroundColor="{StaticResource Primary}">
-                    <ImageButton.Source>
-                        <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Photo_camera}" Color="{DynamicResource White}" Size="25"/>
-                    </ImageButton.Source>
-                    <ImageButton.Shadow>
-                        <Shadow />
-                    </ImageButton.Shadow>
-                </ImageButton>
-                <sfavatar:SfAvatarView Stroke="White" StrokeThickness="8" x:Name="ProfilePicture" AbsoluteLayout.LayoutBounds="0.5,0" AbsoluteLayout.LayoutFlags="PositionProportional" VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="150" CornerRadius="75" WidthRequest="150" >
-                    <sfavatar:SfAvatarView.Shadow>
-                        <Shadow/>
-                    </sfavatar:SfAvatarView.Shadow>
-                </sfavatar:SfAvatarView>
-            </AbsoluteLayout>
             <Grid x:Name="MainVSL" AbsoluteLayout.LayoutBounds="0,0" AbsoluteLayout.LayoutFlags="PositionProportional" Margin="0,0,0,0" RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
-                <VerticalStackLayout Grid.Column="0" Grid.Row="0">
-                    <BoxView x:Name="TopBV" HeightRequest="9" Color="{DynamicResource InfoLL}" HorizontalOptions="Center" Margin="0,0,0,10"/>
-                    <Label CharacterSpacing="1.5" Margin="0,165,0,0" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Primary}" Text="{Binding User.NickName}"/>
-                    <Label CharacterSpacing="0" Margin="0,4,0,0" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.Row="0" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{DynamicResource Gray500}" Text="{Binding User.Email}"/>
-                    <BoxView HeightRequest="3" Color="{DynamicResource PrimaryDark}" Margin="0,10,0,0">
-                        <BoxView.Shadow>
-                            <Shadow Offset="0,14" Opacity="0.3" Brush="{DynamicResource Gray900}" Radius="10" />
-                        </BoxView.Shadow>
-                    </BoxView>
-                </VerticalStackLayout>
                 <ScrollView x:Name="MainScrollView" Margin="0" Grid.Column="0" Grid.Row="1" >
                     <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" x:Name="grdFilters" Margin="0,0,0,0">
                         <VerticalStackLayout Grid.Row="2" Grid.Column="0" Margin="5,0,5,0">
                             <Grid VerticalOptions="Center"  ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" Margin="0,10,0,10">
-                                <Label Grid.Column="1" Grid.Row="0" Text="Account Settings" Margin="15,0,0,0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                                <Label Grid.Column="1" Grid.Row="0" Text="Account Details" Margin="15,0,0,0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
                                 <Image Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,20,0">
                                     <Image.Source>
                                         <FontImageSource x:Name="SubDetailsIcon" FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Expand_more}" Size="30"  Color="{DynamicResource Info}"/>
@@ -62,7 +32,7 @@
                                 </Image>
                             </Grid>
                             <Grid Margin="0,0,0,0" x:Name="SubDetails" HorizontalOptions="Fill" ColumnDefinitions="*" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, AUto, Auto, Auto">
-                                <VerticalStackLayout Grid.Row="0" Grid.Column="0" touchEffects:TouchEffect.Color="{StaticResource Gray200}" Padding="15,5,15,5" VerticalOptions="Center">
+                                <VerticalStackLayout Grid.Row="0" Grid.Column="0" touchEffects:TouchEffect.Color="{StaticResource Gray200}" Padding="15,5,15,5" VerticalOptions="Center" x:Name="ViewSubDetails">
                                     <Label VerticalTextAlignment="Center" Text="{Binding User.SubscriptionType, StringFormat='Your subscription level: {0}'}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}" FontAttributes="Bold" Margin="0,0,0,2" Padding="0"/>
                                     <Label  VerticalTextAlignment="Center" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" Text="{Binding CurrentSubStatus}" TextColor="{StaticResource Gray200}" FontAttributes="Bold" Margin="0,0,0,0" Padding="0">
                                     </Label>

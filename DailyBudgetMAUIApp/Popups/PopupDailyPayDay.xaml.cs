@@ -34,8 +34,16 @@ public partial class PopupDailyPayDay : Popup
         string NextIncomePayday = _vm.Budget.NextIncomePayday.GetValueOrDefault().ToShortDateString();
         lblNextIncomePayday.Text = NextIncomePayday;
 
-        lblTitle.Text = "Transact Payday now!";
+        lblTitle.Text = App.IsFamilyAccount ? "Time for your allowance" : "Transact Payday now!";
+        lblOne.Text = App.IsFamilyAccount ? "Nice, its time for your allowance to be paid. Check with the owner of your parent budget to make sure they have given you the money." : "No better time of the year, month or day ... than pay day";
+        lblTwo.Text = App.IsFamilyAccount ? "Once you have the money, lets allocate it out see what you have left and have some fun!" : "Or do we have it wrong, is pay day not today? Or did you get paid more ... or less this time?!";
         btnUpdate.Text = "No, go back!";
+
+        if(App.IsFamilyAccount)
+        {
+            btnUpdate.IsVisible = false;
+            btnFinsih.Text = "OK";
+        }
 
     }
 
@@ -60,18 +68,20 @@ public partial class PopupDailyPayDay : Popup
 
         string NextIncomePayday = _vm.Budget.NextIncomePayday.GetValueOrDefault().ToShortDateString();
         lblNextIncomePayday.Text = NextIncomePayday;
-   
+
+        lblTitle.Text = App.IsFamilyAccount ? "Time for your allowance" : "Transact Payday now!";
+
+        if (App.IsFamilyAccount)
+        {
+            btnUpdate.IsVisible = false;
+            btnFinsih.Text = "OK";
+
+        }
     }
 
     void PayDayAmount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entPayDayAmount.CursorPosition > position)
-        {
-            entPayDayAmount.CursorPosition = entPayDayAmount.Text.Length;
-        }
+        decimal PayDayAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entPayDayAmount);
 
         _vm.Budget.PaydayAmount = PayDayAmount;
     }

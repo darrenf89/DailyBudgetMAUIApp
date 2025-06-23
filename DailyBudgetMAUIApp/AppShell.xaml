@@ -5,16 +5,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:DailyBudgetMAUIApp"
     xmlns:Pages="clr-namespace:DailyBudgetMAUIApp.Pages"
+    xmlns:sys="clr-namespace:System;assembly=netstandard"
     Shell.FlyoutBehavior="Disabled"
     Shell.TabBarIsVisible="True"
-    xmlns:ContentDI="clr-namespace:Maui.FixesAndWorkarounds;assembly=PureWeen.Maui.FixesAndWorkarounds">
-    
+    FlyoutBackgroundColor="White">
+
     <ShellItem Route="LandingPage" FlyoutItemIsVisible="False">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:LandingPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:LandingPage}"/>
     </ShellItem>
 
     <ShellItem Route="LoadUpPage" FlyoutItemIsVisible="False">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:LoadUpPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:LoadUpPage}"/>
     </ShellItem>
 
     <TabBar x:Name="MainTabBar">
@@ -22,39 +23,69 @@
             <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
         </Tab>
         <Tab Title="Bill" Route="AddBill" Icon="bill.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddBill}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>
         </Tab>
         <Tab Route="AddTransaction" Title="Transaction" Icon="transaction.svg">
             <ShellContent ContentTemplate="{DataTemplate Pages:AddTransaction}"/>
         </Tab>
         <Tab Route="AddIncome" Title="Income" Icon="income.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddIncome}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddIncome}"/>
         </Tab>
         <Tab Route="AddSaving" Title="Saving" Icon="saving.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:AddSaving}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddSaving}"/>
+        </Tab>
+    </TabBar>
+
+    <TabBar x:Name="FamilyAccountMainTabBar">
+        <Tab Title="Dashboard" Route="FamilyAccountMainPage" Icon="dashboard.svg">
+            <ShellContent ContentTemplate="{DataTemplate local:FamilyAccountMainPage}" />
+        </Tab>
+        <Tab Title="Bill" Route="AddBill" Icon="bill.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddBill}"/>
+        </Tab>
+        <Tab Route="AddTransaction" Title="Transaction" Icon="transaction.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddTransaction}"/>
+        </Tab>
+        <Tab Route="AddIncome" Title="Income" Icon="income.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddIncome}"/>
+        </Tab>
+        <Tab Route="AddSaving" Title="Saving" Icon="saving.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:AddSaving}"/>
         </Tab>
     </TabBar>
 
     <TabBar x:Name="ViewTabBar">
         <Tab Route="ViewTransactions" Title="Transaction" Icon="transaction.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewTransactions}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewTransactions}"/>
         </Tab>
         <Tab Route="ViewSavings" Title="Savings" Icon="saving.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewSavings}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewSavings}"/>
         </Tab>
         <Tab Route="ViewBills" Title="Outgoings" Icon="bill.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewBills}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewBills}"/>
         </Tab>
         <Tab Route="ViewEnvelopes" Title="Envelopes" Icon="envelope.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewEnvelopes}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewEnvelopes}"/>
         </Tab>
         <Tab Route="ViewIncomes" Title="Incomes" Icon="income.svg">
-            <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewIncomes}"/>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewIncomes}"/>
+        </Tab>
+    </TabBar>
+
+    <TabBar x:Name="FamilyAccountsTabBar">
+        <Tab Route="FamilyAccountsManage" Title="Manage" Icon="dashboard.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:FamilyAccountsManage}"/>
+        </Tab>
+        <Tab Route="FamilyAccountsView" Title="View Accounts" Icon="accountsettings.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:FamilyAccountsView}"/>
+        </Tab>
+        <Tab Route="FamilyAccountsEdit" Title="Edit Accounts" Icon="edit.svg">
+            <ShellContent ContentTemplate="{DataTemplate Pages:FamilyAccountsEdit}"/>
         </Tab>
     </TabBar>
 
     <ShellItem Route="PatchNotes" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:PatchNotes}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:PatchNotes}"/>
     </ShellItem>
 
     <ShellItem Route="ViewCalendar" FlyoutItemIsVisible="False">
@@ -62,15 +93,77 @@
     </ShellItem>
 
     <ShellItem Route="ViewCategories" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:ViewCategories}"/>
     </ShellItem>
 
     <ShellItem Route="ViewCategory" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewCategory}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:ViewCategory}"/>
     </ShellItem>
 
     <ShellItem Route="ViewPayees" FlyoutItemIsVisible="True">
-        <ContentDI:ShellContentDI ContentTemplate="{DataTemplate Pages:ViewPayees}"/>
+        <ShellContent ContentTemplate="{DataTemplate Pages:ViewPayees}"/>
     </ShellItem>
 
+    <FlyoutItem Title="View Budgets" Icon="budget.svg" Route="ViewBudgets">
+        <Tab>
+            <ShellContent ContentTemplate="{DataTemplate Pages:ViewBudgets}" />
+        </Tab>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Budget Settings" Icon="settings.svg" Route="EditBudgetSettings">
+        <Tab>
+            <ShellContent ContentTemplate="{DataTemplate Pages:EditBudgetSettings}" />
+        </Tab>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Account Settings" Icon="accountsettings.svg" Route="EditAccountSettings">
+        <Tab>
+            <ShellContent ContentTemplate="{DataTemplate Pages:EditAccountSettings}" />
+        </Tab>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Account Details" Icon="details.svg" Route="EditAccountDetails">
+        <Tab>
+            <ShellContent ContentTemplate="{DataTemplate Pages:EditAccountDetails}" />
+        </Tab>
+    </FlyoutItem>
+
+    <MenuItem Text="Dashboard"
+              IconImageSource="dashboard.svg"
+              Command="{Binding GotoMainPageCommand}" />
+
+    <Shell.FlyoutHeaderTemplate>
+        <DataTemplate>
+            <Grid BackgroundColor="White" Margin="0" RowDefinitions="Auto" ColumnDefinitions="*">
+                <Image Source="mainpagelogoprimary.png" HeightRequest="150" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,45,0,0" Grid.Column="0" Grid.Row="0"/>
+            </Grid>
+        </DataTemplate>
+    </Shell.FlyoutHeaderTemplate>   
+    
+    <Shell.FlyoutFooterTemplate>
+        <DataTemplate>
+            <Grid BackgroundColor="White" RowDefinitions="Auto,Auto" ColumnDefinitions="*">
+                <Image Source="mainpagelogo.png" Opacity="0.6" HeightRequest="80" Margin="20,0,20,0" Grid.Row="0" Grid.Column="0"/>
+                <Label Grid.Row="1" Grid.Column="0" FontAttributes="Bold" Margin="0,0,0,10" x:DataType="sys:DateTime" Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='{0:MMMM dd, yyyy}'}" TextColor="{StaticResource Gray600}" HorizontalOptions="Center" />
+            </Grid>
+        </DataTemplate>
+    </Shell.FlyoutFooterTemplate>
+
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid ColumnDefinitions="Auto,*" Margin="10">
+                <Image Grid.Column="0" Source="{Binding Icon}" Margin="5" HeightRequest="25" />
+                <Label Margin="20,0,0,0" Grid.Column="1" Text="{Binding Title}" TextColor="{StaticResource PrimaryDark}" FontAttributes="Bold" VerticalTextAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    <Shell.MenuItemTemplate>
+        <DataTemplate>
+            <Grid ColumnDefinitions="Auto,*" Margin="10">
+                <Image Grid.Column="0" Source="{Binding Icon}" Margin="5" HeightRequest="25" />
+                <Label Margin="20,0,0,0" Grid.Column="1" Text="{Binding Text}" TextColor="{StaticResource PrimaryDark}" FontAttributes="Bold" VerticalTextAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+    </Shell.MenuItemTemplate>
 </Shell>

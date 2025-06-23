@@ -10,7 +10,7 @@
              Shell.NavBarIsVisible = "False"
              Background="#ecdbc3">
     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" ColumnDefinitions="*" VerticalOptions="Fill">
-        <Image Grid.Column="0" Grid.Row="1" Source="disconnectedpage.png" Aspect="AspectFill" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,60,0,0"/>
+        <Image Grid.Column="0" Grid.Row="1" Source="disconnectedpage.png"  VerticalOptions="Center" HorizontalOptions="Center" Margin="0,60,0,0"/>
         <Label Grid.Column="0" Grid.Row="0" Margin="0,20,0,0"
             Text="{Binding TxtConnectionStatus}"
             VerticalOptions="Center" 

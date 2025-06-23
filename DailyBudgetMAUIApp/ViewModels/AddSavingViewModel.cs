@@ -1,12 +1,13 @@
 ﻿using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
 using System.Globalization;
+using static Java.Lang.ProcessBuilder;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -15,33 +16,48 @@ namespace DailyBudgetMAUIApp.ViewModels
     [QueryProperty(nameof(SavingType), nameof(SavingType))]
     [QueryProperty(nameof(NavigatedFrom), nameof(NavigatedFrom))]
     [QueryProperty(nameof(Saving), nameof(Saving))]
+    [QueryProperty(nameof(FamilyAccountID), nameof(FamilyAccountID))]
     public partial class AddSavingViewModel : BaseViewModel
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int  budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private int  savingID;        
+        public partial int FamilyAccountID { get; set; }
+
         [ObservableProperty]
-        private int selectedCalculatorIndex = 0;
+        public partial int SavingID { get; set; }
+
         [ObservableProperty]
-        private Savings  saving;
+        public partial int SelectedCalculatorIndex { get; set; } = 0;
+
         [ObservableProperty]
-        private bool  isPageValid;
+        public partial Savings Saving { get; set; }
+
         [ObservableProperty]
-        private DateTime  minimumDate = DateTime.UtcNow.Date.AddDays(1);
+        public partial bool IsPageValid { get; set; }
+
         [ObservableProperty]
-        private string  savingType;
+        public partial DateTime MinimumDate { get; set; } = DateTime.UtcNow.Date.AddDays(1);
+
         [ObservableProperty]
-        private string  navigatedFrom;         
+        public partial string SavingType { get; set; }
+
         [ObservableProperty]
-        private string isTopUpLabelText = "Replenish";            
+        public partial string NavigatedFrom { get; set; }
+
         [ObservableProperty]
-        private string isTopUpParaText = "By replenishing the stash, every pay period we will reset the envelopes balance to the saving amount. Any balance not spent by the end of the period will effectively be added back to your budget for you to spend!";        
+        public partial string IsTopUpLabelText { get; set; } = "Replenish";
+
         [ObservableProperty]
-        private bool showCalculator;
+        public partial string IsTopUpParaText { get; set; } = "By replenishing the stash, every pay period we will reset the envelopes balance to the saving amount. Any balance not spent by the end of the period will effectively be added back to your budget for you to spend!";
+
+        [ObservableProperty]
+        public partial bool ShowCalculator { get; set; }
+
 
         public string SavingTypeText { get; set; } = "";
         public string SavingRecurringText { get; set; } = "";
@@ -74,7 +90,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             if (result)
             {
                 Saving.LastUpdatedValue = Saving.CurrentBalance;
-                int SavingID = _ds.SaveNewSaving(Saving, BudgetID).Result;
+                int SavingID = await _ds.SaveNewSaving(Saving, BudgetID);
                 if (SavingID != 0)
                 {
                     if (NavigatedFrom == "CreateNewBudget")
@@ -83,10 +99,32 @@ namespace DailyBudgetMAUIApp.ViewModels
                         {
                             var PopUp = new PopUpPage();
                             App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
+                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
                         }
-
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                        await Task.Delay(1);
+                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Bills");
+                    }
+                    else if (NavigatedFrom == "CreateNewFamilyAccountSaving")
+                    {
+                        if (App.CurrentPopUp == null)
+                        {
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                        }
+                        await Task.Delay(1);
+                        await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Bills", false);
+                    }
+                    else if (NavigatedFrom == "CreateNewFamilyAccountEnvelope")
+                    {
+                        if (App.CurrentPopUp == null)
+                        {
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                        }
+                        await Task.Delay(1);
+                        await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Envelopes", false);
                     }
                     else if (NavigatedFrom == "ViewSavings")
                     {
@@ -94,9 +132,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                         {
                             var PopUp = new PopUpPage();
                             App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
+                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
                         }
-
+                        await Task.Delay(1);
                         await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
                     }
                     else if (NavigatedFrom == "ViewEnvelopes")
@@ -105,7 +143,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         {
                             var PopUp = new PopUpPage();
                             App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
+                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
                         }
 
                         await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
@@ -120,7 +158,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        public async void BackButton()
+        public async Task BackButton()
         {
             try
             {
@@ -130,10 +168,32 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
-                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Bills");
+                }
+                else if (NavigatedFrom == "CreateNewFamilyAccountSaving")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Bills", false);
+                }
+                else if (NavigatedFrom == "CreateNewFamilyAccountEnvelope")
+                {
+                    if (App.CurrentPopUp == null)
+                    {
+                        var PopUp = new PopUpPage();
+                        App.CurrentPopUp = PopUp;
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                    }
+                    await Task.Delay(1);
+                    await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Envelopes", false);
                 }
                 else if (NavigatedFrom == "ViewSavings")
                 {
@@ -141,9 +201,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
                 }
                 else if (NavigatedFrom == "ViewEnvelopes")
@@ -152,9 +212,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
-
+                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
                 }
                 else
@@ -174,7 +234,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             bool result = await Shell.Current.DisplayAlert($"Update {Saving.SavingsName}?", $"Are you sure you want to update {Saving.SavingsName}?", "Yes", "Cancel");
             if (result)
             {
-                string SuccessCheck = _ds.UpdateSaving(Saving).Result;
+                string SuccessCheck = await _ds.UpdateSaving(Saving);
                 if (SuccessCheck == "OK")
                 {
                     if (NavigatedFrom == "CreateNewBudget")
@@ -183,10 +243,32 @@ namespace DailyBudgetMAUIApp.ViewModels
                         {
                             var PopUp = new PopUpPage();
                             App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
+                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
                         }
-
-                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Savings");
+                        await Task.Delay(1);
+                        await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Bills");
+                    }
+                    else if (NavigatedFrom == "CreateNewFamilyAccountSaving")
+                    {
+                        if (App.CurrentPopUp == null)
+                        {
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                        }
+                        await Task.Delay(1);
+                        await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Bills", false);
+                    }
+                    else if (NavigatedFrom == "CreateNewFamilyAccountEnvelope")
+                    {
+                        if (App.CurrentPopUp == null)
+                        {
+                            var PopUp = new PopUpPage();
+                            App.CurrentPopUp = PopUp;
+                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                        }
+                        await Task.Delay(1);
+                        await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Envelopes", false);
                     }
                     else if (NavigatedFrom == "ViewSavings")
                     {
@@ -194,9 +276,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                         {
                             var PopUp = new PopUpPage();
                             App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
+                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
                         }
-
+                        await Task.Delay(1);
                         await Shell.Current.GoToAsync($"//{nameof(ViewSavings)}");
                     }
                     else if (NavigatedFrom == "ViewEnvelopes")
@@ -205,9 +287,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                         {
                             var PopUp = new PopUpPage();
                             App.CurrentPopUp = PopUp;
-                            Application.Current.MainPage.ShowPopup(PopUp);
+                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
                         }
-
+                        await Task.Delay(1);
                         await Shell.Current.GoToAsync($"//{nameof(ViewEnvelopes)}");
                     }
                     else
@@ -220,14 +302,14 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        public async void ChangeSavingsName()
+        public async Task ChangeSavingsName()
         {
             try
             {
                 string Description = "Every savings needs a name, we will refer to it by the name you give it and this will make it easier to identify!";
                 string DescriptionSub = "Call it something useful or call it something silly up to you really!";
                 var popup = new PopUpPageSingleInput("Saving Name", Description, DescriptionSub, "Enter an Saving name!", Saving.SavingsName, new PopUpPageSingleInputViewModel());
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if (result != null || (string)result != "")
                 {

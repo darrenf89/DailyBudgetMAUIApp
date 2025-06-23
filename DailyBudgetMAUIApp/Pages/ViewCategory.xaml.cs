@@ -79,8 +79,10 @@ public partial class ViewCategory : BasePage
     {
         try
         {
+            _vm.IsPageBusy = true;
             base.OnAppearing();
             await LoadData();
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {
@@ -92,7 +94,7 @@ public partial class ViewCategory : BasePage
         _vm.Categories.Clear();
         _vm.CategoriesChart.Clear();
 
-        List<Categories> CategoryList = _ds.GetHeaderCategoryDetailsFull(_vm.HeaderCatId, App.DefaultBudgetID).Result;
+        List<Categories> CategoryList = await _ds.GetHeaderCategoryDetailsFull(_vm.HeaderCatId, App.DefaultBudgetID);
 
         var CategoryName = CategoryList.Where(c => !c.IsSubCategory).Select(c => c.CategoryName).FirstOrDefault();
 
@@ -123,9 +125,6 @@ public partial class ViewCategory : BasePage
                 _vm.PayPeriods.Add($"{SP.FromDate: dd MMM} to {SP.ToDate: dd MMM}");
             }
         }
-
-        listView.RefreshView();
-        listView.RefreshItem();
 
         if (App.CurrentPopUp != null)
         {
@@ -217,7 +216,7 @@ public partial class ViewCategory : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
@@ -318,12 +317,12 @@ public partial class ViewCategory : BasePage
         {
             Categories cat = (Categories)e.Parameter;
 
-            bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete category?", $"Are you sure you want to Delete {cat.CategoryName}?", "Yes", "No!");
+            bool Delete = await Application.Current.Windows[0].Page.DisplayAlert($"Delete category?", $"Are you sure you want to Delete {cat.CategoryName}?", "Yes", "No!");
             if (Delete)
             {
                 Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
                 string[] CategoryList = Categories.Keys.ToArray();
-                var reassign = await Application.Current.MainPage.DisplayActionSheet($"Do you want to reassign this categories transactions?", "Cancel", "No", CategoryList);
+                var reassign = await Application.Current.Windows[0].Page.DisplayActionSheet($"Do you want to reassign this categories transactions?", "Cancel", "No", CategoryList);
                 if(reassign == "Cancel")
                 {
 
@@ -348,9 +347,6 @@ public partial class ViewCategory : BasePage
                     _vm.CategoriesChart.RemoveAt(index);
                 }
 
-                listView.RefreshView();
-                listView.RefreshItem();
-
             }
         }
         catch (Exception ex)
@@ -365,8 +361,6 @@ public partial class ViewCategory : BasePage
         {
             Categories cat = (Categories)e.Parameter;
             cat.IsEditMode = true;
-
-            listView.RefreshItem();
 
             var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
             var EntryList = Entries.ToList();
@@ -408,8 +402,6 @@ public partial class ViewCategory : BasePage
 
             cat.IsEditMode = false;
 
-            listView.RefreshItem();
-
             var Entries = listView.GetVisualTreeDescendants().Where(l => l.GetType() == typeof(BorderlessEntry));
             var EntryList = Entries.ToList();
             foreach (BorderlessEntry ent in EntryList)
@@ -439,7 +431,7 @@ public partial class ViewCategory : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
 
                 await Task.Delay(1000);
 
@@ -468,7 +460,7 @@ public partial class ViewCategory : BasePage
     {
         try
         {
-            AddSubCategoryBottomSheet page = new AddSubCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), new ProductTools(new RestDataService()), new RestDataService());
+            AddSubCategoryBottomSheet page = new(await _ds.GetCategoryFromID(_vm.HeaderCatId), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
 
             page.Detents = new DetentsCollection()
             {
@@ -499,7 +491,7 @@ public partial class ViewCategory : BasePage
     {
         try
         {
-            EditCategoryBottomSheet page = new EditCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), new ProductTools(new RestDataService()), new RestDataService());
+            EditCategoryBottomSheet page = new EditCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
 
             page.Detents = new DetentsCollection()
             {
@@ -530,13 +522,13 @@ public partial class ViewCategory : BasePage
     {
         try
         {
-            bool Delete = await Application.Current.MainPage.DisplayAlert($"Delete category group?", $"Are you sure you want to Delete the category group?", "Yes", "No!");
+            bool Delete = await Application.Current.Windows[0].Page.DisplayAlert($"Delete category group?", $"Are you sure you want to Delete the category group?", "Yes", "No!");
             if (Delete)
             {
                 Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
                 string[] CategoryList = Categories.Keys.ToArray();
 
-                var Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, _vm.HeaderCatId, _vm.Categories.ToList(), new RestDataService(), new ProductTools(new RestDataService())));
+                var Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, _vm.HeaderCatId, _vm.Categories.ToList(), IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()));
                 var result = await Shell.Current.ShowPopupAsync(Popup);
                 if (result.ToString() == "Cancel")
                 {

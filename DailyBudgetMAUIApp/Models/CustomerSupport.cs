@@ -1,31 +1,41 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class CustomerSupport : ObservableObject
     {
         [ObservableProperty]
-        public int supportID;
+        public partial int SupportID { get; set; }
+
         [ObservableProperty]
-        public string type;
+        public partial string Type { get; set; }
+
         [ObservableProperty]
-        public string details;
+        public partial string Details { get; set; }
+
         [ObservableProperty]
-        public string? phoneNumber;
+        public partial string? PhoneNumber { get; set; }
+
         [ObservableProperty]
-        public string? fileName;
+        public partial string? FileName { get; set; }
+
         [ObservableProperty]
-        public string? fileLocation;
+        public partial string? FileLocation { get; set; }
+
         [ObservableProperty]
-        public DateTime whenadded;
+        public partial DateTime Whenadded { get; set; }
+
         [ObservableProperty]
-        public bool isClosed;
+        public partial bool IsClosed { get; set; }
+
         [System.Text.Json.Serialization.JsonIgnore]
         [Newtonsoft.Json.JsonIgnore]
         [ObservableProperty]
-        public bool isUnreadMessages;
+        public partial bool IsUnreadMessages { get; set; }
+
         [ObservableProperty]
-        public List<CustomerSupportMessage>? replys;
-    }  
+        public partial List<CustomerSupportMessage>? Replys { get; set; }
+    }
 }

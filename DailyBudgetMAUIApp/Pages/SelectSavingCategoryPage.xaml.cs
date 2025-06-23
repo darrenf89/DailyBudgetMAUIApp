@@ -67,7 +67,7 @@ public partial class SelectSavingCategoryPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Task.Delay(10);
@@ -79,7 +79,7 @@ public partial class SelectSavingCategoryPage : BasePage
 
             base.OnAppearing();
 
-            _vm.EnvelopeSavingList = _ds.GetBudgetEnvelopeSaving(_vm.BudgetID).Result;
+            _vm.EnvelopeSavingList = await _ds.GetBudgetEnvelopeSaving(_vm.BudgetID);
 
             decimal Total = 0;
             decimal Balance = 0;
@@ -498,7 +498,7 @@ public partial class SelectSavingCategoryPage : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Task.Delay(10);

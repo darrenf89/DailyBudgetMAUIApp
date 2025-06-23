@@ -69,13 +69,7 @@ public partial class PopupMoveAccountBalance : Popup
 
     void Amount_Changed(object sender, TextChangedEventArgs e)
     {
-        decimal PayDayAmount = (decimal)_pt.FormatCurrencyNumber(e.NewTextValue);
-        entAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
-        int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-        if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entAmount.CursorPosition > position)
-        {
-            entAmount.CursorPosition = entAmount.Text.Length;
-        }  
+        decimal PayDayAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entAmount);
         _vm.Amount = PayDayAmount;
     }
 
@@ -148,7 +142,7 @@ public partial class PopupMoveAccountBalance : Popup
         {
             if (ValidatePage())
             {
-                bool MoveBalance = await Application.Current.MainPage.DisplayAlert($"Move money around?", $"Are you sure you want to move {entAmount.Text} from {_vm.FromSelectedMoveBalance.Name} to {_vm.ToSelectedMoveBalance.Name}", "Yes", "No");
+                bool MoveBalance = await Application.Current.Windows[0].Page.DisplayAlert($"Move money around?", $"Are you sure you want to move {entAmount.Text} from {_vm.FromSelectedMoveBalance.Name} to {_vm.ToSelectedMoveBalance.Name}", "Yes", "No");
                 if (MoveBalance)
                 {
                     decimal FromAmount = _vm.FromSelectedMoveBalance.Balance - _vm.Amount;

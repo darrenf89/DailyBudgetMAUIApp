@@ -143,7 +143,7 @@
                         </Border>
                         <Label Margin="0,0,0,8" Padding="0" VerticalOptions="Start" Text="{Binding Income.IncomeName}" TextColor="{StaticResource Primary}" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="0" FontAttributes="Bold"/>
                         <Label Margin="0,0,0,0" FontAttributes="Bold" Padding="0" Text="{Binding Income, Converter={StaticResource IncomeTypeConverter}}" TextColor="{StaticResource Tertiary}" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="1"/>
-                        <Label IsVisible="{Binding Income.IsRecuringIncome}" Margin="0,2,0,0" FontAttributes="Bold" Padding="0" Text="{Binding Income, Converter={StaticResource RecurringIncomeDetails}}" TextColor="{StaticResource Gray400}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="2"/>
+                        <Label IsVisible="{Binding Income.isRecurringIncome}" Margin="0,2,0,0" FontAttributes="Bold" Padding="0" Text="{Binding Income, Converter={StaticResource RecurringIncomeDetails}}" TextColor="{StaticResource Gray400}" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" Grid.Column="1" Grid.Row="2"/>
                         <VerticalStackLayout Grid.Row="3" Grid.Column="1" Margin="0,10,0,0">
                             <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
                                 <HorizontalStackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
@@ -193,7 +193,7 @@
                 </Border>
                 <Border Style="{DynamicResource brdCardViewRectange}" IsVisible="{Binding IsBudgetVisible}">
                     <Grid ColumnDefinitions="Auto, *, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" Padding="0" Margin="0,0,0,0">
-                        <Image Source="mainpagelogoprimary.png" Aspect="AspectFill" WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="5,5,15,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
+                        <Image Source="mainpagelogoprimary.png"  WidthRequest="30" VerticalOptions="Start" HorizontalOptions="Start" Margin="5,5,15,0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"/>
                         <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding BudgetCard.BudgetName}" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" Padding="0,0,0,8" TextColor="{StaticResource Primary}" Margin="0"/>
                         <HorizontalStackLayout Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" VerticalOptions="End">
                             <Label Text="{Binding BudgetCard.BankBalance, Converter={StaticResource DecimalToCurrencyString}}" CharacterSpacing="0.1" FontAttributes="Bold" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}" TextColor="{StaticResource Gray900}"  VerticalTextAlignment="End" VerticalOptions="End" Padding="0,0,0,0" Margin="0"/>
@@ -218,7 +218,7 @@
                         <Grid BackgroundColor="{Binding Transaction.IsTransacted,Converter={StaticResource BoolToColorDisabled}}" Grid.Row="0" Grid.Column="0" RowDefinitions="62" ColumnDefinitions="Auto,Auto,*" IsVisible="True">
                             <Border BackgroundColor="White" Margin="15,0,0,0" Grid.Row="0" Grid.RowSpan="1" Grid.Column="0" HeightRequest="24" WidthRequest="24" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
                                 <Border.Shadow>
-                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+                                    <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
                                 </Border.Shadow>
                                 <Image  HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="12" Source="{Binding Transaction.EventType, Converter={StaticResource TransactionTypePngConverter}}"/>
                             </Border>
@@ -229,7 +229,7 @@
                             <Grid BackgroundColor="{Binding Transaction.IsTransacted,Converter={StaticResource BoolToColorDisabled}}" Grid.Row="0" Grid.Column="0" RowDefinitions="62" ColumnDefinitions="Auto,Auto,*" IsVisible="True">
                                 <Border BackgroundColor="White" Margin="15,0,0,0" Grid.Row="0" Grid.RowSpan="1" Grid.Column="0" HeightRequest="24" WidthRequest="24" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource PrimaryDarkBrush}" >
                                     <Border.Shadow>
-                                        <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="20" />
+                                        <Shadow Offset="0,0" Opacity="0.9" Brush="{DynamicResource Black}" Radius="5" />
                                     </Border.Shadow>
                                     <Image  HorizontalOptions="Center" VerticalOptions="Center"  HeightRequest="12" Source="{Binding Transaction.EventType, Converter={StaticResource TransactionTypePngConverter}}"/>
                                 </Border>

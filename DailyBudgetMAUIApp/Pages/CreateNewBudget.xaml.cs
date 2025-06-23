@@ -2,16 +2,9 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Popups;
 using CommunityToolkit.Maui.Views;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using IeuanWalker.Maui.Switch.Events;
-using IeuanWalker.Maui.Switch;
-using IeuanWalker.Maui.Switch.Helpers;
-
-
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -44,28 +37,34 @@ public partial class CreateNewBudget : BasePage
         {
             if (App.CurrentSettings == null)
             {
-                BudgetSettingValues Settings = _ds.GetBudgetSettingsValues(App.DefaultBudgetID).Result;
+                BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(App.DefaultBudgetID);
                 App.CurrentSettings = Settings;
             }
+
+            _vm.CurrencyPlacements = await _ds.GetCurrencyPlacements("");
+            _vm.DateFormats = await _ds.GetDateFormatsByString("");
+            _vm.NumberFormats = await _ds.GetNumberFormats();
+            _vm.TimeZones = await _ds.GetBudgetTimeZones("");
 
             _pt.SetCultureInfo(App.CurrentSettings);
 
             
             if (_vm.BudgetID == 0)
             {
-                string BudgetType = "Basic";
+                string BudgetType = "PremiumPlus";
                 if (!string.IsNullOrEmpty(App.UserDetails.SubscriptionType))
                 {
                     BudgetType = App.UserDetails.SubscriptionType;
                 }
 
-                _vm.BudgetID = _ds.CreateNewBudget(App.UserDetails.Email, BudgetType).Result.BudgetID;
+                var newBudget = await _ds.CreateNewBudget(App.UserDetails.Email, BudgetType);
+                _vm.BudgetID = newBudget.BudgetID;
 
 
                 if (_vm.BudgetID != 0 || _vm.NavigatedFrom != null)
                 {
-                    _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
-                    _vm.BudgetSettings = _ds.GetBudgetSettings(_vm.BudgetID).Result;
+                    _vm.Budget = await _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full");
+                    _vm.BudgetSettings = await _ds.GetBudgetSettings(_vm.BudgetID);
                 }
                 else
                 {
@@ -76,8 +75,8 @@ public partial class CreateNewBudget : BasePage
             {
                 if (_vm.Budget == null || _vm.NavigatedFrom != null)
                 {
-                    _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
-                    _vm.BudgetSettings = _ds.GetBudgetSettings(_vm.BudgetID).Result;
+                    _vm.Budget = await _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full");
+                    _vm.BudgetSettings = await _ds.GetBudgetSettings(_vm.BudgetID);
                 }
 
             }
@@ -88,7 +87,7 @@ public partial class CreateNewBudget : BasePage
                 string Description = "Every budget needs a name, let us know how you'd like your budget to be known so we can use this to identify it for you in the future.";
                 string DescriptionSub = "Call it something useful or call it something silly up to you really!";
                 var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", _vm.Budget.BudgetName, new PopUpPageSingleInputViewModel());
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if (result != null || (string)result != "")
                 {
@@ -106,7 +105,7 @@ public partial class CreateNewBudget : BasePage
 
                 BudgetUpdate.Add(BudgetName);
 
-                string ReturnString = _ds.PatchBudget(_vm.BudgetID, BudgetUpdate).Result;
+                string ReturnString = await _ds.PatchBudget(_vm.BudgetID, BudgetUpdate);
 
             }
 
@@ -120,11 +119,15 @@ public partial class CreateNewBudget : BasePage
 
             if (_vm.SelectedCurrencySymbol == null)
             {
-                _vm.SelectedCurrencySymbol = _ds.GetCurrencySymbols(_vm.BudgetSettings.CurrencySymbol.ToString()).Result[0];
-                _vm.SelectedCurrencyPlacement = _ds.GetCurrencyPlacements(_vm.BudgetSettings.CurrencyPattern.ToString()).Result[0];
-                _vm.SelectedDateFormats = _ds.GetDateFormatsById(_vm.BudgetSettings.ShortDatePattern ?? 1, _vm.BudgetSettings.DateSeperator ?? 1).Result;
-                _vm.SelectedNumberFormats = _ds.GetNumberFormatsById(_vm.BudgetSettings.CurrencyDecimalDigits ?? 2, _vm.BudgetSettings.CurrencyDecimalSeparator ?? 2, _vm.BudgetSettings.CurrencyGroupSeparator ?? 1).Result;
-                _vm.SelectedTimeZone = _ds.GetTimeZoneById(_vm.BudgetSettings.TimeZone.GetValueOrDefault()).Result;
+                _vm.SelectedCurrencySymbol = (await _ds.GetCurrencySymbols(_vm.BudgetSettings.CurrencySymbol.ToString()))[0];
+                _vm.SelectedCurrencyPlacement = (await _ds.GetCurrencyPlacements(_vm.BudgetSettings.CurrencyPattern.ToString()))[0];
+                _vm.SelectedDateFormats = await _ds.GetDateFormatsById(_vm.BudgetSettings.ShortDatePattern ?? 1, _vm.BudgetSettings.DateSeperator ?? 1);
+                _vm.SelectedNumberFormats = await _ds.GetNumberFormatsById(
+                    _vm.BudgetSettings.CurrencyDecimalDigits ?? 2,
+                    _vm.BudgetSettings.CurrencyDecimalSeparator ?? 2,
+                    _vm.BudgetSettings.CurrencyGroupSeparator ?? 1
+                );
+                _vm.SelectedTimeZone = await _ds.GetTimeZoneById(_vm.BudgetSettings.TimeZone.GetValueOrDefault());
             }
 
             pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;
@@ -202,23 +205,23 @@ public partial class CreateNewBudget : BasePage
         Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
         Application.Current.Resources.TryGetValue("Info", out var Info);
 
-        bvStage1.Color = (_vm.Stage == "Budget Settings" || _vm.Stage == "Budget Details" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
-        bvStage2.Color = (_vm.Stage == "Budget Details" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
-        bvStage3.Color = (_vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
-        bvStage4.Color = (_vm.Stage == "Budget Savings" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
+        bvStage1.Color = (_vm.Stage == "Budget Settings" || _vm.Stage == "Budget Details" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Bills" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
+        bvStage2.Color = (_vm.Stage == "Budget Details" || _vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Bills" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
+        bvStage3.Color = (_vm.Stage == "Budget Outgoings" || _vm.Stage == "Budget Bills" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
+        bvStage4.Color = (_vm.Stage == "Budget Bills" || _vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
         bvStage5.Color = (_vm.Stage == "Budget Extra Income" || _vm.Stage == "Finalise Budget") ? (Color)Success : (Color)Gray300;
 
         SettingsDetails.IsVisible = (_vm.Stage == "Budget Settings");
         BudgetDetails.IsVisible = (_vm.Stage == "Budget Details");
         BillDetails.IsVisible = (_vm.Stage == "Budget Outgoings");
-        SavingsDetails.IsVisible = (_vm.Stage == "Budget Savings");
+        SavingsDetails.IsVisible = (_vm.Stage == "Budget Bills");
         IncomeDetails.IsVisible = (_vm.Stage == "Budget Extra Income");
         FinalBudgetDetails.IsVisible = (_vm.Stage == "Finalise Budget");
 
         lblSettingsHeader.TextColor = (_vm.Stage == "Budget Settings") ? (Color)Primary : (Color)Tertiary;
         lblBudgetHeader.TextColor = (_vm.Stage == "Budget Details") ? (Color)Primary : (Color)Tertiary;
         lblBillsHeader.TextColor = (_vm.Stage == "Budget Outgoings") ? (Color)Primary : (Color)Tertiary;
-        lblSavingsHeader.TextColor = (_vm.Stage == "Budget Savings") ? (Color)Primary : (Color)Tertiary;
+        lblSavingsHeader.TextColor = (_vm.Stage == "Budget Bills") ? (Color)Primary : (Color)Tertiary;
         lblIncomesHeader.TextColor = (_vm.Stage == "Budget Extra Income") ? (Color)Primary : (Color)Tertiary;
         lblFinalBudgetHeader.TextColor = (_vm.Stage == "Finalise Budget") ? (Color)Primary : (Color)Tertiary;
 
@@ -228,7 +231,8 @@ public partial class CreateNewBudget : BasePage
             {
                 _vm.Budget.Stage = 1;
             }
-            await MainScrollView.ScrollToAsync(0, 95, true);
+
+            MainScrollView.ScrollToAsync(0, 95, true);
         }
         else if (_vm.Stage == "Budget Details")
         {
@@ -236,7 +240,7 @@ public partial class CreateNewBudget : BasePage
             {
                 _vm.Budget.Stage = 2;
             }
-            await MainScrollView.ScrollToAsync(0, 155, true);
+            MainScrollView.ScrollToAsync(0, 155, true);
         }
         else if (_vm.Stage == "Budget Outgoings")
         {
@@ -254,9 +258,9 @@ public partial class CreateNewBudget : BasePage
                 UpdateBillsYesNo("");
             }
             
-            await MainScrollView.ScrollToAsync(0, 215, true);
+            MainScrollView.ScrollToAsync(0, 215, true);
         }
-        else if (_vm.Stage == "Budget Savings")
+        else if (_vm.Stage == "Budget Bills")
         {
             if(_vm.Budget.Stage < 4)
             {
@@ -273,7 +277,7 @@ public partial class CreateNewBudget : BasePage
                 UpdateSavingsYesNo("");
             }
 
-            await MainScrollView.ScrollToAsync(0, 275, true);
+            MainScrollView.ScrollToAsync(0, 275, true);
         }
         else if (_vm.Stage == "Budget Extra Income")
         {
@@ -293,7 +297,7 @@ public partial class CreateNewBudget : BasePage
                 UpdateIncomeYesNo("");
             }
 
-            await MainScrollView.ScrollToAsync(0, 335, true);
+            MainScrollView.ScrollToAsync(0, 335, true);
         }
         else if (_vm.Stage == "Finalise Budget")
         {
@@ -302,7 +306,7 @@ public partial class CreateNewBudget : BasePage
                 _vm.Budget.Stage = 6;
             }
 
-            await MainScrollView.ScrollToAsync(0, 395, true);            
+            MainScrollView.ScrollToAsync(0, 395, true);            
         }
 
         if (_vm.Budget.Stage > 5)
@@ -400,7 +404,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            _vm.Stage = "Budget Savings";
+            _vm.Stage = "Budget Bills";
             UpdateStageDisplay();
             //await MainScrollView.ScrollToAsync(0, 275, true);
         }
@@ -426,17 +430,17 @@ public partial class CreateNewBudget : BasePage
 
     }
 
-    private void ChangeSelectedCurrency_Tapped(object sender, TappedEventArgs e)
+    private async void ChangeSelectedCurrency_Tapped(object sender, TappedEventArgs e)
     {
         try
         {
             _vm.SearchVisible = true;
-            _vm.CurrencySearchResults = _ds.GetCurrencySymbols("").Result;
+            _vm.CurrencySearchResults = await _ds.GetCurrencySymbols("");
             CurrencySearch.Text = "";
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "CreateNewBudget", "ChangeSelectedCurrency_Tapped");
+            await _pt.HandleException(ex, "CreateNewBudget", "ChangeSelectedCurrency_Tapped");
         }
     }
 
@@ -444,20 +448,24 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
-            entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
-        
-            double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-            entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
-
-            dtpckPayDay.Date = _vm.Budget.NextIncomePayday ?? default;
-
             _vm.Stage = "Budget Details";
             UpdateStageDisplay();
 
             await _vm.SaveStage("Budget Settings");
 
-            //await MainScrollView.ScrollToAsync(0, 155, true);
+            BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(App.DefaultBudgetID);
+            App.CurrentSettings = Settings;
+
+            _pt.SetCultureInfo(App.CurrentSettings);
+
+            double BankBalance = (double?)_vm.Budget.BankBalance ?? 0;
+            entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
+
+            double PayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
+            entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
+
+            dtpckPayDay.Date = _vm.Budget.NextIncomePayday ?? default;
+
         }
         catch (Exception ex)
         {
@@ -614,7 +622,7 @@ public partial class CreateNewBudget : BasePage
         {
             if (ValidateBudgetOutgoings())
             {
-                _vm.Stage = "Budget Savings";
+                _vm.Stage = "Budget Bills";
                 UpdateStageDisplay();
 
                 await _vm.SaveStage("Budget Outgoings");
@@ -654,7 +662,7 @@ public partial class CreateNewBudget : BasePage
                 _vm.Stage = "Budget Extra Income";
                 UpdateStageDisplay();
 
-                await _vm.SaveStage("Budget Outgoings");
+                await _vm.SaveStage("Budget Bills");
 
                 //await MainScrollView.ScrollToAsync(0, 275, true);
             }
@@ -692,7 +700,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            _vm.Stage = "Budget Savings";
+            _vm.Stage = "Budget Bills";
             UpdateStageDisplay();
 
             //await MainScrollView.ScrollToAsync(0, 155, true);
@@ -711,13 +719,11 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             if (ValidateFinaliseBudget())
             {
-                var page = new LoadingPage();
-                await Application.Current.MainPage.Navigation.PushModalAsync(page);
 
                 await _vm.SaveStage("Finalise Budget");
                 await _vm.SaveStage("Create Budget");
@@ -740,7 +746,6 @@ public partial class CreateNewBudget : BasePage
 
             }
 
-            //popup.Close();
         }
         catch (Exception ex)
         {
@@ -846,7 +851,7 @@ public partial class CreateNewBudget : BasePage
 
             if(!ValidateBudgetSavings())
             {
-                _vm.Stage = "Budget Savings";
+                _vm.Stage = "Budget Bills";
                 IsValid = false;
             }
 
@@ -902,7 +907,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}&NavigatedFrom=CreateNewBudget");
@@ -921,7 +926,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}&NavigatedFrom=CreateNewBudget");
@@ -940,7 +945,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={0}&NavigatedFrom=CreateNewBudget");
@@ -968,7 +973,7 @@ public partial class CreateNewBudget : BasePage
             };
 
             var popup = new PopupInfo("Bank Balance", SubTitle, Info);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
         }
         catch (Exception ex)
         {
@@ -980,13 +985,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            double BankBalance = _pt.FormatCurrencyNumber(e.NewTextValue);
-            entBankBalance.Text = BankBalance.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entBankBalance.CursorPosition > position)
-            {
-                entBankBalance.CursorPosition = entBankBalance.Text.Length;
-            }
+            _pt.FormatBorderlessEntryNumber(sender, e, entBankBalance);
         }
         catch (Exception ex)
         {
@@ -998,13 +997,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            double PayAmount = _pt.FormatCurrencyNumber(e.NewTextValue);
-            entPayAmount.Text = PayAmount.ToString("c", CultureInfo.CurrentCulture);
-            int position = e.NewTextValue.IndexOf(App.CurrentSettings.CurrencyDecimalSeparator);
-            if (!string.IsNullOrEmpty(e.OldTextValue) && (e.OldTextValue.Length - position) == 2 && entPayAmount.CursorPosition > position)
-            {
-                entPayAmount.CursorPosition = entPayAmount.Text.Length;
-            }
+            _pt.FormatBorderlessEntryNumber(sender, e, entPayAmount);
         }
         catch (Exception ex)
         {
@@ -1022,13 +1015,11 @@ public partial class CreateNewBudget : BasePage
             };
 
             List<string> Info = new List<string>{
-                "",
-                "",
-                ""
+                "The \"When is Pay Day?\" field in our app is essential for establishing your financial starting point. By entering the exact date of your next payday—whether it's tomorrow, next week, or next month—you enable the app to accurately calculate your initial budget values. This initial input, combined with your other budget details, sets the foundation for a personalized budgeting experience. Subsequently, the app uses the pay frequency information you've provided to determine future pay dates, ensuring that your budget aligns seamlessly with your income schedule from that point onward."
             };
 
-            var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var popup = new PopupInfo("When is Pay day?", SubTitle, Info);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
         }
         catch (Exception ex)
         {
@@ -1042,18 +1033,27 @@ public partial class CreateNewBudget : BasePage
         {
             List<string> SubTitle = new List<string>{
                 "",
+                "Option 1: \"Every Nth\"",
+                "Option 2: \"Nth Last Working Day of the Month\"",
+                "Option 3: \"Same Day Every Month\"",
+                "Option 4: \"Last Weekday of the Month\"",
+                "Understanding Budget Cycles and Daily Values:",
                 "",
                 ""
             };
 
             List<string> Info = new List<string>{
-                "",
-                "",
-                ""
+                "The \"How do you get paid?\" section in our app offers four customizable options to align your budgeting cycle with your income frequency. This flexibility ensures that your budget accurately reflects your financial situation, enhancing your ability to manage expenses effectively.",
+                "The \"Every Nth\" option allows you to define your pay frequency by specifying the exact number of days, weeks, or months between each payday. For example, if you select \"every 2 weeks,\" your budget cycle will span 14 days, and the app will calculate your subsequent paydays by adding 14 days to the previous one. This setting ensures that your budgeting aligns precisely with your unique income schedule, providing accurate daily budget calculations based on your specified cycle.",
+                "The \"Nth Last Working Day of the Month\" option allows you to set your payday to fall on a specific weekday occurrence before the month's end. For example, selecting '2' as the number means your payday will be calculated as the second-to-last working day of the next month, considering weekends and holidays. This approach ensures that your payday aligns with your preferences while accounting for variations in month lengths and non-working days",
+                "The \"Same Day Every Month\" option allows you to set your payday to occur on the same day each month, such as the 28th. This consistency simplifies budgeting by providing predictable income intervals. However, it's important to note that months vary in length, so the 28th may not always be the same day of the week. Additionally, some months have more than 28 days, so the app adjusts your payday accordingly, ensuring it falls on the specified day each month.",
+                "The \"Last Weekday of the Month\" option allows you to set your payday to occur on the final weekday of each month, ensuring consistency in your budgeting cycle. For example, selecting \"Last Thursday\" means your payday will always fall on the last Thursday of every month. This feature is particularly useful for individuals whose pay schedules align with specific weekdays near the end of the month.",
+                "In our app, the budget cycle directly influences how daily budget values are calculated. For instance, if you select a bi-weekly pay schedule, the app divides your total income by 14 to determine your daily budget. This method ensures that your spending limits are proportionate to your income distribution, promoting balanced and realistic budgeting.",
+                "By customizing your pay frequency and budget cycle, you gain greater control over your financial planning, allowing for a budgeting experience that truly reflects your income dynamics.",
             };
 
-            var popup = new PopupInfo("Budget PayDay", SubTitle, Info);
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var popup = new PopupInfo("How do you get paid?", SubTitle, Info);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
         }
         catch (Exception ex)
         {
@@ -1577,10 +1577,10 @@ public partial class CreateNewBudget : BasePage
             bool result = await DisplayAlert("Bill", "Are you sure you want to delete your Outgoing " + Bill.BillName.ToString(), "Yes, continue", "Cancel");
             if (result)
             {
-                string Result = _ds.DeleteBill(Bill.BillID).Result;
+                string Result = await _ds.DeleteBill(Bill.BillID);
                 if(Result == "OK")
                 {
-                    _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+                    _vm.Budget = await _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full");
 
                     if (_vm.Budget.Bills.Count == 0)
                     {
@@ -1603,7 +1603,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             var Bill = (Bills)e.Parameter;
@@ -1658,7 +1658,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             var Saving = (Savings)e.Parameter;
@@ -1677,13 +1677,13 @@ public partial class CreateNewBudget : BasePage
         {
             var Saving = (Savings)e.Parameter;
 
-            bool result = await DisplayAlert("Savings", "Are you sure you want to delete your Saving " + Saving.SavingsName.ToString(), "Yes, continue", "Cancel");
+            bool result = await DisplayAlert("Bills", "Are you sure you want to delete your Saving " + Saving.SavingsName.ToString(), "Yes, continue", "Cancel");
             if (result)
             {
-                string Result = _ds.DeleteSaving(Saving.SavingID).Result;
+                string Result = await _ds.DeleteSaving(Saving.SavingID);
                 if (Result == "OK")
                 {
-                    _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+                    _vm.Budget = await _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full");
 
                     if (_vm.Budget.Savings.Count == 0)
                     {
@@ -1715,7 +1715,7 @@ public partial class CreateNewBudget : BasePage
                 Image imgTargetDate = (Image)vcSaving.FindByName("imgTargetDate");
                 imgTargetDate.IsVisible = true;
 
-                lblSavingsheader.Text = Saving.GoalDate.GetValueOrDefault().ToString("dd MMM yy") + " Savings Goal Added";
+                lblSavingsheader.Text = Saving.GoalDate.GetValueOrDefault().ToString("dd MMM yy") + " Bills Goal Added";
                 lblSavingCurrent.Text = String.Format("{0:c} / ", Saving.CurrentBalance);
                 lblSavingTarget.Text = String.Format("{0:c}    ", Saving.SavingsGoal);
                 lblSavingRegValues.Text = String.Format("{0:c}", Saving.RegularSavingValue);
@@ -1730,7 +1730,7 @@ public partial class CreateNewBudget : BasePage
                 Image imgTargetAmount = (Image)vcSaving.FindByName("imgTargetAmount");
                 imgTargetAmount.IsVisible = true;
 
-                lblSavingsheader.Text = String.Format("{0:c}", Saving.SavingsGoal) + " Savings Goal Added";
+                lblSavingsheader.Text = String.Format("{0:c}", Saving.SavingsGoal) + " Bills Goal Added";
                 lblSavingCurrent.Text = String.Format("{0:c} / ", Saving.CurrentBalance);
                 lblSavingTarget.Text = String.Format("{0:c}    ", Saving.SavingsGoal);
                 if(Saving.IsDailySaving)
@@ -1752,7 +1752,7 @@ public partial class CreateNewBudget : BasePage
                 Image imgSavingsBuilder = (Image)vcSaving.FindByName("imgSavingsBuilder");
                 imgSavingsBuilder.IsVisible = true;
 
-                lblSavingsheader.Text = "Builder Savings Goal Added";
+                lblSavingsheader.Text = "Builder Bills Goal Added";
                 lblSavingCurrent.Text = String.Format("{0:c}    ", Saving.CurrentBalance);
                 lblSavingRegValues.Text = String.Format("{0:c}", Saving.RegularSavingValue);
 
@@ -1818,7 +1818,7 @@ public partial class CreateNewBudget : BasePage
             {
                 var PopUp = new PopUpPage();
                 App.CurrentPopUp = PopUp;
-                Application.Current.MainPage.ShowPopup(PopUp);
+                Application.Current.Windows[0].Page.ShowPopup(PopUp);
             }
 
             var Income = (IncomeEvents)e.Parameter;
@@ -1840,10 +1840,10 @@ public partial class CreateNewBudget : BasePage
             bool result = await DisplayAlert("Income", "Are you sure you want to delete your Income " + Income.IncomeName.ToString(), "Yes, continue", "Cancel");
             if (result)
             {
-                string Result = _ds.DeleteIncome(Income.IncomeEventID).Result;
+                string Result = await _ds.DeleteIncome(Income.IncomeEventID);
                 if (Result == "OK")
                 {
-                    _vm.Budget = _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full").Result;
+                    _vm.Budget = await _ds.GetBudgetDetailsAsync(_vm.BudgetID, "Full");
 
                     if (_vm.Budget.IncomeEvents.Count == 0)
                     {
@@ -1884,27 +1884,6 @@ public partial class CreateNewBudget : BasePage
         {
             _pt.HandleException(ex, "CreateNewBudget", "IsAcceptTerms_CheckChanged");
         }
-    }
-
-    static void CustomSwitch_SwitchPanUpdate(CustomSwitch customSwitch, SwitchPanUpdatedEventArgs e)
-    {
-        Application.Current.Resources.TryGetValue("Primary", out var Primary);
-        Application.Current.Resources.TryGetValue("PrimaryLight", out var PrimaryLight);
-        Application.Current.Resources.TryGetValue("Tertiary", out var Tertiary);
-        Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
-
-        //Switch Color Animation
-        Color fromSwitchColor = e.IsToggled ? (Color)Primary : (Color)Gray400;
-        Color toSwitchColor = e.IsToggled ? (Color)Gray400 : (Color)Primary;
-
-        //BackGroundColor Animation
-        Color fromColor = e.IsToggled ? (Color)Tertiary : (Color)PrimaryLight;
-        Color toColor = e.IsToggled ? (Color)PrimaryLight : (Color)Tertiary;
-
-        double t = e.Percentage * 0.01;
-
-        customSwitch.KnobBackgroundColor = ColorAnimationUtil.ColorAnimation(fromSwitchColor, toSwitchColor, t);
-        customSwitch.BackgroundColor = ColorAnimationUtil.ColorAnimation(fromColor, toColor, t);
     }
 
 }

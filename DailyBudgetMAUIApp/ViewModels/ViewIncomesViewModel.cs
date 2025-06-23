@@ -11,19 +11,24 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
-        [ObservableProperty]
-        private ObservableCollection<IncomeEvents>  incomes = new ObservableCollection<IncomeEvents>();
-        [ObservableProperty]
-        private Budgets  budget;
-        [ObservableProperty]
-        private double  screenHeight;
-        [ObservableProperty]
-        private double  signOutButtonWidth;
-        [ObservableProperty]
-        private decimal  balanceExtraPeriodIncome;
-        [ObservableProperty]
-        private double  minHeight;
 
+        [ObservableProperty]
+        public partial ObservableCollection<IncomeEvents> Incomes { get; set; } = new ObservableCollection<IncomeEvents>();
+
+        [ObservableProperty]
+        public partial Budgets Budget { get; set; }
+
+        [ObservableProperty]
+        public partial double ScreenHeight { get; set; }
+
+        [ObservableProperty]
+        public partial double SignOutButtonWidth { get; set; }
+
+        [ObservableProperty]
+        public partial decimal BalanceExtraPeriodIncome { get; set; }
+
+        [ObservableProperty]
+        public partial double MinHeight { get; set; }
 
         public ViewIncomesViewModel(IProductTools pt, IRestDataService ds)
         {

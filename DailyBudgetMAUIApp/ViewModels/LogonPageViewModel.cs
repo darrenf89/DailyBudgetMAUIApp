@@ -24,31 +24,32 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [ObservableProperty]
-        private string  email;
+        public partial string Email { get; set; }
 
         [ObservableProperty]
-        private string  password;
+        public partial string Password { get; set; }
 
         [ObservableProperty]
-        private bool  rememberMe;
+        public partial bool RememberMe { get; set; }
 
         [ObservableProperty]
-        private bool  emailRequired;
+        public partial bool EmailRequired { get; set; }
 
         [ObservableProperty]
-        private bool  emailValid;
+        public partial bool EmailValid { get; set; }
 
         [ObservableProperty]
-        private bool  passwordRequired;
+        public partial bool PasswordRequired { get; set; }
 
         [ObservableProperty]
-        private bool  emailValidatedSuccess;
+        public partial bool EmailValidatedSuccess { get; set; }
 
         [ObservableProperty]
-        private bool  resetPasswordSuccess;
+        public partial bool ResetPasswordSuccess { get; set; }
 
         [ObservableProperty]
-        private bool  resetPasswordFail;
+        public partial bool ResetPasswordFail { get; set; }
+
 
         public bool PageIsValid()
         {
@@ -76,20 +77,21 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void NavigateRegister()
+        async Task NavigateRegister()
         {
             await Shell.Current.GoToAsync($"../{nameof(RegisterPage)}");
         }
 
         [RelayCommand]
-        async void ResetPassword()
+        async Task ResetPassword()
         {
             try
             {
                 await ResetSuccessFailureMessage();
 
-                var popup = new PopUpOTP(0, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ResetPassword", new ProductTools(new RestDataService()), new RestDataService());
-                var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                var popup = new PopUpOTP(0, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ResetPassword", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
+                App.CurrentPopUp = popup;
+                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                 if((string)result.ToString() == "OK")
                 {
@@ -107,7 +109,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        async void Login()
+        async Task Login()
         {
             try
             {
@@ -122,7 +124,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 if (!string.IsNullOrEmpty(Email))
@@ -130,11 +132,27 @@ namespace DailyBudgetMAUIApp.ViewModels
                     if (!string.IsNullOrEmpty(Password))
                     {
                         UserDetailsModel userDetails = new UserDetailsModel();
-
-                        string salt = await _ds.GetUserSaltAsync(Email);
-                        if (salt is null)
+                        string salt = "";
+                        try
                         {
-                            return;
+                            salt = await _ds.GetUserSaltAsync(Email);
+                            if (salt is null)
+                            {
+                                return;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex.Message.Contains("User not found"))
+                            {
+                                await App.CurrentPopUp.CloseAsync();
+                                App.CurrentPopUp = null;
+                                await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
+                            }
+                            else
+                            {
+                                throw;
+                            }
                         }
 
                         switch (salt)
@@ -142,7 +160,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                             case "User not found":
                                 await App.CurrentPopUp.CloseAsync();
                                 App.CurrentPopUp = null;
-                                await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
+                                await Application.Current.Windows[0].Page.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 break;
                             case not "":
 
@@ -152,7 +170,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                 {
                                     await App.CurrentPopUp.CloseAsync();
                                     App.CurrentPopUp = null;
-                                    await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
+                                    await Application.Current.Windows[0].Page.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                 }
                                 else
                                 {
@@ -161,7 +179,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     {
                                         await App.CurrentPopUp.CloseAsync();
                                         App.CurrentPopUp = null;
-                                        await Application.Current.MainPage.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
+                                        await Application.Current.Windows[0].Page.DisplayAlert("Opps", "Thats not right ... check your details and try again!", "OK");
                                     }
                                     else
                                     {
@@ -169,14 +187,15 @@ namespace DailyBudgetMAUIApp.ViewModels
                                         {
                                             await App.CurrentPopUp.CloseAsync();
                                             App.CurrentPopUp = null;
-                                            bool ValidateEmail = await Application.Current.MainPage.DisplayAlert("Mmmm, can't be doing that!", "You haven't verified your email! Would you like to now so you can log in?", "Verify email","Not now");
+                                            bool ValidateEmail = await Application.Current.Windows[0].Page.DisplayAlert("Mmmm, can't be doing that!", "You haven't verified your email! Would you like to now so you can log in?", "Verify email","Not now");
                                             if(ValidateEmail)
                                             {
                                                 string status = await _ds.CreateNewOtpCode(userDetails.UserID, "ValidateEmail");
                                                 if (status == "OK" || status == "MaxLimit")
                                                 {
-                                                    var popup = new PopUpOTP(userDetails.UserID, new PopUpOTPViewModel(new RestDataService(), new ProductTools(new RestDataService())), "ValidateEmail", new ProductTools(new RestDataService()), new RestDataService());
-                                                    var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+                                                    var popup = new PopUpOTP(userDetails.UserID, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ValidateEmail", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
+                                                    App.CurrentPopUp = popup;
+                                                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
                                                     if ((string)result.ToString() == "OK")
                                                     {
@@ -209,14 +228,37 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 Preferences.Remove(nameof(App.DefaultBudgetID));
                                             }
 
+                                            if (Preferences.ContainsKey(nameof(App.IsFamilyAccount)))
+                                            {
+                                                Preferences.Remove(nameof(App.IsFamilyAccount));
+                                            }
+
                                             string userDetailsStr = JsonConvert.SerializeObject(userDetails);
                                             Preferences.Set(nameof(App.UserDetails), userDetailsStr);
                                             Preferences.Set(nameof(App.DefaultBudgetID), userDetails.DefaultBudgetID);
 
                                             App.UserDetails = userDetails;
+                                            App.FamilyUserDetails = null;
                                             App.DefaultBudgetID = userDetails.DefaultBudgetID;
                                             App.HasVisitedCreatePage = false;
+                                            App.IsFamilyAccount = false;
                                             await _pt.SetSubDetails();
+
+                                            if (await SecureStorage.Default.GetAsync("Session") != null)
+                                            {
+                                                SecureStorage.Default.Remove("Session");
+                                            }
+
+                                            AuthDetails Auth = new()
+                                            {
+                                                ClientID = DeviceInfo.Current.Name,
+                                                ClientSecret = userDetails.Password,
+                                                UserID = userDetails.UniqueUserID
+                                            };
+
+                                            SessionDetails Session = await _ds.CreateSession(Auth);
+                                            string SessionString = JsonConvert.SerializeObject(Session);
+                                            await SecureStorage.Default.SetAsync("Session", SessionString);
 
                                             if (await SecureStorage.Default.GetAsync("FirebaseToken") != null)
                                             {
@@ -225,9 +267,9 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                 FirebaseDevices UserDevice = new FirebaseDevices
                                                 {
                                                     FirebaseDeviceID = FirebaseID,
-                                                    UserAccountID = userDetails.UserID,
+                                                    UserAccountID = userDetails.UniqueUserID,
                                                     LoginExpiryDate = userDetails.SessionExpiry,
-                                                    FirebaseToken = SecureStorage.Default.GetAsync("FirebaseToken").Result
+                                                    FirebaseToken = await SecureStorage.Default.GetAsync("FirebaseToken")
                                                 };
 
                                                 try
@@ -239,6 +281,11 @@ namespace DailyBudgetMAUIApp.ViewModels
                                                     //Log as non fatal error
                                                 }
                                             }
+
+                                            BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(userDetails.DefaultBudgetID);
+                                            App.CurrentSettings = Settings;
+
+                                            _pt.SetCultureInfo(App.CurrentSettings);
 
                                             //await _pt.LoadTabBars(App.UserDetails.SubscriptionType, App.UserDetails.SubscriptionExpiry, App.UserDetails.DefaultBudgetType);
                                             await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
@@ -255,7 +302,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         await App.CurrentPopUp.CloseAsync();
                         App.CurrentPopUp = null;
-                        await Application.Current.MainPage.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
+                        await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                     }
                 }
                 else 
@@ -263,14 +310,27 @@ namespace DailyBudgetMAUIApp.ViewModels
                     IsButtonBusy = false;
                     await App.CurrentPopUp.CloseAsync();
                     App.CurrentPopUp = null;
-                    await Application.Current.MainPage.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
+                    await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                 }
             }
             catch (Exception ex)
             {
                 await _pt.HandleException(ex, "LogonPage", "Login");
             }
-        }        
+        }
+
+        [RelayCommand]
+        async Task NavigateFamilySignPage()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync($"{nameof(FamilyAccountLogonPage)}");
+            }
+            catch (Exception ex)
+            {
+                await _pt.HandleException(ex, "LogonPage", "NavigateFamilySignPage");
+            }
+        }
 
     }
 }

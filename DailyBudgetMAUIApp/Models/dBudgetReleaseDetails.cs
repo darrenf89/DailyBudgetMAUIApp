@@ -5,14 +5,18 @@ namespace DailyBudgetMAUIApp.Models
     public partial class dBudgetReleaseDetails : ObservableObject
     {
         [ObservableProperty]
-        public int releaseID;
+        public partial int ReleaseID { get; set; }
+
         [ObservableProperty]
-        public string versionName;
+        public partial string VersionName { get; set; }
+
         [ObservableProperty]
-        public string versionNumber;
+        public partial string VersionNumber { get; set; }
+
         [ObservableProperty]
-        public DateTime releaseDate;
+        public partial DateTime ReleaseDate { get; set; }
+
         [ObservableProperty]
-        public bool isMajorVersion;
-    }  
+        public partial bool IsMajorVersion { get; set; }
+    }
 }

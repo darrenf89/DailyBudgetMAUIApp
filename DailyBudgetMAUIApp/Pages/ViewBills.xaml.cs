@@ -24,12 +24,38 @@ public partial class ViewBills : BasePage
 
     }
 
+    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        if (App.CurrentPopUp == null)
+        {
+            var PopUp = new PopUpPage();
+            App.CurrentPopUp = PopUp;
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
+        }
+
+        _vm.IsPageBusy = false;
+
+        await Task.Delay(500);
+        base.OnNavigatingFrom(args);
+    }
+
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+
+        if (Navigation.NavigationStack.Count > 1)
+        {
+            Shell.SetTabBarIsVisible(this, false);
+        }
+    }
+
     protected async override void OnAppearing()
     {
         try
         {
-            _vm.Budget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited").Result;
-            List<Bills> B = _ds.GetBudgetBills(App.DefaultBudgetID, "ViewBills").Result;
+            _vm.IsPageBusy = true;
+            _vm.Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
+            List<Bills> B = await _ds.GetBudgetBills(App.DefaultBudgetID, "ViewBills");
 
             _vm.TotalBills = 0;
             _vm.Budget.DailyBillOutgoing = 0;
@@ -56,6 +82,7 @@ public partial class ViewBills : BasePage
                 await App.CurrentPopUp.CloseAsync();
                 App.CurrentPopUp = null;
             }
+            _vm.IsPageBusy = false;
         }
         catch (Exception ex)
         {
@@ -64,20 +91,13 @@ public partial class ViewBills : BasePage
 
     }
 
-    protected override void OnSizeAllocated(double width, double height)
-    {
-        base.OnSizeAllocated(width, height);
-
-        // listView.HeightRequest = _vm.ScreenHeight - BudgetDetailsGrid.Height - TitleView.Height - 150;
-    }
-
     private async void HomeButton_Clicked(object sender, EventArgs e)
     {
         if (App.CurrentPopUp == null)
         {
             var PopUp = new PopUpPage();
             App.CurrentPopUp = PopUp;
-            Application.Current.MainPage.ShowPopup(PopUp);
+            Application.Current.Windows[0].Page.ShowPopup(PopUp);
         }
 
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
@@ -97,7 +117,7 @@ public partial class ViewBills : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewBills)}/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=ViewBills");
@@ -146,7 +166,7 @@ public partial class ViewBills : BasePage
             string Description = "Update the outgoing due date!";
             string DescriptionSub = "Outoing not when you expected, you can update the outgoing due date to any date in the future. We will do the rest!";
             var popup = new PopUpPageVariableInput("Outgoing due date", Description, DescriptionSub, "", Bill.BillDueDate, "DateTime", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if(!string.IsNullOrEmpty(result.ToString()))
             {
@@ -206,7 +226,8 @@ public partial class ViewBills : BasePage
             await _pt.PayBillNow(Bill, App.DefaultBudget);
 
             await _ds.ReCalculateBudget(App.DefaultBudgetID);
-            App.DefaultBudget = _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full").Result;
+            var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
+            App.DefaultBudget = Budget;
 
             if (App.CurrentPopUp != null)
             {
@@ -230,7 +251,7 @@ public partial class ViewBills : BasePage
             string Description = "Update the outgoing amount!";
             string DescriptionSub = "Outoing not as much as you expected, you can update the outgoing amount and we will do the rest!";
             var popup = new PopUpPageVariableInput("Outgoing amount", Description, DescriptionSub, "", Bill.BillAmount, "Currency", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.MainPage.ShowPopupAsync(popup);
+            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
             if (!string.IsNullOrEmpty(result.ToString()))
             {
@@ -293,7 +314,7 @@ public partial class ViewBills : BasePage
                 {
                     var PopUp = new PopUpPage();
                     App.CurrentPopUp = PopUp;
-                    Application.Current.MainPage.ShowPopup(PopUp);
+                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
                 }
 
                 await Shell.Current.GoToAsync($"///{nameof(ViewBills)}/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewBills");

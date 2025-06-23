@@ -1,22 +1,25 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-
 namespace DailyBudgetMAUIApp.Models
 {
     public partial class OTP : ObservableObject
     {
         [ObservableProperty]
-        public int  oTPID;
-        [ObservableProperty]
-        public string  oTPCode;
-        [ObservableProperty]
-        public DateTime  oTPExpiryTime;
-        [ObservableProperty]
-        public int  userAccountID;
-        [ObservableProperty]
-        public bool  isValidated;
-        [ObservableProperty]
-        public string  oTPType;
-    }
+        public partial int OTPID { get; set; }
 
+        [ObservableProperty]
+        public partial string OTPCode { get; set; }
+
+        [ObservableProperty]
+        public partial DateTime OTPExpiryTime { get; set; }
+
+        [ObservableProperty]
+        public partial int UserAccountID { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsValidated { get; set; }
+
+        [ObservableProperty]
+        public partial string OTPType { get; set; }
+    }
 }

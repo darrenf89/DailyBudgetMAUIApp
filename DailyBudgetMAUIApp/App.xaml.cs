@@ -31,8 +31,11 @@ namespace DailyBudgetMAUIApp;
 public partial class App : Application
 {
 	public static UserDetailsModel UserDetails;	
+	public static FamilyUserAccount FamilyUserDetails;	
 	public static bool IsPremiumAccount;	
 	public static int DefaultBudgetID;
+	public static bool IsBudgetUpdated;
+	public static bool IsFamilyAccount;
     public static Budgets DefaultBudget;
     public static DateTime SessionLastUpdate;
     public static bool HasVisitedCreatePage;
@@ -51,8 +54,7 @@ public partial class App : Application
     public static bool IsBackgrounded;
 
     public App()
-	{
-        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWXdfdnVWQmRYVEdxXks=");
+	{       
 		
         InitializeComponent();
         LoadChartBrush();
@@ -85,6 +87,7 @@ public partial class App : Application
 #if __ANDROID__
                 handler.PlatformView.Background = null;
                 handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                handler.PlatformView.EmojiCompatEnabled = false;
 #elif __IOS__
                 handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
                 handler.PlatformView.Layer.BorderWidth = 0;
@@ -102,6 +105,7 @@ public partial class App : Application
                 handler.PlatformView.Background = null;
                 handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
                 handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Colors.Transparent.ToAndroid());
+                handler.PlatformView.EmojiCompatEnabled = false;
 #elif __IOS__
                 handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
                 handler.PlatformView.Layer.BorderWidth = 0;
@@ -118,6 +122,7 @@ public partial class App : Application
                 handler.PlatformView.Background = null;
                 handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
                 handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Colors.Transparent.ToAndroid());
+                handler.PlatformView.EmojiCompatEnabled = false;
 #elif __IOS__
                 handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
                 handler.PlatformView.Layer.BorderWidth = 0;
@@ -135,6 +140,18 @@ public partial class App : Application
             }
 #endif
         });
+
+        //// Entry
+        //Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("DisableEmojiCompat", (handler, view) =>
+        //{
+        //    handler.PlatformView.EmojiCompatEnabled = false;
+        //});
+
+        //// Editor
+        //Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("DisableEmojiCompat", (handler, view) =>
+        //{
+        //    handler.PlatformView.EmojiCompatEnabled = false;
+        //});
 
         //MainPage = new AppShell();
     }
@@ -159,7 +176,7 @@ public partial class App : Application
                     {
                         if (currentActivity != null) 
                         {       
-                            if(App.UserDetails == null)
+                            if(App.UserDetails == null && App.FamilyUserDetails == null)
                             {
                                 Toast.MakeText(currentActivity.ApplicationContext, "Please login to use quick transaction", ToastLength.Short).Show();
                                 break;

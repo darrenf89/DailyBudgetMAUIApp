@@ -364,7 +364,7 @@ public partial class AddNewCategoryBottomSheet : BottomSheet
                 return;
             }
 
-            bool IsAddSub = await Application.Current.MainPage.DisplayAlert($"Add new sub category?", $"Are you sure you want to add {entSubCategory.Text} as a sub category?", "Yes", "No");
+            bool IsAddSub = await Application.Current.Windows[0].Page.DisplayAlert($"Add new sub category?", $"Are you sure you want to add {entSubCategory.Text} as a sub category?", "Yes", "No");
             if (IsAddSub)
             {
                 Application.Current.Resources.TryGetValue("StandardInputBorderOptionSelect", out var StandardInputBorderOptionSelect);

@@ -12,7 +12,7 @@ namespace DailyBudgetMAUIApp.Converters
 
             string Icon = (string)value;
 
-            ProductTools pt = new ProductTools(new RestDataService());
+            IProductTools pt = IPlatformApplication.Current.Services.GetService<IProductTools>();
 
             return pt.GetIcon(Icon).Result;
 

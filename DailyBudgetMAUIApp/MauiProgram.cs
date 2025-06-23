@@ -1,19 +1,21 @@
 ﻿using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
-using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Handlers;
-using Microsoft.Extensions.Logging;
-using IeuanWalker.Maui.Switch;
-using Syncfusion.Maui.Core.Hosting;
-using Maui.FixesAndWorkarounds;
-using The49.Maui.BottomSheet;
-using DotNet.Meteor.HotReload.Plugin;
 using DailyBudgetMAUIApp.Popups;
+using DailyBudgetMAUIApp.ViewModels;
+using DotNet.Meteor.HotReload.Plugin;
+using IeuanWalker.Maui.Switch;
 using Maui.FreakyEffects;
-using Plugin.MauiMTAdmob;
+using Microsoft.Extensions.Logging;
+using Plugin.LocalNotification;
 using Plugin.Maui.AppRating;
+using Plugin.MauiMTAdmob;
+using Syncfusion.Licensing;
+using Syncfusion.Maui.Core.Hosting;
+using The49.Maui.BottomSheet;
+using YourAppNamespace.Droid;
 
 namespace DailyBudgetMAUIApp;
 
@@ -21,15 +23,16 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        SyncfusionLicenseProvider.RegisterLicense("Mzg4NzM1MEAzMjM5MmUzMDJlMzAzYjMyMzkzYlgwUFBySk55Y1pzTjduK1UwT3VJTDdWZlVSM3pacnpJRlpzb0N2TmJCTHc9");
 
         var builder = MauiApp.CreateBuilder();
 
         builder
             .UseMauiApp<App>()
+            .UseLocalNotification()
             .UseSwitch()
             .UseMauiCommunityToolkit()
             .ConfigureSyncfusionCore()
-            .ConfigureMauiWorkarounds()
             .UseBottomSheet()
             .UseMauiMTAdmob()
             .ConfigureFonts(fonts =>
@@ -63,6 +66,9 @@ public static class MauiProgram
         builder.Services.AddSingleton<IRestDataService, RestDataService>();
         builder.Services.AddSingleton<IProductTools, ProductTools>();
         builder.Services.AddSingleton<IAppRating>(AppRating.Default);
+        builder.Services.AddSingleton<INotificationPermissions, NotificationPermissionsImplementation>();
+        builder.Services.AddSingleton<IKeyboardService, KeyboardService>();
+        builder.Services.AddSingleton<ILogService, LogService>();
 
         //Pages
         builder.Services.AddTransient<MainPage>();
@@ -100,6 +106,13 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewSupports>();
         builder.Services.AddTransient<ViewSupports>();
         builder.Services.AddTransient<ViewAccounts>();
+        builder.Services.AddTransient<FamilyAccountsManage>();
+        builder.Services.AddTransient<CreateNewFamilyAccounts>();
+        builder.Services.AddTransient<FamilyAccountLogonPage>();
+        builder.Services.AddTransient<FamilyAccountMainPage>();
+        builder.Services.AddTransient<ViewBudgets>();
+        builder.Services.AddTransient<FamilyAccountsView>();
+        builder.Services.AddTransient<FamilyAccountsEdit>();
 
         //ViewModes
         builder.Services.AddTransient<MainPageViewModel>();
@@ -136,6 +149,13 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewSupportViewModel>();
         builder.Services.AddTransient<ViewSupportsViewModel>();
         builder.Services.AddTransient<ViewAccountsViewModel>();
+        builder.Services.AddTransient<FamilyAccountsManageViewModel>();
+        builder.Services.AddTransient<CreateNewFamilyAccountsViewModel>();
+        builder.Services.AddTransient<FamilyAccountLogonPageViewModel>();
+        builder.Services.AddTransient<FamilyAccountMainPageViewModel>();
+        builder.Services.AddTransient<ViewBudgetsViewModel>();
+        builder.Services.AddTransient<FamilyAccountsViewViewModel>();
+        builder.Services.AddTransient<FamilyAccountsEditViewModel>();
 
         //Popups
         builder.Services.AddTransient<PopUpPage>();
@@ -155,6 +175,7 @@ public static class MauiProgram
         builder.Services.AddTransient<PopUpNoNetwork, PopUpNoNetworkViewModel>();
         builder.Services.AddTransient<PopUpNoServer, PopUpNoServerViewModel>();
         builder.Services.AddTransient<PopupMoveAccountBalance, PopupMoveAccountBalanceViewModel>();
+        builder.Services.AddTransient<PopupDailyAllowance, PopupDailyAllowanceViewModel>();
 
         //BottomSheets
         builder.Services.AddTransient<ViewTransactionFilterBottomSheet>();
@@ -169,6 +190,8 @@ public static class MauiProgram
         builder.Services.AddTransient<CategoryOptionsBottomSheet>();
         builder.Services.AddTransient<PayeeOptionsBottomSheet>();
         builder.Services.AddTransient<MultipleAccountsBottomSheet>();
+
+        builder.Services.AddTransient<BaseViewModel>();
 
 #if WINDOWS
         SetWindowHandlers(); 

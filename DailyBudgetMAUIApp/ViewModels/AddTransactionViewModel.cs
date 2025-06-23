@@ -18,37 +18,53 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
 
         [ObservableProperty]
-        private int  budgetID;
+        public partial int BudgetID { get; set; }
+
         [ObservableProperty]
-        private int  transactionID;
+        public partial int TransactionID { get; set; }
+
         [ObservableProperty]
-        private Transactions?  transaction = null;
+        public partial Transactions? Transaction { get; set; } = null;
+
         [ObservableProperty]
-        private bool  isPageValid;
+        public partial bool IsPageValid { get; set; }
+
         [ObservableProperty]
-        private bool  isFutureDatedTransaction;
+        public partial bool IsFutureDatedTransaction { get; set; }
+
         [ObservableProperty]
-        private bool  isPayee;
+        public partial bool IsPayee { get; set; }
+
         [ObservableProperty]
-        private bool  isAccount;
+        public partial bool IsAccount { get; set; }
+
         [ObservableProperty]
-        private bool  isAppearing;
+        public partial bool IsAppearing { get; set; }
+
         [ObservableProperty]
-        private bool isMultipleAccounts;
+        public partial bool IsMultipleAccounts { get; set; }
+
         [ObservableProperty]
-        private bool  isSpendCategory;
+        public partial bool IsSpendCategory { get; set; }
+
         [ObservableProperty]
-        private bool  isNote;
+        public partial bool IsNote { get; set; }
+
         [ObservableProperty]
-        private string  navigatedFrom;
+        public partial string NavigatedFrom { get; set; }
+
         [ObservableProperty]
-        private string redirectTo;
+        public partial string RedirectTo { get; set; }
+
         [ObservableProperty]
-        private string? defaultAccountName;
+        public partial string? DefaultAccountName { get; set; }
+
         [ObservableProperty]
-        private List<BankAccounts> bankAccounts;
+        public partial List<BankAccounts> BankAccounts { get; set; }
+
         [ObservableProperty]
-        private BankAccounts? selectedBankAccount;
+        public partial BankAccounts? SelectedBankAccount { get; set; }
+
 
 
 
@@ -61,7 +77,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         }
 
         [RelayCommand]
-        public async void BackButton()
+        public async Task BackButton()
         {
             try
             {
@@ -71,7 +87,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     await Shell.Current.GoToAsync($"///{nameof(ViewTransactions)}");
@@ -82,7 +98,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
@@ -93,7 +109,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
@@ -104,7 +120,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
@@ -115,7 +131,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     {
                         var PopUp = new PopUpPage();
                         App.CurrentPopUp = PopUp;
-                        Application.Current.MainPage.ShowPopup(PopUp);
+                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
                     }
 
                     await Shell.Current.GoToAsync($"..");

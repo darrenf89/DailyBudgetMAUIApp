@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DailyBudgetMAUIApp"
+             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
+             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
+             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:ViewModels="clr-namespace:DailyBudgetMAUIApp.ViewModels"
+             x:Class="DailyBudgetMAUIApp.Pages.FamilyAccountsManage"
+             xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
+             xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
+             xmlns:sfavatar="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             Shell.TabBarIsVisible="True"
+             Shell.NavBarIsVisible="True"
+             droid:NavigationBar.Color="{StaticResource PrimaryDark}"
+             droid:NavigationBar.Style="LightContent"
+             Title="{Binding Title}">
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="25,*" x:Name="TitleView">
+            <Button TextColor="White" BackgroundColor="{StaticResource Primary}" x:Name="HomeButton" Command="{Binding BackButtonCommand}" HorizontalOptions="Center" Grid.Column="0" Padding="0,0,0,0" Style="{StaticResource TitleButtons}">
+                <Button.ImageSource>
+                    <FontImageSource FontFamily="MaterialDesignIcons" Glyph="{x:Static helpers:MaterialDesignIconsFonts.Home}" Size="35" />
+                </Button.ImageSource>
+            </Button>
+            <Label Text="{Binding Title}" TextColor="White" VerticalOptions="Center" Margin="10,0,10,0" Padding="0" FontSize="{Binding Source=Medium, Converter={StaticResource StringToSizeConverter}}"  FontFamily="OpenSansSemibold" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
+        </Grid>
+    </Shell.TitleView>
+    <Grid ColumnDefinitions="*" RowDefinitions="Auto, *, Auto">
+        <Grid BackgroundColor="{StaticResource Primary}" ColumnDefinitions="*" RowDefinitions="Auto, Auto" Grid.Row="0" Grid.Column="0" >
+            <Label Margin="20,0,0,20" Grid.Row="1" Grid.Column="0" FontFamily="OpenSansSemibold" CharacterSpacing="0" Text="Manage all your family’s accounts in one place! Stay organized, track spending, and keep everyone on the same page because budgeting is better when you do it together." TextColor="White" FontSize="{Binding Source=Header, Converter={StaticResource StringToSizeConverter}}" HorizontalTextAlignment="Start" Padding="0,0,5,0"/>
+            <Grid.Shadow>
+                <Shadow Radius="10" Opacity="0.5" Offset="0, 2" Brush="Black"/>
+            </Grid.Shadow>
+        </Grid>
+        <ScrollView Grid.Row="1" Grid.Column="0">
+            <StackLayout BindableLayout.ItemsSource="{Binding FamilyAccounts}" >
+                <BindableLayout.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15" Padding="20" BackgroundColor="White">
+                        <Image Source="family_portrait.png" WidthRequest="100" HeightRequest="100" Aspect="AspectFit" Opacity="0.5"/>
+                        <Label Text="No family accounts" FontSize="24" FontAttributes="Bold" TextColor="Gray" HorizontalOptions="Center"/>
+                        <Label Text="Click add family account to create a family account and get budgetting together!" FontSize="{Binding Source=Body, Converter={StaticResource StringToSizeConverter}}" TextColor="Gray" HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </BindableLayout.EmptyView>
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,*,Auto" Padding="20">
+                            <ContentView Content="{Binding AvatarView}" Grid.Column="0" Grid.Row="0" />
+                            <VerticalStackLayout Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="Start" Margin="20,0,0,0">
+                                <HorizontalStackLayout Margin="0,0,0,4">
+                                    <Label Padding="0" Margin="0" Text="{Binding NickName}" TextColor="{StaticResource PrimaryDark}" FontAttributes="Bold" FontSize="{Binding Source=Large, Converter={StaticResource StringToSizeConverter}}" VerticalTextAlignment="End"/>
+                                    <Label Padding="0,0,0,4" Margin="0" IsVisible="{Binding IsActive, Converter={StaticResource BoolConverter}}" Text="   (Inactive)"  TextColor="{StaticResource Info}" FontSize="{Binding Source=small, Converter={StaticResource StringToSizeConverter}}" VerticalTextAlignment="End"/>
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding Email}" TextColor="{StaticResource Gray400}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}"/>
+                            </VerticalStackLayout>
+                            <BoxView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" HeightRequest="1" Color="{StaticResource Gray200}" Margin="0,20,0,15" />
+                            <VerticalStackLayout Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" HorizontalOptions="Start" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}" Padding="0,0,20,0">
+                                <Label Text="Continue setting up account" Margin="0,0,0,8" TextColor="{StaticResource Gray600}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="CharacterWrap"/>
+                                <Label Text="Go back to the family account creation to finalise set up." TextColor="{StaticResource Gray400}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="CharacterWrap"/>
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout HorizontalOptions="End" Padding="0,0,4,0" Grid.Column="2" Grid.Row="2" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}" touchEffects:TouchEffect.Color="{StaticResource InfoLLL}">
+                                <Label VerticalTextAlignment="Center" TextColor="{StaticResource Info}" Text="Complete Setup" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
+                                <HorizontalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:FamilyAccountsManageViewModel}}, Path=CompleteBudgetSetUpCommand}" CommandParameter="{Binding .}"/>
+                                </HorizontalStackLayout.GestureRecognizers>
+                            </HorizontalStackLayout>
+                            <VerticalStackLayout Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" HorizontalOptions="Start" IsVisible="{Binding IsBudgetCreated}" Padding="0,0,20,0">
+                                <Label Text="View Account" Margin="0,0,0,8" TextColor="{StaticResource Gray600}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="CharacterWrap"/>
+                                <Label Text="Take a look at your family accounts budget and how they are getting on!" TextColor="{StaticResource Gray400}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="CharacterWrap"/>
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout HorizontalOptions="End" Padding="0,0,4,0" Grid.Column="2" Grid.Row="2" IsVisible="{Binding IsBudgetCreated}" touchEffects:TouchEffect.Color="{StaticResource InfoLLL}">
+                                <Label VerticalTextAlignment="Center" TextColor="{StaticResource Info}" Text="View" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
+                                <HorizontalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:FamilyAccountsManageViewModel}}, Path=ManageFamilyAccountCommand}" CommandParameter="{Binding .}"/>
+                                </HorizontalStackLayout.GestureRecognizers>
+                            </HorizontalStackLayout>
+                            <BoxView Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" HeightRequest="1" Color="{StaticResource Gray200}" Margin="0,20,0,15" />
+                            <VerticalStackLayout Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" HorizontalOptions="Start" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}" Padding="0,0,20,0">
+                                <Label Text="Delete Account" Margin="0,0,0,8" TextColor="{StaticResource Gray600}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="CharacterWrap"/>
+                                <Label Text="You have not finalised creation yet and can abdandon set up at any time!" TextColor="{StaticResource Gray400}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="CharacterWrap"/>
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout HorizontalOptions="End" Padding="0,0,4,0" Grid.Column="2" Grid.Row="4" IsVisible="{Binding IsBudgetCreated, Converter={StaticResource BoolConverter}}" touchEffects:TouchEffect.Color="{StaticResource InfoLLL}">
+                                <Label VerticalTextAlignment="Center" TextColor="{StaticResource Info}" Text="Abandon Creation" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}"/>
+                                <HorizontalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:FamilyAccountsManageViewModel}}, Path=DeleteFamilyAccountCommand}" CommandParameter="{Binding .}"/>
+                                </HorizontalStackLayout.GestureRecognizers>
+                            </HorizontalStackLayout>
+                            <VerticalStackLayout Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" HorizontalOptions="Start" IsVisible="{Binding IsBudgetCreated}" Padding="0,0,20,0">
+                                <Label Text="Turn account off" Margin="0,0,0,8" TextColor="{StaticResource Gray600}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="CharacterWrap" IsVisible="{Binding IsActive}"/>
+                                <Label Text="Turn account on" Margin="0,0,0,8" TextColor="{StaticResource Gray600}" FontAttributes="Bold" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="CharacterWrap" IsVisible="{Binding IsActive, Converter={StaticResource BoolConverter}}"/>
+                                <Label Text="Account no longer in use or want to stop acess, deactivate here." TextColor="{StaticResource Gray400}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="CharacterWrap" IsVisible="{Binding IsActive}"/>
+                                <Label Text="Want to start re using a previous budget turn it back on here." TextColor="{StaticResource Gray400}" FontSize="{Binding Source=Caption, Converter={StaticResource StringToSizeConverter}}" LineBreakMode="CharacterWrap" IsVisible="{Binding IsActive, Converter={StaticResource BoolConverter}}"/>
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout Grid.Column="2" Grid.Row="4" Padding="0,0,4,0" IsVisible="{Binding IsBudgetCreated}" touchEffects:TouchEffect.Color="{StaticResource InfoLLL}" HorizontalOptions="End">
+                                <Label VerticalTextAlignment="Center" TextColor="{StaticResource Info}" Text="Deactivate" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" IsVisible="{Binding IsActive}"/>
+                                <Label VerticalTextAlignment="Center" TextColor="{StaticResource Info}" Text="Activate" FontSize="{Binding Source=Small, Converter={StaticResource StringToSizeConverter}}" IsVisible="{Binding IsActive, Converter={StaticResource BoolConverter}}"/>
+                                <HorizontalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:FamilyAccountsManageViewModel}}, Path=ActivateDeactivateCommand}" CommandParameter="{Binding .}"/>
+                                </HorizontalStackLayout.GestureRecognizers>
+                            </HorizontalStackLayout>
+                            <BoxView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" HeightRequest="2" Color="{StaticResource Info}" Margin="0,20,0,0" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </StackLayout>
+        </ScrollView>
+        <Grid RowDefinitions="Auto" ColumnDefinitions="*" BackgroundColor="{StaticResource Primary}" x:Name="Footer" Grid.Row="2" Grid.Column="0">
+            <Button Command="{Binding AddNewFamilyAccountCommand}" WidthRequest="{Binding SignOutButtonWidth}" Grid.Row="0" Grid.Column="0" Style="{DynamicResource buttonClicked}" Text="Add new account" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" Margin="5,10,5,10" FontSize="18" CornerRadius="20" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}"/>
+        </Grid>
+    </Grid>
+</local:BasePage>
