@@ -1,9 +1,9 @@
-using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Popups;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -11,14 +11,15 @@ public partial class ViewIncomes : BasePage
 {
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
+    private readonly IPopupService _ps;
 	private readonly ViewIncomesViewModel _vm;
-    public ViewIncomes(ViewIncomesViewModel viewModel, IProductTools pt, IRestDataService ds)
+    public ViewIncomes(ViewIncomesViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
 	{
         this.BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
-
+        _ps = ps;
 
         InitializeComponent();
 
@@ -36,13 +37,7 @@ public partial class ViewIncomes : BasePage
 
     protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.Windows[0].Page.ShowPopup(PopUp);
-        }
-
+        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
         _vm.IsPageBusy = false;
 
         await Task.Delay(500);
@@ -71,11 +66,7 @@ public partial class ViewIncomes : BasePage
             _vm.SignOutButtonWidth = ScreenWidth - 60;
 
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             _vm.IsPageBusy = false;
         }
         catch (Exception ex)
@@ -88,13 +79,7 @@ public partial class ViewIncomes : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
         }
         catch (Exception ex)
@@ -113,13 +98,7 @@ public partial class ViewIncomes : BasePage
 
             if(result)
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}/{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=ViewIncomes");
             }
         }
@@ -166,12 +145,33 @@ public partial class ViewIncomes : BasePage
 
             string Description = "Update extra income due date!";
             string DescriptionSub = "extra income not due when you expected? You can update the due date to any date in the future!";
-            var popup = new PopUpPageVariableInput("Income due date", Description, DescriptionSub, "", Income.DateOfIncomeEvent, "DateTime", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
-            if(!string.IsNullOrEmpty(result.ToString()))
+            var queryAttributes = new Dictionary<string, object>
             {
-                Income.DateOfIncomeEvent = (DateTime)result;
+                [nameof(PopUpPageVariableInputViewModel.Description)] = Description,
+                [nameof(PopUpPageVariableInputViewModel.DescriptionSub)] = DescriptionSub,
+                [nameof(PopUpPageVariableInputViewModel.TitleText)] = "Income due date",
+                [nameof(PopUpPageVariableInputViewModel.Input)] = Income.DateOfIncomeEvent,
+                [nameof(PopUpPageVariableInputViewModel.Type)] = "DateTime",
+                [nameof(PopUpPageVariableInputViewModel.Placeholder)] = "",
+            };
+
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = false,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageVariableInput, object>(
+                Shell.Current,
+                options: popupOptions,
+                shellParameters: queryAttributes,
+                cancellationToken: CancellationToken.None
+            );
+
+            if (popupResult.Result is string && DateTime.TryParse((string)popupResult.Result, out DateTime result))
+            {
+                Income.DateOfIncomeEvent = result;
 
                 List<PatchDoc> PatchDocs = new List<PatchDoc>();
                 PatchDoc DateOfIncomeEvent = new PatchDoc
@@ -201,12 +201,33 @@ public partial class ViewIncomes : BasePage
 
             string Description = "Update income amount!";
             string DescriptionSub = "Income not as much as you expected, you can update the income amount and we will do the rest!";
-            var popup = new PopUpPageVariableInput("Outgoing amount", Description, DescriptionSub, "", Income.IncomeAmount, "Currency", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-
-            if (!string.IsNullOrEmpty(result.ToString()))
+            
+            var queryAttributes = new Dictionary<string, object>
             {
-                Income.IncomeAmount = (decimal)result;
+                [nameof(PopUpPageVariableInputViewModel.Description)] = Description,
+                [nameof(PopUpPageVariableInputViewModel.DescriptionSub)] = DescriptionSub,
+                [nameof(PopUpPageVariableInputViewModel.TitleText)] = "income amount",
+                [nameof(PopUpPageVariableInputViewModel.Input)] = Income.IncomeAmount,
+                [nameof(PopUpPageVariableInputViewModel.Type)] = "Currency",
+                [nameof(PopUpPageVariableInputViewModel.Placeholder)] = "",
+            };
+
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = false,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageVariableInput, object>(
+                Shell.Current,
+                options: popupOptions,
+                shellParameters: queryAttributes,
+                cancellationToken: CancellationToken.None
+            );
+
+            if (popupResult.Result is string && decimal.TryParse((string)popupResult.Result, out decimal result))
+            {
+                Income.IncomeAmount = result;
 
                 List<PatchDoc> PatchDocs = new List<PatchDoc>();
                 PatchDoc IncomeAmount = new PatchDoc
@@ -236,13 +257,7 @@ public partial class ViewIncomes : BasePage
 
             if (result)
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Shell.Current.GoToAsync($"///{nameof(ViewIncomes)}//{nameof(AddIncome)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewIncomes");
             }
         }

@@ -1,4 +1,5 @@
-using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
@@ -11,11 +12,12 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
 {
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
+    private readonly IPopupService _ps;
 
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
 
-    public CategoryOptionsBottomSheet(IRestDataService ds, IProductTools pt)
+    public CategoryOptionsBottomSheet(IRestDataService ds, IProductTools pt, IPopupService ps)
     {
         InitializeComponent();
 
@@ -169,7 +171,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
             else
             {
                 int CategoryID = CatDict[SelectCategory];
-                AddSubCategoryBottomSheet page = new AddSubCategoryBottomSheet(await _ds.GetCategoryFromID(CategoryID), _pt, _ds);
+                AddSubCategoryBottomSheet page = new AddSubCategoryBottomSheet(await _ds.GetCategoryFromID(CategoryID), _pt, _ds, _ps);
 
                 page.Detents = new DetentsCollection()
                 {
@@ -215,12 +217,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
             {
                 int CategoryID = CatDict[SelectCategory];
 
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
                 if (App.CurrentBottomSheet != null)
                 {
@@ -238,13 +235,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
 
     private async void ViewAllCategories_Tapped(object sender, TappedEventArgs e)
     {
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.Windows[0].Page.ShowPopup(PopUp);
-        }
-
+        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
         if (App.CurrentBottomSheet != null)
         {
             await App.CurrentBottomSheet.DismissAsync();
@@ -280,13 +271,31 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
                 Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
                 List<Categories> CategoryDetails = await _ds.GetHeaderCategoryDetailsFull(CategoryID, App.DefaultBudgetID);
 
-                var Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, CategoryID, CategoryDetails, _ds, _pt));
-                var result = await Shell.Current.ShowPopupAsync(Popup);
-                if (result.ToString() == "Cancel")
+                var queryAttributes = new Dictionary<string, object>
+                {
+                    [nameof(PopupReassignCategoriesViewModel.Categories)] = CategoryDetails,
+                    [nameof(PopupReassignCategoriesViewModel.ReAssignCategories)] = Categories,
+                    [nameof(PopupReassignCategoriesViewModel.HeaderCatID)] = CategoryID,
+                };
+
+                var popupOptions = new PopupOptions
+                {
+                    CanBeDismissedByTappingOutsideOfPopup = false,
+                    PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                };
+
+                IPopupResult<string> popupResult = await _ps.ShowPopupAsync<PopupReassignCategories, string>(
+                    Shell.Current,
+                    options: popupOptions,
+                    shellParameters: queryAttributes,
+                    cancellationToken: CancellationToken.None
+                );
+
+                if (popupResult.Result.ToString() == "Cancel")
                 {
 
                 }
-                else if (result.ToString() == "Ok")
+                else if (popupResult.Result.ToString() == "Ok")
                 {
                     await _ds.DeleteCategory(CategoryID, false, 0);
 

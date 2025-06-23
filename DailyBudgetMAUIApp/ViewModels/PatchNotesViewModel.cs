@@ -1,11 +1,9 @@
 ﻿using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Collections.ObjectModel;
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.Input;
-using Plugin.MauiMTAdmob;
 using DailyBudgetMAUIApp.Handlers;
+using CommunityToolkit.Maui;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -14,14 +12,16 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
+        private readonly IPopupService _ps;
 
         [ObservableProperty]
         public partial List<PatchNote> PatchNotes { get; set; } = new List<PatchNote>();
 
-        public PatchNotesViewModel(IProductTools pt, IRestDataService ds)
+        public PatchNotesViewModel(IProductTools pt, IRestDataService ds, IPopupService ps)
         {
             _ds = ds;
             _pt = pt;
+            _ps = ps;
 
         }
 
@@ -42,14 +42,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                    await Task.Delay(1);
-                }
 
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
             }
             catch (Exception ex)

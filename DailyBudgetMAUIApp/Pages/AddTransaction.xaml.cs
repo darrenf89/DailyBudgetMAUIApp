@@ -2,14 +2,13 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using System.Globalization;
-using IeuanWalker.Maui.Switch;
-using IeuanWalker.Maui.Switch.Events;
-using IeuanWalker.Maui.Switch.Helpers;
 using DailyBudgetMAUIApp.Handlers;
-using CommunityToolkit.Maui.Views;
 using Plugin.MauiMTAdmob;
+using CommunityToolkit.Maui;
+
+
 #if ANDROID
-    using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Handlers;
 #endif
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -19,7 +18,8 @@ public partial class AddTransaction : BasePage
     private readonly AddTransactionViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    public AddTransaction(AddTransactionViewModel viewModel, IProductTools pt, IRestDataService ds)
+    private readonly IPopupService _ps;
+    public AddTransaction(AddTransactionViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
 	{
 		InitializeComponent();
 
@@ -27,18 +27,13 @@ public partial class AddTransaction : BasePage
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
+        _ps = ps;
 
     }
 
     protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.Windows[0].Page.ShowPopup(PopUp);
-        }
-
+        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
         _vm.IsPageBusy = false;
 
         await Task.Delay(500);
@@ -52,15 +47,6 @@ public partial class AddTransaction : BasePage
         if (Navigation.NavigationStack.Count > 1)
         {
             Shell.SetTabBarIsVisible(this, false);
-        }
-    }
-
-    private async void Content_Loaded(object sender, EventArgs e)
-    {
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
         }
     }
 
@@ -218,11 +204,8 @@ public partial class AddTransaction : BasePage
 
             UpdateExpenseIncomeSelected();
             _vm.IsAppearing = false;
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+
         }
         catch (Exception ex)
         {
@@ -324,16 +307,11 @@ public partial class AddTransaction : BasePage
 
                 bool result = await DisplayAlert("Add New Transaction", $"You are adding {TransactionType} for {TransactionAmount}, are you sure you want to continue?", "Yes, continue", "Cancel");
                 if (result)
-                {               
+                {
 
-                    if (App.CurrentPopUp == null)
-                    {
-                        var PopUp = new PopUpPage();
-                        App.CurrentPopUp = PopUp;
-                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                    }
+                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
-                    if(!_vm.IsMultipleAccounts)
+                    if (!_vm.IsMultipleAccounts)
                     {
                         _vm.Transaction.AccountID = null;
                     }
@@ -402,12 +380,7 @@ public partial class AddTransaction : BasePage
                 bool result = await DisplayAlert("Update A Transaction", $"You are updating {TransactionType} to {TransactionAmount}, are you sure you want to?", "Yes, continue", "Cancel");
                 if (result)
                 {
-                    if (App.CurrentPopUp == null)
-                    {
-                        var PopUp = new PopUpPage();
-                        App.CurrentPopUp = PopUp;
-                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                    }
+                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
                     if (!_vm.IsMultipleAccounts)
                     {

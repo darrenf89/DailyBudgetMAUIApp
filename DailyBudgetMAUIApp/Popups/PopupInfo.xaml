@@ -4,9 +4,7 @@
            x:Class="DailyBudgetMAUIApp.Handlers.PopupInfo"
            xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
            xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
-           xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
-           CanBeDismissedByTappingOutsideOfPopup="False"
-           Color="#80000000">
+           xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers">
     <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent">
         <Border BackgroundColor="{DynamicResource White}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" MaximumHeightRequest="{Binding PopupHeight}" StrokeShape="RoundRectangle 4" Margin="0,180,0,0">
             <VerticalStackLayout>

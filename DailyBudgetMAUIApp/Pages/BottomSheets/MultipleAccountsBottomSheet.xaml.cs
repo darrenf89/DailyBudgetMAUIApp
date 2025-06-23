@@ -1,15 +1,12 @@
+using CommunityToolkit.Maui;
+using CommunityToolkit.Mvvm.Messaging;
 using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Models;
-using The49.Maui.BottomSheet;
-using Microsoft.Maui.Layouts;
-using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Models;
+using Microsoft.Maui.Layouts;
 using System.ComponentModel;
 using System.Globalization;
-using CommunityToolkit.Maui.ApplicationModel;
-using CommunityToolkit.Maui.Views;
-using Microsoft.Maui.Controls;
-using CommunityToolkit.Mvvm.Messaging;
+using The49.Maui.BottomSheet;
 using static DailyBudgetMAUIApp.Pages.ViewAccounts;
 
 
@@ -33,14 +30,15 @@ public partial class MultipleAccountsBottomSheet : BottomSheet, INotifyPropertyC
 
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-
-    public MultipleAccountsBottomSheet(IProductTools pt, IRestDataService ds)
+    private readonly IPopupService _ps;
+    public MultipleAccountsBottomSheet(IProductTools pt, IRestDataService ds, IPopupService ps )
 	{
 		InitializeComponent();
 
         this.BindingContext = this;
         _pt = pt;
         _ds = ds;
+        _ps = ps;
 
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
@@ -410,13 +408,7 @@ public partial class MultipleAccountsBottomSheet : BottomSheet, INotifyPropertyC
             
             if (result)
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Task.Delay(1);
 
                 List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
@@ -468,12 +460,7 @@ public partial class MultipleAccountsBottomSheet : BottomSheet, INotifyPropertyC
                     App.CurrentBottomSheet = null;
                 }
 
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
-
+                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
                 await _pt.MakeSnackBar("Congrats you have set up multiple accounts", null, null, new TimeSpan(0, 0, 10), "Success");
             }
         }

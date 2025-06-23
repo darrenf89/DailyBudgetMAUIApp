@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.ViewModels;
 
@@ -7,12 +8,14 @@ public partial class FamilyAccountsView : BasePage
 {
     private readonly FamilyAccountsViewViewModel _vm;
     private readonly IProductTools _pt;
+    private readonly IPopupService _ps;
 
-    public FamilyAccountsView(FamilyAccountsViewViewModel vm, IProductTools pt)
+    public FamilyAccountsView(FamilyAccountsViewViewModel vm, IProductTools pt, IPopupService ps)
     {
         InitializeComponent();
         _vm = vm;
         _pt = pt;
+        _ps = ps;
         BindingContext = _vm;        
     }
 
@@ -27,12 +30,7 @@ public partial class FamilyAccountsView : BasePage
         base.OnAppearing();
         try
         {
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
-
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             _vm.IsPageBusy = true;
             await _vm.OnLoad();
             if(_vm.FamilyUserAccounts.Count > 0)

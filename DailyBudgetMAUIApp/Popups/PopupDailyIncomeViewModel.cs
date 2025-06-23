@@ -1,10 +1,9 @@
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupDailyIncomeViewModel : BaseViewModel
+    public partial class PopupDailyIncomeViewModel : BaseViewModel, IQueryAttributable
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -32,9 +31,13 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue(nameof(Income), out var income) && income is IncomeEvents ie)
+            {
+                Income = ie;
+            }
 
-
-
-
+        }
     }
 }

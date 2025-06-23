@@ -1,28 +1,31 @@
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Models;
+using CommunityToolkit.Maui;
 
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupReassignCategories : Popup
+public partial class PopupReassignCategories : Popup<String>
 {
     private readonly PopupReassignCategoriesViewModel _vm;
+    private readonly IPopupService _ps;
     
 
-    public PopupReassignCategories(PopupReassignCategoriesViewModel viewModel)
+    public PopupReassignCategories(PopupReassignCategoriesViewModel viewModel, IPopupService ps)
 	{
         InitializeComponent();
 
         BindingContext = viewModel;
         _vm = viewModel;
+        _ps = ps;
 
-        CreateReAssignData();
-
+        Loaded += async (s, e) => await CreateReAssignData();
     }
 
-    private void CreateReAssignData()
+    private async Task CreateReAssignData()
     {
+        await Task.Delay(1);
         Application.Current.Resources.TryGetValue("StandardInputBorder", out var StandardInputBorder);
         Application.Current.Resources.TryGetValue("Primary", out var Primary);
         Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
@@ -161,15 +164,15 @@ public partial class PopupReassignCategories : Popup
             i++;
         }
 
-        this.Close("Ok");
+        await CloseAsync("Ok");
     }
 
-    private void Cancel_Clicked(object sender, EventArgs e)
+    private async void Cancel_Clicked(object sender, EventArgs e)
     {
-        this.Close("Cancel");
+        await CloseAsync("Cancel");
     }
-    private void BackButton_Clicked(object sender, TappedEventArgs e)
+    private async void BackButton_Clicked(object sender, TappedEventArgs e)
     {
-        this.Close("Cancel");
+        await CloseAsync("Cancel");
     }
 }

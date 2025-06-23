@@ -1,25 +1,29 @@
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Models;
 using System.Globalization;
 using DailyBudgetMAUIApp.DataServices;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupDailyIncome : Popup
+public partial class PopupDailyIncome : Popup<Object>
 {
     private readonly PopupDailyIncomeViewModel _vm;
     private readonly IProductTools _pt;
 
-    public PopupDailyIncome(IncomeEvents Income, PopupDailyIncomeViewModel viewModel, IProductTools pt)
+    public PopupDailyIncome(PopupDailyIncomeViewModel viewModel, IProductTools pt)
 	{
         InitializeComponent();
-
-        viewModel.Income = Income;
 
         BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
+
+        Loaded += async (s, e) => await Load();   
+    }
+
+    private async Task Load()
+    {
+        await Task.Delay(1);
 
         _vm.OriginalDate = _vm.Income.DateOfIncomeEvent;
         _vm.OriginalAmount = _vm.Income.IncomeAmount;
@@ -32,9 +36,7 @@ public partial class PopupDailyIncome : Popup
 
         string GoalDate = _vm.Income.DateOfIncomeEvent.ToShortDateString();
         lblIncomeDate.Text = GoalDate;
-   
     }
-
     void IncomeAmount_Changed(object sender, TextChangedEventArgs e)
     {
         decimal IncomeAmount = (decimal)_pt.FormatBorderlessEntryNumber(sender, e, entIncomeAmount);
@@ -42,14 +44,14 @@ public partial class PopupDailyIncome : Popup
         _vm.Income.IncomeAmount = IncomeAmount;
     }
 
-    private void Close_Saving(object sender, EventArgs e)
+    private async void Close_Saving(object sender, EventArgs e)
     {
-        this.Close("OK");
+        await CloseAsync("OK");
     }
 
-    private void DeleteYes_Saving(object sender, EventArgs e)
+    private async void DeleteYes_Saving(object sender, EventArgs e)
     {
-        this.Close("Delete");
+        await CloseAsync("Delete");
     }
 
     private void DeleteNo_Saving(object sender, EventArgs e)
@@ -129,11 +131,11 @@ public partial class PopupDailyIncome : Popup
         return IsValid;
     }
 
-    private void AcceptUpdate_Saving(object sender, EventArgs e)
+    private async void AcceptUpdate_Saving(object sender, EventArgs e)
     {
         if(ValidatePage())
         {
-            this.Close(_vm.Income);
+            await CloseAsync(_vm.Income);
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui.Alerts;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.Messaging;
@@ -16,6 +17,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
+
 using static DailyBudgetMAUIApp.Pages.ViewAccounts;
 
 
@@ -26,10 +28,12 @@ namespace DailyBudgetMAUIApp.DataServices
     internal class ProductTools : IProductTools
     {
         private readonly IRestDataService _ds;
+        private readonly IPopupService _ps;
 
-        public ProductTools(IRestDataService ds)
+        public ProductTools(IRestDataService ds, IPopupService ps)
         {
             _ds = ds;
+            _ps = ps;
         }
 
         public RegisterModel ResetUserPassword(RegisterModel obj)
@@ -115,12 +119,6 @@ namespace DailyBudgetMAUIApp.DataServices
             DateTime? LastUpdated = await _ds.GetBudgetLastUpdatedAsync(BudgetID);
 
             return LastUpdated.GetValueOrDefault();
-        }
-
-        public void ShowPopup(PopUpPage popup)
-        {
-            Page page = Application.Current.Windows[0].Page ?? throw new NullReferenceException();
-            page.ShowPopup(popup);
         }
 
         public double FormatBorderlessEntryNumber(object sender, TextChangedEventArgs e, BorderlessEntry entry)
@@ -1286,22 +1284,38 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
                     if (Transaction.TransactionDate.GetValueOrDefault().Date == GetBudgetLocalTime(DateTime.UtcNow).Date)
                     {
-                        var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
-                        var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-                        if ((string)result.ToString() == "OK")
+                        var queryAttributes = new Dictionary<string, object>
+                        {
+                            [nameof(PopupDailyTransactionViewModel.Transaction)] = Transaction
+                        };
+
+                        var popupOptions = new PopupOptions
+                        {
+                            CanBeDismissedByTappingOutsideOfPopup = false,
+                            PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                        };
+
+                        IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyTransaction, object>(
+                            Shell.Current,
+                            options: popupOptions,
+                            shellParameters: queryAttributes,
+                            cancellationToken: CancellationToken.None
+                        );
+
+                        if ((string)popupResult.Result.ToString() == "OK")
                         {
                             Transaction.IsTransacted = true;
                             Transact(ref Transaction, ref budget);
                             budget.Transactions[i] = Transaction;
                         }
-                        else if ((string)result.ToString() == "Delete")
+                        else if ((string)popupResult.Result.ToString() == "Delete")
                         {
                             _ds.DeleteTransaction(Transaction.TransactionID);
                             budget.Transactions.RemoveAt(i);
                         }
                         else
                         {
-                            Transaction = (Transactions)result;
+                            Transaction = (Transactions)popupResult.Result;
 
                             if (Transaction.TransactionDate.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date && Transaction.TransactionDate.GetValueOrDefault().Date != GetBudgetLocalTime(DateTime.UtcNow).Date)
                             {
@@ -1382,11 +1396,26 @@ namespace DailyBudgetMAUIApp.DataServices
 
             if (budget.NextIncomePayday.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
             {
-                //Confirm pay amount and date!
-                var popup = new PopupDailyPayDay(budget, new PopupDailyPayDayViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
-                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+                var queryAttributes = new Dictionary<string, object>
+                {
+                    [nameof(PopupDailyPayDayViewModel.Budget)] = budget,
+                    [nameof(PopupDailyPayDayViewModel.IsPayNow)] = false
+                };
 
-                if ((string)result.ToString() == "OK")
+                var popupOptions = new PopupOptions
+                {
+                    CanBeDismissedByTappingOutsideOfPopup = false,
+                    PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                };
+
+                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyPayDay, object>(
+                    Shell.Current,
+                    options: popupOptions,
+                    shellParameters: queryAttributes,
+                    cancellationToken: CancellationToken.None
+                );
+
+                if ((string)popupResult.Result.ToString() == "OK")
                 {
                     Stats.IsCurrentPeriod = false;
                     budget.PayPeriodStats[Index] = Stats;
@@ -1442,7 +1471,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
                 else
                 {
-                    budget = (Budgets)result;
+                    budget = (Budgets)popupResult.Result;
 
                     if (budget.NextIncomePayday.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
                     {
@@ -1547,22 +1576,37 @@ namespace DailyBudgetMAUIApp.DataServices
                         }
                         else
                         {
-                            var popup = new PopupDailySaving(Saving, new PopupDailySavingViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
-                            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+                            var queryAttributes = new Dictionary<string, object>
+                            {
+                                [nameof(PopupDailySavingViewModel.Saving)] = Saving
+                            };
 
-                            if ((string)result.ToString() == "OK")
+                            var popupOptions = new PopupOptions
+                            {
+                                CanBeDismissedByTappingOutsideOfPopup = false,
+                                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                            };
+
+                            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailySaving, object>(
+                                Shell.Current,
+                                options: popupOptions,
+                                shellParameters: queryAttributes,
+                                cancellationToken: CancellationToken.None
+                            );
+
+                            if ((string)popupResult.Result.ToString() == "OK")
                             {
                                 CloseSaving(ref Saving);
                                 budget.Savings[i] = Saving;
                             }
-                            else if ((string)result.ToString() == "Delete")
+                            else if ((string)popupResult.Result.ToString() == "Delete")
                             {
                                 await _ds.DeleteSaving(Saving.SavingID);
                                 budget.Savings.RemoveAt(i);
                             }
                             else
                             {
-                                Saving = (Savings)result;
+                                Saving = (Savings)popupResult.Result;
 
                                 if (Saving.GoalDate.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
                                 {
@@ -1612,24 +1656,40 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (Bill.BillDueDate.GetValueOrDefault().Date == budget.BudgetValuesLastUpdated.Date)
                 {
-                    var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
-                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+                    var queryAttributes = new Dictionary<string, object>
+                    {
+                        [nameof(PopupDailyBillViewModel.Bill)] = Bill,
+                        [nameof(PopupDailyBillViewModel.IsAcceptOnly)] = false
+                    };
 
-                    if ((string)result.ToString() == "OK")
+                    var popupOptions = new PopupOptions
+                    {
+                        CanBeDismissedByTappingOutsideOfPopup = false,
+                        PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                    };
+
+                    IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyBill, object>(
+                        Shell.Current,
+                        options: popupOptions,
+                        shellParameters: queryAttributes,
+                        cancellationToken: CancellationToken.None
+                    );
+
+                    if ((string)popupResult.Result.ToString() == "OK")
                     {
                         Bill = await TransactBillAsync(Bill, budget);
                         Stats.SpendToDate += Bill.BillAmount.GetValueOrDefault();
                         budget.BankBalance = budget.BankBalance - Bill.BillAmount;
                         budget.Bills[i] = Bill;
                     }
-                    else if ((string)result.ToString() == "Delete")
+                    else if ((string)popupResult.Result.ToString() == "Delete")
                     {
                         await _ds.DeleteBill(Bill.BillID);
                         budget.Bills.RemoveAt(i);
                     }
                     else
                     {
-                        Bill = (Bills)result;
+                        Bill = (Bills)popupResult.Result;
 
                         if (Bill.BillDueDate.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date)
                         {
@@ -1677,23 +1737,40 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (Income.DateOfIncomeEvent.Date == budget.BudgetValuesLastUpdated.Date)
                 {
-                    var popup = new PopupDailyIncome(Income, new PopupDailyIncomeViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
-                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-                    if ((string)result.ToString() == "OK")
+
+                    var queryAttributes = new Dictionary<string, object>
+                    {
+                        [nameof(PopupDailyIncomeViewModel.Income)] = Income
+                    };
+
+                    var popupOptions = new PopupOptions
+                    {
+                        CanBeDismissedByTappingOutsideOfPopup = false,
+                        PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                    };
+
+                    IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyIncome, object>(
+                        Shell.Current,
+                        options: popupOptions,
+                        shellParameters: queryAttributes,
+                        cancellationToken: CancellationToken.None
+                    );
+
+                    if ((string)popupResult.Result.ToString() == "OK")
                     {
                         Income = await TransactIncomeEventAsync(Income, budget);
                         Stats.IncomeToDate += Income.IncomeAmount;
                         budget.BankBalance = budget.BankBalance + Income.IncomeAmount;
                         budget.IncomeEvents[i] = Income;
                     }
-                    else if ((string)result.ToString() == "Delete")
+                    else if ((string)popupResult.Result.ToString() == "Delete")
                     {
                         await _ds.DeleteIncome(Income.IncomeEventID);
                         budget.IncomeEvents.RemoveAt(i);
                     }
                     else
                     {
-                        Income = (IncomeEvents)result;
+                        Income = (IncomeEvents)popupResult.Result;
 
                         if (Income.DateOfIncomeEvent.Date <= budget.BudgetValuesLastUpdated.Date)
                         {
@@ -1745,22 +1822,38 @@ namespace DailyBudgetMAUIApp.DataServices
                     {
                         if (Transaction.TransactionDate.GetValueOrDefault().Date < GetBudgetLocalTime(DateTime.UtcNow).Date)
                         {
-                            var popup = new PopupDailyTransaction(Transaction, new PopupDailyTransactionViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>());
-                            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-                            if ((string)result.ToString() == "OK")
+                            var queryAttributes = new Dictionary<string, object>
+                            {
+                                [nameof(PopupDailyTransactionViewModel.Transaction)] = Transaction
+                            };
+
+                            var popupOptions = new PopupOptions
+                            {
+                                CanBeDismissedByTappingOutsideOfPopup = false,
+                                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                            };
+
+                            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyTransaction, object>(
+                                Shell.Current,
+                                options: popupOptions,
+                                shellParameters: queryAttributes,
+                                cancellationToken: CancellationToken.None
+                            );
+
+                            if ((string)popupResult.Result.ToString() == "OK")
                             {
                                 Transaction.IsTransacted = true;
                                 Transact(ref Transaction, ref budget);
                                 budget.Transactions[i] = Transaction;
                             }
-                            else if ((string)result.ToString() == "Delete")
+                            else if ((string)popupResult.Result.ToString() == "Delete")
                             {
-                                _ds.DeleteTransaction(Transaction.TransactionID);
+                                await _ds.DeleteTransaction(Transaction.TransactionID);
                                 budget.Transactions.RemoveAt(i);
                             }
                             else
                             {
-                                Transaction = (Transactions)result;
+                                Transaction = (Transactions)popupResult.Result;
 
                                 if (Transaction.TransactionDate.GetValueOrDefault().Date <= budget.BudgetValuesLastUpdated.Date && Transaction.TransactionDate.GetValueOrDefault().Date != GetBudgetLocalTime(DateTime.UtcNow).Date)
                                 {
@@ -1809,10 +1902,28 @@ namespace DailyBudgetMAUIApp.DataServices
                                 bool IsAllowanceProcessed = await _ds.CheckIsAllowanceProcessedParent(familyUserBudgetsAllowance);
                                 if (!IsAllowanceProcessed)
                                 {
-                                    var popup = new PopupDailyAllowance(FamilyBudget, familyUser.UserID, "Parent", familyUser.NickName ,new PopupDailyAllowanceViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
-                                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+                                    var queryAttributes = new Dictionary<string, object>
+                                    {
+                                        [nameof(PopupDailyAllowanceViewModel.UserID)] = familyUser.UserID,
+                                        [nameof(PopupDailyAllowanceViewModel.Budget)] = FamilyBudget,
+                                        [nameof(PopupDailyAllowanceViewModel.Type)] = "Parent",
+                                        [nameof(PopupDailyAllowanceViewModel.NickName)] = familyUser.NickName
+                                    };
 
-                                    if ((string)result.ToString() == "OK")
+                                    var popupOptions = new PopupOptions
+                                    {
+                                        CanBeDismissedByTappingOutsideOfPopup = false,
+                                        PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                                    };
+
+                                    IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyAllowance, object>(
+                                        Shell.Current,
+                                        options: popupOptions,
+                                        shellParameters: queryAttributes,
+                                        cancellationToken: CancellationToken.None
+                                    );
+
+                                    if ((string)popupResult.Result.ToString() == "OK")
                                     {
                                         Transactions Transaction = new Transactions
                                         {
@@ -1839,14 +1950,14 @@ namespace DailyBudgetMAUIApp.DataServices
                                         familyUserBudgetsAllowance.IsParentAdded = true;
                                         familyUserBudgetsAllowance = await _ds.ProcessFamilyBudgetAllowance(familyUserBudgetsAllowance);
                                     }
-                                    else if((string)result.ToString() == "DEACTIVATE")
+                                    else if((string)popupResult.Result.ToString() == "DEACTIVATE")
                                     {
                                         familyUser.IsActive = false;                                        
                                         continue;
                                     }
                                     else
                                     {
-                                        FamilyBudget = (Budgets)result;
+                                        FamilyBudget = (Budgets)popupResult.Result;
 
                                         if (FamilyBudget.NextIncomePayday.GetValueOrDefault().Date <= DateTime.Now.Date)
                                         {
@@ -1896,9 +2007,28 @@ namespace DailyBudgetMAUIApp.DataServices
                     var familyUser = await _ds.GetFamilyUserAccount(familyUserBudgetsAllowance.FamilyUserID);
                     var FamilyBudget = await _ds.GetBudgetDetailsAsync(familyUser.BudgetID, "Limited");
 
-                    var popup = new PopupDailyAllowance(FamilyBudget, familyUserBudgetsAllowance.FamilyUserID, "ParentProcessed", familyUser.NickName, new PopupDailyAllowanceViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
-                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-                    if ((string)result.ToString() == "OK")
+                    var queryAttributes = new Dictionary<string, object>
+                    {
+                        [nameof(PopupDailyAllowanceViewModel.UserID)] = familyUserBudgetsAllowance.FamilyUserID,
+                        [nameof(PopupDailyAllowanceViewModel.Budget)] = FamilyBudget,
+                        [nameof(PopupDailyAllowanceViewModel.Type)] = "ParentProcessed",
+                        [nameof(PopupDailyAllowanceViewModel.NickName)] = familyUser.NickName
+                    };
+
+                    var popupOptions = new PopupOptions
+                    {
+                        CanBeDismissedByTappingOutsideOfPopup = false,
+                        PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                    };
+
+                    IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyAllowance, object>(
+                        Shell.Current,
+                        options: popupOptions,
+                        shellParameters: queryAttributes,
+                        cancellationToken: CancellationToken.None
+                    );
+
+                    if ((string)popupResult.Result.ToString() == "OK")
                     {
                         Transactions Transaction = new Transactions
                         {
@@ -2202,18 +2332,35 @@ namespace DailyBudgetMAUIApp.DataServices
                     Preferences.Remove("NavigationType");
                     Preferences.Remove("NavigationID");
 
-                    var popup = new PopUpOTP(ShareBudgetRequestID, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ShareBudget", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
-                    var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-
-                    if ((string)result.ToString() != "User Closed")
+                    var queryAttributes = new Dictionary<string, object>
                     {
-                        ShareBudgetRequest BudgetRequest = (ShareBudgetRequest)result;
+                        [nameof(PopUpOTPViewModel.UserID)] = ShareBudgetRequestID,
+                        [nameof(PopUpOTPViewModel.OTPType)] = "ShareBudget"
+                    };
 
-                        bool DefaultBudgetYesNo = await Application.Current.Windows[0].Page.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
+                    var popupOptions = new PopupOptions
+                    {
+                        CanBeDismissedByTappingOutsideOfPopup = false,
+                        PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                    };
 
-                        if (DefaultBudgetYesNo)
+                    IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpOTP, object>(
+                        Shell.Current,
+                        options: popupOptions,
+                        shellParameters: queryAttributes,
+                        cancellationToken: CancellationToken.None
+                    );
+
+                    if ((string)popupResult.Result.ToString() != "User Closed")
+                    {
+                        if(popupResult.Result is ShareBudgetRequest BudgetRequest)
                         {
-                            await ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID, true);                      
+                            bool DefaultBudgetYesNo = await Application.Current.Windows[0].Page.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
+
+                            if (DefaultBudgetYesNo)
+                            {
+                                await ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID, true);
+                            }
                         }
                     }
 
@@ -2359,12 +2506,13 @@ namespace DailyBudgetMAUIApp.DataServices
                     App.CurrentBottomSheet = null;
                 }
 
-                if (navigate && App.CurrentPopUp == null)
+                if (navigate)
                 {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-
+                    if (App.IsPopupShowing)
+                    {
+                        App.IsPopupShowing = false;
+                        await _ps.ClosePopupAsync(Shell.Current);
+                    }
                     await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
                 }
             }   
@@ -2528,8 +2676,21 @@ namespace DailyBudgetMAUIApp.DataServices
                             "If you have already subscribed don't worry it may take our records a moment to update. If you are having difficulties please contact us, we are here to and love to help."
                         };
 
-                        var popup = new PopupInfo("Subscription expired!", SubTitle, Info);
-                        var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+                        var queryAttributes = new Dictionary<string, object>
+                        {
+                            [nameof(PopupInfo.Info)] = Info,
+                            [nameof(PopupInfo.SubTitles)] = SubTitle,
+                            [nameof(PopupInfo.TitleText)] = "Subscription expired!"
+
+                        };
+
+                        var popupOptions = new PopupOptions
+                        {
+                            CanBeDismissedByTappingOutsideOfPopup = true,
+                            PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                        };
+
+                        await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
                     }
                 }
                 else
@@ -2637,17 +2798,33 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task PayBillNow(Bills Bill, Budgets budget)
         {
-            var popup = new PopupDailyBill(Bill, new PopupDailyBillViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), true);
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            var queryAttributes = new Dictionary<string, object>
+            {
+                [nameof(PopupDailyBillViewModel.Bill)] = Bill,
+                [nameof(PopupDailyBillViewModel.IsAcceptOnly)] = true
+            };
 
-            if ((string)result.ToString() == "OK")
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = false,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyBill, object>(
+                Shell.Current,
+                options: popupOptions,
+                shellParameters: queryAttributes,
+                cancellationToken: CancellationToken.None
+            );
+
+            if ((string)popupResult.Result.ToString() == "OK")
             {
                 Bill.BillDueDate = DateTime.UtcNow;
                 Bill = await TransactBillAsync(Bill, budget);
                 await _ds.UpdateBill(Bill);
 
             }
-            else if ((string)result.ToString() == "Cancel")
+            else if ((string)popupResult.Result.ToString() == "Cancel")
             {
 
             }
@@ -2661,10 +2838,26 @@ namespace DailyBudgetMAUIApp.DataServices
             PayPeriodStats Stats = budget.PayPeriodStats[Index];
 
             //Confirm pay amount and date!
-            var popup = new PopupDailyPayDay(budget, new PopupDailyPayDayViewModel(), IPlatformApplication.Current.Services.GetService<IProductTools>(), true);
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            var queryAttributes = new Dictionary<string, object>
+            {
+                [nameof(PopupDailyPayDayViewModel.Budget)] = budget,
+                [nameof(PopupDailyPayDayViewModel.IsPayNow)] = true
+            };
 
-            if ((string)result.ToString() == "OK")
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = false,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyPayDay, object>(
+                Shell.Current,
+                options: popupOptions,
+                shellParameters: queryAttributes,
+                cancellationToken: CancellationToken.None
+            );
+
+            if ((string)popupResult.Result.ToString() == "OK")
             {
                 Stats.IsCurrentPeriod = false;
                 budget.PayPeriodStats[Index] = Stats;
@@ -2757,10 +2950,10 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 }
 
-                if (App.CurrentPopUp != null)
+                if (App.IsPopupShowing)
                 {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
+                    App.IsPopupShowing = false;
+                    await _ps.ClosePopupAsync(Shell.Current);
                 }
 
                 if (App.CurrentBottomSheet != null)
@@ -2771,10 +2964,10 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             else
             {
-                if (App.CurrentPopUp != null)
+                if (App.IsPopupShowing)
                 {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
+                    App.IsPopupShowing = false;
+                    await _ps.ClosePopupAsync(Shell.Current);
                 }
             }
         }

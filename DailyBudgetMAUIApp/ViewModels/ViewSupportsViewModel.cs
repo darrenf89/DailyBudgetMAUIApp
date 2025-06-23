@@ -1,9 +1,11 @@
-﻿using DailyBudgetMAUIApp.DataServices;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DailyBudgetMAUIApp.Models;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using System.Collections.ObjectModel;
 
@@ -13,6 +15,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
+        private readonly IPopupService _ps;
 
         [ObservableProperty]
         public partial List<CustomerSupport> Supports { get; set; } = new List<CustomerSupport>();
@@ -30,10 +33,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         public partial string ReadUnreadFilter { get; set; } = "none";
 
 
-        public ViewSupportsViewModel(IProductTools pt, IRestDataService ds)
+        public ViewSupportsViewModel(IProductTools pt, IRestDataService ds, IPopupService ps)
         {
             _ds = ds;
             _pt = pt;
+            _ps = ps;
 
             double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             SignOutButtonWidth = ScreenWidth - 60;
@@ -116,12 +120,22 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                var popup = new PopUpContactUs(new PopUpContactUsViewModel(_pt, _ds));
-                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-                if (result is int)
+                var popup = new PopUpContactUs(new PopUpContactUsViewModel(_pt,_ds));
+                var popupOptions = new PopupOptions
                 {
+                    CanBeDismissedByTappingOutsideOfPopup = false,
+                    PageOverlayColor = Color.FromArgb("#80000000")
+                };
 
-                    int SupportID = (int)result;
+                IPopupResult<string> popupResult = await Shell.Current.ShowPopupAsync<string>(
+                    popup,
+                    options: popupOptions,
+                    shellParameters: null,
+                    token: CancellationToken.None
+                );
+
+                if (int.TryParse(popupResult.Result, out int SupportID))
+                {
                     Action action = async () =>
                     {
                         await Task.Delay(500);
@@ -131,7 +145,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     await GetSupports();
                     await _pt.MakeSnackBar("We have received your support inquiry", action, "View", new TimeSpan(0, 0, 10), "Success");
                 }
-                else if ((string)result.ToString() == "Closed")
+                else if ((string)popupResult.Result.ToString() == "Closed")
                 {
 
                 }

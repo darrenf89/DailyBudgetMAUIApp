@@ -1,9 +1,8 @@
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.DataServices;
 using Syncfusion.Maui.Scheduler;
-using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.Handlers;
-using DailyBudgetMAUIApp.Models;
+using CommunityToolkit.Maui;
 
 namespace DailyBudgetMAUIApp.Pages
 {
@@ -12,15 +11,17 @@ namespace DailyBudgetMAUIApp.Pages
         private readonly ViewCalendarViewModel _vm;
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
+        private readonly IPopupService _ps;
 
-        public ViewCalendar(ViewCalendarViewModel viewModel, IProductTools pt, IRestDataService ds)        {
-
+        public ViewCalendar(ViewCalendarViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
+        {
             InitializeComponent();
 
             this.BindingContext = viewModel;
             _vm = viewModel;
             _pt = pt;
             _ds = ds;
+            _ps = ps;
         }
 
         protected async override void OnAppearing()
@@ -46,11 +47,7 @@ namespace DailyBudgetMAUIApp.Pages
                 base.OnAppearing();
                 await _vm.LoadData();
 
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
+                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             }
             catch (Exception ex)
             {
@@ -62,13 +59,7 @@ namespace DailyBudgetMAUIApp.Pages
         {
             try
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Task.Delay(500);
 
                 await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");

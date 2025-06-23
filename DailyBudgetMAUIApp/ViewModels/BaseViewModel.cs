@@ -1,8 +1,8 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Pages;
+using static Android.Telephony.CarrierConfigManager;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -45,21 +45,12 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet && !App.IsBackgrounded)
             {
+                IPopupService ps = IPlatformApplication.Current.Services.GetService<IPopupService>();
 
                 //TODO: SHOW POPUP
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
-
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpNoNetwork(new PopUpNoNetworkViewModel());
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
+                if (App.IsPopupShowing) { App.IsPopupShowing = false; await ps.ClosePopupAsync(Application.Current.Windows[0].Page); }
+                ps.ShowPopup<PopUpNoNetwork>(Application.Current.Windows[0].Page, options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
+                App.IsPopupShowing = true;
                 await Task.Delay(1);
 
                 int i = 0;
@@ -78,12 +69,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
                 }
 
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
-
+                if (App.IsPopupShowing) { App.IsPopupShowing = false; await ps.ClosePopupAsync(Application.Current.Windows[0].Page); }
             }
         }
     }

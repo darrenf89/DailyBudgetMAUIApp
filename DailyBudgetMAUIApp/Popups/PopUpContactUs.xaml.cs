@@ -1,12 +1,10 @@
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.Messaging;
 using DailyBudgetMAUIApp.ViewModels;
-using Microsoft.Maui.Controls;
-
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopUpContactUs : Popup
+public partial class PopUpContactUs : Popup<string>
 {
     private bool IsFirstLoad = true;
 
@@ -25,7 +23,7 @@ public partial class PopUpContactUs : Popup
             {
                 if(m._isSuccess)
                 {
-                    this.CloseAsync(m._supportID);
+                    this.CloseAsync(m._supportID.ToString());
                 }
                 else
                 {

@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
@@ -18,14 +19,16 @@ public partial class EditAccountSettings : BasePage
 
     private readonly EditAccountSettingsViewModel _vm;
     private readonly IProductTools _pt;
+    private readonly IPopupService _ps;
 
-    public EditAccountSettings(EditAccountSettingsViewModel viewModel, IProductTools pt)
+    public EditAccountSettings(EditAccountSettingsViewModel viewModel, IProductTools pt, IPopupService ps)
 	{
 		InitializeComponent();      
 
         this.BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
+        _ps = ps;
 
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 140;
@@ -56,11 +59,7 @@ public partial class EditAccountSettings : BasePage
                 BudgetVisibility.IsVisible = false;
             }
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
         }
         catch (Exception ex)
         {
@@ -93,12 +92,7 @@ public partial class EditAccountSettings : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
             if (App.CurrentBottomSheet != null)
             {

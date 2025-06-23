@@ -3,38 +3,30 @@ using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Models;
 using System.Globalization;
 using DailyBudgetMAUIApp.DataServices;
-using System.Threading.Tasks;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupDailyAllowance : Popup
+public partial class PopupDailyAllowance : Popup<Object>
 {
     private readonly PopupDailyAllowanceViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    private readonly string _Type;
-    private readonly int _UserID;
 
-    public PopupDailyAllowance(Budgets Budget, int UserID, string Type, string NickName, PopupDailyAllowanceViewModel viewModel, IProductTools pt, IRestDataService ds)
+    public PopupDailyAllowance(PopupDailyAllowanceViewModel viewModel, IProductTools pt, IRestDataService ds)
     {
         InitializeComponent();
-
-        viewModel.Budget = Budget;
-        viewModel.NickName = NickName;
-
-        _Type = Type;
-        _UserID = UserID;
 
         BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
 
-        Opened += PopupDailyAllowance_Opened;
+        Loaded += async (s, e) => await Load();
     }
 
-    private void PopupDailyAllowance_Opened(object sender, EventArgs e)
+    private async Task Load()
     {
+        await Task.Delay(1);
         _vm.OriginalDate = _vm.Budget.NextIncomePayday.GetValueOrDefault();
         _vm.OriginalAmount = _vm.Budget.PaydayAmount.GetValueOrDefault();
 
@@ -47,7 +39,7 @@ public partial class PopupDailyAllowance : Popup
         string NextIncomePayday = _vm.Budget.NextIncomePayday.GetValueOrDefault().ToShortDateString();
         lblNextIncomePayday.Text = NextIncomePayday;
 
-        if (_Type == "Parent")
+        if (_vm.Type == "Parent")
         {
             lblTitle.Text = $"Time to pay {_vm.NickName} their allowance!";
 
@@ -62,7 +54,7 @@ public partial class PopupDailyAllowance : Popup
 
             _vm.TextTwo = $"If this isn't the correct amount or the correct date you can update and correct the allowance now. If your are no longer paying an allowance to {_vm.NickName} and they aren't using their account you can deactivate the account!";
         }
-        else if( _Type == "ParentProcessed")
+        else if(_vm.Type == "ParentProcessed")
         {
             lblTitle.Text = $"You need to pay {_vm.NickName} their allowance!";
 
@@ -90,9 +82,9 @@ public partial class PopupDailyAllowance : Popup
         _vm.Budget.PaydayAmount = PayDayAmount;
     }
 
-    private void Close_Saving(object sender, EventArgs e)
+    private async void Close_Saving(object sender, EventArgs e)
     {
-        this.Close("OK");
+        await CloseAsync("OK");
     }
 
     private async void Deactivate_account(object sender, EventArgs e)
@@ -112,9 +104,9 @@ public partial class PopupDailyAllowance : Popup
 
             UpdateUserDetails.Add(IsActive);
 
-            await _ds.PatchFamilyUserAccount(_UserID, UpdateUserDetails);
+            await _ds.PatchFamilyUserAccount(_vm.UserID, UpdateUserDetails);
 
-            this.Close("DEACTIVATE");
+            await CloseAsync("DEACTIVATE");
         }               
     }
 
@@ -188,7 +180,7 @@ public partial class PopupDailyAllowance : Popup
 
             await _ds.PatchBudget(_vm.Budget.BudgetID, UpdateBudget);
 
-            this.Close(_vm.Budget);
+            await CloseAsync(_vm.Budget);
         }
     }
 

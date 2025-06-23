@@ -1,25 +1,30 @@
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Models;
 using System.Globalization;
 using DailyBudgetMAUIApp.DataServices;
 
+
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupDailySaving : Popup
+public partial class PopupDailySaving : Popup<Object>
 {
     private readonly PopupDailySavingViewModel _vm;
     private readonly IProductTools _pt;
 
-    public PopupDailySaving(Savings Saving, PopupDailySavingViewModel viewModel, IProductTools pt)
+    public PopupDailySaving(PopupDailySavingViewModel viewModel, IProductTools pt)
 	{
         InitializeComponent();
-
-        viewModel.Saving = Saving;
 
         BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
+
+        Loaded += async (s, e) => await Load();
+    }
+
+    private async Task Load()
+    {
+        await Task.Delay(1);
 
         _vm.OriginalDate = _vm.Saving.GoalDate.GetValueOrDefault();
         _vm.OriginalTarget = _vm.Saving.SavingsGoal.GetValueOrDefault();
@@ -63,14 +68,14 @@ public partial class PopupDailySaving : Popup
         _vm.Saving.RegularSavingValue = SavingValue;
     }
 
-    private void Close_Saving(object sender, EventArgs e)
+    private async void Close_Saving(object sender, EventArgs e)
     {
-        this.Close("OK");
+        await CloseAsync("OK");
     }
 
-    private void DeleteYes_Saving(object sender, EventArgs e)
+    private async void DeleteYes_Saving(object sender, EventArgs e)
     {
-        this.Close("Delete");
+        await CloseAsync("Delete");
     }
 
     private void DeleteNo_Saving(object sender, EventArgs e)
@@ -197,7 +202,7 @@ public partial class PopupDailySaving : Popup
         return IsValid;
     }
 
-    private void AcceptUpdate_Saving(object sender, EventArgs e)
+    private async void AcceptUpdate_Saving(object sender, EventArgs e)
     {
         if(ValidatePage())
         {
@@ -224,7 +229,7 @@ public partial class PopupDailySaving : Popup
                 }
             }
 
-            this.Close(_vm.Saving);
+            await CloseAsync(_vm.Saving);
         }
     }
 

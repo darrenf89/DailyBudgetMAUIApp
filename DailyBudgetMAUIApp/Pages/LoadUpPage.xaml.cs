@@ -1,14 +1,15 @@
-using AndroidX.Core.View;
+using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.ViewModels;
-
 
 namespace DailyBudgetMAUIApp.Pages;
 
 public partial class LoadUpPage : BasePage
 {
-	public LoadUpPage(LoadUpPageViewModel viewModel)
+    private readonly IPopupService _ps;
+    public LoadUpPage(LoadUpPageViewModel viewModel, IPopupService ps)
 	{
-		InitializeComponent();
+        _ps = ps;
+        InitializeComponent();
 		this.BindingContext = viewModel;
 
     }
@@ -17,11 +18,7 @@ public partial class LoadUpPage : BasePage
     {
         base.OnAppearing();
 
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
-        }
+        if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
     }
 
 

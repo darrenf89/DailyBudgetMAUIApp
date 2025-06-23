@@ -1,9 +1,8 @@
-using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
 using Microsoft.Maui.Controls.Shapes;
-using System.Collections.ObjectModel;
 
 
 namespace DailyBudgetMAUIApp.Handlers;
@@ -11,11 +10,13 @@ namespace DailyBudgetMAUIApp.Handlers;
 public partial class BudgetPayeeChart : ContentView
 {
     private readonly IRestDataService _ds;
+    private readonly IPopupService _ps;
     public int CurrentPayeeOffset = 0;
 
     public BudgetPayeeChart()
     {
         _ds = IPlatformApplication.Current.Services.GetService<IRestDataService>();
+        _ps = IPlatformApplication.Current.Services.GetService<IPopupService>();
         IsBusy = false;
         PayeeList = new List<Payees>();
         InitializeComponent();
@@ -118,9 +119,7 @@ public partial class BudgetPayeeChart : ContentView
             TapGesture.NumberOfTapsRequired = 1;
             TapGesture.Tapped += async (s, e) =>
             {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Task.Delay(1000);
                 FilterModel Filters = new FilterModel
                 {

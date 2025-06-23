@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.Converters;
@@ -17,6 +17,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
         private readonly INotificationPermissions _notificationPermissions;
+        private readonly IPopupService _ps;
 
         [ObservableProperty]
         public partial UserDetailsModel User { get; set; }
@@ -122,10 +123,11 @@ namespace DailyBudgetMAUIApp.ViewModels
 
 
 
-        public EditAccountSettingsViewModel(IProductTools pt, IRestDataService ds, INotificationPermissions notificationPermissions)
+        public EditAccountSettingsViewModel(IProductTools pt, IRestDataService ds, INotificationPermissions notificationPermissions, IPopupService ps)
         {
             _pt = pt;
             _ds = ds;
+            _ps = ps;
             _notificationPermissions = notificationPermissions;
         }
 
@@ -203,13 +205,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Task.Delay(500);
 
                 await Shell.Current.GoToAsync($"..");
@@ -270,13 +266,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     bool UpdatePassword = await Application.Current.Windows[0].Page.DisplayAlert($"Are you sure you want to update your password?", $"Forgot your current password and you can reset it from the logon screen using your email", "Yes", "No");
                     if (UpdatePassword)
                     {
-                        if (App.CurrentPopUp == null)
-                        {
-                            var PopUp = new PopUpPage();
-                            App.CurrentPopUp = PopUp;
-                            Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                        }
-
+                        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                         await Task.Delay(1);
 
                         string salt = App.IsFamilyAccount ? await _ds.GetFamilyUserSaltAsync(App.FamilyUserDetails.Email) : await _ds.GetUserSaltAsync(App.UserDetails.Email);
@@ -378,11 +368,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                 }
 
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
+                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             }
             catch (Exception ex)
             {
@@ -690,12 +676,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
+
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Task.Delay(1);
 
                 await Shell.Current.GoToAsync($"//{(App.IsFamilyAccount ? nameof(FamilyAccountMainPage) : nameof(MainPage))}");

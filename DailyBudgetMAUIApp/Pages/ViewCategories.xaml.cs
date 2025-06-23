@@ -1,11 +1,10 @@
-using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.ViewModels;
 using Syncfusion.Maui.Carousel;
-using Syncfusion.Maui.ListView;
 using The49.Maui.BottomSheet;
 
 
@@ -42,13 +41,15 @@ public partial class ViewCategories : BasePage
     private readonly IRestDataService _ds;
 	private readonly ViewCategoriesViewModel _vm;
     private readonly IDispatcherTimer _timer;
+    private readonly IPopupService _ps;
 
-    public ViewCategories(ViewCategoriesViewModel viewModel, IProductTools pt, IRestDataService ds)
+    public ViewCategories(ViewCategoriesViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
 	{
         this.BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
+        _ps = ps;
 
         InitializeComponent();
 
@@ -89,12 +90,7 @@ public partial class ViewCategories : BasePage
             await _vm.OnLoad();
 
             var size = _vm.ScreenWidth / 170;
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
-
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             _vm.IsPageBusy = false;
         }
         catch (Exception ex)
@@ -182,13 +178,7 @@ public partial class ViewCategories : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
         }
         catch (Exception ex)
@@ -201,10 +191,7 @@ public partial class ViewCategories : BasePage
     {
         try
         {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.Windows[0].Page.ShowPopup(PopUp);
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             Categories Category = (Categories)e.Parameter;
 
             if(Category.CategoryID == -1)
@@ -221,12 +208,7 @@ public partial class ViewCategories : BasePage
 
                 App.CurrentBottomSheet = page;
 
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
-
+                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
                 await page.ShowAsync();
             }
             else

@@ -1,4 +1,3 @@
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DailyBudgetMAUIApp.Models;
 using System.Collections.ObjectModel;
@@ -6,7 +5,7 @@ using System.Globalization;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupMoveBalanceViewModel : BaseViewModel
+    public partial class PopupMoveBalanceViewModel : BaseViewModel, IQueryAttributable
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -59,6 +58,13 @@ namespace DailyBudgetMAUIApp.ViewModels
         public partial Budgets Budget { get; set; }
 
         [ObservableProperty]
+        public partial string Type { get; set; }
+        [ObservableProperty]
+        public partial int Id { get; set; }
+        [ObservableProperty]
+        public partial bool IsCoverOverSpend { get; set; }
+
+        [ObservableProperty]
         public partial ObservableCollection<MoveBalanceClass> MoveBalances { get; set; } = new();
 
 
@@ -68,6 +74,29 @@ namespace DailyBudgetMAUIApp.ViewModels
             ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             PopupWidth = ScreenWidth - 30;
             EntryWidth = PopupWidth * 0.6;
+        }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue(nameof(Budget), out var budget) && budget is Budgets b)
+            {
+                Budget = b;
+            }
+
+            if (query.TryGetValue(nameof(Type), out var type) && type is string t)
+            {
+                Type = t;
+            }
+
+            if (query.TryGetValue(nameof(Id), out var id) && id is int i)
+            {
+                Id = i;
+            }
+
+            if (query.TryGetValue(nameof(IsCoverOverSpend), out var overSpend) && overSpend is bool cover)
+            {
+                IsCoverOverSpend = cover;
+            }
         }
 
         partial void OnFromSelectedMoveBalanceChanged(MoveBalanceClass oldValue, MoveBalanceClass newValue)

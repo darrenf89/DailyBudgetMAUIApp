@@ -158,24 +158,24 @@ public static class MauiProgram
         builder.Services.AddTransient<FamilyAccountsEditViewModel>();
 
         //Popups
-        builder.Services.AddTransient<PopUpPage>();
-        builder.Services.AddTransient<PopUpPageSingleInput, PopUpPageSingleInputViewModel>();
-        builder.Services.AddTransient<PopupInfo>();
-        builder.Services.AddTransient<PopUpOTP, PopUpOTPViewModel>();
-        builder.Services.AddTransient<PopupDailySaving, PopupDailySavingViewModel>();
-        builder.Services.AddTransient<PopupDailyBill, PopupDailyBillViewModel>();
-        builder.Services.AddTransient<PopupDailyPayDay, PopupDailyPayDayViewModel>();
-        builder.Services.AddTransient<PopupDailyIncome, PopupDailyIncomeViewModel>();
-        builder.Services.AddTransient<PopupDailyTransaction, PopupDailyTransactionViewModel>();
-        builder.Services.AddTransient<PopupReassignCategories, PopupReassignCategoriesViewModel>();
-        builder.Services.AddTransient<PopupEditNextPayInfo, PopupEditNextPayInfoViewModel>();
-        builder.Services.AddTransient<PopupMoveBalance, PopupMoveBalanceViewModel>();
-        builder.Services.AddTransient<LoadingPage>();
-        builder.Services.AddTransient<LoadingPageTwo>();
-        builder.Services.AddTransient<PopUpNoNetwork, PopUpNoNetworkViewModel>();
-        builder.Services.AddTransient<PopUpNoServer, PopUpNoServerViewModel>();
-        builder.Services.AddTransient<PopupMoveAccountBalance, PopupMoveAccountBalanceViewModel>();
-        builder.Services.AddTransient<PopupDailyAllowance, PopupDailyAllowanceViewModel>();
+        builder.Services.AddSingleton<PopUpPage>();
+        builder.Services.AddTransientPopup<PopUpPageSingleInput, PopUpPageSingleInputViewModel>();
+        builder.Services.AddTransientPopup<PopupInfo>();
+        builder.Services.AddTransientPopup<PopUpOTP, PopUpOTPViewModel>();
+        builder.Services.AddTransientPopup<PopupDailySaving, PopupDailySavingViewModel>();
+        builder.Services.AddTransientPopup<PopupDailyBill, PopupDailyBillViewModel>();
+        builder.Services.AddTransientPopup<PopupDailyPayDay, PopupDailyPayDayViewModel>();
+        builder.Services.AddTransientPopup<PopupDailyIncome, PopupDailyIncomeViewModel>();
+        builder.Services.AddTransientPopup<PopupDailyTransaction, PopupDailyTransactionViewModel>();
+        builder.Services.AddTransientPopup<PopupReassignCategories, PopupReassignCategoriesViewModel>();
+        builder.Services.AddTransientPopup<PopupEditNextPayInfo, PopupEditNextPayInfoViewModel>();
+        builder.Services.AddTransientPopup<PopupMoveBalance, PopupMoveBalanceViewModel>();
+        builder.Services.AddTransientPopup<LoadingPage>();
+        builder.Services.AddTransientPopup<LoadingPageTwo>();
+        builder.Services.AddTransientPopup<PopUpNoNetwork, PopUpNoNetworkViewModel>();
+        builder.Services.AddTransientPopup<PopUpNoServer, PopUpNoServerViewModel>();
+        builder.Services.AddTransientPopup<PopupMoveAccountBalance, PopupMoveAccountBalanceViewModel>();
+        builder.Services.AddTransientPopup<PopupDailyAllowance, PopupDailyAllowanceViewModel>();
 
         //BottomSheets
         builder.Services.AddTransient<ViewTransactionFilterBottomSheet>();

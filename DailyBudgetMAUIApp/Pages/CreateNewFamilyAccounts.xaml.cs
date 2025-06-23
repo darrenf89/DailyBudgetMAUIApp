@@ -1,13 +1,11 @@
-using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
-using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using Plugin.LocalNotification;
 using Syncfusion.Maui.Core;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -15,6 +13,7 @@ public partial class CreateNewFamilyAccounts : BasePage
 {
     private readonly CreateNewFamilyAccountsViewModel _vm;
     private readonly IProductTools _pt;
+    private readonly IPopupService _ps;
 
     public string _updatedAvatar = "";
     public string UpdatedAvatar
@@ -61,12 +60,13 @@ public partial class CreateNewFamilyAccounts : BasePage
         }
     }
 
-    public CreateNewFamilyAccounts(CreateNewFamilyAccountsViewModel vm, IProductTools pt)
+    public CreateNewFamilyAccounts(CreateNewFamilyAccountsViewModel vm, IProductTools pt, IPopupService ps)
     {
         InitializeComponent();
         _vm = vm;
         _pt = pt;
-        BindingContext = _vm;        
+        BindingContext = _vm;
+        _ps = ps;
     }
 
     protected async override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -103,11 +103,7 @@ public partial class CreateNewFamilyAccounts : BasePage
 
             UpdateSelectedOption(_vm.Budget.PaydayType);
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
         }
         catch (Exception ex)
         {
@@ -145,8 +141,21 @@ public partial class CreateNewFamilyAccounts : BasePage
                 "It is also worth knowing that your BankBalance is not always what you have to spend, you have to take into account savings, bills and any other income!, We will use other terms along with Bank Balance to describe your budgets state - MaB (Money available Balance) & LtSB (Left to Spend Balance)"
             };
 
-            var popup = new PopupInfo("Bank Balance", SubTitle, Info);
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            var queryAttributes = new Dictionary<string, object>
+            {
+                [nameof(PopupInfo.Info)] = Info,
+                [nameof(PopupInfo.SubTitles)] = SubTitle,
+                [nameof(PopupInfo.TitleText)] = "Bank Balance"
+
+            };
+
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = true,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -191,8 +200,21 @@ public partial class CreateNewFamilyAccounts : BasePage
                 "The \"When is Pay Day?\" field in our app is essential for establishing your financial starting point. By entering the exact date of your next payday—whether it's tomorrow, next week, or next month—you enable the app to accurately calculate your initial budget values. This initial input, combined with your other budget details, sets the foundation for a personalized budgeting experience. Subsequently, the app uses the pay frequency information you've provided to determine future pay dates, ensuring that your budget aligns seamlessly with your income schedule from that point onward."
             };
 
-            var popup = new PopupInfo("When is Pay day?", SubTitle, Info);
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            var queryAttributes = new Dictionary<string, object>
+            {
+                [nameof(PopupInfo.Info)] = Info,
+                [nameof(PopupInfo.SubTitles)] = SubTitle,
+                [nameof(PopupInfo.TitleText)] = "When is Pay day?"
+
+            };
+
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = true,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -225,8 +247,21 @@ public partial class CreateNewFamilyAccounts : BasePage
                 "By customizing your pay frequency and budget cycle, you gain greater control over your financial planning, allowing for a budgeting experience that truly reflects your income dynamics.",
             };
 
-            var popup = new PopupInfo("How do you get paid?", SubTitle, Info);
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            var queryAttributes = new Dictionary<string, object>
+            {
+                [nameof(PopupInfo.Info)] = Info,
+                [nameof(PopupInfo.SubTitles)] = SubTitle,
+                [nameof(PopupInfo.TitleText)] = "How do you get paid?"
+
+            };
+
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = true,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {

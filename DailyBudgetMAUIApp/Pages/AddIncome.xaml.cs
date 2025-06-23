@@ -1,11 +1,14 @@
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Popups;
-using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.ViewModels;
 using System.Globalization;
 using System.Text.RegularExpressions;
+
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -15,7 +18,8 @@ public partial class AddIncome : BasePage
     private readonly AddIncomeViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    public AddIncome(AddIncomeViewModel viewModel, IProductTools pt, IRestDataService ds)
+    private readonly IPopupService _ps;
+    public AddIncome(AddIncomeViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
 	{
         InitializeComponent();
 
@@ -23,17 +27,13 @@ public partial class AddIncome : BasePage
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
+        _ps = ps;
 
     }
 
     protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.Windows[0].Page.ShowPopup(PopUp);
-        }
+        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
         _vm.IsPageBusy = false;
 
@@ -145,11 +145,7 @@ public partial class AddIncome : BasePage
 
             base.OnAppearing();
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
         }
         catch (Exception ex)
         {
@@ -535,18 +531,37 @@ public partial class AddIncome : BasePage
 
     private async Task<string> ChangeIncomeName()
     {
-
         string Description = "Every income needs a name, we will refer to it by the name you give it and this will make it easier to identify!";
         string DescriptionSub = "Call it something useful or call it something silly up to you really!";
-        var popup = new PopUpPageSingleInput("Income Name", Description, DescriptionSub, "Enter an Income name!", _vm.Income.IncomeName, new PopUpPageSingleInputViewModel());
-        var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
-        if (result != null || (string)result != "")
+        var queryAttributes = new Dictionary<string, object>
         {
-            _vm.Income.IncomeName = (string)result;
+            [nameof(PopUpPageSingleInputViewModel.Description)] = Description,
+            [nameof(PopUpPageSingleInputViewModel.DescriptionSub)] = DescriptionSub,
+            [nameof(PopUpPageSingleInputViewModel.InputTitle)] = "Income Name",
+            [nameof(PopUpPageSingleInputViewModel.Placeholder)] = "Enter an Income name!",
+            [nameof(PopUpPageSingleInputViewModel.Input)] = _vm.Income.IncomeName
+        };
+
+        var popupOptions = new PopupOptions
+        {
+            CanBeDismissedByTappingOutsideOfPopup = false,
+            PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+        };
+
+        IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageSingleInput, object>(
+            Shell.Current,
+            options: popupOptions,
+            shellParameters: queryAttributes,
+            cancellationToken: CancellationToken.None
+        );
+
+        if (popupResult.Result != null || (string)popupResult.Result != "")
+        {
+            _vm.Income.IncomeName = (string)popupResult.Result;
         }
 
-        return (string)result;
+        return (string)popupResult.Result;
     }
 
     private async void AddIncome_Clicked(object sender, EventArgs e)

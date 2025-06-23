@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -5,24 +6,21 @@ namespace DailyBudgetMAUIApp.Pages;
 public partial class NoServerAccess : BasePage
 {
     private readonly NoServerAccessViewModel _vm;
-    public NoServerAccess(NoServerAccessViewModel viewModel)
+    private readonly IPopupService _ps;
+    public NoServerAccess(NoServerAccessViewModel viewModel, IPopupService ps)
 	{
         this.BindingContext = viewModel;
         InitializeComponent();
 
         _vm = viewModel;
+        _ps = ps;
     }
 
     protected async override void OnAppearing()
     {
         try
         {
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
-
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             if (App.UserDetails is not null && App.UserDetails.SessionExpiry > DateTime.UtcNow)
             {
                 _vm.TxtButton = "Get back to budgeting!";

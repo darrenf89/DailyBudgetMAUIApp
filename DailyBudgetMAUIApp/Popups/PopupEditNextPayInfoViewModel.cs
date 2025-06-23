@@ -1,10 +1,9 @@
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupEditNextPayInfoViewModel : BaseViewModel
+    public partial class PopupEditNextPayInfoViewModel : BaseViewModel, IQueryAttributable
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -25,8 +24,6 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         public partial Budgets Budget { get; set; }
-
-
         public PopupEditNextPayInfoViewModel()
         {
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
@@ -38,10 +35,12 @@ namespace DailyBudgetMAUIApp.ViewModels
             ButtonThreeWidth = ((PopupWidth - 260) / 2);
 
         }
-
-
-
-
-
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue("Budget", out var budgetObj) && budgetObj is Budgets budget)
+            {
+                Budget = budget;
+            }
+        }
     }
 }

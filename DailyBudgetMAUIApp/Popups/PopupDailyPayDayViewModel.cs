@@ -4,7 +4,7 @@ using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupDailyPayDayViewModel : BaseViewModel
+    public partial class PopupDailyPayDayViewModel : BaseViewModel, IQueryAttributable
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -20,6 +20,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         public partial Budgets Budget { get; set; }
 
+        [ObservableProperty]
+        public partial bool IsPayNow { get; set; }
+
         public PopupDailyPayDayViewModel()
         {
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
@@ -32,9 +35,17 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue(nameof(Budget), out var budget) && budget is Budgets b)
+            {
+                Budget = b;
+            }
 
-
-
-
+            if (query.TryGetValue(nameof(IsPayNow), out var isPayNow) && isPayNow is bool payNow)
+            {
+                IsPayNow = payNow;
+            }
+        }
     }
 }

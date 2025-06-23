@@ -1,10 +1,9 @@
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupSyncBankBalanceViewModel : BaseViewModel
+    public partial class PopupSyncBankBalanceViewModel : BaseViewModel, IQueryAttributable
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -35,9 +34,12 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
-
-
-
-
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue("Budget", out var budgetObj) && budgetObj is Budgets budget)
+            {
+                Budget = budget;
+            }
+        }
     }
 }

@@ -1,9 +1,10 @@
 using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopUpPage : Popup
-{
+public partial class PopUpPage
+{    
 	public PopUpPage()
 	{
 		InitializeComponent();

@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
@@ -11,6 +12,7 @@ namespace DailyBudgetMAUIApp.Pages;
 public partial class SelectPayeePage : BasePage
 {
 	private readonly IRestDataService _ds;
+	private readonly IPopupService _ps;
 	private readonly IProductTools _pt;
 	private readonly SelectPayeePageViewModel _vm;
     private IDispatcherTimer _payeeSearchTimer;
@@ -20,10 +22,11 @@ public partial class SelectPayeePage : BasePage
     public double ScreenHeight { get; set; }
     public string LastSearchPayee { get; set; } = "";
 
-    public SelectPayeePage(IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel)
+    public SelectPayeePage(IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel, IPopupService ps)
     {
         _ds = ds;
         _pt = pt;
+        _ps = ps;
 
         InitializeComponent();
 
@@ -105,12 +108,7 @@ public partial class SelectPayeePage : BasePage
     {
 
         base.OnNavigatedTo(args);
-
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
-        }
+        if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
     }
 
     private void acrPayeeName_Tapped(object sender, TappedEventArgs e)
@@ -159,12 +157,7 @@ public partial class SelectPayeePage : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
             if (_vm.PageType == "ViewList")
             {

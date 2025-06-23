@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -5,24 +6,21 @@ namespace DailyBudgetMAUIApp.Pages;
 public partial class ErrorPage : BasePage
 {
     private readonly ErrorPageViewModel _vm;
-    public ErrorPage(ErrorPageViewModel viewModel)
+    private readonly IPopupService _ps;
+    public ErrorPage(ErrorPageViewModel viewModel, IPopupService ps)
 	{
 		InitializeComponent();
         this.BindingContext = viewModel;
         _vm = viewModel;
+        _ps = ps;
     }
 
     protected async override void OnAppearing()
     {
         try 
         {
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
-
-            if(_vm.Error is not null && _vm.Error.ErrorLogID != 0)
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            if (_vm.Error is not null && _vm.Error.ErrorLogID != 0)
             {
                  _vm.TxtErrorMessage = _vm.Error.ErrorMessage;
             }

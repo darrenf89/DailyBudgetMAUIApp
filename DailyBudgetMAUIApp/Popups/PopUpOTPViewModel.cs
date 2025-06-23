@@ -5,7 +5,7 @@ using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopUpOTPViewModel : BaseViewModel
+    public partial class PopUpOTPViewModel : BaseViewModel, IQueryAttributable
     {
         [ObservableProperty]
         public partial int UserID { get; set; }
@@ -129,6 +129,19 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             _ds = ds;
             _pt = pt;
+        }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue(nameof(UserID), out var userId) && userId is int id)
+            {
+                UserID = id;
+            }
+
+            if (query.TryGetValue(nameof(OTPType), out var otpType) && otpType is string otp)
+            {
+                OTPType = otp;
+            }
         }
 
         private async Task ClearClipboard() =>

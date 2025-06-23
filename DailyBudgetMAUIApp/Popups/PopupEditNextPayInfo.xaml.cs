@@ -6,22 +6,26 @@ using DailyBudgetMAUIApp.DataServices;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupEditNextPayInfo : Popup
+public partial class PopupEditNextPayInfo : Popup<Object>
 {
     private readonly PopupEditNextPayInfoViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
 
-    public PopupEditNextPayInfo(Budgets Budget, PopupEditNextPayInfoViewModel viewModel, IProductTools pt, IRestDataService ds)
+    public PopupEditNextPayInfo(PopupEditNextPayInfoViewModel viewModel, IProductTools pt, IRestDataService ds)
 	{
-        InitializeComponent();
-
-        viewModel.Budget = Budget;        
+        InitializeComponent();      
 
         BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
+
+        Loaded += async (s, e) => await Load();
+    }
+    private async Task Load()
+    {
+        await Task.Delay(1);
 
         _vm.OriginalDate = _vm.Budget.NextIncomePayday.GetValueOrDefault();
         _vm.OriginalAmount = _vm.Budget.PaydayAmount.GetValueOrDefault();
@@ -32,7 +36,7 @@ public partial class PopupEditNextPayInfo : Popup
         hslNextIncomePayday.IsVisible = true;
 
         double PayDayAmount = (double?)_vm.Amount ?? 0;
-        entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);   
+        entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
     }
 
     void PayDayAmount_Changed(object sender, TextChangedEventArgs e)
@@ -76,7 +80,7 @@ public partial class PopupEditNextPayInfo : Popup
         return IsValid;
     }
 
-    private void AcceptUpdate_Saving(object sender, EventArgs e)
+    private async void AcceptUpdate_Saving(object sender, EventArgs e)
     {
         try
         {
@@ -102,22 +106,22 @@ public partial class PopupEditNextPayInfo : Popup
 
                 BudgetUpdate.Add(NextIncomePayday);
 
-                _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+                await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
 
                 App.DefaultBudget.NextIncomePayday = _vm.Date.Date;
                 App.DefaultBudget.PaydayAmount = _vm.Amount;
-                this.Close(_vm.Budget);
+                await CloseAsync(_vm.Budget);
             }
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "PopupEditNextPayInfo", "AcceptUpdate_Saving");
+            await _pt.HandleException(ex, "PopupEditNextPayInfo", "AcceptUpdate_Saving");
         }
     }
 
-    private void CancelUpdate_Saving(object sender, EventArgs e)
+    private async void CancelUpdate_Saving(object sender, EventArgs e)
     {
-        this.Close("Closed");
+        await CloseAsync("Closed");
     }
 
     private void Reset_Saving(object sender, EventArgs e)

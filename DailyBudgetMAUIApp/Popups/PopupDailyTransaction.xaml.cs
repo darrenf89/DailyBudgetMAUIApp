@@ -1,25 +1,29 @@
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Models;
 using System.Globalization;
 using DailyBudgetMAUIApp.DataServices;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupDailyTransaction : Popup
+public partial class PopupDailyTransaction : Popup<Object>
 {
     private readonly PopupDailyTransactionViewModel _vm;
     private readonly IProductTools _pt;
 
-    public PopupDailyTransaction(Transactions Transaction, PopupDailyTransactionViewModel viewModel, IProductTools pt)
+    public PopupDailyTransaction(PopupDailyTransactionViewModel viewModel, IProductTools pt)
 	{
         InitializeComponent();
-
-        viewModel.Transaction = Transaction;
 
         BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
+
+        Loaded += async (s, e) => await Load();   
+    }
+
+    private async Task Load()
+    {
+        await Task.Delay(1);
 
         _vm.OriginalDate = _vm.Transaction.TransactionDate.GetValueOrDefault();
         _vm.OriginalAmount = _vm.Transaction.TransactionAmount.GetValueOrDefault();
@@ -32,7 +36,6 @@ public partial class PopupDailyTransaction : Popup
 
         string GoalDate = _vm.Transaction.TransactionDate.GetValueOrDefault().ToShortDateString();
         lblTargetDate.Text = GoalDate;
-   
     }
 
     void TransactionAmount_Changed(object sender, TextChangedEventArgs e)
@@ -44,12 +47,12 @@ public partial class PopupDailyTransaction : Popup
 
     private void Close_Saving(object sender, EventArgs e)
     {
-        this.Close("OK");
+        CloseAsync("OK");
     }
 
     private void DeleteYes_Saving(object sender, EventArgs e)
     {
-        this.Close("Delete");
+        CloseAsync("Delete");
     }
 
     private void DeleteNo_Saving(object sender, EventArgs e)
@@ -122,8 +125,8 @@ public partial class PopupDailyTransaction : Popup
     private void AcceptUpdate_Saving(object sender, EventArgs e)
     {
         if(ValidatePage())
-        {           
-            this.Close(_vm.Transaction);
+        {
+            CloseAsync(_vm.Transaction);
         }
     }
 

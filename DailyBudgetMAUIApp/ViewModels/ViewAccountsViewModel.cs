@@ -2,12 +2,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DailyBudgetMAUIApp.Models;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Pages;
 using System.Globalization;
 using The49.Maui.BottomSheet;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -15,6 +16,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
+        private readonly IPopupService _ps;
 
         [ObservableProperty]
         public partial List<BankAccounts> BankAccounts { get; set; } = new List<BankAccounts>();
@@ -29,10 +31,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         public partial int AccountCount { get; set; }
 
 
-        public ViewAccountsViewModel(IProductTools pt, IRestDataService ds)
+        public ViewAccountsViewModel(IProductTools pt, IRestDataService ds, IPopupService ps)
         {
             _ds = ds;
             _pt = pt;
+            _ps = ps;
 
             double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             SignOutButtonWidth = ScreenWidth - 60;
@@ -56,7 +59,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                MultipleAccountsBottomSheet page = new MultipleAccountsBottomSheet(_pt, _ds);
+                MultipleAccountsBottomSheet page = new MultipleAccountsBottomSheet(_pt, _ds, _ps);
 
                 page.Detents = new DetentsCollection()
                 {
@@ -69,11 +72,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 App.CurrentBottomSheet = page;
 
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
+                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
 
                 await page.ShowAsync();
             }
@@ -93,12 +92,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 if (result)
                 {
-                    if (App.CurrentPopUp == null)
-                    {
-                        var PopUp = new PopUpPage();
-                        App.CurrentPopUp = PopUp;
-                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                    }
+                    if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
 
                     Transactions T = new Transactions
                     {
@@ -171,10 +165,28 @@ namespace DailyBudgetMAUIApp.ViewModels
                 }
 
                 BankAccounts Account = (BankAccounts)parameter;
-                var popup = new PopupMoveAccountBalance(Account, this.BankAccounts, new PopupMoveAccountBalanceViewModel(), _pt, _ds);
-                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+
+                var queryAttributes = new Dictionary<string, object>
+                {
+                    [nameof(PopupMoveAccountBalanceViewModel.ToAccount)] = Account,
+                    [nameof(PopupMoveAccountBalanceViewModel.FromAccounts)] = this.BankAccounts
+                };
+
+                var popupOptions = new PopupOptions
+                {
+                    CanBeDismissedByTappingOutsideOfPopup = false,
+                    PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                };
+
+                IPopupResult<string> popupResult = await _ps.ShowPopupAsync<PopupMoveAccountBalance, string>(
+                    Shell.Current,
+                    options: popupOptions,
+                    shellParameters: queryAttributes,
+                    cancellationToken: CancellationToken.None
+                );
+
                 await Task.Delay(100);
-                if (result.ToString() == "OK")
+                if (popupResult.Result == "OK")
                 {
                     await GetBankAccountDetails();
                 }
@@ -190,7 +202,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             try
             {
                 BankAccounts Account = (BankAccounts)parameter;
-                MultipleAccountsBottomSheet page = new MultipleAccountsBottomSheet(_pt, _ds);
+                MultipleAccountsBottomSheet page = new MultipleAccountsBottomSheet(_pt, _ds, _ps);
 
                 page.Detents = new DetentsCollection()
                 {
@@ -203,12 +215,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 App.CurrentBottomSheet = page;
 
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
-
+                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
                 await page.ShowAsync();
             }
             catch (Exception ex)

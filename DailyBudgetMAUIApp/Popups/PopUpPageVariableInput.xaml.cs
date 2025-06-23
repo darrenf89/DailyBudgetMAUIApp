@@ -1,17 +1,18 @@
+using AndroidX.Lifecycle;
 using CommunityToolkit.Maui.Views;
-using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.ViewModels;
 using System.Globalization;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopUpPageVariableInput : Popup
+public partial class PopUpPageVariableInput : Popup<Object>
 {
     private readonly PopUpPageVariableInputViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
 
-    public PopUpPageVariableInput(string Title, string Description, string DescriptionSub, string Placeholder, object Input, string Type, PopUpPageVariableInputViewModel viewModel)
+    public PopUpPageVariableInput(PopUpPageVariableInputViewModel viewModel)
     {
         _pt = IPlatformApplication.Current.Services.GetService<IProductTools>();
         _ds = IPlatformApplication.Current.Services.GetService<IRestDataService>();
@@ -21,42 +22,44 @@ public partial class PopUpPageVariableInput : Popup
         BindingContext = viewModel;
         _vm = viewModel;
 
-        _vm.Type = Type;
+        Loaded += async (s, e) => await Load();
+    }
 
-        if(Type == "DateTime")
+    private async Task Load()
+    {
+        await Task.Delay(1);
+
+        if (_vm.Type == "DateTime")
         {
-            _vm.DateTimeInput = (DateTime)Input;
+            _vm.DateTimeInput = (DateTime)_vm.Input;
             pckDateTimeInput.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow);
             pckDateTimeInput.IsVisible = true;
         }
-        else if (Type == "Currency")
+        else if (_vm.Type == "Currency")
         {
-            _vm.DecimalInput = (decimal)Input;
+            _vm.DecimalInput = (decimal)_vm.Input;
             entCurrencyInput.IsVisible = true;
             entCurrencyInput.Focus();
             entCurrencyInput.Text = _vm.DecimalInput.ToString("c", CultureInfo.CurrentCulture);
-            //entCurrencyInput.CursorPosition = _pt.FindCurrencyCursorPosition(entCurrencyInput.Text);
         }
 
-        lblTitle.Text = Title;
-        lblDescription.Text = Description;
-        if (DescriptionSub == "" || DescriptionSub == null)
+        lblTitle.Text = _vm.TitleText;
+        lblDescription.Text = _vm.Description;
+        if (_vm.DescriptionSub == "" || _vm.DescriptionSub == null)
         {
-            viewModel.IsSubDesc = false;
+            _vm.IsSubDesc = false;
         }
         else
         {
-            viewModel.IsSubDesc = true;
-            lblDescriptionSub.Text = DescriptionSub;
+            _vm.IsSubDesc = true;
+            lblDescriptionSub.Text = _vm.DescriptionSub;
         }
 
-        double width = viewModel.PopupWidth -11;
+        double width = _vm.PopupWidth - 11;
         Rect rt = new Rect(width, 123, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize);
         AbsLayout.SetLayoutBounds(btnClose, rt);
 
-
     }
-
     private bool Validate()
     {
         bool IsValid = true;
@@ -89,12 +92,12 @@ public partial class PopUpPageVariableInput : Popup
         {
             if (_vm.Type == "DateTime")
             {
-                this.Close(_vm.DateTimeInput);
+                this.CloseAsync(_vm.DateTimeInput);
 
             }
             else if (_vm.Type == "Currency")
             {
-                this.Close(_vm.DecimalInput);
+                this.CloseAsync(_vm.DecimalInput);
             }
         }
 
@@ -102,7 +105,7 @@ public partial class PopUpPageVariableInput : Popup
 
     private void Close_Window(object sender, EventArgs e)
     {
-        this.Close("");
+        this.CloseAsync("");
     }
 
     private void txtCurrencyInput_TextChanged(object sender, TextChangedEventArgs e)

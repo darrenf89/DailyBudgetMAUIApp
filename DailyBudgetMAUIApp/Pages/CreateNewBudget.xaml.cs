@@ -1,8 +1,9 @@
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using CommunityToolkit.Maui.Views;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -13,8 +14,9 @@ public partial class CreateNewBudget : BasePage
     private readonly CreateNewBudgetViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
+    private readonly IPopupService _ps;
 
-    public CreateNewBudget(CreateNewBudgetViewModel viewModel, IProductTools pt, IRestDataService ds)
+    public CreateNewBudget(CreateNewBudgetViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
 	{
 		InitializeComponent(); 
 
@@ -22,6 +24,7 @@ public partial class CreateNewBudget : BasePage
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
+        _ps = ps;
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -86,12 +89,32 @@ public partial class CreateNewBudget : BasePage
 
                 string Description = "Every budget needs a name, let us know how you'd like your budget to be known so we can use this to identify it for you in the future.";
                 string DescriptionSub = "Call it something useful or call it something silly up to you really!";
-                var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", _vm.Budget.BudgetName, new PopUpPageSingleInputViewModel());
-                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-
-                if (result != null || (string)result != "")
+                var queryAttributes = new Dictionary<string, object>
                 {
-                    _vm.Budget.BudgetName = (string)result;
+                    [nameof(PopUpPageSingleInputViewModel.Description)] = Description,
+                    [nameof(PopUpPageSingleInputViewModel.DescriptionSub)] = DescriptionSub,
+                    [nameof(PopUpPageSingleInputViewModel.InputTitle)] = "Budget Name",
+                    [nameof(PopUpPageSingleInputViewModel.Placeholder)] = "Enter a budget name!",
+                    [nameof(PopUpPageSingleInputViewModel.Input)] = _vm.Budget.BudgetName
+                };
+
+                var popupOptions = new PopupOptions
+                {
+                    CanBeDismissedByTappingOutsideOfPopup = false,
+                    PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                };
+
+                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageSingleInput, object>(
+                    Shell.Current,
+                    options: popupOptions,
+                    shellParameters: queryAttributes,
+                    cancellationToken: CancellationToken.None
+
+                );
+
+                if (popupResult.Result != null || (string)popupResult.Result != "")
+                {
+                    _vm.Budget.BudgetName = (string)popupResult.Result;
                 }
 
                 List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
@@ -175,17 +198,7 @@ public partial class CreateNewBudget : BasePage
                 vslIncomeList.IsVisible = true;
             }
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
-
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
         }
         catch (Exception ex)
         {
@@ -715,12 +728,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
             if (ValidateFinaliseBudget())
             {
@@ -903,13 +911,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}&NavigatedFrom=CreateNewBudget");
         }
         catch (Exception ex)
@@ -922,13 +924,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}&NavigatedFrom=CreateNewBudget");
         }
         catch (Exception ex)
@@ -941,13 +937,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={0}&NavigatedFrom=CreateNewBudget");
         }
         catch (Exception ex)
@@ -972,8 +962,21 @@ public partial class CreateNewBudget : BasePage
                 "It is also worth knowing that your BankBalance is not always what you have to spend, you have to take into account savings, bills and any other income!, We will use other terms along with Bank Balance to describe your budgets state - MaB (Money available Balance) & LtSB (Left to Spend Balance)"
             };
 
-            var popup = new PopupInfo("Bank Balance", SubTitle, Info);
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            var queryAttributes = new Dictionary<string, object>
+            {
+                [nameof(PopupInfo.Info)] = Info,
+                [nameof(PopupInfo.SubTitles)] = SubTitle,
+                [nameof(PopupInfo.TitleText)] = "Bank Balance"
+
+            };
+
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = true,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -1018,8 +1021,21 @@ public partial class CreateNewBudget : BasePage
                 "The \"When is Pay Day?\" field in our app is essential for establishing your financial starting point. By entering the exact date of your next payday—whether it's tomorrow, next week, or next month—you enable the app to accurately calculate your initial budget values. This initial input, combined with your other budget details, sets the foundation for a personalized budgeting experience. Subsequently, the app uses the pay frequency information you've provided to determine future pay dates, ensuring that your budget aligns seamlessly with your income schedule from that point onward."
             };
 
-            var popup = new PopupInfo("When is Pay day?", SubTitle, Info);
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            var queryAttributes = new Dictionary<string, object>
+            {
+                [nameof(PopupInfo.Info)] = Info,
+                [nameof(PopupInfo.SubTitles)] = SubTitle,
+                [nameof(PopupInfo.TitleText)] = "When is Pay day?"
+
+            };
+
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = true,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -1052,8 +1068,21 @@ public partial class CreateNewBudget : BasePage
                 "By customizing your pay frequency and budget cycle, you gain greater control over your financial planning, allowing for a budgeting experience that truly reflects your income dynamics.",
             };
 
-            var popup = new PopupInfo("How do you get paid?", SubTitle, Info);
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            var queryAttributes = new Dictionary<string, object>
+            {
+                [nameof(PopupInfo.Info)] = Info,
+                [nameof(PopupInfo.SubTitles)] = SubTitle,
+                [nameof(PopupInfo.TitleText)] = "How do you get paid?"
+
+            };
+
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = true,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -1599,13 +1628,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             var Bill = (Bills)e.Parameter;
 
             await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=CreateNewBudget");
@@ -1654,13 +1677,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             var Saving = (Savings)e.Parameter;
 
             await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=CreateNewBudget");
@@ -1814,13 +1831,7 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             var Income = (IncomeEvents)e.Parameter;
 
             await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=CreateNewBudget");

@@ -1,9 +1,11 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Pages;
 using DailyBudgetMAUIApp.Popups;
 using Plugin.LocalNotification;
+using static Android.Telephony.CarrierConfigManager;
 
 namespace DailyBudgetMAUIApp;
 
@@ -61,12 +63,8 @@ public partial class AppShell : Shell
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
+            IPopupService ps = IPlatformApplication.Current.Services.GetService<IPopupService>();
+            if (!App.IsPopupShowing) { App.IsPopupShowing = true; ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") }); }
             await Task.Delay(1);
             await Shell.Current.GoToAsync($"//{(App.IsFamilyAccount ? nameof(FamilyAccountMainPage) : nameof(MainPage))}");
         }

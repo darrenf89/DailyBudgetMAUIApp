@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
@@ -16,6 +16,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
+        private readonly IPopupService _ps;
 
         [ObservableProperty]
         public partial BorderlessPicker SwitchBudgetPicker { get; set; }
@@ -84,10 +85,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         public partial decimal MaxBankBalance { get; set; } = 0;
 
 
-        public FamilyAccountsViewViewModel(IProductTools pt, IRestDataService ds)
+        public FamilyAccountsViewViewModel(IProductTools pt, IRestDataService ds, IPopupService ps)
         {
             _pt = pt;
             _ds = ds;
+            _ps = ps;
 
             Title = "Family Account Details";
             BorderWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 20;
@@ -204,9 +206,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Task.Delay(1);
                 FilterModel Filters = new FilterModel
                 {
@@ -230,12 +230,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Task.Delay(1);
 
                 await Shell.Current.GoToAsync($"//{nameof(MainPage)}");

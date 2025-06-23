@@ -4,7 +4,7 @@ using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupDailySavingViewModel : BaseViewModel
+    public partial class PopupDailySavingViewModel : BaseViewModel, IQueryAttributable
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -33,9 +33,13 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
-
-
-
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue(nameof(Saving), out var saving) && saving is Savings s)
+            {
+                Saving = s;
+            }
+        }
 
     }
 }

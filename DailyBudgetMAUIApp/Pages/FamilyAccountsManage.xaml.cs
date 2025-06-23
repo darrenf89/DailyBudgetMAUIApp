@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.ViewModels;
 using Plugin.LocalNotification;
@@ -8,8 +9,9 @@ public partial class FamilyAccountsManage : BasePage
 {
     private readonly FamilyAccountsManageViewModel _vm;
     private readonly IProductTools _pt;
+    private readonly IPopupService _ps;
 
-    public FamilyAccountsManage(FamilyAccountsManageViewModel vm, IProductTools pt)
+    public FamilyAccountsManage(FamilyAccountsManageViewModel vm, IProductTools pt, IPopupService ps)
     {
         InitializeComponent();
         _vm = vm;
@@ -29,12 +31,7 @@ public partial class FamilyAccountsManage : BasePage
         try
         {
             await _vm.LoadFamilyAccounts();
-
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
         }
         catch (Exception ex)
         {

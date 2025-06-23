@@ -4,7 +4,7 @@ using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupDailyAllowanceViewModel : BaseViewModel
+    public partial class PopupDailyAllowanceViewModel : BaseViewModel, IQueryAttributable
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -22,6 +22,12 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         [ObservableProperty]
         public partial string NickName { get; set; }
+
+        [ObservableProperty]
+        public partial int UserID { get; set; }
+
+        [ObservableProperty]
+        public partial string Type { get; set; }
 
         [ObservableProperty]
         public partial string TextOne { get; set; }
@@ -42,9 +48,24 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
-
-
-
-
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue("Budget", out var budget) && budget is Budgets b)
+            {
+                Budget = b;
+            }
+            if (query.TryGetValue("NickName", out var nickName) && nickName is string n)
+            {
+                NickName = n;
+            }
+            if (query.TryGetValue("UserID", out var userId) && userId is int id)
+            {
+                UserID = id;
+            }
+            if (query.TryGetValue("Type", out var type) && type is string t)
+            {
+                Type = t;
+            }
+        }
     }
 }

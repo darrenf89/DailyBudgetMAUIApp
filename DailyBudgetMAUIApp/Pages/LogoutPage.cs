@@ -1,12 +1,15 @@
 namespace DailyBudgetMAUIApp.Pages;
-using DailyBudgetMAUIApp.Popups;
+
+using CommunityToolkit.Maui;
 using Plugin.LocalNotification;
 
 public class LogoutPage : ContentPage
 {
-	public LogoutPage()
+    private readonly IPopupService _ps;
+	public LogoutPage(IPopupService ps)
 	{
-		Logout();
+        _ps = ps;
+        Logout();
 	}
 
     async void Logout()
@@ -42,12 +45,7 @@ public class LogoutPage : ContentPage
         Application.Current!.MainPage = new AppShell();
         LocalNotificationCenter.Current.CancelAll();
 
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
-        }
-
+        if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
         if (App.CurrentBottomSheet != null)
         {
             await App.CurrentBottomSheet.DismissAsync();

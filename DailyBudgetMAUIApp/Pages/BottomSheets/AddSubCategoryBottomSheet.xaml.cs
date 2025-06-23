@@ -2,9 +2,8 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using The49.Maui.BottomSheet;
 using Microsoft.Maui.Layouts;
-using DailyBudgetMAUIApp.Helpers;
-using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.Handlers;
+using CommunityToolkit.Maui;
 
 namespace DailyBudgetMAUIApp.Pages.BottomSheets;
 
@@ -16,14 +15,16 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
     public Categories Category { get; set; }
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
+    private readonly IPopupService _ps;
 
-    public AddSubCategoryBottomSheet(Categories Category, IProductTools pt, IRestDataService ds)
+    public AddSubCategoryBottomSheet(Categories Category, IProductTools pt, IRestDataService ds, IPopupService ps)
 	{
 		InitializeComponent();
 
         BindingContext = this;
         _pt = pt;
         _ds = ds;
+        _ps = ps;
 
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
@@ -97,12 +98,7 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
                 return;
             }
 
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
             await Task.Delay(500);
 
@@ -125,11 +121,7 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
             } 
             catch (Exception) 
             {
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
+                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             }
 
             if (App.CurrentBottomSheet != null)

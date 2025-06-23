@@ -5,8 +5,8 @@
             xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
             xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
             xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
-            CanBeDismissedByTappingOutsideOfPopup="False"
-            Color="#80000000">
+            xmlns:system="clr-namespace:System;assembly=mscorlib"
+            x:TypeArguments="system:Object">
     <AbsoluteLayout x:Name="AbsLayout">
         <VerticalStackLayout HeightRequest="{Binding ScreenHeight}" WidthRequest="{Binding ScreenWidth}" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0">
             <Border BackgroundColor="{DynamicResource White}" Margin="15,160,15,0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="{Binding PopupWidth}" StrokeShape="RoundRectangle 16"  StrokeThickness="2">

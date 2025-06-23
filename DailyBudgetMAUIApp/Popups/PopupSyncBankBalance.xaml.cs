@@ -6,7 +6,7 @@ using DailyBudgetMAUIApp.DataServices;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupSyncBankBalance : Popup
+public partial class PopupSyncBankBalance : Popup<Object>
 {
     private readonly PopupSyncBankBalanceViewModel _vm;
     private readonly IProductTools _pt;
@@ -14,22 +14,24 @@ public partial class PopupSyncBankBalance : Popup
 
     public PopupSyncBankBalance(Budgets Budget, PopupSyncBankBalanceViewModel viewModel, IProductTools pt, IRestDataService ds)
 	{
-        InitializeComponent();
-
-        viewModel.Budget = Budget;        
-
+        InitializeComponent(); 
         BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
 
+        Loaded += async (s, e) => await Load(); 
+    }
+    private async Task Load()
+    {
+        await Task.Delay(1);
         _vm.OriginalAmount = _vm.Budget.BankBalance.GetValueOrDefault();
         _vm.Amount = _vm.Budget.BankBalance.GetValueOrDefault();
 
         hslPayDayAmount.IsVisible = true;
 
         double PayDayAmount = (double?)_vm.Amount ?? 0;
-        entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);   
+        entPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
     }
 
     void PayDayAmount_Changed(object sender, TextChangedEventArgs e)
@@ -63,7 +65,7 @@ public partial class PopupSyncBankBalance : Popup
         return IsValid;
     }
 
-    private void AcceptUpdate_Saving(object sender, EventArgs e)
+    private async void AcceptUpdate_Saving(object sender, EventArgs e)
     {
         try
         {
@@ -80,21 +82,21 @@ public partial class PopupSyncBankBalance : Popup
 
                 BudgetUpdate.Add(BankBalance);
 
-                _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+                await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
 
                 App.DefaultBudget.BankBalance = _vm.Amount;
-                this.Close(_vm.Budget);
+                await CloseAsync(_vm.Budget);
             }
         }
         catch (Exception ex)
         {
-            _pt.HandleException(ex, "PopupSyncBankBalance", "AcceptUpdate_Saving");
+            await _pt.HandleException(ex, "PopupSyncBankBalance", "AcceptUpdate_Saving");
         }
     }
 
-    private void CancelUpdate_Saving(object sender, EventArgs e)
+    private async void CancelUpdate_Saving(object sender, EventArgs e)
     {
-        this.Close("Closed");
+        await CloseAsync("Closed");
     }
 
     private void Reset_Saving(object sender, EventArgs e)

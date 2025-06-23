@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
@@ -15,6 +16,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
+        private readonly IPopupService _ps;
 
         public Picker SwitchBudgetPicker { get; set; }
         public VerticalStackLayout BtnApply { get; set; }
@@ -174,10 +176,12 @@ namespace DailyBudgetMAUIApp.ViewModels
             HasBorrowPayChanged = true;
         }
 
-        public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds)
+        public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds, IPopupService ps)
         {
             _pt = pt;
             _ds = ds;
+            _ps = ps;
+
         }      
         
         public async Task OnLoad()
@@ -272,7 +276,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         await _ds.AddBankAccounts(App.DefaultBudgetID, Account);
 
-                        MultipleAccountsBottomSheet page = new MultipleAccountsBottomSheet(_pt, _ds);
+                        MultipleAccountsBottomSheet page = new MultipleAccountsBottomSheet(_pt, _ds, _ps);
 
                         page.Detents = new DetentsCollection()
                         {
@@ -285,12 +289,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         App.CurrentBottomSheet = page;
 
-                        if (App.CurrentPopUp != null)
-                        {
-                            await App.CurrentPopUp.CloseAsync();
-                            App.CurrentPopUp = null;
-                        }
-
+                        if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
                         await page.ShowAsync();
 
                     }
@@ -607,12 +606,33 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 string Description = "Every budget needs a name, let us know how you'd like your budget to be known so we can use this to identify it for you in the future.";
                 string DescriptionSub = "Call it something useful or call it something silly up to you really!";
-                var popup = new PopUpPageSingleInput("Budget Name", Description, DescriptionSub, "Enter a budget name!", Budget.BudgetName, new PopUpPageSingleInputViewModel());
-                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
-                if (result != null || (string)result != "")
+                var queryAttributes = new Dictionary<string, object>
                 {
-                    Budget.BudgetName = (string)result;
+                    [nameof(PopUpPageSingleInputViewModel.Description)] = Description,
+                    [nameof(PopUpPageSingleInputViewModel.DescriptionSub)] = DescriptionSub,
+                    [nameof(PopUpPageSingleInputViewModel.InputTitle)] = "Budget Name",
+                    [nameof(PopUpPageSingleInputViewModel.Placeholder)] = "Enter a budget name!",
+                    [nameof(PopUpPageSingleInputViewModel.Input)] = Budget.BudgetName
+                };
+
+                var popupOptions = new PopupOptions
+                {
+                    CanBeDismissedByTappingOutsideOfPopup = false,
+                    PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                };
+
+                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageSingleInput, object>(
+                    Shell.Current,
+                    options: popupOptions,
+                    shellParameters: queryAttributes,
+                    cancellationToken: CancellationToken.None
+
+                );
+
+                if (popupResult.Result != null || (string)popupResult.Result != "")
+                {
+                    Budget.BudgetName = (string)popupResult.Result;
 
                     List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
 
@@ -675,13 +695,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Task.Delay(500);
 
                 await Shell.Current.GoToAsync($"..");
@@ -716,13 +730,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 bool EditBudget = await Application.Current.Windows[0].Page.DisplayAlert($"Update settings?", $"Are you sure you want to update your budgets settings?", "Yes", "No");
                 if (EditBudget)
                 {
-                    if (App.CurrentPopUp == null)
-                    {
-                        var PopUp = new PopUpPage();
-                        App.CurrentPopUp = PopUp;
-                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                    }
-
+                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                     await Task.Delay(100);
 
 
@@ -1068,8 +1076,21 @@ namespace DailyBudgetMAUIApp.ViewModels
                     "If accumulating the necessary funds to cover bills upfront is challenging, it's advisable to use the \"Cover Bills When Paid\" option. This method aligns with typical financial practices and provides a more accurate reflection of your daily spending capacity. As you work towards building savings, you might consider transitioning to the \"Cover Bills From Balance Every Day\" method for enhanced financial predictability.",
                 };
 
-                var popup = new PopupInfo("Bill accrual", SubTitle, Info);
-                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+                var queryAttributes = new Dictionary<string, object>
+                {
+                    [nameof(PopupInfo.Info)] = Info,
+                    [nameof(PopupInfo.SubTitles)] = SubTitle,
+                    [nameof(PopupInfo.TitleText)] = "Bill accrual"
+
+                };
+
+                var popupOptions = new PopupOptions
+                {
+                    CanBeDismissedByTappingOutsideOfPopup = true,
+                    PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                };
+
+                await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
             }
             catch (Exception ex)
             {
@@ -1108,12 +1129,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Task.Delay(1);
 
                 await Shell.Current.GoToAsync($"//{(App.IsFamilyAccount ? nameof(FamilyAccountMainPage) : nameof(MainPage))}");

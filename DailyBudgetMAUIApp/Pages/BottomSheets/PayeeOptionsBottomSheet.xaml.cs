@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
@@ -9,11 +10,11 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
 {
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
-
+    private readonly IPopupService _ps;
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
 
-    public PayeeOptionsBottomSheet(IRestDataService ds, IProductTools pt)
+    public PayeeOptionsBottomSheet(IRestDataService ds, IProductTools pt, IPopupService ps)
     {
         InitializeComponent();
 
@@ -21,11 +22,10 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
         var ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
         ButtonWidth = ScreenWidth - 40;
         btnDismiss.WidthRequest = ButtonWidth;
-        //MainScrollView.MaximumHeightRequest = ScreenHeight - 280;
-
 
         _ds = ds;
         _pt = pt;
+        _ps = ps;
     }
 
     private void btnDismiss_Clicked(object sender, EventArgs e)
@@ -109,12 +109,7 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
             if (App.CurrentBottomSheet != null)
             {

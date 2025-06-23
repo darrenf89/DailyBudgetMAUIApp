@@ -1,7 +1,9 @@
+using CommunityToolkit.Maui;
+using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.ViewModels;
 using Microsoft.Maui.Layouts;
 using System.Text.RegularExpressions;
-using DailyBudgetMAUIApp.DataServices;
+
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -13,15 +15,17 @@ public partial class EditBudgetSettings : BasePage
 
     private readonly EditBudgetSettingsViewModel _vm;
     private readonly IProductTools _pt;
+    private readonly IPopupService _ps;
     private IDispatcherTimer _timer;
 
-    public EditBudgetSettings(EditBudgetSettingsViewModel viewModel, IProductTools pt)
+    public EditBudgetSettings(EditBudgetSettingsViewModel viewModel, IProductTools pt, IPopupService ps)
 	{
 		InitializeComponent();
 
         this.BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
+        _ps = ps;
 
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 60;
@@ -94,11 +98,7 @@ public partial class EditBudgetSettings : BasePage
 
             _vm.BtnApply = BtnApply;
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             _vm.HasPageLoaded = true;
         }
         catch (Exception ex)

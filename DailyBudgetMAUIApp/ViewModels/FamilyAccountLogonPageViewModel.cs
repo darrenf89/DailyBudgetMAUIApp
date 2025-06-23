@@ -7,6 +7,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using DailySpendWebApp.Models;
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -15,12 +17,14 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
+        private readonly IPopupService _ps;
 
-        public FamilyAccountLogonPageViewModel(IRestDataService ds, IProductTools pt)
+        public FamilyAccountLogonPageViewModel(IRestDataService ds, IProductTools pt, IPopupService ps)
         {
             Title = "Sign In";
             _ds = ds;
             _pt = pt;
+            _ps = ps;
         }
 
         [ObservableProperty]
@@ -93,11 +97,26 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 await ResetSuccessFailureMessage();
 
-                var popup = new PopUpOTP(0, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "FamilyAccountCreation", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
-                App.CurrentPopUp = popup;
-                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+                var queryAttributes = new Dictionary<string, object>
+                {
+                    [nameof(PopUpOTPViewModel.UserID)] = 0,
+                    [nameof(PopUpOTPViewModel.OTPType)] = "FamilyAccountCreation"
+                };
 
-                if ((string)result.ToString() == "OK")
+                var popupOptions = new PopupOptions
+                {
+                    CanBeDismissedByTappingOutsideOfPopup = false,
+                    PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                };
+
+                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpOTP, object>(
+                    Shell.Current,
+                    options: popupOptions,
+                    shellParameters: queryAttributes,
+                    cancellationToken: CancellationToken.None
+                );
+
+                if ((string)popupResult.Result.ToString() == "OK")
                 {
                     AccountCreationSuccess = true;
                 }
@@ -120,11 +139,26 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 await ResetSuccessFailureMessage();
 
-                var popup = new PopUpOTP(0, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ResetPasswordFamily", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
-                App.CurrentPopUp = popup;
-                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+                var queryAttributes = new Dictionary<string, object>
+                {
+                    [nameof(PopUpOTPViewModel.UserID)] = 0,
+                    [nameof(PopUpOTPViewModel.OTPType)] = "ResetPasswordFamily"
+                };
 
-                if((string)result.ToString() == "OK")
+                var popupOptions = new PopupOptions
+                {
+                    CanBeDismissedByTappingOutsideOfPopup = false,
+                    PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                };
+
+                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpOTP, object>(
+                    Shell.Current,
+                    options: popupOptions,
+                    shellParameters: queryAttributes,
+                    cancellationToken: CancellationToken.None
+                );
+
+                if((string)popupResult.Result.ToString() == "OK")
                 {
                     ResetPasswordSuccess = true;
                 }
@@ -165,12 +199,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     return;
                 }
 
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
                 if (!string.IsNullOrEmpty(Email))
                 {
@@ -190,8 +219,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         {
                             if (ex.Message.Contains("User not found"))
                             {
-                                await App.CurrentPopUp.CloseAsync();
-                                App.CurrentPopUp = null;
+                                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
                                 await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                             }
                             else
@@ -203,8 +231,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         switch (salt)
                         {
                             case "User not found":
-                                await App.CurrentPopUp.CloseAsync();
-                                App.CurrentPopUp = null;
+                                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
                                 await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                                 break;
                             case not "":
@@ -213,24 +240,21 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                 if (userDetails == null)
                                 {
-                                    await App.CurrentPopUp.CloseAsync();
-                                    App.CurrentPopUp = null;
+                                    if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
                                     await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                                 }
                                 else
                                 {
                                     if (!userDetails.IsActive)
                                     {
-                                        await App.CurrentPopUp.CloseAsync();
-                                        App.CurrentPopUp = null;
+                                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
                                         await Application.Current.Windows[0].Page.DisplayAlert("You aren't account isn't active", "This account is no longer active, if you'd still like to budget please get the owner of the parent account to reactive or create your own account with us!", "OK");
                                         return;
                                     }
 
                                     if (!userDetails.IsConfirmed)
                                     {
-                                        await App.CurrentPopUp.CloseAsync();
-                                        App.CurrentPopUp = null;
+                                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
                                         await Application.Current.Windows[0].Page.DisplayAlert("Please confirm your set up!", "You haven't completed your account set up, please click complete set up to set up a password and finalise you account!", "OK");
                                         return;
                                     }
@@ -238,8 +262,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     string HashPassword = _pt.GenerateHashedPassword(Password, salt);
                                     if(userDetails.Password != HashPassword)
                                     {
-                                        await App.CurrentPopUp.CloseAsync();
-                                        App.CurrentPopUp = null;
+                                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
                                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                                     }
                                     else
@@ -330,16 +353,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     else
                     {
-                        await App.CurrentPopUp.CloseAsync();
-                        App.CurrentPopUp = null;
+                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                     }
                 }
                 else 
                 {
                     IsButtonBusy = false;
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
+                    if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
                     await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                 }
             }

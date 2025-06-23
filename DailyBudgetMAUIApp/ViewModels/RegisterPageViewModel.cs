@@ -1,3 +1,5 @@
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -16,11 +18,13 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
-        public RegisterPageViewModel(IRestDataService ds, IProductTools pt)
+        private readonly IPopupService _ps;
+        public RegisterPageViewModel(IRestDataService ds, IProductTools pt, IPopupService ps)
         {
             Title = "Please Sign Up!";
             _ds = ds;
             _pt = pt;
+            _ps = ps;
         }
 
         [ObservableProperty]
@@ -112,12 +116,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 if (IsAgreedToTerms && String.Equals(Password, PasswordConfirm))
                 {
-                    if (App.CurrentPopUp == null)
-                    {
-                        var PopUp = new PopUpPage();
-                        App.CurrentPopUp = PopUp;
-                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                    }
+                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
                     await Task.Delay(1);
 
@@ -138,22 +137,33 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         if(ReturnUser.Error == null)
                         {
-                            if (App.CurrentPopUp != null)
-                            {
-                                await App.CurrentPopUp.CloseAsync();
-                                App.CurrentPopUp = null;
-                            }
+                            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
 
                             string status = await _ds.CreateNewOtpCode(ReturnUser.UserID, "ValidateEmail");
                             if (status == "OK")
                             {
                                 RegisterSuccess = true;
 
-                                var popup = new PopUpOTP(ReturnUser.UserID, new PopUpOTPViewModel(IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()), "ValidateEmail", IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
-                                App.CurrentPopUp = popup;
-                                var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+                                var queryAttributes = new Dictionary<string, object>
+                                {
+                                    [nameof(PopUpOTPViewModel.UserID)] = ReturnUser.UserID,
+                                    [nameof(PopUpOTPViewModel.OTPType)] = "ValidateEmail"
+                                };
 
-                                if((string)result.ToString() == "OK")
+                                var popupOptions = new PopupOptions
+                                {
+                                    CanBeDismissedByTappingOutsideOfPopup = false,
+                                    PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                                };
+
+                                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpOTP, object>(
+                                    Shell.Current,
+                                    options: popupOptions,
+                                    shellParameters: queryAttributes,
+                                    cancellationToken: CancellationToken.None
+                                );
+
+                                if((string)popupResult.Result.ToString() == "OK")
                                 {                                    
                                     ReturnUser.SessionExpiry = DateTime.UtcNow.AddDays(1);
 
@@ -196,11 +206,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                             }
                             else
                             {
-                                if (App.CurrentPopUp != null)
-                                {
-                                    await App.CurrentPopUp.CloseAsync();
-                                    App.CurrentPopUp = null;
-                                }
+                                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
 
                                 await Application.Current.Windows[0].Page.DisplayAlert("Opps", "There was an error sending you an OTP code to verify you email! Please click the link to create a new one so you can continue your daily budgeting journey", "OK");
 
@@ -214,11 +220,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     else
                     {
-                        if (App.CurrentPopUp != null)
-                        {
-                            await App.CurrentPopUp.CloseAsync();
-                            App.CurrentPopUp = null;
-                        }
+                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
 
                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "This Email is already taken, reset your password or try a different Email", "OK");
                     }
@@ -227,21 +229,13 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     if(IsAgreedToTerms)
                     {
-                        if (App.CurrentPopUp != null)
-                        {
-                            await App.CurrentPopUp.CloseAsync();
-                            App.CurrentPopUp = null;
-                        }
+                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
 
                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "Your Passwords don't match ...", "OK");
                     }
                     else
                     {
-                        if (App.CurrentPopUp != null)
-                        {
-                            await App.CurrentPopUp.CloseAsync();
-                            App.CurrentPopUp = null;
-                        }
+                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
 
                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "You have to agree to our Terms of Service", "OK");
                     }

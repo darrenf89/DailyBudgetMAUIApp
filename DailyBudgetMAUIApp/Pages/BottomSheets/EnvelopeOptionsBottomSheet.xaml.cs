@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
@@ -10,11 +11,11 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
 {
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
-
+    private readonly IPopupService _ps;
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
 
-    public EnvelopeOptionsBottomSheet(IRestDataService ds, IProductTools pt)
+    public EnvelopeOptionsBottomSheet(IRestDataService ds, IProductTools pt, IPopupService ps)
     {
         InitializeComponent();
 
@@ -26,6 +27,7 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
 
         _ds = ds;
         _pt = pt;
+        _ps = ps;
     }
 
     private void btnDismiss_Clicked(object sender, EventArgs e)
@@ -67,13 +69,7 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();
@@ -115,13 +111,7 @@ public partial class EnvelopeOptionsBottomSheet : BottomSheet
             else
             {
                 int SavingsID = EnvelopeSavings[SelectEnvelope];
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 string SpendType = "EnvelopeSaving";
                 Transactions T = new Transactions
                 {

@@ -1,7 +1,6 @@
+using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.ViewModels;
-using Microsoft.Maui.Layouts;
-using Plugin.LocalNotification;
 using Syncfusion.Maui.Core;
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -10,6 +9,7 @@ public partial class ViewBudgets : BasePage
 {
     private readonly ViewBudgetsViewModel _vm;
     private readonly IProductTools _pt;
+    private readonly IPopupService _ps;
 
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
@@ -57,11 +57,12 @@ public partial class ViewBudgets : BasePage
         }
     }
 
-    public ViewBudgets(ViewBudgetsViewModel vm, IProductTools pt)
+    public ViewBudgets(ViewBudgetsViewModel vm, IProductTools pt, IPopupService ps)
     {
         InitializeComponent();
         _vm = vm;
         _pt = pt;
+        _ps = ps;
         BindingContext = _vm;
 
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
@@ -126,11 +127,7 @@ public partial class ViewBudgets : BasePage
                 AddNewBudget.IsVisible = false;
             }
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
         }
         catch (Exception ex)
         {

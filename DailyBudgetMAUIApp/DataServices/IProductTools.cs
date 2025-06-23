@@ -12,7 +12,6 @@ namespace DailyBudgetMAUIApp.DataServices
         public RegisterModel ResetUserPassword(RegisterModel obj);
         public Task HandleException(Exception ex, string page, string Method);
         public Task<DateTime>? GetBudgetLastUpdated(int BudgetID);
-        public void ShowPopup(PopUpPage popup);
         public double FormatBorderlessEntryNumber(object sender, TextChangedEventArgs e, BorderlessEntry entry);
         public double FormatEntryNumber(object sender, TextChangedEventArgs e, Entry entry);
         public double FormatCurrencyNumber(string input);

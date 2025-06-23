@@ -1,9 +1,11 @@
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Popups;
-using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.ViewModels;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -16,7 +18,8 @@ public partial class AddBill : BasePage
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
     private readonly IKeyboardService _ks;
-    public AddBill(AddBillViewModel viewModel, IProductTools pt, IRestDataService ds, IKeyboardService ks)
+    private readonly IPopupService _ps;
+    public AddBill(AddBillViewModel viewModel, IProductTools pt, IRestDataService ds, IKeyboardService ks, IPopupService ps)
 	{
 		InitializeComponent();
 
@@ -25,18 +28,14 @@ public partial class AddBill : BasePage
         _pt = pt;
         _ds = ds;
         _ks = ks;
+        _ps = ps;
 
         dtpckBillDueDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(1);
     }
 
     protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.Windows[0].Page.ShowPopup(PopUp);
-        }
+        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
         _vm.IsPageBusy = false;
 
@@ -202,11 +201,7 @@ public partial class AddBill : BasePage
                 _vm.Bill.AccountID = null;
             }
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
 
         }
         catch (Exception ex)
@@ -654,18 +649,34 @@ public partial class AddBill : BasePage
 
     private async Task<string> ChangeBillName()
     {
-
-        string Description = "Every outgoing needs a name, we will refer to it by the name you give it and will make it easier to identify!";
-        string DescriptionSub = "Call it something useful or call it something silly up to you really!";
-        var popup = new PopUpPageSingleInput("Outgoing Name", Description, DescriptionSub, "Enter an outgoing name!", _vm.Bill.BillName, new PopUpPageSingleInputViewModel());
-        var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-
-        if (result != null || (string)result != "")
+        var queryAttributes = new Dictionary<string, object>
         {
-            _vm.Bill.BillName = (string)result;
+            [nameof(PopUpPageSingleInputViewModel.Description)] = "Every outgoing needs a name, we will refer to it by the name you give it and will make it easier to identify!",
+            [nameof(PopUpPageSingleInputViewModel.DescriptionSub)] = "Call it something useful or call it something silly up to you really!",
+            [nameof(PopUpPageSingleInputViewModel.InputTitle)] = "Outgoing Name",
+            [nameof(PopUpPageSingleInputViewModel.Placeholder)] = "Enter an outgoing name!",
+            [nameof(PopUpPageSingleInputViewModel.Input)] = _vm.Bill.BillName
+        };
+
+        var popupOptions = new PopupOptions
+        {
+            CanBeDismissedByTappingOutsideOfPopup = false,
+            PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+        };
+
+        IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageSingleInput, object>(
+            Shell.Current,
+            options: popupOptions,
+            shellParameters: queryAttributes,
+            cancellationToken: CancellationToken.None
+        );
+
+        if (popupResult.Result != null || (string)popupResult.Result != "")
+        {
+            _vm.Bill.BillName = (string)popupResult.Result;
         }
 
-        return (string)result;
+        return (string)popupResult.Result;
     }
     private async void AddBill_Clicked(object sender, EventArgs e)
     {

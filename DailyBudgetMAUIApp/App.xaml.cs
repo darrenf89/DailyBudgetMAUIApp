@@ -23,7 +23,8 @@ using DailyBudgetMAUIApp.Platforms.Android.Mappers;
 using System.Runtime.ExceptionServices;
 using Android.Content;
 using MAUISample.Platforms.Android;
-using static Microsoft.Maui.ApplicationModel.Platform;
+using CommunityToolkit.Maui;
+using static Android.Telephony.CarrierConfigManager;
 #endif
 
 namespace DailyBudgetMAUIApp;
@@ -35,13 +36,13 @@ public partial class App : Application
 	public static bool IsPremiumAccount;	
 	public static int DefaultBudgetID;
 	public static bool IsBudgetUpdated;
+	public static bool IsPopupShowing;
 	public static bool IsFamilyAccount;
     public static Budgets DefaultBudget;
     public static DateTime SessionLastUpdate;
     public static bool HasVisitedCreatePage;
     public static BudgetSettingValues CurrentSettings;
     public static BottomSheet CurrentBottomSheet = null;
-    public static Popup CurrentPopUp = null;
     public static TabBar MainTabBar;
     public static TabBar ViewTabBar;
     public static List<Brush> ChartBrush;
@@ -235,21 +236,16 @@ public partial class App : Application
     {
         if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
         {
-
+            IPopupService ps = IPlatformApplication.Current.Services.GetService<IPopupService>();
             //TODO: SHOW POPUP
-            if (CurrentPopUp != null)
+            if (IsPopupShowing)
             {
-                await CurrentPopUp.CloseAsync();
-                CurrentPopUp = null;
+                IsPopupShowing = false;
+                await ps.ClosePopupAsync(Application.Current.Windows[0].Page);
             }
 
-            if (CurrentPopUp == null)
-            {
-                var PopUp = new PopUpNoNetwork(new PopUpNoNetworkViewModel());
-                CurrentPopUp = PopUp;
-                Current.MainPage.ShowPopup(PopUp);
-            }
-
+            ps.ShowPopup<PopUpNoNetwork>(Application.Current.Windows[0].Page, options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
+            App.IsPopupShowing = true;
             await Task.Delay(1);
 
             int i = 0;
@@ -268,10 +264,10 @@ public partial class App : Application
                 await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
             }
 
-            if (CurrentPopUp != null)
+            if (App.IsPopupShowing)
             {
-                await CurrentPopUp.CloseAsync();
-                CurrentPopUp = null;
+                App.IsPopupShowing = false;
+                await ps.ClosePopupAsync(Application.Current.Windows[0].Page);
             }
 
         }

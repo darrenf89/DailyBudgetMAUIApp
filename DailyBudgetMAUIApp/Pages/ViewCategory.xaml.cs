@@ -1,9 +1,9 @@
-using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages.BottomSheets;
-using DailyBudgetMAUIApp.Popups;
 using DailyBudgetMAUIApp.ViewModels;
 using Syncfusion.Maui.Carousel;
 using The49.Maui.BottomSheet;
@@ -37,14 +37,16 @@ public partial class ViewCategory : BasePage
 
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
+    private readonly IPopupService _ps;
 	private readonly ViewCategoryViewModel _vm;
     private readonly IDispatcherTimer _timer;
-    public ViewCategory(ViewCategoryViewModel viewModel, IProductTools pt, IRestDataService ds)
+    public ViewCategory(ViewCategoryViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
 	{
         this.BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
+        _ps = ps;
 
         InitializeComponent();
 
@@ -126,11 +128,7 @@ public partial class ViewCategory : BasePage
             }
         }
 
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
-        }
+        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
     }
 
     private async Task SwitchChart(int Index)
@@ -212,14 +210,8 @@ public partial class ViewCategory : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
-        await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
+            await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
         }
         catch (Exception ex)
         {
@@ -429,10 +421,7 @@ public partial class ViewCategory : BasePage
 
             if (!Cat.IsEditMode)
             {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Task.Delay(1000);
 
                 FilterModel Filters = new FilterModel
@@ -456,11 +445,11 @@ public partial class ViewCategory : BasePage
         }
     }
 
-    private async void AddSubCat_Tapped(object sender, TappedEventArgs e)
+    private async void AddSubCat_Tapped(object sender, TappedEventArgs e)   
     {
         try
         {
-            AddSubCategoryBottomSheet page = new(await _ds.GetCategoryFromID(_vm.HeaderCatId), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
+            AddSubCategoryBottomSheet page = new(await _ds.GetCategoryFromID(_vm.HeaderCatId), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>(), _ps);
 
             page.Detents = new DetentsCollection()
             {
@@ -473,12 +462,7 @@ public partial class ViewCategory : BasePage
 
             App.CurrentBottomSheet = page;
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
-
+            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
             await page.ShowAsync();
         }
         catch (Exception ex)
@@ -491,7 +475,7 @@ public partial class ViewCategory : BasePage
     {
         try
         {
-            EditCategoryBottomSheet page = new EditCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>());
+            EditCategoryBottomSheet page = new EditCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>(), _ps);
 
             page.Detents = new DetentsCollection()
             {
@@ -504,12 +488,7 @@ public partial class ViewCategory : BasePage
 
             App.CurrentBottomSheet = page;
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
-
+            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
             await page.ShowAsync();
         }
         catch (Exception ex)
@@ -528,13 +507,31 @@ public partial class ViewCategory : BasePage
                 Dictionary<string, int> Categories = await _ds.GetAllCategoryNames(App.DefaultBudgetID);
                 string[] CategoryList = Categories.Keys.ToArray();
 
-                var Popup = new PopupReassignCategories(new PopupReassignCategoriesViewModel(Categories, _vm.HeaderCatId, _vm.Categories.ToList(), IPlatformApplication.Current.Services.GetService<IRestDataService>(), IPlatformApplication.Current.Services.GetService<IProductTools>()));
-                var result = await Shell.Current.ShowPopupAsync(Popup);
-                if (result.ToString() == "Cancel")
+                var queryAttributes = new Dictionary<string, object>
+                {
+                    [nameof(PopupReassignCategoriesViewModel.Categories)] = _vm.Categories.ToList(),
+                    [nameof(PopupReassignCategoriesViewModel.ReAssignCategories)] = Categories,
+                    [nameof(PopupReassignCategoriesViewModel.HeaderCatID)] = _vm.HeaderCatId,
+                };
+
+                var popupOptions = new PopupOptions
+                {
+                    CanBeDismissedByTappingOutsideOfPopup = false,
+                    PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+                };
+
+                IPopupResult<string> popupResult = await _ps.ShowPopupAsync<PopupReassignCategories, string>(
+                    Shell.Current,
+                    options: popupOptions,
+                    shellParameters: queryAttributes,
+                    cancellationToken: CancellationToken.None
+                );
+
+                if (popupResult.Result.ToString() == "Cancel")
                 {
 
                 }
-                else if (result.ToString() == "Ok")
+                else if (popupResult.Result.ToString() == "Ok")
                 {
                     await _ds.DeleteCategory(_vm.HeaderCatId, false, 0);
                     await Shell.Current.GoToAsync($"..");

@@ -73,6 +73,8 @@ namespace DailyBudgetMAUIApp.ViewModels
             
             ChartBrushes = App.ChartBrush;           
         }
+
+
     }
 
 }

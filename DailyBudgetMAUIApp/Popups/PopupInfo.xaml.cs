@@ -2,14 +2,18 @@ using CommunityToolkit.Maui.Views;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupInfo : Popup
+public partial class PopupInfo : Popup, IQueryAttributable
 {
     public double ScreenWidth { get; }
     public double ScreenHeight { get; }
     public double PopupWidth { get; }
     public double PopupHeight { get; }
     public double ButtonOneWidth { get; }
-    public PopupInfo(string Title, List<string> SubTitles, List<string> Info)
+    public string TitleText { get; set; }
+    public List<string> SubTitles { get; set; }
+    public List<string> Info { get; set; }
+
+    public PopupInfo()
     {
         InitializeComponent();
 
@@ -19,7 +23,31 @@ public partial class PopupInfo : Popup
         PopupHeight = ScreenHeight -  360;
         ButtonOneWidth = ((PopupWidth - 100) / 2);
 
-        lblTitle.Text = Title;
+        Loaded += async (s, e) => await PopupInfo_Loaded();
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue(nameof(TitleText), out var titleText) && titleText is string title)
+        {
+            TitleText = title;
+        }
+
+        if (query.TryGetValue(nameof(SubTitles), out var subTitles) && subTitles is List<string> subtitlesList)
+        {
+            SubTitles = subtitlesList;
+        }
+
+        if (query.TryGetValue(nameof(Info), out var info) && info is List<string> infoList)
+        {
+            Info = infoList;
+        }
+    }
+
+    private async Task PopupInfo_Loaded()
+    {
+        await Task.Delay(1);
+        lblTitle.Text = TitleText;
 
         Application.Current.Resources.TryGetValue("Gray700", out var Gray700);
         Application.Current.Resources.TryGetValue("Gray900", out var Gray900);
@@ -32,7 +60,7 @@ public partial class PopupInfo : Popup
         };
 
         int i = 0;
-        foreach(string details in Info)
+        foreach (string details in Info)
         {
             var VerticalLayout = new VerticalStackLayout
             {
@@ -88,8 +116,8 @@ public partial class PopupInfo : Popup
         BindingContext = this;
     }
 
-	private void Close_Popup(object sender, EventArgs e)
+    private void Close_Popup(object sender, EventArgs e)
 	{
-        this.Close();
+        this.CloseAsync();
     }
 }

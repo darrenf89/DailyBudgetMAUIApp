@@ -1,9 +1,14 @@
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Popups;
+using DailyBudgetMAUIApp.ViewModels;
+using static Android.Renderscripts.ScriptGroup;
+
+using static Android.Util.EventLogTags;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -11,28 +16,22 @@ public partial class ViewBills : BasePage
 {
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
+    private readonly IPopupService _ps;
 	private readonly ViewBillsViewModel _vm;
-    public ViewBills(ViewBillsViewModel viewModel, IProductTools pt, IRestDataService ds)
+    public ViewBills(ViewBillsViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
 	{
         this.BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
-
+        _ps = ps;
 
         InitializeComponent();
-
     }
 
     protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.Windows[0].Page.ShowPopup(PopUp);
-        }
-
+        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
         _vm.IsPageBusy = false;
 
         await Task.Delay(500);
@@ -77,11 +76,7 @@ public partial class ViewBills : BasePage
             double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             _vm.SignOutButtonWidth = ScreenWidth - 60;
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             _vm.IsPageBusy = false;
         }
         catch (Exception ex)
@@ -93,13 +88,7 @@ public partial class ViewBills : BasePage
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
     {
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.Windows[0].Page.ShowPopup(PopUp);
-        }
-
+        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
     }
 
@@ -113,13 +102,7 @@ public partial class ViewBills : BasePage
 
             if(result)
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Shell.Current.GoToAsync($"///{nameof(ViewBills)}/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=ViewBills");
             }
         }
@@ -165,12 +148,33 @@ public partial class ViewBills : BasePage
 
             string Description = "Update the outgoing due date!";
             string DescriptionSub = "Outoing not when you expected, you can update the outgoing due date to any date in the future. We will do the rest!";
-            var popup = new PopUpPageVariableInput("Outgoing due date", Description, DescriptionSub, "", Bill.BillDueDate, "DateTime", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
 
-            if(!string.IsNullOrEmpty(result.ToString()))
+            var queryAttributes = new Dictionary<string, object>
             {
-                Bill.BillDueDate = (DateTime)result;
+                [nameof(PopUpPageVariableInputViewModel.Description)] = Description,
+                [nameof(PopUpPageVariableInputViewModel.DescriptionSub)] = DescriptionSub,
+                [nameof(PopUpPageVariableInputViewModel.TitleText)] = "Outgoing due date",
+                [nameof(PopUpPageVariableInputViewModel.Input)] = Bill.BillDueDate,
+                [nameof(PopUpPageVariableInputViewModel.Type)] = "DateTime",
+                [nameof(PopUpPageVariableInputViewModel.Placeholder)] = "",
+            };
+
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = false,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageVariableInput, object>(
+                Shell.Current,
+                options: popupOptions,
+                shellParameters: queryAttributes,
+                cancellationToken: CancellationToken.None
+            );
+
+            if(popupResult.Result is string && DateTime.TryParse((string)popupResult.Result, out DateTime result))
+            {
+                Bill.BillDueDate = result;
 
                 List<PatchDoc> PatchDocs = new List<PatchDoc>();
                 PatchDoc BillDueDate = new PatchDoc
@@ -229,12 +233,7 @@ public partial class ViewBills : BasePage
             var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
             App.DefaultBudget = Budget;
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
-
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
         }
         catch (Exception ex)
         {
@@ -249,11 +248,32 @@ public partial class ViewBills : BasePage
             var Bill = (Bills)e.Parameter;
 
             string Description = "Update the outgoing amount!";
-            string DescriptionSub = "Outoing not as much as you expected, you can update the outgoing amount and we will do the rest!";
-            var popup = new PopUpPageVariableInput("Outgoing amount", Description, DescriptionSub, "", Bill.BillAmount, "Currency", new PopUpPageVariableInputViewModel());
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
+            string DescriptionSub = "Outgoing not as much as you expected, you can update the outgoing amount and we will do the rest!";
 
-            if (!string.IsNullOrEmpty(result.ToString()))
+            var queryAttributes = new Dictionary<string, object>
+            {
+                [nameof(PopUpPageVariableInputViewModel.Description)] = Description,
+                [nameof(PopUpPageVariableInputViewModel.DescriptionSub)] = DescriptionSub,
+                [nameof(PopUpPageVariableInputViewModel.TitleText)] = "Outgoing amount",
+                [nameof(PopUpPageVariableInputViewModel.Input)] = Bill.BillAmount,
+                [nameof(PopUpPageVariableInputViewModel.Type)] = "Currency",
+                [nameof(PopUpPageVariableInputViewModel.Placeholder)] = "",
+            };
+
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = false,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageVariableInput, object>(
+                Shell.Current,
+                options: popupOptions,
+                shellParameters: queryAttributes,
+                cancellationToken: CancellationToken.None
+            );
+
+            if (popupResult.Result is string && decimal.TryParse((string)popupResult.Result, out decimal result))
             {
                 Bill.BillAmount = (decimal)result;
 
@@ -310,13 +330,7 @@ public partial class ViewBills : BasePage
 
             if (result)
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Shell.Current.GoToAsync($"///{nameof(ViewBills)}/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewBills");
             }
         }

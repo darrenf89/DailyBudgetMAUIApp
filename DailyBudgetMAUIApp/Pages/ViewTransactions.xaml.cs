@@ -3,13 +3,12 @@ using DailyBudgetMAUIApp.Pages.BottomSheets;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Handlers;
-using CommunityToolkit.Maui.Views;
 using Syncfusion.Maui.ListView;
 using Syncfusion.Maui.DataSource;
 using Syncfusion.Maui.DataSource.Extensions;
 using Syncfusion.Maui.ListView.Helpers;
-using System.Globalization;
 using The49.Maui.BottomSheet;
+using CommunityToolkit.Maui;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -19,6 +18,7 @@ public partial class ViewTransactions : BasePage
     private readonly ViewTransactionsViewModel _vm;
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
+    private readonly IPopupService _ps;
     private Transactions tappedItem;
     private double CurrentScrollY;
 
@@ -44,7 +44,7 @@ public partial class ViewTransactions : BasePage
         }
     }
 
-    public ViewTransactions(ViewTransactionsViewModel viewModel, IRestDataService ds, IProductTools pt)
+    public ViewTransactions(ViewTransactionsViewModel viewModel, IRestDataService ds, IProductTools pt, IPopupService ps)
 	{
 		InitializeComponent();
 
@@ -91,13 +91,7 @@ public partial class ViewTransactions : BasePage
 
     protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.Windows[0].Page.ShowPopup(PopUp);
-        }
-
+        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
         _vm.IsPageBusy = false;
 
         await Task.Delay(500);
@@ -113,13 +107,9 @@ public partial class ViewTransactions : BasePage
             base.OnAppearing();
 
             AbsMain.SetLayoutBounds(vslChart, new Rect(0, 0, _vm.ScreenWidth, _vm.ChartContentHeight + 10));
-            AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, _vm.ChartContentHeight + 10, _vm.ScreenWidth, _vm.ScreenHeight));            
+            AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, _vm.ChartContentHeight + 10, _vm.ScreenWidth, _vm.ScreenHeight));
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             _vm.IsPageBusy = false;
         }
         catch (Exception ex)
@@ -132,13 +122,7 @@ public partial class ViewTransactions : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
         }
         catch (Exception ex)
@@ -312,15 +296,6 @@ public partial class ViewTransactions : BasePage
         catch (Exception ex)
         {
             await _pt.HandleException(ex, "ViewTransactions", "ListViewScrollView_Scrolled");
-        }
-    }
-
-    private async void Content_Loaded(object sender, EventArgs e)
-    {
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
         }
     }
 

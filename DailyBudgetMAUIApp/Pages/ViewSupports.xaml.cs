@@ -1,4 +1,7 @@
 
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Extensions;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -6,25 +9,40 @@ namespace DailyBudgetMAUIApp.Pages;
 public partial class ViewSupports : BasePage
 {
     private readonly ViewSupportsViewModel _vm;
-    public ViewSupports(ViewSupportsViewModel viewModel)
+    private readonly IPopupService _ps;
+    public ViewSupports(ViewSupportsViewModel viewModel, IPopupService ps)
     {
         InitializeComponent();
         this.BindingContext = viewModel;
         _vm = viewModel;
+        _ps = ps;
 
     }
+
+
+    protected async override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        try
+        {
+            base.OnNavigatedTo(args);
+
+            Shell.Current.ShowPopup(new PopUpPage(), options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
+
+            await _vm.GetSupports();
+
+            await _ps.ClosePopupAsync(Shell.Current);
+        }
+        catch (Exception ex)
+        {
+            await HandleException(ex, "ViewSupports", "OnNavigatedTo");
+        }
+    }
+
     async protected override void OnAppearing()
     {
         try
         {
             base.OnAppearing();
-            await _vm.GetSupports();
-
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
         }
         catch(Exception ex)
         {

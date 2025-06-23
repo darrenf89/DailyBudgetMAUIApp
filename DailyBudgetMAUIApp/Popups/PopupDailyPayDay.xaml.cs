@@ -1,82 +1,76 @@
 using CommunityToolkit.Maui.Views;
-using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Models;
-using System.Globalization;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.ViewModels;
+using System.Globalization;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupDailyPayDay : Popup
+public partial class PopupDailyPayDay : Popup<Object>
 {
     private readonly PopupDailyPayDayViewModel _vm;
     private readonly IProductTools _pt;
-    private readonly bool _IsPayNow;
 
-    public PopupDailyPayDay(Budgets Budget, PopupDailyPayDayViewModel viewModel, IProductTools pt, bool IsPayNow)
-    {
-        InitializeComponent();
-        _IsPayNow = true;
-        viewModel.Budget = Budget;
-
-        BindingContext = viewModel;
-        _vm = viewModel;
-        _pt = pt;
-
-        _vm.OriginalDate = _vm.Budget.NextIncomePayday.GetValueOrDefault();
-        _vm.OriginalAmount = _vm.Budget.PaydayAmount.GetValueOrDefault();
-
-        hslPayDayAmount.IsVisible = true;
-        hslNextIncomePayday.IsVisible = true;
-
-        double PayDayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        lblPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
-
-        string NextIncomePayday = _vm.Budget.NextIncomePayday.GetValueOrDefault().ToShortDateString();
-        lblNextIncomePayday.Text = NextIncomePayday;
-
-        lblTitle.Text = App.IsFamilyAccount ? "Time for your allowance" : "Transact Payday now!";
-        lblOne.Text = App.IsFamilyAccount ? "Nice, its time for your allowance to be paid. Check with the owner of your parent budget to make sure they have given you the money." : "No better time of the year, month or day ... than pay day";
-        lblTwo.Text = App.IsFamilyAccount ? "Once you have the money, lets allocate it out see what you have left and have some fun!" : "Or do we have it wrong, is pay day not today? Or did you get paid more ... or less this time?!";
-        btnUpdate.Text = "No, go back!";
-
-        if(App.IsFamilyAccount)
-        {
-            btnUpdate.IsVisible = false;
-            btnFinsih.Text = "OK";
-        }
-
-    }
-
-    public PopupDailyPayDay(Budgets Budget, PopupDailyPayDayViewModel viewModel, IProductTools pt)
+    public PopupDailyPayDay(PopupDailyPayDayViewModel viewModel, IProductTools pt)
 	{
         InitializeComponent();
-        _IsPayNow = false;
-        viewModel.Budget = Budget;
-
         BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
+        Loaded += async (s, e) => await Load();
+    }
 
-        _vm.OriginalDate = _vm.Budget.NextIncomePayday.GetValueOrDefault();
-        _vm.OriginalAmount = _vm.Budget.PaydayAmount.GetValueOrDefault();
+    private async Task Load()
+    {
+        await Task.Delay(1);
 
-        hslPayDayAmount.IsVisible = true;
-        hslNextIncomePayday.IsVisible = true;
-
-        double PayDayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
-        lblPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
-
-        string NextIncomePayday = _vm.Budget.NextIncomePayday.GetValueOrDefault().ToShortDateString();
-        lblNextIncomePayday.Text = NextIncomePayday;
-
-        lblTitle.Text = App.IsFamilyAccount ? "Time for your allowance" : "Transact Payday now!";
-
-        if (App.IsFamilyAccount)
+        if (_vm.IsPayNow)
         {
-            btnUpdate.IsVisible = false;
-            btnFinsih.Text = "OK";
+            _vm.OriginalDate = _vm.Budget.NextIncomePayday.GetValueOrDefault();
+            _vm.OriginalAmount = _vm.Budget.PaydayAmount.GetValueOrDefault();
 
+            hslPayDayAmount.IsVisible = true;
+            hslNextIncomePayday.IsVisible = true;
+
+            double PayDayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
+            lblPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
+
+            string NextIncomePayday = _vm.Budget.NextIncomePayday.GetValueOrDefault().ToShortDateString();
+            lblNextIncomePayday.Text = NextIncomePayday;
+
+            lblTitle.Text = App.IsFamilyAccount ? "Time for your allowance" : "Transact Payday now!";
+            lblOne.Text = App.IsFamilyAccount ? "Nice, its time for your allowance to be paid. Check with the owner of your parent budget to make sure they have given you the money." : "No better time of the year, month or day ... than pay day";
+            lblTwo.Text = App.IsFamilyAccount ? "Once you have the money, lets allocate it out see what you have left and have some fun!" : "Or do we have it wrong, is pay day not today? Or did you get paid more ... or less this time?!";
+            btnUpdate.Text = "No, go back!";
+
+            if (App.IsFamilyAccount)
+            {
+                btnUpdate.IsVisible = false;
+                btnFinsih.Text = "OK";
+            }
         }
+        else
+        {
+            _vm.OriginalDate = _vm.Budget.NextIncomePayday.GetValueOrDefault();
+            _vm.OriginalAmount = _vm.Budget.PaydayAmount.GetValueOrDefault();
+
+            hslPayDayAmount.IsVisible = true;
+            hslNextIncomePayday.IsVisible = true;
+
+            double PayDayAmount = (double?)_vm.Budget.PaydayAmount ?? 0;
+            lblPayDayAmount.Text = PayDayAmount.ToString("c", CultureInfo.CurrentCulture);
+
+            string NextIncomePayday = _vm.Budget.NextIncomePayday.GetValueOrDefault().ToShortDateString();
+            lblNextIncomePayday.Text = NextIncomePayday;
+
+            lblTitle.Text = App.IsFamilyAccount ? "Time for your allowance" : "Transact Payday now!";
+
+            if (App.IsFamilyAccount)
+            {
+                btnUpdate.IsVisible = false;
+                btnFinsih.Text = "OK";
+            }
+        }
+            
     }
 
     void PayDayAmount_Changed(object sender, TextChangedEventArgs e)
@@ -86,16 +80,16 @@ public partial class PopupDailyPayDay : Popup
         _vm.Budget.PaydayAmount = PayDayAmount;
     }
 
-    private void Close_Saving(object sender, EventArgs e)
+    private async void Close_Saving(object sender, EventArgs e)
     {
-        this.Close("OK");
+        await CloseAsync("OK");
     }
 
-    private void Update_Saving(object sender, EventArgs e)
+    private async void Update_Saving(object sender, EventArgs e)
     {
-        if(_IsPayNow)
+        if(_vm.IsPayNow)
         {
-            this.Close("Cancel");
+            await CloseAsync("Cancel");
         }
         else
         {
@@ -140,11 +134,11 @@ public partial class PopupDailyPayDay : Popup
         return IsValid;
     }
 
-    private void AcceptUpdate_Saving(object sender, EventArgs e)
+    private async void AcceptUpdate_Saving(object sender, EventArgs e)
     {
         if(ValidatePage())
         {
-            this.Close(_vm.Budget);
+            await CloseAsync(_vm.Budget);
         }
     }
 

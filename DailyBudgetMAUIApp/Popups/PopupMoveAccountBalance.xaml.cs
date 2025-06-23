@@ -1,32 +1,31 @@
 using CommunityToolkit.Maui.Views;
-using DailyBudgetMAUIApp.ViewModels;
-using DailyBudgetMAUIApp.Models;
-using System.Globalization;
 using DailyBudgetMAUIApp.DataServices;
-using System;
+using DailyBudgetMAUIApp.Models;
+using DailyBudgetMAUIApp.ViewModels;
+using System.Globalization;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupMoveAccountBalance : Popup
+public partial class PopupMoveAccountBalance : Popup<String>
 {
     private readonly PopupMoveAccountBalanceViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
 
-    private BankAccounts ToAccount;
-    private List<BankAccounts> FromAccounts;
-
-    public PopupMoveAccountBalance(BankAccounts Account, List<BankAccounts> BankAccounts, PopupMoveAccountBalanceViewModel viewModel, IProductTools pt, IRestDataService ds)
+    public PopupMoveAccountBalance(PopupMoveAccountBalanceViewModel viewModel, IProductTools pt, IRestDataService ds)
 	{
         InitializeComponent();
 
-        ToAccount = Account;
-        FromAccounts = BankAccounts;
         BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
 
+        Loaded += async (s, e) => await PopupMoveBalance_Loaded();       
+    }
+    private async Task PopupMoveBalance_Loaded()
+    {
+        await Task.Delay(1);
         _vm.Amount = 0;
 
         Application.Current.Resources.TryGetValue("Success", out var Success);
@@ -34,7 +33,7 @@ public partial class PopupMoveAccountBalance : Popup
         Application.Current.Resources.TryGetValue("pillSuccess", out var pillSuccess);
         Application.Current.Resources.TryGetValue("pillDanger", out var pillDanger);
         Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
-        
+
         _vm.FromBalanceColor = (Color)Success;
         _vm.FromBalanceStyle = (Style)pillSuccess;
         _vm.ToBalanceColor = (Color)Success;
@@ -43,7 +42,7 @@ public partial class PopupMoveAccountBalance : Popup
         double Amount = 0;
         entAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
 
-        foreach(BankAccounts account in BankAccounts)
+        foreach (BankAccounts account in _vm.FromAccounts)
         {
             MoveBalanceClass MoveBalance = new MoveBalanceClass
             {
@@ -54,17 +53,17 @@ public partial class PopupMoveAccountBalance : Popup
             };
 
             _vm.MoveBalances.Add(MoveBalance);
-            if(Account.ID == account.ID)
+            if (_vm.ToAccount.ID == account.ID)
             {
                 _vm.ToSelectedMoveBalance = MoveBalance;
             }
-            else if(_vm.FromSelectedMoveBalance == null)
+            else if (_vm.FromSelectedMoveBalance == null)
             {
                 _vm.FromSelectedMoveBalance = MoveBalance;
             }
         }
         _vm.FromEnabled = true;
-        _vm.ToEnabled = false;        
+        _vm.ToEnabled = false;
     }
 
     void Amount_Changed(object sender, TextChangedEventArgs e)
@@ -148,16 +147,16 @@ public partial class PopupMoveAccountBalance : Popup
                     decimal FromAmount = _vm.FromSelectedMoveBalance.Balance - _vm.Amount;
                     int FromID = _vm.FromSelectedMoveBalance.Id;
 
-                    BankAccounts? FromAccount = FromAccounts.Where(a=> a.ID == FromID).FirstOrDefault();
+                    BankAccounts? FromAccount = _vm.FromAccounts.Where(a=> a.ID == FromID).FirstOrDefault();
                     FromAccount.AccountBankBalance = FromAmount;
                     await _ds.UpdateBankAccounts(App.DefaultBudgetID, FromAccount);
 
-                    decimal ToAmount = _vm.ToSelectedMoveBalance.Balance + _vm.Amount; 
-                    ToAccount.AccountBankBalance = ToAmount;
-                    await _ds.UpdateBankAccounts(App.DefaultBudgetID, ToAccount);
+                    decimal ToAmount = _vm.ToSelectedMoveBalance.Balance + _vm.Amount;
+                    _vm.ToAccount.AccountBankBalance = ToAmount;
+                    await _ds.UpdateBankAccounts(App.DefaultBudgetID, _vm.ToAccount);
                 }
                 await _pt.MakeSnackBar("We have updated your bank accounts balances, get budgeting", null, null, new TimeSpan(0, 0, 10), "Success");
-                this.Close("OK");
+                await CloseAsync("OK");
             }
         }
         catch (Exception ex)
@@ -166,9 +165,9 @@ public partial class PopupMoveAccountBalance : Popup
         }
     }
 
-    private void CancelUpdate_Saving(object sender, EventArgs e)
+    private async void CancelUpdate_Saving(object sender, EventArgs e)
     {
-        this.Close("Closed");
+        await CloseAsync("Closed");
     }
 
 }

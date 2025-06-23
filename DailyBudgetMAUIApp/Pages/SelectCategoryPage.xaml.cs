@@ -1,11 +1,11 @@
+using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
-using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Popups;
-using Microsoft.Maui.Layouts;
-using CommunityToolkit.Maui.Views;
+using DailyBudgetMAUIApp.ViewModels;
 using Microsoft.Maui.Controls.Shapes;
+using Microsoft.Maui.Layouts;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -13,6 +13,7 @@ public partial class SelectCategoryPage : BasePage
 {
 	private readonly IRestDataService _ds;
 	private readonly IProductTools _pt;
+	private readonly IPopupService _ps;
 	private readonly SelectCategoryPageViewModel _vm;
     private Dictionary<string, Grid> AddNewCat = new Dictionary<string, Grid>();
     private Dictionary<string, VerticalStackLayout> SubCatList = new Dictionary<string, VerticalStackLayout>();
@@ -24,10 +25,11 @@ public partial class SelectCategoryPage : BasePage
     public double ScreenWidth { get; set; }
     public double ScreenHeight { get; set; }
 
-    public SelectCategoryPage(IRestDataService ds, IProductTools pt, SelectCategoryPageViewModel viewModel)
+    public SelectCategoryPage(IRestDataService ds, IProductTools pt, SelectCategoryPageViewModel viewModel, IPopupService ps)
     {
         _ds = ds;
         _pt = pt;
+        _ps = ps;
 
         InitializeComponent();
 
@@ -64,11 +66,7 @@ public partial class SelectCategoryPage : BasePage
 
         base.OnNavigatedTo(args);
 
-        if (App.CurrentPopUp != null)
-        {
-            await App.CurrentPopUp.CloseAsync();
-            App.CurrentPopUp = null;
-        }
+        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
     }
 
 
@@ -76,13 +74,6 @@ public partial class SelectCategoryPage : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
             await Task.Delay(10);
 
             TopBV.WidthRequest = ScreenWidth;
@@ -945,13 +936,7 @@ public partial class SelectCategoryPage : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Task.Delay(10);
 
             entCatFilterSearch.IsEnabled = false;
@@ -1014,11 +999,7 @@ public partial class SelectCategoryPage : BasePage
 
             acrFilterOption_Tapped(null, null);
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
         }
         catch (Exception ex)
         {

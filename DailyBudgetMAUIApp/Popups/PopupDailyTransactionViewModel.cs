@@ -4,7 +4,7 @@ using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupDailyTransactionViewModel : BaseViewModel
+    public partial class PopupDailyTransactionViewModel : BaseViewModel, IQueryAttributable
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -29,6 +29,15 @@ namespace DailyBudgetMAUIApp.ViewModels
             ButtonOneWidth = ((PopupWidth - 60) / 2);
             ButtonTwoWidth = ((PopupWidth - 140) / 3);
             ButtonThreeWidth = ((PopupWidth - 260) / 2);
+
+        }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue(nameof(Transaction), out var transaction) && transaction is Transactions t)
+            {
+                Transaction = t;
+            }
 
         }
     }

@@ -1,6 +1,7 @@
-﻿using CommunityToolkit.Maui.Alerts;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.Messaging;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
@@ -21,12 +22,14 @@ public partial class MainPage : BasePage
     private readonly MainPageViewModel _vm;
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
+    private readonly IPopupService _ps;
     public Picker SwitchBudgetPicker { get; set; }
 
-    public MainPage(MainPageViewModel viewModel, IRestDataService ds, IProductTools pt)
+    public MainPage(MainPageViewModel viewModel, IRestDataService ds, IProductTools pt, IPopupService ps)
 	{
         _ds = ds;
         _pt = pt;
+        _ps = ps;
 
         InitializeComponent();
 
@@ -64,25 +67,28 @@ public partial class MainPage : BasePage
         await _ds.PatchUserAccount(App.UserDetails.UserID, UserUpdate);
     }
 
-    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
-    {
-        if (App.CurrentPopUp == null)
-        {
-            var PopUp = new PopUpPage();
-            App.CurrentPopUp = PopUp;
-            Application.Current.Windows[0].Page.ShowPopup(PopUp);
-        }
+    //protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    //{
+    //    var NavStack = Shell.Current.Navigation.NavigationStack;
+    //    var Count = NavStack.Count;
 
-        _vm.IsMainPageBusy = false;
+    //    if (!App.IsPopupShowing) 
+    //    { 
+    //        App.IsPopupShowing = true;
+    //        Shell.Current.ShowPopup(new PopUpPage(), options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
+    //    }
 
-        await Task.Delay(1000);
-        base.OnNavigatingFrom(args);
-    }
+    //    NavStack = Shell.Current.Navigation.NavigationStack;
+    //    Count = NavStack.Count;
+
+    //    _vm.IsMainPageBusy = false;
+
+    //    await Task.Delay(1000);
+    //    base.OnNavigatingFrom(args);
+    //}
 
     protected async override void OnAppearing()
     {
-
-
         try
         {
             if (App.IsFamilyAccount)
@@ -218,18 +224,18 @@ public partial class MainPage : BasePage
             _vm.ReloadPage += async () =>
             {
                 await LoadMainDashboardContent();
-
-                if (App.CurrentPopUp != null)
+                if (App.IsPopupShowing)
                 {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
+                    App.IsPopupShowing = false;
+                    await _ps.ClosePopupAsync(Shell.Current);
                 }
+
             };
 
-            if (App.CurrentPopUp != null)
+            if(App.IsPopupShowing)
             {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
+                App.IsPopupShowing = false;
+                await _ps.ClosePopupAsync(Shell.Current);
             }
 
             _vm.IsMainPageBusy = false;
@@ -256,12 +262,11 @@ public partial class MainPage : BasePage
             try
             {
                 if(!m._isBackground)
-                {               
-                    if (App.CurrentPopUp == null)
+                {
+                    if (App.IsPopupShowing)
                     {
-                        var PopUp = new PopUpPage();
-                        App.CurrentPopUp = PopUp;
-                        Application.Current.Windows[0].Page.ShowPopup(PopUp);
+                        App.IsPopupShowing = false;
+                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
                     }
                 }
 
@@ -279,11 +284,11 @@ public partial class MainPage : BasePage
 
                 if (!m._isBackground)
                 {
-                    if (App.CurrentPopUp != null)
-                    {
-                        await App.CurrentPopUp.CloseAsync();
-                        App.CurrentPopUp = null;
-                    } 
+                                if(App.IsPopupShowing)
+            {
+                App.IsPopupShowing = false;
+                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+            }
                 }
             }
             catch
@@ -676,12 +681,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
             List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
 
@@ -749,19 +749,35 @@ public partial class MainPage : BasePage
     {
         try
         {
-            var popup = new PopUpOTP(_vm.DefaultBudget.AccountInfo.BudgetShareRequestID, new PopUpOTPViewModel(_ds, _pt), "ShareBudget", _pt, _ds);
-            App.CurrentPopUp = popup;
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-
-            if ((string)result.ToString() != "User Closed")
+            var queryAttributes = new Dictionary<string, object>
             {
-                ShareBudgetRequest BudgetRequest = (ShareBudgetRequest)result;
+                [nameof(PopUpOTPViewModel.UserID)] = _vm.DefaultBudget.AccountInfo.BudgetShareRequestID,
+                [nameof(PopUpOTPViewModel.OTPType)] = "ShareBudget"
+            };
 
-                bool DefaultBudgetYesNo = await Application.Current.Windows[0].Page.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = false,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
 
-                if (DefaultBudgetYesNo)
+            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpOTP, object>(
+                Shell.Current,
+                options: popupOptions,
+                shellParameters: queryAttributes,
+                cancellationToken: CancellationToken.None
+            );
+
+            if ((string)popupResult.Result.ToString() != "User Closed")
+            {
+                if (popupResult.Result is ShareBudgetRequest BudgetRequest)
                 {
-                    await _pt.ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID, true);
+                    bool DefaultBudgetYesNo = await Application.Current.Windows[0].Page.DisplayAlert($"Update Default Budget ", $"CONGRATS!! You have shared a budget with {BudgetRequest.SharedByUserEmail}, do you want to make this budget your default Budget?", "Yes, continue", "No Thanks!");
+
+                    if (DefaultBudgetYesNo)
+                    {
+                        await _pt.ChangeDefaultBudget(App.UserDetails.UserID, BudgetRequest.SharedBudgetID, true);
+                    }
                 }
             }
         }
@@ -784,7 +800,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet(_ds, _pt);
+            TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet(_ds, _pt, _ps);
 
             page.Detents = new DetentsCollection()
             {
@@ -809,7 +825,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            BudgetOptionsBottomSheet page = new BudgetOptionsBottomSheet(_vm.DefaultBudget, _pt,_ds);
+            BudgetOptionsBottomSheet page = new BudgetOptionsBottomSheet(_vm.DefaultBudget, _pt,_ds, _ps);
 
             page.Detents = new DetentsCollection()
             {
@@ -833,7 +849,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(_ds, _pt);
+            EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(_ds, _pt, _ps);
 
             page.Detents = new DetentsCollection()
             {
@@ -863,12 +879,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
             if (App.CurrentBottomSheet != null)
             {
@@ -890,12 +901,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
             if (App.CurrentBottomSheet != null)
             {
@@ -914,12 +920,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewBills)}");
         }
@@ -934,12 +935,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
         }
@@ -1118,10 +1114,29 @@ public partial class MainPage : BasePage
     {
         try
         {
-            var popup = new PopupMoveBalance(App.DefaultBudget, "Budget", 0, true, new PopupMoveBalanceViewModel(), _pt, _ds);
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-            await Task.Delay(100);
-            if (result.ToString() == "OK")
+            var queryAttributes = new Dictionary<string, object>
+            {
+                [nameof(PopupMoveBalanceViewModel.Budget)] = App.DefaultBudget,
+                [nameof(PopupMoveBalanceViewModel.Type)] = "Budget",
+                [nameof(PopupMoveBalanceViewModel.Id)] = 0,
+                [nameof(PopupMoveBalanceViewModel.IsCoverOverSpend)] = true
+            };
+
+            var popupOptions = new PopupOptions
+            {
+                CanBeDismissedByTappingOutsideOfPopup = false,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
+
+            IPopupResult<string> popupResult = await _ps.ShowPopupAsync<PopupMoveBalance, string>(
+                Shell.Current,
+                options: popupOptions,
+                shellParameters: queryAttributes,
+                cancellationToken: CancellationToken.None
+            );
+
+            await Task.Delay(1);
+            if (popupResult.Result.ToString() == "OK")
             {
                 var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
                 App.DefaultBudget = Budget;
@@ -1137,7 +1152,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            CategoryOptionsBottomSheet page = new CategoryOptionsBottomSheet(_ds, _pt);
+            CategoryOptionsBottomSheet page = new CategoryOptionsBottomSheet(_ds, _pt, _ps);
 
             page.Detents = new DetentsCollection()
             {
@@ -1161,7 +1176,7 @@ public partial class MainPage : BasePage
     {
         try
         {
-            PayeeOptionsBottomSheet page = new PayeeOptionsBottomSheet(_ds, _pt);
+            PayeeOptionsBottomSheet page = new PayeeOptionsBottomSheet(_ds, _pt, _ps);
 
             page.Detents = new DetentsCollection()
             {

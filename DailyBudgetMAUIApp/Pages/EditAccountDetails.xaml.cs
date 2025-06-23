@@ -1,12 +1,12 @@
-using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
-using DailyBudgetMAUIApp.Popups;
 using DailyBudgetMAUIApp.ViewModels;
 using Microsoft.Maui.Layouts;
 using Plugin.LocalNotification;
 using Plugin.Maui.AppRating;
-using Syncfusion.Maui.Core;
+using static Android.Renderscripts.ScriptGroup;
 
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -22,8 +22,9 @@ public partial class EditAccountDetails : BasePage
 
     private readonly EditAccountDetailsViewModel _vm;
     private readonly IProductTools _pt;
+    private readonly IPopupService _ps;
 
-    public EditAccountDetails(EditAccountDetailsViewModel viewModel, IProductTools pt, IAppRating ar)
+    public EditAccountDetails(EditAccountDetailsViewModel viewModel, IProductTools pt, IAppRating ar, IPopupService ps)
 	{
 		InitializeComponent();      
 
@@ -31,6 +32,7 @@ public partial class EditAccountDetails : BasePage
         _vm = viewModel;
         _pt = pt;
         _ar = ar;
+        _ps = ps;
 
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 60;
@@ -52,14 +54,9 @@ public partial class EditAccountDetails : BasePage
             if(App.IsFamilyAccount)
             {
                 ViewSubDetails.IsVisible = false;
-            }            
-
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
             }
 
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
         }
         catch (Exception ex)
         {
@@ -227,13 +224,7 @@ public partial class EditAccountDetails : BasePage
     {
         try
         {
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpPage();
-                App.CurrentPopUp = PopUp;
-                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-            }
-
+            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Task.Delay(1);
 
             if (Preferences.ContainsKey(nameof(App.UserDetails)))
@@ -278,13 +269,21 @@ public partial class EditAccountDetails : BasePage
     {
         try
         {
-
-            var popup = new PopUpContactUs(new PopUpContactUsViewModel(_pt, IPlatformApplication.Current.Services.GetService<IRestDataService>()));            
-            var result = await Application.Current.Windows[0].Page.ShowPopupAsync(popup);
-            if (result is int)
+            var popupOptions = new PopupOptions
             {
+                CanBeDismissedByTappingOutsideOfPopup = false,
+                PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
+            };
 
-                int SupportID = (int)result;
+            IPopupResult<string> popupResult = await _ps.ShowPopupAsync<PopUpContactUs, string>(
+                Shell.Current,
+                options: popupOptions,
+                shellParameters: null,
+                cancellationToken: CancellationToken.None
+            );
+
+            if (int.TryParse(popupResult.Result, out int SupportID))
+            {
                 Action action = async () =>
                 {
                     await Task.Delay(500);
@@ -293,7 +292,7 @@ public partial class EditAccountDetails : BasePage
                 };
                 await _pt.MakeSnackBar("We have received your inquiry", action, "View", new TimeSpan(0, 0, 10), "Success");
             }
-            else if((string)result.ToString() == "Closed")
+            else if((string)popupResult.Result.ToString() == "Closed")
             {
 
             }

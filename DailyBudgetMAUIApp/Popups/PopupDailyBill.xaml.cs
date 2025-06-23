@@ -3,64 +3,60 @@ using DailyBudgetMAUIApp.ViewModels;
 using DailyBudgetMAUIApp.Models;
 using System.Globalization;
 using DailyBudgetMAUIApp.DataServices;
+using System.Threading.Tasks;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupDailyBill : Popup
+public partial class PopupDailyBill : Popup<Object>
 {
     private readonly PopupDailyBillViewModel _vm;
     private readonly IProductTools _pt;
-    private readonly bool _IsAcceptOnly;
 
-    public PopupDailyBill(Bills Bill, PopupDailyBillViewModel viewModel, IProductTools pt, bool IsAcceptOnly)
+    public PopupDailyBill(PopupDailyBillViewModel viewModel, IProductTools pt)
     {
         InitializeComponent();
-        _IsAcceptOnly = true;
-        viewModel.Bill = Bill;
 
         BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
 
-        _vm.OriginalDate = _vm.Bill.BillDueDate.GetValueOrDefault();
-        _vm.OriginalAmount = _vm.Bill.BillAmount.GetValueOrDefault();
-
-        hslBillAmount.IsVisible = true;
-        hslTargetDate.IsVisible = true;
-
-        double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
-        lblBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
-
-        string GoalDate = _vm.Bill.BillDueDate.GetValueOrDefault().ToShortDateString();
-        lblTargetDate.Text = GoalDate;
-
-        btnUpdate.Text = "No, Go Back";
-        lblTitle.Text = "Pay Bill Now!";
-
+        Loaded += async (s, e) => await Load();
     }
 
-    public PopupDailyBill(Bills Bill, PopupDailyBillViewModel viewModel, IProductTools pt)
-	{
-        InitializeComponent();
-        _IsAcceptOnly = false;
-        viewModel.Bill = Bill;
+    private async Task Load()
+    {
+        await Task.Delay(1);
+        if (_vm.IsAcceptOnly)
+        {
+            _vm.OriginalDate = _vm.Bill.BillDueDate.GetValueOrDefault();
+            _vm.OriginalAmount = _vm.Bill.BillAmount.GetValueOrDefault();
 
-        BindingContext = viewModel;
-        _vm = viewModel;
-        _pt = pt;
+            hslBillAmount.IsVisible = true;
+            hslTargetDate.IsVisible = true;
 
-        _vm.OriginalDate = _vm.Bill.BillDueDate.GetValueOrDefault();
-        _vm.OriginalAmount = _vm.Bill.BillAmount.GetValueOrDefault();
+            double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
+            lblBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
 
-        hslBillAmount.IsVisible = true;
-        hslTargetDate.IsVisible = true;
+            string GoalDate = _vm.Bill.BillDueDate.GetValueOrDefault().ToShortDateString();
+            lblTargetDate.Text = GoalDate;
 
-        double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
-        lblBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
+            btnUpdate.Text = "No, Go Back";
+            lblTitle.Text = "Pay Bill Now!";
+        }
+        else
+        {
+            _vm.OriginalDate = _vm.Bill.BillDueDate.GetValueOrDefault();
+            _vm.OriginalAmount = _vm.Bill.BillAmount.GetValueOrDefault();
 
-        string GoalDate = _vm.Bill.BillDueDate.GetValueOrDefault().ToShortDateString();
-        lblTargetDate.Text = GoalDate;
-   
+            hslBillAmount.IsVisible = true;
+            hslTargetDate.IsVisible = true;
+
+            double BillAmount = (double?)_vm.Bill.BillAmount ?? 0;
+            lblBillAmount.Text = BillAmount.ToString("c", CultureInfo.CurrentCulture);
+
+            string GoalDate = _vm.Bill.BillDueDate.GetValueOrDefault().ToShortDateString();
+            lblTargetDate.Text = GoalDate;
+        }
     }
 
     void BillAmount_Changed(object sender, TextChangedEventArgs e)
@@ -77,14 +73,14 @@ public partial class PopupDailyBill : Popup
         }
     }
 
-    private void Close_Saving(object sender, EventArgs e)
+    private async void Close_Saving(object sender, EventArgs e)
     {
-        this.Close("OK");
+        await CloseAsync("OK");
     }
 
-    private void DeleteYes_Saving(object sender, EventArgs e)
+    private async void DeleteYes_Saving(object sender, EventArgs e)
     {
-        this.Close("Delete");
+        await CloseAsync("Delete");
     }
 
     private void DeleteNo_Saving(object sender, EventArgs e)
@@ -93,7 +89,7 @@ public partial class PopupDailyBill : Popup
         {
             grdFirstBtns.IsVisible = false;
             grdUpdateBtns.IsVisible = true;
-            if (_IsAcceptOnly) 
+            if (_vm.IsAcceptOnly) 
             {
                 btnDelete.IsVisible = false;
             }
@@ -137,20 +133,20 @@ public partial class PopupDailyBill : Popup
         }
     }
 
-    private void Update_Saving(object sender, EventArgs e)
+    private async void Update_Saving(object sender, EventArgs e)
     {
         try
         {
 
-            if(_IsAcceptOnly)
+            if(_vm.IsAcceptOnly)
             {
-                this.Close("Cancel");
+                await CloseAsync("Cancel");
             }
             else
             {
                 grdFirstBtns.IsVisible = false;
                 grdUpdateBtns.IsVisible = true;
-                if (_IsAcceptOnly)
+                if (_vm.IsAcceptOnly)
                 {
                     btnDelete.IsVisible = false;
                 }
@@ -203,7 +199,7 @@ public partial class PopupDailyBill : Popup
         return IsValid;
     }
 
-    private void AcceptUpdate_Saving(object sender, EventArgs e)
+    private async void AcceptUpdate_Saving(object sender, EventArgs e)
     {
         try
         {
@@ -222,7 +218,7 @@ public partial class PopupDailyBill : Popup
                     _vm.Bill.RegularBillValue = AmountOutstanding;
                 }            
 
-                this.Close(_vm.Bill);
+                await CloseAsync(_vm.Bill);
             }
         }
         catch (Exception ex)

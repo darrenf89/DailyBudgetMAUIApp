@@ -6,7 +6,7 @@ using System.Globalization;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupMoveAccountBalanceViewModel : BaseViewModel
+    public partial class PopupMoveAccountBalanceViewModel : BaseViewModel, IQueryAttributable
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -58,6 +58,12 @@ namespace DailyBudgetMAUIApp.ViewModels
         public partial Budgets Budget { get; set; }
 
         [ObservableProperty]
+        public partial BankAccounts ToAccount { get; set; }
+
+        [ObservableProperty]
+        public partial List<BankAccounts> FromAccounts { get; set; }
+
+        [ObservableProperty]
         public partial ObservableCollection<MoveBalanceClass> MoveBalances { get; set; } = new();
 
 
@@ -67,6 +73,19 @@ namespace DailyBudgetMAUIApp.ViewModels
             ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             PopupWidth = ScreenWidth - 30;
             EntryWidth = PopupWidth * 0.6;
+        }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue(nameof(FromAccounts), out var fromAccounts) && fromAccounts is List<BankAccounts> fromList)
+            {
+                FromAccounts = fromList;
+            }
+
+            if (query.TryGetValue(nameof(ToAccount), out var toAccount) && toAccount is BankAccounts to)
+            {
+                ToAccount = to;
+            }
         }
 
         partial void OnFromSelectedMoveBalanceChanged(MoveBalanceClass oldValue, MoveBalanceClass newValue)

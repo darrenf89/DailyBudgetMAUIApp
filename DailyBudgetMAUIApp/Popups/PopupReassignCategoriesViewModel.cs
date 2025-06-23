@@ -6,7 +6,7 @@ using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupReassignCategoriesViewModel : BaseViewModel
+    public partial class PopupReassignCategoriesViewModel : BaseViewModel, IQueryAttributable
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
@@ -36,7 +36,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public partial List<string> DdlCategories { get; set; } = new List<string>();
 
 
-        public PopupReassignCategoriesViewModel(Dictionary<string, int> InputReAssignCategories, int InputHeaderCatID, List<Categories> InputCategories, IRestDataService ds, IProductTools pt)
+        public PopupReassignCategoriesViewModel(IRestDataService ds, IProductTools pt)
         {
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
             MaxHeight = ScreenHeight * 0.4;
@@ -47,10 +47,6 @@ namespace DailyBudgetMAUIApp.ViewModels
             ButtonTwoWidth = ((PopupWidth - 140) / 3);
             ButtonThreeWidth = ((PopupWidth - 260) / 2);
 
-            Categories = InputCategories;
-            ReAssignCategories = InputReAssignCategories;
-            HeaderCatID = InputHeaderCatID;
-
             _ds = ds;
             _pt = pt;
 
@@ -59,6 +55,24 @@ namespace DailyBudgetMAUIApp.ViewModels
             foreach(string item in ReAssignCategories.Keys)
             {
                 DdlCategories.Add(item);
+            }
+        }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue(nameof(Categories), out var categories) && categories is List<Categories> catList)
+            {
+                Categories = catList;
+            }
+
+            if (query.TryGetValue(nameof(ReAssignCategories), out var reassign) && reassign is Dictionary<string, int> reassignDict)
+            {
+                ReAssignCategories = reassignDict;
+            }
+
+            if (query.TryGetValue(nameof(HeaderCatID), out var headerId) && headerId is int id)
+            {
+                HeaderCatID = id;
             }
         }
 

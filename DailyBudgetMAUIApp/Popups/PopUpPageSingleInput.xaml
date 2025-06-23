@@ -5,8 +5,8 @@
            xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
            xmlns:handlers="clr-namespace:DailyBudgetMAUIApp.Handlers"
            xmlns:helpers="clr-namespace:DailyBudgetMAUIApp.Helpers"
-           CanBeDismissedByTappingOutsideOfPopup="False"
-           Color="#80000000">
+           xmlns:system="clr-namespace:System;assembly=mscorlib"
+           x:TypeArguments="system:String">
     <AbsoluteLayout 
         x:Name="AbsLayout">
         <ImageButton

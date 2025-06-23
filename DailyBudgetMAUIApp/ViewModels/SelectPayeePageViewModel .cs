@@ -1,9 +1,10 @@
-﻿using DailyBudgetMAUIApp.DataServices;
-using DailyBudgetMAUIApp.Models;
+﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.Input;
+using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
+using DailyBudgetMAUIApp.Models;
+using static Android.Telephony.CarrierConfigManager;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
@@ -16,6 +17,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
+        private readonly IPopupService _ps;
 
         [ObservableProperty]
         public partial int BudgetID { get; set; }
@@ -55,10 +57,11 @@ namespace DailyBudgetMAUIApp.ViewModels
         public double PayeeBorderWidth { get; }
         public double MinHeight { get; }
 
-        public SelectPayeePageViewModel(IProductTools pt, IRestDataService ds)
+        public SelectPayeePageViewModel(IProductTools pt, IRestDataService ds, IPopupService ps)
         {
             _pt = pt;
             _ds = ds;
+            _ps = ps;
 
             ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             double ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
@@ -73,12 +76,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpPage();
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
+                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
 
                 await Task.Delay(500);
 

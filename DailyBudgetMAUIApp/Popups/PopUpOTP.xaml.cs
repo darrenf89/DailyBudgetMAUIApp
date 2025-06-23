@@ -8,17 +8,14 @@ using System.Text.RegularExpressions;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopUpOTP : Popup
+public partial class PopUpOTP : Popup<Object>
 {
 
     private readonly PopUpOTPViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    private readonly int _userID;
-    private readonly string _otpType;
 
-
-    public PopUpOTP(int UserID, PopUpOTPViewModel viewModel, string OTPType, IProductTools pt, IRestDataService ds)
+    public PopUpOTP(PopUpOTPViewModel viewModel, IProductTools pt, IRestDataService ds)
     {
         InitializeComponent();
 
@@ -26,31 +23,26 @@ public partial class PopUpOTP : Popup
         Rect rt = new Rect(width, 123, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize);
         AbsLayout.SetLayoutBounds(btnClose, rt);
 
-        _userID = UserID;
         _vm = viewModel;
         _pt = pt;
         _ds = ds;
-        _otpType = OTPType;
+
         BindingContext = _vm;
 
-        Opened += async (s, e) => await InitializeAsync();
+        Loaded += async (s, e) => await InitializeAsync();
     }
 
     private async Task InitializeAsync()
     {
         try
         {
-            if (_otpType == "ShareBudget")
+            if (_vm.OTPType == "ShareBudget")
             {
-                _vm.ShareBudgetRequest = await _ds.GetShareBudgetRequestByID(_userID);
+                _vm.ShareBudgetRequest = await _ds.GetShareBudgetRequestByID(_vm.UserID);
                 _vm.UserID = _vm.ShareBudgetRequest.SharedWithUserAccountID;
             }
-            else
-            {
-                _vm.UserID = _userID;
-            }
 
-            _vm.OTPType = _otpType;
+            _vm.OTPType = _vm.OTPType;
             _vm.OTP = new OTP();
             _vm.OTP.OTPCode = "";
 
@@ -265,8 +257,8 @@ public partial class PopUpOTP : Popup
                         {
                             _vm.OTPValidated = true;
                             keyboardService.HideKeyboard();
-                            App.CurrentPopUp = null;
-                            this.Close("OK");
+
+                            await CloseAsync("OK");
                         }
                         else
                         {
@@ -342,8 +334,7 @@ public partial class PopUpOTP : Popup
                         if(status == "OK")
                         {
                             keyboardService.HideKeyboard();
-                            App.CurrentPopUp = null;
-                            this.Close("OK");
+                            await CloseAsync("OK");
                         }
                         else
                         {
@@ -458,8 +449,7 @@ public partial class PopUpOTP : Popup
                         if(status == "OK")
                         {
                             keyboardService.HideKeyboard();
-                            App.CurrentPopUp = null;
-                            this.Close("OK");
+                            await CloseAsync("OK");
                         }
                         else
                         {
@@ -509,8 +499,7 @@ public partial class PopUpOTP : Popup
                         _vm.ShareBudgetRequest.IsVerified = true;
                         _vm.OTPValidated = true;
                         keyboardService.HideKeyboard();
-                        App.CurrentPopUp = null;
-                        this.Close(_vm.ShareBudgetRequest);
+                        await CloseAsync(_vm.ShareBudgetRequest);
                     }
                     else if(status == "Error")
                     {
@@ -632,8 +621,7 @@ public partial class PopUpOTP : Popup
                             if (status == "OK")
                             {
                                 keyboardService.HideKeyboard();
-                                App.CurrentPopUp = null;
-                                this.Close("OK");
+                                await CloseAsync("OK");
                             }
                             else
                             {
@@ -741,10 +729,9 @@ public partial class PopUpOTP : Popup
         }
     }
 
-    private void Close_Window(object sender, EventArgs e)
+    private async void Close_Window(object sender, EventArgs e)
     {
-        App.CurrentPopUp = null;
-        this.Close("User Closed");
+        await CloseAsync("User Closed");
     }
 
     private void txtEmail_Loaded(object sender, EventArgs e)

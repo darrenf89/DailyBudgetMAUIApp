@@ -1,11 +1,10 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using DailySpendWebApp.Models;
 using Newtonsoft.Json;
 using System.Diagnostics;
-using System.Dynamic;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -30,8 +29,11 @@ namespace DailyBudgetMAUIApp.DataServices
         private bool IsRefreshingToken = false;
 
         private readonly ILogService _ls;
+        private readonly IPopupService _ps;
 
-        public RestDataService(ILogService ls)
+        public bool IsPopUpNoServerShowing = false;
+
+        public RestDataService(ILogService ls, IPopupService ps)
         {
             _httpClient = new HttpClient
             {
@@ -46,6 +48,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
             _ls = ls;
+            _ps = ps;
         }
 
         public async Task<ErrorLog> CreateNewErrorLog(ErrorLog NewLog)
@@ -117,18 +120,10 @@ namespace DailyBudgetMAUIApp.DataServices
                         if (roundTripTime > 2000)
                         {
                             //TODO: SHOW A POPUP
-                            if (App.CurrentPopUp != null)
-                            {
-                                await App.CurrentPopUp.CloseAsync();
-                                App.CurrentPopUp = null;
-                            }
-
-                            if (App.CurrentPopUp == null)
-                            {
-                                var PopUp = new PopUpNoServer(new PopUpNoServerViewModel());
-                                App.CurrentPopUp = PopUp;
-                                Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                            }
+                            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+                            _ps.ShowPopup<PopUpNoServer>(Application.Current.Windows[0].Page, options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
+                            IsPopUpNoServerShowing = true;
+                            App.IsPopupShowing = true;
 
                             int i = 0;
                             while (roundTripTime > 2000 && i < 2)
@@ -144,11 +139,7 @@ namespace DailyBudgetMAUIApp.DataServices
                                 i++;
                             }
 
-                            if (App.CurrentPopUp != null)
-                            {
-                                await App.CurrentPopUp.CloseAsync();
-                                App.CurrentPopUp = null;
-                            }
+                            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
 
                             return true;
                         }
@@ -234,19 +225,9 @@ namespace DailyBudgetMAUIApp.DataServices
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
-
-                if (App.CurrentPopUp == null)
-                {
-                    var PopUp = new PopUpNoNetwork(new PopUpNoNetworkViewModel());
-                    App.CurrentPopUp = PopUp;
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-
+                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+                _ps.ShowPopup<PopUpNoNetwork>(Application.Current.Windows[0].Page, options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
+                App.IsPopupShowing = true;
                 await Task.Delay(1);
 
                 int i = 0;
@@ -256,11 +237,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     i++;
                 }
 
-                if (App.CurrentPopUp != null)
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
+                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             }
 
             return Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
@@ -334,7 +311,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 IsRefreshingToken = false;
             }
 
-            if(!_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionToken") ||!_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionClient") ||!_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionUser"))
+            if (!_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionToken") || !_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionClient") || !_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionUser"))
             {
                 if (_httpClient.DefaultRequestHeaders.Contains("X-Custom-SessionToken"))
                     _httpClient.DefaultRequestHeaders.Remove("X-Custom-SessionToken");
@@ -436,9 +413,9 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 }
                 catch (Exception ex)
-                { 
+                {
                     await _ls.LogErrorAsync($"POST REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
-                    throw;                    
+                    throw;
                 }
 
                 if (attempt == 1)
@@ -491,10 +468,10 @@ namespace DailyBudgetMAUIApp.DataServices
                     await _ls.LogErrorAsync($"PATCH REQUEST TIMED OUT - attempt {attempt}. Reason: {ex.Message}");
 
                 }
-                catch (Exception ex)   
+                catch (Exception ex)
                 {
                     await _ls.LogErrorAsync($"PATCH REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
-                    throw;                    
+                    throw;
                 }
 
                 if (attempt == 1)
@@ -550,7 +527,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
 
                     await _ls.LogErrorAsync($"PATCH REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
-                    throw;                    
+                    throw;
                 }
 
                 if (attempt == 1)
@@ -575,32 +552,21 @@ namespace DailyBudgetMAUIApp.DataServices
         {
             await Task.Delay(10);
 
-            if (App.CurrentPopUp != null)
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            if (Application.Current.Windows[0].Page != null)
             {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
+                _ps.ShowPopup<PopUpNoServer>(Application.Current.Windows[0].Page, options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
+                App.IsPopupShowing = true;
+                IsPopUpNoServerShowing = true;
             }
 
-            if (App.CurrentPopUp == null)
-            {
-                var PopUp = new PopUpNoServer(new PopUpNoServerViewModel());
-                App.CurrentPopUp = PopUp;
-                if (Application.Current.Windows[0].Page != null)
-                {
-                    Application.Current.Windows[0].Page.ShowPopup(PopUp);
-                }
-            }
         }
         public async Task HideServerConnectionPopup()
         {
-            if (App.CurrentPopUp != null)
+            if (IsPopUpNoServerShowing)
             {
-                var type = App.CurrentPopUp.GetType();
-                if (type.Name == "PopUpNoServer")
-                {
-                    await App.CurrentPopUp.CloseAsync();
-                    App.CurrentPopUp = null;
-                }
+                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+                IsPopUpNoServerShowing = false;
             }
         }
 
@@ -3498,7 +3464,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
                 else
                 {
-                    if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                     {
                         return "Incorrect Code";
                     }
@@ -3510,7 +3476,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                         error = serializer.Deserialize<ErrorClass>(reader);
 
-                        if(error.ErrorMessage == "No budget share request")
+                        if (error.ErrorMessage == "No budget share request")
                         {
                             return "Error";
                         }
@@ -3940,25 +3906,25 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    Account = serializer.Deserialize<BankAccounts>(reader);
-                }
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Account = serializer.Deserialize<BankAccounts>(reader);
+                    }
 
-                return Account;
-            }
-            else
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
-                {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
-                    throw new Exception(error.ErrorMessage);
+                    return Account;
                 }
-            }
+                else
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
+                        throw new Exception(error.ErrorMessage);
+                    }
+                }
         }
 
         public async Task<string> DeleteBankAccounts(int BudgetID)
@@ -3967,21 +3933,21 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                return "OK";
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                    return "OK";
                 }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                throw new Exception(error.ErrorMessage);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<string> DeleteBankAccount(int ID)
@@ -3990,21 +3956,21 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                return "OK";
-            }
-            else
-            {
-                ErrorClass error = new ErrorClass();
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    error = serializer.Deserialize<ErrorClass>(reader);
+                    return "OK";
                 }
+                else
+                {
+                    ErrorClass error = new ErrorClass();
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        error = serializer.Deserialize<ErrorClass>(reader);
+                    }
 
-                throw new Exception(error.ErrorMessage);
-            }
+                    throw new Exception(error.ErrorMessage);
+                }
         }
 
         public async Task<SessionDetails> RefreshSession(SessionDetails Details)
@@ -4016,25 +3982,25 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    Details = serializer.Deserialize<SessionDetails>(reader);
-                }
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Details = serializer.Deserialize<SessionDetails>(reader);
+                    }
 
-                return Details;
-            }
-            else
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
-                {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
-                    throw new Exception(error.ErrorMessage);
+                    return Details;
                 }
-            }
+                else
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
+                        throw new Exception(error.ErrorMessage);
+                    }
+                }
         }
 
         public async Task<SessionDetails> CreateSession(AuthDetails Details)
@@ -4048,25 +4014,25 @@ namespace DailyBudgetMAUIApp.DataServices
             using (Stream s = await response.Content.ReadAsStreamAsync())
             using (StreamReader sr = new StreamReader(s))
 
-            if (response.IsSuccessStatusCode)
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
+                if (response.IsSuccessStatusCode)
                 {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    Session = serializer.Deserialize<SessionDetails>(reader);
-                }
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        Session = serializer.Deserialize<SessionDetails>(reader);
+                    }
 
-                return Session;
-            }
-            else
-            {
-                using (JsonReader reader = new JsonTextReader(sr))
-                {
-                    Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                    ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
-                    throw new Exception(error.ErrorMessage);
+                    return Session;
                 }
-            }
+                else
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                        ErrorClass error = serializer.Deserialize<ErrorClass>(reader);
+                        throw new Exception(error.ErrorMessage);
+                    }
+                }
         }
 
         public async Task<string?> FamilyAccountEmailValid(string Email, int UserID)
@@ -4096,7 +4062,7 @@ namespace DailyBudgetMAUIApp.DataServices
                                 case "EmailInUseBySomeoneElse":
                                 default:
                                     return "Sorry this email is in use by someone else. If you do not believe this is correct and are sure this is your email please contact us. Otherwise use another valid email.";
-                            }                            
+                            }
                         }
                     }
 
@@ -4134,7 +4100,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 }
                 else
                 {
-                    throw new Exception(jsonString);                    
+                    throw new Exception(jsonString);
                 }
             }
         }
@@ -4287,7 +4253,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 {
                     throw new Exception(jsonString);
                 }
-            }            
+            }
         }
 
         public async Task<bool> CheckIsAllowanceProcessedParent(FamilyUserBudgetsAllowance familyUserBudgetsAllowance)
@@ -4303,7 +4269,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (response.IsSuccessStatusCode)
                 {
-                    if(jsonString == "OK")
+                    if (jsonString == "OK")
                     {
                         return true;
                     }

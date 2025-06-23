@@ -11,7 +11,7 @@ using Microsoft.Maui.Storage;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopUpContactUsViewModel : BaseViewModel
+    public partial class PopUpContactUsViewModel : BaseViewModel, IQueryAttributable
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -75,11 +75,16 @@ namespace DailyBudgetMAUIApp.ViewModels
                 { DevicePlatform.MacCatalyst, new[] { "public.jpeg", "public.png", "com.adobe.pdf" } }
             });
 
-            ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
-            ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
+            ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 100;
+            ScreenWidth = (DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density) - 30;
             PopupWidth = ScreenWidth - 30;
             ErrorWidth = PopupWidth - 60;
 
+
+        }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
 
         }
 

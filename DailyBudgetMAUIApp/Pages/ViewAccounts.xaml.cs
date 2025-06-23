@@ -1,4 +1,5 @@
 
+using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.Messaging;
 using DailyBudgetMAUIApp.ViewModels;
 
@@ -7,11 +8,13 @@ namespace DailyBudgetMAUIApp.Pages;
 public partial class ViewAccounts : BasePage
 {
     private readonly ViewAccountsViewModel _vm;
-    public ViewAccounts(ViewAccountsViewModel viewModel)
+    private readonly IPopupService _ps;
+    public ViewAccounts(ViewAccountsViewModel viewModel, IPopupService ps)
     {
         InitializeComponent();
         this.BindingContext = viewModel;
         _vm = viewModel;
+        _ps = ps;
 
     }
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
@@ -40,11 +43,7 @@ public partial class ViewAccounts : BasePage
                 }
             });
 
-            if (App.CurrentPopUp != null)
-            {
-                await App.CurrentPopUp.CloseAsync();
-                App.CurrentPopUp = null;
-            }
+            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
         }
         catch(Exception ex)
         {

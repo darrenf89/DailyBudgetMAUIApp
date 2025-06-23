@@ -6,23 +6,27 @@ using DailyBudgetMAUIApp.DataServices;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopupMoveBalance : Popup
+public partial class PopupMoveBalance : Popup<String>
 {
     private readonly PopupMoveBalanceViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
 
-    public PopupMoveBalance(Budgets Budget, string Type, int id, bool IsCoverOverSpend, PopupMoveBalanceViewModel viewModel, IProductTools pt, IRestDataService ds)
+    public PopupMoveBalance(PopupMoveBalanceViewModel viewModel, IProductTools pt, IRestDataService ds)
 	{
-        InitializeComponent();
-
-        viewModel.Budget = Budget;        
+        InitializeComponent();     
 
         BindingContext = viewModel;
         _vm = viewModel;
         _pt = pt;
-        _ds = ds;
+        _ds = ds;        
 
+        Loaded += async (s,e) => await PopupMoveBalance_Loaded();
+    }
+
+    private async Task PopupMoveBalance_Loaded()
+    {
+        await Task.Delay(1);
         _vm.Amount = 0;
 
         Application.Current.Resources.TryGetValue("Success", out var Success);
@@ -30,17 +34,15 @@ public partial class PopupMoveBalance : Popup
         Application.Current.Resources.TryGetValue("pillSuccess", out var pillSuccess);
         Application.Current.Resources.TryGetValue("pillDanger", out var pillDanger);
         Application.Current.Resources.TryGetValue("Gray400", out var Gray400);
-        
+
         _vm.FromBalanceColor = (Color)Success;
         _vm.FromBalanceStyle = (Style)pillSuccess;
         _vm.ToBalanceColor = (Color)Success;
         _vm.ToBalanceStyle = (Style)pillSuccess;
-        _vm.IsCoverOverspend = IsCoverOverSpend;
 
         double Amount = 0;
         entAmount.Text = Amount.ToString("c", CultureInfo.CurrentCulture);
 
-        _vm.Budget = Budget;
         _vm.MoveBalances.Add(new MoveBalanceClass
         {
             Name = "Left to spend",
@@ -49,7 +51,7 @@ public partial class PopupMoveBalance : Popup
             Balance = _vm.Budget.LeftToSpendBalance.GetValueOrDefault()
         });
 
-        foreach(Savings saving in Budget.Savings.Where(s => !s.IsSavingsClosed))
+        foreach (Savings saving in _vm.Budget.Savings.Where(s => !s.IsSavingsClosed))
         {
             _vm.MoveBalances.Add(new MoveBalanceClass
             {
@@ -60,9 +62,9 @@ public partial class PopupMoveBalance : Popup
             });
         }
 
-        if(!IsCoverOverSpend)
+        if (!_vm.IsCoverOverSpend)
         {
-            foreach (Bills bill in Budget.Bills.Where(b => !b.IsClosed))
+            foreach (Bills bill in _vm.Budget.Bills.Where(b => !b.IsClosed))
             {
                 _vm.MoveBalances.Add(new MoveBalanceClass
                 {
@@ -76,12 +78,12 @@ public partial class PopupMoveBalance : Popup
 
         _vm.FromEnabled = true;
         _vm.ToEnabled = true;
-        if(Type == "Budget")
-        {            
+        if (_vm.Type == "Budget")
+        {
             double Balance = (double)_vm.Budget.LeftToSpendBalance.GetValueOrDefault();
             _vm.ToNewBalanceString = Balance.ToString("c", CultureInfo.CurrentCulture);
 
-            for(int i = _vm.MoveBalances.Count - 1; i >= 0; i--)
+            for (int i = _vm.MoveBalances.Count - 1; i >= 0; i--)
             {
                 if (_vm.MoveBalances[i].Name == "Left to spend")
                 {
@@ -89,30 +91,30 @@ public partial class PopupMoveBalance : Popup
                 }
             }
         }
-        else if(Type == "Saving")
+        else if (_vm.Type == "Saving")
         {
-            Savings? s = Budget.Savings.Where(s => s.SavingID == id).FirstOrDefault();
+            Savings? s = _vm.Budget.Savings.Where(s => s.SavingID == _vm.Id).FirstOrDefault();
             double Balance = (double)s.CurrentBalance.GetValueOrDefault();
             _vm.ToNewBalanceString = Balance.ToString("c", CultureInfo.CurrentCulture);
 
             for (int i = _vm.MoveBalances.Count - 1; i >= 0; i--)
             {
-                if (_vm.MoveBalances[i].Id == id && _vm.MoveBalances[i].Type == "Saving")
+                if (_vm.MoveBalances[i].Id == _vm.Id && _vm.MoveBalances[i].Type == "Saving")
                 {
                     _vm.ToSelectedMoveBalance = _vm.MoveBalances[i];
                 }
             }
 
         }
-        else if(Type == "Bill")
+        else if (_vm.Type == "Bill")
         {
-            Bills? b = Budget.Bills.Where(s => s.BillID == id).FirstOrDefault();
+            Bills? b = _vm.Budget.Bills.Where(s => s.BillID == _vm.Id).FirstOrDefault();
             double Balance = (double)b.BillCurrentBalance;
             _vm.ToNewBalanceString = Balance.ToString("c", CultureInfo.CurrentCulture);
 
             for (int i = _vm.MoveBalances.Count - 1; i >= 0; i--)
             {
-                if (_vm.MoveBalances[i].Id == id && _vm.MoveBalances[i].Type == "Bill")
+                if (_vm.MoveBalances[i].Id == _vm.Id && _vm.MoveBalances[i].Type == "Bill")
                 {
                     _vm.ToSelectedMoveBalance = _vm.MoveBalances[i];
                 }
@@ -120,19 +122,18 @@ public partial class PopupMoveBalance : Popup
         }
 
         _vm.ToEnabled = false;
-        if(IsCoverOverSpend)
+        if (_vm.IsCoverOverSpend)
         {
             brdFromTo.IsEnabled = false;
-            brdFromTo.Stroke = (Color)Gray400;            
+            brdFromTo.Stroke = (Color)Gray400;
             if (_vm.Budget.LeftToSpendDailyAmount < 0)
             {
                 decimal OverSpend = _vm.Budget.LeftToSpendDailyAmount * -1;
                 entAmount.Text = OverSpend.ToString("c", CultureInfo.CurrentCulture);
-            }    
+            }
             entAmount.IsEnabled = false;
-            lblTitle.Text = "Cover todays overspend!";            
+            lblTitle.Text = "Cover todays overspend!";
         }
-
     }
 
     void Amount_Changed(object sender, TextChangedEventArgs e)
@@ -318,7 +319,7 @@ public partial class PopupMoveBalance : Popup
                     }
                 }
 
-                this.Close("OK");
+                await CloseAsync("OK");
             }
         }
         catch (Exception ex)
@@ -327,9 +328,9 @@ public partial class PopupMoveBalance : Popup
         }
     }
 
-    private void CancelUpdate_Saving(object sender, EventArgs e)
+    private async void CancelUpdate_Saving(object sender, EventArgs e)
     {
-        this.Close("Closed");
+        await CloseAsync("Closed");
     }
 
     private void SwapFromTo_Tapped(object sender, TappedEventArgs e)

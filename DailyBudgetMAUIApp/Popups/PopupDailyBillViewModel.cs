@@ -5,7 +5,7 @@ using DailyBudgetMAUIApp.Models;
 
 namespace DailyBudgetMAUIApp.ViewModels
 {
-    public partial class PopupDailyBillViewModel : BaseViewModel
+    public partial class PopupDailyBillViewModel : BaseViewModel, IQueryAttributable
     {
         public double ScreenWidth { get; }
         public double ScreenHeight { get; }
@@ -21,6 +21,9 @@ namespace DailyBudgetMAUIApp.ViewModels
         [ObservableProperty]
         public partial Bills Bill { get; set; }
 
+        [ObservableProperty]
+        public partial bool IsAcceptOnly { get; set; }
+
         public PopupDailyBillViewModel()
         {
             ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density);
@@ -33,9 +36,19 @@ namespace DailyBudgetMAUIApp.ViewModels
 
         }
 
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue(nameof(Bill), out var bill) && bill is Bills b)
+            {
+                Bill = b;
+            }
 
+            if (query.TryGetValue(nameof(IsAcceptOnly), out var acceptOnly) && acceptOnly is bool accept)
+            {
+                IsAcceptOnly = accept;
+            }
 
-
+        }
 
     }
 }

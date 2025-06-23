@@ -2,6 +2,7 @@
 using DailyBudgetMAUIApp.Pages;
 using System.Text.Json;
 using System.Text;
+using Android.Health.Connect.DataTypes;
 
 
 namespace DailyBudgetMAUIApp
@@ -60,6 +61,7 @@ namespace DailyBudgetMAUIApp
                 await HandleException(ex, "BasePage", "OnNavigatedFrom");
             }
         }
+
         protected async override void OnNavigatedTo(NavigatedToEventArgs args)
         {
             try
