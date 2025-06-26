@@ -493,11 +493,15 @@ public partial class AddTransaction : BasePage
                 {
                     _vm.Transaction.Payee = "";
                 }
-                await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
+
+                if (!_vm.IsAppearing)
+                {
+                    await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectPayeePage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
                     new Dictionary<string, object>
                     {
                         ["Transaction"] = _vm.Transaction
                     });
+                }
             }
 
         }
@@ -532,11 +536,15 @@ public partial class AddTransaction : BasePage
                     _vm.Transaction.CategoryID = 0;
                 }
 
-                await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
-                    new Dictionary<string, object>
-                    {
-                        ["Transaction"] = _vm.Transaction
-                    });
+                if(!_vm.IsAppearing)
+                {
+                    await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectCategoryPage)}?BudgetID={_vm.BudgetID}&PageType=Transaction",
+                        new Dictionary<string, object>
+                        {
+                            ["Transaction"] = _vm.Transaction
+                        });
+                }
+
             }
         }
         catch (Exception ex)
@@ -577,11 +585,14 @@ public partial class AddTransaction : BasePage
                 }
                 else
                 {
-                    await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectSavingCategoryPage)}?BudgetID={_vm.BudgetID}",
+                    if (!_vm.IsAppearing)
+                    {
+                        await Shell.Current.GoToAsync($"{nameof(DailyBudgetMAUIApp.Pages.SelectSavingCategoryPage)}?BudgetID={_vm.BudgetID}",
                         new Dictionary<string, object>
                         {
                             ["Transaction"] = _vm.Transaction
                         });
+                    }
 
                 }
             }
