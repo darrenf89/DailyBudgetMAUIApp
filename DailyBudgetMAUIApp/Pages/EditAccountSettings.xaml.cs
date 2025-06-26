@@ -19,9 +19,9 @@ public partial class EditAccountSettings : BasePage
 
     private readonly EditAccountSettingsViewModel _vm;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
-    public EditAccountSettings(EditAccountSettingsViewModel viewModel, IProductTools pt, IPopupService ps)
+    public EditAccountSettings(EditAccountSettingsViewModel viewModel, IProductTools pt, IModalPopupService ps)
 	{
 		InitializeComponent();      
 
@@ -39,6 +39,11 @@ public partial class EditAccountSettings : BasePage
     {
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             base.OnAppearing();
             
             MainAbs.WidthRequest = ScreenWidth;
@@ -59,7 +64,7 @@ public partial class EditAccountSettings : BasePage
                 BudgetVisibility.IsVisible = false;
             }
 
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -92,8 +97,6 @@ public partial class EditAccountSettings : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();

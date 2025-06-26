@@ -36,7 +36,6 @@ public partial class App : Application
 	public static bool IsPremiumAccount;	
 	public static int DefaultBudgetID;
 	public static bool IsBudgetUpdated;
-	public static bool IsPopupShowing;
 	public static bool IsFamilyAccount;
     public static Budgets DefaultBudget;
     public static DateTime SessionLastUpdate;
@@ -236,17 +235,8 @@ public partial class App : Application
     {
         if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
         {
-            IPopupService ps = IPlatformApplication.Current.Services.GetService<IPopupService>();
-            //TODO: SHOW POPUP
-            if (IsPopupShowing)
-            {
-                IsPopupShowing = false;
-                await ps.ClosePopupAsync(Application.Current.Windows[0].Page);
-            }
-
-            ps.ShowPopup<PopUpNoNetwork>(Application.Current.Windows[0].Page, options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
-            App.IsPopupShowing = true;
-            await Task.Delay(1);
+            var mps = IPlatformApplication.Current.Services.GetService<IModalPopupService>();
+            await mps.ShowAsync<PopUpNoNetwork>(() => IPlatformApplication.Current.Services.GetService<PopUpNoNetwork>());
 
             int i = 0;
             while (Connectivity.Current.NetworkAccess != NetworkAccess.Internet && i < 30)
@@ -254,6 +244,8 @@ public partial class App : Application
                 await Task.Delay(1000);
                 i++;
             }
+
+            await mps.CloseAsync<PopUpNoNetwork>();
 
             if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
             {
@@ -263,13 +255,6 @@ public partial class App : Application
             {
                 await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
             }
-
-            if (App.IsPopupShowing)
-            {
-                App.IsPopupShowing = false;
-                await ps.ClosePopupAsync(Application.Current.Windows[0].Page);
-            }
-
         }
     }
 

@@ -1,6 +1,4 @@
 using CommunityToolkit.Maui;
-using CommunityToolkit.Maui.Extensions;
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -25,7 +23,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
         private readonly IAppRating _ar;
-        private readonly IPopupService _ps;
+        private readonly IModalPopupService _ps;
 
         [ObservableProperty]
         public partial int DefaultBudgetID { get; set; }
@@ -154,7 +152,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public delegate void ReloadPageAction();
         public event ReloadPageAction ReloadPage;
 
-        public MainPageViewModel(IRestDataService ds, IProductTools pt, IAppRating ar, IPopupService ps)
+        public MainPageViewModel(IRestDataService ds, IProductTools pt, IAppRating ar, IModalPopupService ps)
         {
             _ds = ds;
             _pt = pt;
@@ -258,7 +256,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Shell.Current.GoToAsync($"//{nameof(ViewBudgets)}");
             }
             catch (Exception ex)
@@ -324,8 +321,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
                 await Shell.Current.GoToAsync($"/{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={DefaultBudgetID}&NavigatedFrom=Budget Settings");
             }
             catch (Exception ex)
@@ -340,8 +335,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
 
                 if (Preferences.ContainsKey(nameof(App.UserDetails)))
                 {
@@ -361,7 +354,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                 App.DefaultBudgetID = 0;
                 App.DefaultBudget = null;
 
-                Application.Current!.MainPage = new AppShell();
                 await Shell.Current.GoToAsync($"//{nameof(LoadUpPage)}");
             }
             catch (Exception ex)
@@ -419,8 +411,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                     return;
                 }
 
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
                 string SpendType = "EnvelopeSaving";
                 Transactions T = new Transactions
                 {
@@ -458,7 +448,6 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 if (result)
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}//{nameof(AddSaving)}?BudgetID={DefaultBudget.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=MainPage");
                 }
             }
@@ -477,8 +466,6 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 if (result)
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(AddSaving)}?SavingType=Envelope");
                 }
             }
@@ -493,22 +480,15 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing)
-                {
-                    App.IsPopupShowing = true;
-                    _ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions
-                    {
-                        CanBeDismissedByTappingOutsideOfPopup = false,
-                        PageOverlayColor = Color.FromArgb("#80000000"),
-                    });
-                }                
-                await Task.Delay(1);
+                await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
 
                 await _ds.ReCalculateBudget(App.DefaultBudgetID);
                 var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
                 App.DefaultBudget = Budget;
                 DefaultBudget = App.DefaultBudget;
                 ReloadPage?.Invoke();
+
+                await _ps.CloseAsync<PopUpPage>();
             }
             catch (Exception ex)
             {
@@ -521,9 +501,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
-
                 await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={T.TransactionID}&NavigatedFrom=ViewMainPage",
                     new Dictionary<string, object>
                     {

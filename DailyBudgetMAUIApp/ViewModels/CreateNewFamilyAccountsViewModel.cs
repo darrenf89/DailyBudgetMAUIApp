@@ -808,8 +808,6 @@ namespace DailyBudgetMAUIApp.ViewModels
 
             if(IsNavigateManage)
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
                 await Shell.Current.GoToAsync($"//{nameof(FamilyAccountsManage)}");
             }
         }
@@ -971,7 +969,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Shell.Current.GoToAsync($"//{nameof(FamilyAccountsManage)}");
                 
             }
@@ -1061,8 +1058,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
                 await Shell.Current.GoToAsync($"/{nameof(AddBill)}?FamilyAccountID={AccountID}&BudgetID={FamilyAccount.BudgetID}&BillID={0}&NavigatedFrom=CreateNewFamilyAccount");
             }
             catch (Exception ex)
@@ -1101,8 +1096,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
                 await Shell.Current.GoToAsync($"/{nameof(AddBill)}?FamilyAccountID={AccountID}&BudgetID={FamilyAccount.BudgetID}&BillID={bill.BillID}&NavigatedFrom=CreateNewFamilyAccount");
             }
             catch (Exception ex)
@@ -1116,8 +1109,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
                 await Shell.Current.GoToAsync($"/{nameof(AddSaving)}?FamilyAccountID={AccountID}&BudgetID={FamilyAccount.BudgetID}&SavingID={0}&NavigatedFrom=CreateNewFamilyAccountSaving");
             }
             catch (Exception ex)
@@ -1156,8 +1147,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
                 await Shell.Current.GoToAsync($"/{nameof(AddSaving)}?FamilyAccountID={AccountID}&BudgetID={FamilyAccount.BudgetID}&SavingID={saving.SavingID}&NavigatedFrom=CreateNewFamilyAccountSaving");
             }
             catch (Exception ex)
@@ -1171,8 +1160,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
                 await Shell.Current.GoToAsync($"/{nameof(AddIncome)}?FamilyAccountID={AccountID}&BudgetID={FamilyAccount.BudgetID}&IncomeID={0}&NavigatedFrom=CreateNewFamilyAccount");
             }
             catch (Exception ex)
@@ -1211,8 +1198,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
                 await Shell.Current.GoToAsync($"/{nameof(AddIncome)}?FamilyAccountID={AccountID}&BudgetID={FamilyAccount.BudgetID}&IncomeID={income.IncomeEventID}&NavigatedFrom=CreateNewFamilyAccount");
             }
             catch (Exception ex)
@@ -1226,8 +1211,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
                 await Shell.Current.GoToAsync($"/{nameof(AddSaving)}?FamilyAccountID={AccountID}&BudgetID={FamilyAccount.BudgetID}&SavingID={0}&NavigatedFrom=CreateNewFamilyAccountEnvelope");
             }
             catch (Exception ex)
@@ -1266,8 +1249,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
                 await Shell.Current.GoToAsync($"/{nameof(AddSaving)}?FamilyAccountID={AccountID}&BudgetID={FamilyAccount.BudgetID}&SavingID={saving.SavingID}&NavigatedFrom=CreateNewFamilyAccountEnvelope");
             }
             catch (Exception ex)

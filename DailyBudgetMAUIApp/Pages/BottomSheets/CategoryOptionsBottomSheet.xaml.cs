@@ -12,12 +12,12 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
 {
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
 
-    public CategoryOptionsBottomSheet(IRestDataService ds, IProductTools pt, IPopupService ps)
+    public CategoryOptionsBottomSheet(IRestDataService ds, IProductTools pt, IModalPopupService ps)
     {
         InitializeComponent();
 
@@ -28,6 +28,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
 
         _ds = ds;
         _pt = pt;
+        _ps = ps;
     }
 
     private void btnDismiss_Clicked(object sender, EventArgs e)
@@ -217,8 +218,6 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
             {
                 int CategoryID = CatDict[SelectCategory];
 
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
                 if (App.CurrentBottomSheet != null)
                 {
                     await App.CurrentBottomSheet.DismissAsync();
@@ -235,7 +234,6 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
 
     private async void ViewAllCategories_Tapped(object sender, TappedEventArgs e)
     {
-        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
         if (App.CurrentBottomSheet != null)
         {
             await App.CurrentBottomSheet.DismissAsync();
@@ -284,7 +282,7 @@ public partial class CategoryOptionsBottomSheet : BottomSheet
                     PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                 };
 
-                IPopupResult<string> popupResult = await _ps.ShowPopupAsync<PopupReassignCategories, string>(
+                IPopupResult<string> popupResult = await _ps.PopupService.ShowPopupAsync<PopupReassignCategories, string>(
                     Shell.Current,
                     options: popupOptions,
                     shellParameters: queryAttributes,

@@ -85,27 +85,22 @@ namespace DailyBudgetMAUIApp.ViewModels
             {
                 if (string.Equals(RedirectTo, "ViewTransactions",StringComparison.OrdinalIgnoreCase))
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                     await Shell.Current.GoToAsync($"///{nameof(ViewTransactions)}");
                 }
                 else if (string.Equals(RedirectTo, "ViewSavings", StringComparison.OrdinalIgnoreCase))
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                     await Shell.Current.GoToAsync($"///{nameof(ViewSavings)}");
                 }
                 else if (string.Equals(RedirectTo, "ViewEnvelopes", StringComparison.OrdinalIgnoreCase))
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                     await Shell.Current.GoToAsync($"///{nameof(ViewEnvelopes)}");
                 }
                 else if (string.Equals(RedirectTo, "ViewMainPage", StringComparison.OrdinalIgnoreCase))
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
                 }
                 else if (string.Equals(RedirectTo, "ViewAccounts", StringComparison.OrdinalIgnoreCase))
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                     await Shell.Current.GoToAsync($"..");
                 }
                 else

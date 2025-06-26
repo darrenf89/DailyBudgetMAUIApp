@@ -13,7 +13,7 @@ public partial class CreateNewFamilyAccounts : BasePage
 {
     private readonly CreateNewFamilyAccountsViewModel _vm;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
     public string _updatedAvatar = "";
     public string UpdatedAvatar
@@ -60,19 +60,13 @@ public partial class CreateNewFamilyAccounts : BasePage
         }
     }
 
-    public CreateNewFamilyAccounts(CreateNewFamilyAccountsViewModel vm, IProductTools pt, IPopupService ps)
+    public CreateNewFamilyAccounts(CreateNewFamilyAccountsViewModel vm, IProductTools pt, IModalPopupService ps)
     {
         InitializeComponent();
         _vm = vm;
         _pt = pt;
         BindingContext = _vm;
         _ps = ps;
-    }
-
-    protected async override void OnNavigatedTo(NavigatedToEventArgs args)
-    {
-        base.OnNavigatedTo(args);
-
     }
 
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
@@ -83,9 +77,16 @@ public partial class CreateNewFamilyAccounts : BasePage
 
     protected async override void OnAppearing()
     {
-        base.OnAppearing();
+       
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
+            base.OnAppearing();
+
             await _vm.LoadFamilyAccount();
 
             pckrSymbolPlacement.SelectedIndex = _vm.SelectedCurrencyPlacement.Id - 1;
@@ -103,7 +104,7 @@ public partial class CreateNewFamilyAccounts : BasePage
 
             UpdateSelectedOption(_vm.Budget.PaydayType);
 
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -155,7 +156,7 @@ public partial class CreateNewFamilyAccounts : BasePage
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
+            await _ps.PopupService.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -214,7 +215,7 @@ public partial class CreateNewFamilyAccounts : BasePage
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
+            await _ps.PopupService.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -261,7 +262,7 @@ public partial class CreateNewFamilyAccounts : BasePage
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
+            await _ps.PopupService.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {

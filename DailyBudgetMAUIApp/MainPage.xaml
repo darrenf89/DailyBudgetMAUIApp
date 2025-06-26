@@ -17,9 +17,10 @@
              droid:NavigationBar.Color="{StaticResource PrimaryDark}"
              droid:NavigationBar.Style="LightContent"             
              NavigationPage.HasNavigationBar="True"
-             NavigationPage.HasBackButton="False">
+             NavigationPage.HasBackButton="False"
+             Shell.BackgroundColor="{StaticResource Primary}">
     <Shell.TitleView>
-        <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,0,10,0">
+        <Grid ColumnDefinitions="*,Auto,Auto" Padding="0" Margin="0,0,10,0" BackgroundColor="{StaticResource Primary}">
             <Label Text="{Binding Title}" 
                    TextColor="White" 
                    VerticalOptions="Center"

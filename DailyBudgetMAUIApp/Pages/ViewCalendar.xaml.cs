@@ -11,9 +11,9 @@ namespace DailyBudgetMAUIApp.Pages
         private readonly ViewCalendarViewModel _vm;
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
-        private readonly IPopupService _ps;
+        private readonly IModalPopupService _ps;
 
-        public ViewCalendar(ViewCalendarViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
+        public ViewCalendar(ViewCalendarViewModel viewModel, IProductTools pt, IRestDataService ds, IModalPopupService ps)
         {
             InitializeComponent();
 
@@ -28,6 +28,13 @@ namespace DailyBudgetMAUIApp.Pages
         {
             try
             {
+                if (_ps.CurrentPopup is not null)
+                    return;
+
+                await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
+                base.OnAppearing();
+
                 Application.Current.Resources.TryGetValue("Primary", out var Primary);
                 Application.Current.Resources.TryGetValue("Gray400", out var Tertiary);
 
@@ -44,10 +51,9 @@ namespace DailyBudgetMAUIApp.Pages
                     FontSize = 12              
                 };
 
-                base.OnAppearing();
                 await _vm.LoadData();
 
-                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+                await _ps.CloseAsync<PopUpPage>();
             }
             catch (Exception ex)
             {
@@ -59,9 +65,6 @@ namespace DailyBudgetMAUIApp.Pages
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(500);
-
                 await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
             }
             catch (Exception ex)

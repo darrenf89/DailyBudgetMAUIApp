@@ -1,7 +1,6 @@
-using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.ViewModels;
-using Plugin.LocalNotification;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -9,9 +8,9 @@ public partial class FamilyAccountsManage : BasePage
 {
     private readonly FamilyAccountsManageViewModel _vm;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
-    public FamilyAccountsManage(FamilyAccountsManageViewModel vm, IProductTools pt, IPopupService ps)
+    public FamilyAccountsManage(FamilyAccountsManageViewModel vm, IProductTools pt, IModalPopupService ps)
     {
         InitializeComponent();
         _vm = vm;
@@ -27,11 +26,17 @@ public partial class FamilyAccountsManage : BasePage
 
     protected async override void OnAppearing()
     {
-        base.OnAppearing();
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
+            base.OnAppearing();
+
             await _vm.LoadFamilyAccounts();
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {

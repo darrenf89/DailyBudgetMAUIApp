@@ -16,7 +16,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
-        private readonly IPopupService _ps;
+        private readonly IModalPopupService _ps;
 
         public Picker SwitchBudgetPicker { get; set; }
         public VerticalStackLayout BtnApply { get; set; }
@@ -176,7 +176,7 @@ namespace DailyBudgetMAUIApp.ViewModels
             HasBorrowPayChanged = true;
         }
 
-        public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds, IPopupService ps)
+        public EditBudgetSettingsViewModel(IProductTools pt, IRestDataService ds, IModalPopupService ps)
         {
             _pt = pt;
             _ds = ds;
@@ -289,7 +289,6 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         App.CurrentBottomSheet = page;
 
-                        if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
                         await page.ShowAsync();
 
                     }
@@ -622,7 +621,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                 };
 
-                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageSingleInput, object>(
+                IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpPageSingleInput, object>(
                     Shell.Current,
                     options: popupOptions,
                     shellParameters: queryAttributes,
@@ -695,9 +694,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(500);
-
                 await Shell.Current.GoToAsync($"..");
             }
             catch (Exception ex)
@@ -730,247 +726,243 @@ namespace DailyBudgetMAUIApp.ViewModels
                 bool EditBudget = await Application.Current.Windows[0].Page.DisplayAlert($"Update settings?", $"Are you sure you want to update your budgets settings?", "Yes", "No");
                 if (EditBudget)
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                    await Task.Delay(100);
+                    await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+                    List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
+                    List<PatchDoc> BudgetSettingsUpdate = new List<PatchDoc>();
 
-
-                        List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
-                        List<PatchDoc> BudgetSettingsUpdate = new List<PatchDoc>();
-
-                        if (HasCurrencySymbolChanged)
+                    if (HasCurrencySymbolChanged)
+                    {
+                        PatchDoc CurrencySymbol = new PatchDoc
                         {
-                            PatchDoc CurrencySymbol = new PatchDoc
+                            op = "replace",
+                            path = "/CurrencySymbol",
+                            value = SelectedCurrencySymbol.Id
+                        };
+
+                        BudgetSettingsUpdate.Add(CurrencySymbol);
+                    }
+
+                    if (HasCurrencyPlacementChanged)
+                    {
+                        PatchDoc CurrencyPattern = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/CurrencyPattern",
+                            value = SelectedCurrencyPlacement.Id
+                        };
+
+                        BudgetSettingsUpdate.Add(CurrencyPattern);
+                    }
+
+
+                    if (HasNumberFormatsChanged)
+                    {
+                        PatchDoc CurrencyDecimalDigits = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/CurrencyDecimalDigits",
+                            value = SelectedNumberFormats.CurrencyDecimalDigitsID
+                        };
+
+                        BudgetSettingsUpdate.Add(CurrencyDecimalDigits);
+
+                        PatchDoc CurrencyDecimalSeparator = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/CurrencyDecimalSeparator",
+                            value = SelectedNumberFormats.CurrencyDecimalSeparatorID
+                        };
+
+                        BudgetSettingsUpdate.Add(CurrencyDecimalSeparator);
+
+                        PatchDoc CurrencyGroupSeparator = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/CurrencyGroupSeparator",
+                            value = SelectedNumberFormats.CurrencyGroupSeparatorID
+                        };
+
+                        BudgetSettingsUpdate.Add(CurrencyGroupSeparator);
+                    }
+
+                    if(HasDateFormatChanged)
+                    {
+                        PatchDoc DateSeperator = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/DateSeperator",
+                            value = SelectedDateFormats.DateSeperatorID
+                        };
+
+                        BudgetSettingsUpdate.Add(DateSeperator);
+
+                        PatchDoc ShortDatePattern = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/ShortDatePattern",
+                            value = SelectedDateFormats.ShortDatePatternID
+                        };
+
+                        BudgetSettingsUpdate.Add(ShortDatePattern);
+                    }
+
+                    if(HasTimeZoneChanged)
+                    {
+                        PatchDoc TimeZone = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/TimeZone",
+                            value = SelectedTimeZone.TimeZoneID
+                        };
+
+                        BudgetSettingsUpdate.Add(TimeZone);
+                    }
+
+                    if(HasBorrowPayChanged)
+                    {
+                        PatchDoc BorrowPay = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/IsBorrowPay",
+                            value = IsBorrowPay
+                        };
+
+                        BudgetUpdate.Add(BorrowPay);
+                    }
+
+                    if (HasPayAmountChanged)
+                    {
+                        PatchDoc PayDayAmount = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/PayDayAmount",
+                            value = PayAmount
+                        };
+
+                        BudgetUpdate.Add(PayDayAmount);
+                    }
+
+                    if (HasPayDayDateChanged)
+                    {
+                        PatchDoc NextIncomePayday = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/NextIncomePayday",
+                            value = PayDayDate
+                        };
+
+                        BudgetUpdate.Add(NextIncomePayday);
+                    }
+
+
+                    if(HasPayDayTypeTextChanged)
+                    {
+                        PatchDoc PayType = new PatchDoc
+                        {
+                            op = "replace",
+                            path = "/PaydayType",
+                            value = PayDayTypeText
+                        };
+
+                        BudgetUpdate.Add(PayType);
+                    }
+
+                    if(HasPayDayOptionsChanged)
+                    {
+                        if (PayDayTypeText == "Everynth")
+                        {
+                            PatchDoc PaydayValue = new PatchDoc
                             {
                                 op = "replace",
-                                path = "/CurrencySymbol",
-                                value = SelectedCurrencySymbol.Id
+                                path = "/PaydayValue",
+                                value = EveryNthValue
                             };
 
-                            BudgetSettingsUpdate.Add(CurrencySymbol);
-                        }
+                            BudgetUpdate.Add(PaydayValue);
 
-                        if (HasCurrencyPlacementChanged)
-                        {
-                            PatchDoc CurrencyPattern = new PatchDoc
+                            PatchDoc PaydayDuration = new PatchDoc
                             {
                                 op = "replace",
-                                path = "/CurrencyPattern",
-                                value = SelectedCurrencyPlacement.Id
+                                path = "/PaydayDuration",
+                                value = EveryNthDuration
                             };
 
-                            BudgetSettingsUpdate.Add(CurrencyPattern);
+                            BudgetUpdate.Add(PaydayDuration);
+
                         }
-
-
-                        if (HasNumberFormatsChanged)
+                        else if (PayDayTypeText == "WorkingDays")
                         {
-                            PatchDoc CurrencyDecimalDigits = new PatchDoc
+                            PatchDoc PaydayValue = new PatchDoc
                             {
                                 op = "replace",
-                                path = "/CurrencyDecimalDigits",
-                                value = SelectedNumberFormats.CurrencyDecimalDigitsID
+                                path = "/PaydayValue",
+                                value = WorkingDaysValue
                             };
 
-                            BudgetSettingsUpdate.Add(CurrencyDecimalDigits);
+                            BudgetUpdate.Add(PaydayValue);
 
-                            PatchDoc CurrencyDecimalSeparator = new PatchDoc
+                            PatchDoc PaydayDuration = new PatchDoc
                             {
                                 op = "replace",
-                                path = "/CurrencyDecimalSeparator",
-                                value = SelectedNumberFormats.CurrencyDecimalSeparatorID
+                                path = "/PaydayDuration",
+                                value = ""
                             };
 
-                            BudgetSettingsUpdate.Add(CurrencyDecimalSeparator);
-
-                            PatchDoc CurrencyGroupSeparator = new PatchDoc
+                            BudgetUpdate.Add(PaydayDuration);
+                        }
+                        else if (PayDayTypeText == "OfEveryMonth")
+                        {
+                            PatchDoc PaydayValue = new PatchDoc
                             {
                                 op = "replace",
-                                path = "/CurrencyGroupSeparator",
-                                value = SelectedNumberFormats.CurrencyGroupSeparatorID
+                                path = "/PaydayValue",
+                                value = EveryMonthValue
                             };
 
-                            BudgetSettingsUpdate.Add(CurrencyGroupSeparator);
-                        }
+                            BudgetUpdate.Add(PaydayValue);
 
-                        if(HasDateFormatChanged)
-                        {
-                            PatchDoc DateSeperator = new PatchDoc
+                            PatchDoc PaydayDuration = new PatchDoc
                             {
                                 op = "replace",
-                                path = "/DateSeperator",
-                                value = SelectedDateFormats.DateSeperatorID
+                                path = "/PaydayDuration",
+                                value = ""
                             };
 
-                            BudgetSettingsUpdate.Add(DateSeperator);
-
-                            PatchDoc ShortDatePattern = new PatchDoc
+                            BudgetUpdate.Add(PaydayDuration);
+                        }
+                        else if (PayDayTypeText == "LastOfTheMonth")
+                        {
+                            PatchDoc PaydayValue = new PatchDoc
                             {
                                 op = "replace",
-                                path = "/ShortDatePattern",
-                                value = SelectedDateFormats.ShortDatePatternID
+                                path = "/PaydayValue",
+                                value = ""
                             };
 
-                            BudgetSettingsUpdate.Add(ShortDatePattern);
-                        }
+                            BudgetUpdate.Add(PaydayValue);
 
-                        if(HasTimeZoneChanged)
-                        {
-                            PatchDoc TimeZone = new PatchDoc
+                            PatchDoc PaydayDuration = new PatchDoc
                             {
                                 op = "replace",
-                                path = "/TimeZone",
-                                value = SelectedTimeZone.TimeZoneID
+                                path = "/PaydayDuration",
+                                value = LastOfTheMonthDuration
                             };
 
-                            BudgetSettingsUpdate.Add(TimeZone);
+                            BudgetUpdate.Add(PaydayDuration);
                         }
+                    }
 
-                        if(HasBorrowPayChanged)
-                        {
-                            PatchDoc BorrowPay = new PatchDoc
-                            {
-                                op = "replace",
-                                path = "/IsBorrowPay",
-                                value = IsBorrowPay
-                            };
+                    if (BudgetUpdate.Count() > 0)
+                    {
+                        await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
+                    }
 
-                            BudgetUpdate.Add(BorrowPay);
-                        }
+                    if (BudgetSettingsUpdate.Count() > 0)
+                    {
+                        await _ds.PatchBudgetSettings(App.DefaultBudgetID, BudgetSettingsUpdate);
+                    }
 
-                        if (HasPayAmountChanged)
-                        {
-                            PatchDoc PayDayAmount = new PatchDoc
-                            {
-                                op = "replace",
-                                path = "/PayDayAmount",
-                                value = PayAmount
-                            };
-
-                            BudgetUpdate.Add(PayDayAmount);
-                        }
-
-                        if (HasPayDayDateChanged)
-                        {
-                            PatchDoc NextIncomePayday = new PatchDoc
-                            {
-                                op = "replace",
-                                path = "/NextIncomePayday",
-                                value = PayDayDate
-                            };
-
-                            BudgetUpdate.Add(NextIncomePayday);
-                        }
-
-
-                        if(HasPayDayTypeTextChanged)
-                        {
-                            PatchDoc PayType = new PatchDoc
-                            {
-                                op = "replace",
-                                path = "/PaydayType",
-                                value = PayDayTypeText
-                            };
-
-                            BudgetUpdate.Add(PayType);
-                        }
-
-                        if(HasPayDayOptionsChanged)
-                        {
-                            if (PayDayTypeText == "Everynth")
-                            {
-                                PatchDoc PaydayValue = new PatchDoc
-                                {
-                                    op = "replace",
-                                    path = "/PaydayValue",
-                                    value = EveryNthValue
-                                };
-
-                                BudgetUpdate.Add(PaydayValue);
-
-                                PatchDoc PaydayDuration = new PatchDoc
-                                {
-                                    op = "replace",
-                                    path = "/PaydayDuration",
-                                    value = EveryNthDuration
-                                };
-
-                                BudgetUpdate.Add(PaydayDuration);
-
-                            }
-                            else if (PayDayTypeText == "WorkingDays")
-                            {
-                                PatchDoc PaydayValue = new PatchDoc
-                                {
-                                    op = "replace",
-                                    path = "/PaydayValue",
-                                    value = WorkingDaysValue
-                                };
-
-                                BudgetUpdate.Add(PaydayValue);
-
-                                PatchDoc PaydayDuration = new PatchDoc
-                                {
-                                    op = "replace",
-                                    path = "/PaydayDuration",
-                                    value = ""
-                                };
-
-                                BudgetUpdate.Add(PaydayDuration);
-                            }
-                            else if (PayDayTypeText == "OfEveryMonth")
-                            {
-                                PatchDoc PaydayValue = new PatchDoc
-                                {
-                                    op = "replace",
-                                    path = "/PaydayValue",
-                                    value = EveryMonthValue
-                                };
-
-                                BudgetUpdate.Add(PaydayValue);
-
-                                PatchDoc PaydayDuration = new PatchDoc
-                                {
-                                    op = "replace",
-                                    path = "/PaydayDuration",
-                                    value = ""
-                                };
-
-                                BudgetUpdate.Add(PaydayDuration);
-                            }
-                            else if (PayDayTypeText == "LastOfTheMonth")
-                            {
-                                PatchDoc PaydayValue = new PatchDoc
-                                {
-                                    op = "replace",
-                                    path = "/PaydayValue",
-                                    value = ""
-                                };
-
-                                BudgetUpdate.Add(PaydayValue);
-
-                                PatchDoc PaydayDuration = new PatchDoc
-                                {
-                                    op = "replace",
-                                    path = "/PaydayDuration",
-                                    value = LastOfTheMonthDuration
-                                };
-
-                                BudgetUpdate.Add(PaydayDuration);
-                            }
-                        }
-
-                        if (BudgetUpdate.Count() > 0)
-                        {
-                            await _ds.PatchBudget(App.DefaultBudgetID, BudgetUpdate);
-                        }
-
-                        if (BudgetSettingsUpdate.Count() > 0)
-                        {
-                            await _ds.PatchBudgetSettings(App.DefaultBudgetID, BudgetSettingsUpdate);
-                        }
-
-
-
+                    await _ps.CloseAsync<PopUpPage>();
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}?SnackBar=BudgetSettingsUpdated&SnackID=0");
 
                 }
@@ -1090,7 +1082,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                 };
 
-                await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
+                await _ps.PopupService.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
             }
             catch (Exception ex)
             {
@@ -1129,11 +1121,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
-
                 await Shell.Current.GoToAsync($"//{(App.IsFamilyAccount ? nameof(FamilyAccountMainPage) : nameof(MainPage))}");
-
             }
             catch (Exception ex)
             {

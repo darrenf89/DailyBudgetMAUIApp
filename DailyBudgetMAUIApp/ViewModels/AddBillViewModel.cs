@@ -96,20 +96,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                 Bill.BillPayee = "";
                 if (RedirectTo == "CreateNewBudget")
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings", false);
                 }
                 else if (RedirectTo == "CreateNewFamilyAccount")
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Outgoings", false);
                 }
                 else if (RedirectTo == "ViewBills")
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
                 }
                 else
@@ -138,20 +132,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                 Bill.BillPayee = "";
                 if (RedirectTo == "CreateNewBudget")
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
                 }
                 else if (RedirectTo == "CreateNewFamilyAccount")
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Outgoings", false);
                 }
                 else if (RedirectTo == "ViewBills")
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
                     await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
                 }
                 else
@@ -170,20 +158,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                 Bill.BillPayee = "";
                 if (RedirectTo == "CreateNewBudget")
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={BudgetID}&NavigatedFrom=Budget Outgoings");
                 }
                 else if (RedirectTo == "CreateNewFamilyAccount")
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                    await Task.Delay(1);
                     await Shell.Current.GoToAsync($"../../{nameof(CreateNewFamilyAccounts)}?AccountID={FamilyAccountID}&NavigatedFrom=Budget Outgoings", false);
                 }
                 else if (RedirectTo == "ViewBills")
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
                     await Shell.Current.GoToAsync($"//{nameof(ViewBills)}");
                 }
                 else

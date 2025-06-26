@@ -41,9 +41,9 @@ public partial class ViewCategories : BasePage
     private readonly IRestDataService _ds;
 	private readonly ViewCategoriesViewModel _vm;
     private readonly IDispatcherTimer _timer;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
-    public ViewCategories(ViewCategoriesViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
+    public ViewCategories(ViewCategoriesViewModel viewModel, IProductTools pt, IRestDataService ds, IModalPopupService ps)
 	{
         this.BindingContext = viewModel;
         _vm = viewModel;
@@ -84,13 +84,18 @@ public partial class ViewCategories : BasePage
     {
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             _vm.IsPageBusy = true;
             base.OnAppearing();
 
             await _vm.OnLoad();
 
             var size = _vm.ScreenWidth / 170;
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
             _vm.IsPageBusy = false;
         }
         catch (Exception ex)
@@ -178,7 +183,6 @@ public partial class ViewCategories : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
         }
         catch (Exception ex)
@@ -191,8 +195,7 @@ public partial class ViewCategories : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-            Categories Category = (Categories)e.Parameter;
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage()); Categories Category = (Categories)e.Parameter;
 
             if(Category.CategoryID == -1)
             {
@@ -207,14 +210,13 @@ public partial class ViewCategories : BasePage
                 page.CornerRadius = 0;
 
                 App.CurrentBottomSheet = page;
-
-                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+                
                 await page.ShowAsync();
+                await _ps.CloseAsync<PopUpPage>();
             }
             else
             {
-                await Task.Delay(1000);
-
+                await _ps.CloseAsync<PopUpPage>();
                 await Shell.Current.GoToAsync($"///{nameof(ViewCategories)}/{nameof(ViewCategory)}?HeaderCatId={Category.CategoryID}");
             }
         }

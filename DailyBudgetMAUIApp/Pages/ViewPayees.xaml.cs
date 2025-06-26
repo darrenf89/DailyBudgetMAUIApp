@@ -37,8 +37,8 @@ public partial class ViewPayees : BasePage
     private readonly IRestDataService _ds;
 	private readonly ViewPayeesViewModel _vm;
     private readonly IDispatcherTimer _timer;
-    private readonly IPopupService _ps;
-    public ViewPayees(ViewPayeesViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
+    private readonly IModalPopupService _ps;
+    public ViewPayees(ViewPayeesViewModel viewModel, IProductTools pt, IRestDataService ds, IModalPopupService ps)
 	{
         this.BindingContext = viewModel;
         _vm = viewModel;
@@ -79,10 +79,17 @@ public partial class ViewPayees : BasePage
     {
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             _vm.IsPageBusy = true;
             base.OnAppearing();
             await LoadData();
             _vm.IsPageBusy = false;
+
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -128,8 +135,6 @@ public partial class ViewPayees : BasePage
                 _vm.PayPeriods.Add($"{SP.FromDate: dd MMM} to {SP.ToDate: dd MMM}");
             }
         }
-
-        if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
     }
 
     private async Task SwitchChart(int Index)
@@ -226,7 +231,6 @@ public partial class ViewPayees : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
         }
         catch (Exception ex)
@@ -427,8 +431,6 @@ public partial class ViewPayees : BasePage
 
             if (!payee.IsEditMode)
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1000);
 
                 if(payee.Payee == "Unassigned")
                 {

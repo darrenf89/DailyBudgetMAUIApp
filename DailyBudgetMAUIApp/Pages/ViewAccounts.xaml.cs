@@ -1,6 +1,7 @@
 
-using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.Messaging;
+using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Pages;
@@ -8,8 +9,8 @@ namespace DailyBudgetMAUIApp.Pages;
 public partial class ViewAccounts : BasePage
 {
     private readonly ViewAccountsViewModel _vm;
-    private readonly IPopupService _ps;
-    public ViewAccounts(ViewAccountsViewModel viewModel, IPopupService ps)
+    private readonly IModalPopupService _ps;
+    public ViewAccounts(ViewAccountsViewModel viewModel, IModalPopupService ps)
     {
         InitializeComponent();
         this.BindingContext = viewModel;
@@ -27,6 +28,12 @@ public partial class ViewAccounts : BasePage
     {
         try
         {
+
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             base.OnAppearing();
             await _vm.GetBankAccountDetails();
 
@@ -43,7 +50,7 @@ public partial class ViewAccounts : BasePage
                 }
             });
 
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch(Exception ex)
         {

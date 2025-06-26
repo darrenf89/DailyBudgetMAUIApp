@@ -2,7 +2,6 @@ using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Handlers;
 using The49.Maui.BottomSheet;
-using CommunityToolkit.Maui.Views;
 using DailyBudgetMAUIApp.ViewModels;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui;
@@ -13,14 +12,14 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 {
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
     public Budgets Budget { get; set; }
     public Picker SwitchBudgetPicker { get; set; }
 
-    public BudgetOptionsBottomSheet(Budgets InputBudget, IProductTools pt, IRestDataService ds, IPopupService ps)
+    public BudgetOptionsBottomSheet(Budgets InputBudget, IProductTools pt, IRestDataService ds, IModalPopupService ps)
     {
         InitializeComponent();
 
@@ -123,10 +122,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
             await _pt.PayPayDayNow(App.DefaultBudget);
-
 
         }
         catch (Exception ex)
@@ -139,7 +135,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();
@@ -157,7 +152,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();
@@ -176,7 +170,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();
@@ -194,7 +187,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();
@@ -223,7 +215,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupEditNextPayInfo, object>(
+            IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupEditNextPayInfo, object>(
                 Shell.Current,
                 options: popupOptions,
                 shellParameters: queryAttributes,
@@ -251,12 +243,8 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
                 App.CurrentBottomSheet = null;
             }
 
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-            await Task.Delay(500);
+            await Shell.Current.GoToAsync($"{nameof(EditBudgetSettings)}");
 
-            EditBudgetSettings page = new EditBudgetSettings(new EditBudgetSettingsViewModel(_pt, _ds, _ps), _pt, _ps);
-
-            await Application.Current.Windows[0].Navigation.PushModalAsync(page, true);
         }
         catch (Exception ex)
         {
@@ -279,7 +267,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupSyncBankBalance, object>(
+            IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupSyncBankBalance, object>(
                 Shell.Current,
                 options: popupOptions,
                 shellParameters: queryAttributes,
@@ -308,12 +296,8 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
                 App.CurrentBottomSheet = null;
             }
 
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-            await Task.Delay(500);
+            await Shell.Current.GoToAsync($"{nameof(EditAccountSettings)}");
 
-            EditAccountSettings page = new EditAccountSettings(new EditAccountSettingsViewModel(_pt, _ds, new NotificationPermissionsImplementation(), _ps), _pt, _ps);
-
-            await Application.Current.Windows[0].Navigation.PushModalAsync(page, true);
         }
         catch (Exception ex)
         {
@@ -333,9 +317,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
                     await this.DismissAsync();
                     App.CurrentBottomSheet = null;
                 }
-
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1000);
 
                 Budgets NewBudget = new Budgets();
 
@@ -450,7 +431,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();
@@ -504,7 +484,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
     private async void ViewCalendar_Tapped(object sender, TappedEventArgs e)
     {
-        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
         if (App.CurrentBottomSheet != null)
         {
             await App.CurrentBottomSheet.DismissAsync();
@@ -532,7 +511,7 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            IPopupResult<string> popupResult = await _ps.ShowPopupAsync<PopupMoveBalance, string>(
+            IPopupResult<string> popupResult = await _ps.PopupService.ShowPopupAsync<PopupMoveBalance, string>(
                 Shell.Current,
                 options: popupOptions,
                 shellParameters: queryAttributes,
@@ -561,9 +540,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
                 await App.CurrentBottomSheet.DismissAsync();
                 App.CurrentBottomSheet = null;
             }
-
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-            await Task.Delay(1);
 
             List<PatchDoc> BudgetUpdate = new List<PatchDoc>();
 
@@ -600,7 +576,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
 
             App.CurrentBottomSheet = page;
 
-            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
             await page.ShowAsync();
             var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
             App.DefaultBudget = Budget;
@@ -617,7 +592,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"{nameof(ViewAccounts)}");
 
             if (App.CurrentBottomSheet != null)
@@ -639,8 +613,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
             var result = await Shell.Current.DisplayAlert("Careful, before you proceed!", "Are you sure you want to delete your accounts and budget with only a single balance to manage?", "Yes", "No");
             if (result)
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
 
                 await _ds.DeleteBankAccounts(App.DefaultBudgetID);
 
@@ -663,8 +635,6 @@ public partial class BudgetOptionsBottomSheet : BottomSheet
                     await App.CurrentBottomSheet.DismissAsync();
                     App.CurrentBottomSheet = null;
                 }
-
-                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
             }
         }
         catch (Exception ex)

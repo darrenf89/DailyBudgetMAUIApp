@@ -1,9 +1,10 @@
+using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
-using Syncfusion.Maui.ListView;
 using Syncfusion.Maui.DataSource;
-using CommunityToolkit.Maui;
+using Syncfusion.Maui.ListView;
 
 namespace DailyBudgetMAUIApp.Pages;
 
@@ -12,10 +13,10 @@ public partial class ViewFilteredTransactions : BasePage
     private readonly ViewFilteredTransactionsViewModel _vm;
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
     private Transactions tappedItem;
 
-    public ViewFilteredTransactions(ViewFilteredTransactionsViewModel viewModel, IRestDataService ds, IProductTools pt, IPopupService ps)
+    public ViewFilteredTransactions(ViewFilteredTransactionsViewModel viewModel, IRestDataService ds, IProductTools pt, IModalPopupService ps)
 	{
 		InitializeComponent();
 
@@ -30,6 +31,11 @@ public partial class ViewFilteredTransactions : BasePage
     {
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             _vm.IsPageBusy = true;
             await Task.Delay(1);
             base.OnAppearing();
@@ -57,9 +63,7 @@ public partial class ViewFilteredTransactions : BasePage
             _vm.OnAppearing();
         
             _vm.IsPageBusy = false;
-            await Task.Delay(1);
-
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {

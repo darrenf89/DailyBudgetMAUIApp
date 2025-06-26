@@ -18,7 +18,7 @@ public partial class ViewTransactions : BasePage
     private readonly ViewTransactionsViewModel _vm;
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
     private Transactions tappedItem;
     private double CurrentScrollY;
 
@@ -44,7 +44,7 @@ public partial class ViewTransactions : BasePage
         }
     }
 
-    public ViewTransactions(ViewTransactionsViewModel viewModel, IRestDataService ds, IProductTools pt, IPopupService ps)
+    public ViewTransactions(ViewTransactionsViewModel viewModel, IRestDataService ds, IProductTools pt, IModalPopupService ps)
 	{
 		InitializeComponent();
 
@@ -89,12 +89,9 @@ public partial class ViewTransactions : BasePage
         }
     }
 
-    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    protected override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
-        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
         _vm.IsPageBusy = false;
-
-        await Task.Delay(500);
         base.OnNavigatingFrom(args);
     }
 
@@ -102,6 +99,11 @@ public partial class ViewTransactions : BasePage
     {
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             _vm.IsPageBusy = true;
             await _vm.OnLoad();
             base.OnAppearing();
@@ -109,7 +111,7 @@ public partial class ViewTransactions : BasePage
             AbsMain.SetLayoutBounds(vslChart, new Rect(0, 0, _vm.ScreenWidth, _vm.ChartContentHeight + 10));
             AbsMain.SetLayoutBounds(vslTransactionData, new Rect(0, _vm.ChartContentHeight + 10, _vm.ScreenWidth, _vm.ScreenHeight));
 
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
             _vm.IsPageBusy = false;
         }
         catch (Exception ex)
@@ -122,7 +124,6 @@ public partial class ViewTransactions : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
         }
         catch (Exception ex)

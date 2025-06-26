@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Pages;
 using static Android.Telephony.CarrierConfigManager;
@@ -45,13 +46,8 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet && !App.IsBackgrounded)
             {
-                IPopupService ps = IPlatformApplication.Current.Services.GetService<IPopupService>();
-
-                //TODO: SHOW POPUP
-                if (App.IsPopupShowing) { App.IsPopupShowing = false; await ps.ClosePopupAsync(Application.Current.Windows[0].Page); }
-                ps.ShowPopup<PopUpNoNetwork>(Application.Current.Windows[0].Page, options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
-                App.IsPopupShowing = true;
-                await Task.Delay(1);
+                var mps = IPlatformApplication.Current.Services.GetService<IModalPopupService>();
+                await mps.ShowAsync<PopUpNoNetwork>(() => IPlatformApplication.Current.Services.GetService<PopUpNoNetwork>());
 
                 int i = 0;
                 while (Connectivity.Current.NetworkAccess != NetworkAccess.Internet && i < 30)
@@ -59,6 +55,8 @@ namespace DailyBudgetMAUIApp.ViewModels
                     await Task.Delay(1000);
                     i++;
                 }
+
+                await mps.CloseAsync<PopUpNoNetwork>();
 
                 if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
                 {
@@ -69,7 +67,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                     await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
                 }
 
-                if (App.IsPopupShowing) { App.IsPopupShowing = false; await ps.ClosePopupAsync(Application.Current.Windows[0].Page); }
             }
         }
     }

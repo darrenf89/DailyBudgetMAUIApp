@@ -15,9 +15,9 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
     public Categories Category { get; set; }
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
-    public AddSubCategoryBottomSheet(Categories Category, IProductTools pt, IRestDataService ds, IPopupService ps)
+    public AddSubCategoryBottomSheet(Categories Category, IProductTools pt, IRestDataService ds, IModalPopupService ps)
 	{
 		InitializeComponent();
 
@@ -98,9 +98,7 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
                 return;
             }
 
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
-            await Task.Delay(500);
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
 
             Categories NewCat = new Categories
             {
@@ -121,8 +119,10 @@ public partial class AddSubCategoryBottomSheet : BottomSheet
             } 
             catch (Exception) 
             {
-                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+                
             }
+
+            await _ps.CloseAsync<PopUpPage>();
 
             if (App.CurrentBottomSheet != null)
             {

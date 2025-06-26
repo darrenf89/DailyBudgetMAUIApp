@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.Messaging;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
@@ -23,10 +22,10 @@ public partial class FamilyAccountMainPage : BasePage
     private readonly FamilyAccountMainPageViewModel _vm;
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
     public Picker SwitchBudgetPicker { get; set; }
 
-    public FamilyAccountMainPage(FamilyAccountMainPageViewModel viewModel, IRestDataService ds, IProductTools pt, IPopupService ps)
+    public FamilyAccountMainPage(FamilyAccountMainPageViewModel viewModel, IRestDataService ds, IProductTools pt, IModalPopupService ps)
 	{
         _ds = ds;
         _pt = pt;
@@ -147,10 +146,10 @@ public partial class FamilyAccountMainPage : BasePage
             _vm.ReloadPage += async () =>
             {
                 await LoadMainDashboardContent();
-                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+                await _ps.CloseAsync<PopUpPage>();
             };
 
-            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+            await _ps.CloseAsync<PopUpPage>();
 
             _vm.IsPageBusy = false;
         }
@@ -177,7 +176,7 @@ public partial class FamilyAccountMainPage : BasePage
             {
                 if(!m._isBackground)
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
+                    await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
                 }
 
                 await Task.Delay(1);
@@ -194,7 +193,7 @@ public partial class FamilyAccountMainPage : BasePage
 
                 if (!m._isBackground)
                 {
-                    if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+                    await _ps.CloseAsync<PopUpPage>();
                 }
             }
             catch
@@ -561,7 +560,7 @@ public partial class FamilyAccountMainPage : BasePage
     {
         try
         {
-            TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet(_ds, _pt, _ps);
+            TransactionOptionsBottomSheet page = new TransactionOptionsBottomSheet(_ds, _pt);
 
             page.Detents = new DetentsCollection()
             {
@@ -609,7 +608,7 @@ public partial class FamilyAccountMainPage : BasePage
     {
         try
         {
-            EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(_ds, _pt, _ps);
+            EnvelopeOptionsBottomSheet page = new EnvelopeOptionsBottomSheet(_ds, _pt);
 
             page.Detents = new DetentsCollection()
             {
@@ -639,8 +638,6 @@ public partial class FamilyAccountMainPage : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();
@@ -658,7 +655,6 @@ public partial class FamilyAccountMainPage : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewBills)}");
         }
         catch (Exception ex)
@@ -672,7 +668,6 @@ public partial class FamilyAccountMainPage : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.Pages.ViewSavings)}");
         }
         catch (Exception ex)
@@ -825,7 +820,7 @@ public partial class FamilyAccountMainPage : BasePage
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            IPopupResult<string> popupResult = await _ps.ShowPopupAsync<PopupMoveBalance, string>(
+            IPopupResult<string> popupResult = await _ps.PopupService.ShowPopupAsync<PopupMoveBalance, string>(
                 Shell.Current,
                 options: popupOptions,
                 shellParameters: queryAttributes,
@@ -873,7 +868,7 @@ public partial class FamilyAccountMainPage : BasePage
     {
         try
         {
-            PayeeOptionsBottomSheet page = new PayeeOptionsBottomSheet(_ds, _pt, _ps);
+            PayeeOptionsBottomSheet page = new PayeeOptionsBottomSheet(_ds, _pt);
 
             page.Detents = new DetentsCollection()
             {

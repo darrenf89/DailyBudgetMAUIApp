@@ -1,15 +1,12 @@
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DailyBudgetMAUIApp.DataServices;
 using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.Pages;
-using DailyBudgetMAUIApp.Popups;
 using Newtonsoft.Json;
-using System.Diagnostics;
 
 
 namespace DailyBudgetMAUIApp.ViewModels
@@ -18,8 +15,8 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
-        private readonly IPopupService _ps;
-        public RegisterPageViewModel(IRestDataService ds, IProductTools pt, IPopupService ps)
+        private readonly IModalPopupService _ps;
+        public RegisterPageViewModel(IRestDataService ds, IProductTools pt, IModalPopupService ps)
         {
             Title = "Please Sign Up!";
             _ds = ds;
@@ -116,9 +113,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 if (IsAgreedToTerms && String.Equals(Password, PasswordConfirm))
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
-                    await Task.Delay(1);
+                    await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
 
                     UserDetailsModel UserDetails = await _ds.GetUserDetailsAsync(Email);
                     if(UserDetails.Error != null)
@@ -137,8 +132,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                         if(ReturnUser.Error == null)
                         {
-                            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
-
+                            await _ps.CloseAsync<PopUpPage>();
                             string status = await _ds.CreateNewOtpCode(ReturnUser.UserID, "ValidateEmail");
                             if (status == "OK")
                             {
@@ -156,7 +150,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                                 };
 
-                                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpOTP, object>(
+                                IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpOTP, object>(
                                     Shell.Current,
                                     options: popupOptions,
                                     shellParameters: queryAttributes,
@@ -191,7 +185,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     App.DefaultBudgetID = ReturnUser.DefaultBudgetID;
                                     App.HasVisitedCreatePage = false;
                                     await _pt.SetSubDetails();
-
+                                    await _ps.CloseAsync<PopUpPage>();
                                     await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
                                 }
                                 else
@@ -206,8 +200,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                             }
                             else
                             {
-                                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
-
+                                await _ps.CloseAsync<PopUpPage>();
                                 await Application.Current.Windows[0].Page.DisplayAlert("Opps", "There was an error sending you an OTP code to verify you email! Please click the link to create a new one so you can continue your daily budgeting journey", "OK");
 
                             }
@@ -220,8 +213,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     else
                     {
-                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
-
+                        await _ps.CloseAsync<PopUpPage>();
                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "This Email is already taken, reset your password or try a different Email", "OK");
                     }
                 }
@@ -229,14 +221,12 @@ namespace DailyBudgetMAUIApp.ViewModels
                 {
                     if(IsAgreedToTerms)
                     {
-                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
-
+                        await _ps.CloseAsync<PopUpPage>();
                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "Your Passwords don't match ...", "OK");
                     }
                     else
                     {
-                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
-
+                        await _ps.CloseAsync<PopUpPage>();
                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "You have to agree to our Terms of Service", "OK");
                     }
                 }

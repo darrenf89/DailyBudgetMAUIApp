@@ -1,5 +1,6 @@
 using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.ViewModels;
 using Syncfusion.Maui.Core;
 
@@ -9,7 +10,7 @@ public partial class ViewBudgets : BasePage
 {
     private readonly ViewBudgetsViewModel _vm;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
@@ -57,7 +58,7 @@ public partial class ViewBudgets : BasePage
         }
     }
 
-    public ViewBudgets(ViewBudgetsViewModel vm, IProductTools pt, IPopupService ps)
+    public ViewBudgets(ViewBudgetsViewModel vm, IProductTools pt, IModalPopupService ps)
     {
         InitializeComponent();
         _vm = vm;
@@ -70,17 +71,17 @@ public partial class ViewBudgets : BasePage
         ButtonWidth = ScreenWidth - 40;
     }
 
-    protected async override void OnNavigatedTo(NavigatedToEventArgs args)
-    {
-        base.OnNavigatedTo(args);
-
-    }
 
     protected async override void OnAppearing()
-    {
-        base.OnAppearing();
+    {        
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
+            base.OnAppearing();
             await _vm.LoadBudgets();
 
             if (App.IsFamilyAccount && _vm.FamilyUser.ProfilePicture.Contains("Avatar"))
@@ -127,7 +128,7 @@ public partial class ViewBudgets : BasePage
                 AddNewBudget.IsVisible = false;
             }
 
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {

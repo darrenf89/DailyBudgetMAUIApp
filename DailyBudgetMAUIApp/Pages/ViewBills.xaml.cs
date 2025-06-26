@@ -16,9 +16,9 @@ public partial class ViewBills : BasePage
 {
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 	private readonly ViewBillsViewModel _vm;
-    public ViewBills(ViewBillsViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
+    public ViewBills(ViewBillsViewModel viewModel, IProductTools pt, IRestDataService ds, IModalPopupService ps)
 	{
         this.BindingContext = viewModel;
         _vm = viewModel;
@@ -29,12 +29,9 @@ public partial class ViewBills : BasePage
         InitializeComponent();
     }
 
-    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    protected override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
-        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
         _vm.IsPageBusy = false;
-
-        await Task.Delay(500);
         base.OnNavigatingFrom(args);
     }
 
@@ -52,6 +49,11 @@ public partial class ViewBills : BasePage
     {
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             _vm.IsPageBusy = true;
             _vm.Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Limited");
             List<Bills> B = await _ds.GetBudgetBills(App.DefaultBudgetID, "ViewBills");
@@ -76,7 +78,7 @@ public partial class ViewBills : BasePage
             double ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
             _vm.SignOutButtonWidth = ScreenWidth - 60;
 
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
             _vm.IsPageBusy = false;
         }
         catch (Exception ex)
@@ -88,7 +90,6 @@ public partial class ViewBills : BasePage
 
     private async void HomeButton_Clicked(object sender, EventArgs e)
     {
-        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
         await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
     }
 
@@ -102,7 +103,6 @@ public partial class ViewBills : BasePage
 
             if(result)
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Shell.Current.GoToAsync($"///{nameof(ViewBills)}/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=ViewBills");
             }
         }
@@ -165,7 +165,7 @@ public partial class ViewBills : BasePage
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageVariableInput, object>(
+            IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpPageVariableInput, object>(
                 Shell.Current,
                 options: popupOptions,
                 shellParameters: queryAttributes,
@@ -232,8 +232,7 @@ public partial class ViewBills : BasePage
             await _ds.ReCalculateBudget(App.DefaultBudgetID);
             var Budget = await _ds.GetBudgetDetailsAsync(App.DefaultBudgetID, "Full");
             App.DefaultBudget = Budget;
-
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -266,7 +265,7 @@ public partial class ViewBills : BasePage
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageVariableInput, object>(
+            IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpPageVariableInput, object>(
                 Shell.Current,
                 options: popupOptions,
                 shellParameters: queryAttributes,
@@ -330,7 +329,6 @@ public partial class ViewBills : BasePage
 
             if (result)
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Shell.Current.GoToAsync($"///{nameof(ViewBills)}/{nameof(AddBill)}?BudgetID={_vm.Budget.BudgetID}&NavigatedFrom=ViewBills");
             }
         }

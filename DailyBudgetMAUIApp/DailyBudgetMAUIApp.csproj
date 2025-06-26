@@ -116,17 +116,17 @@
 		<PackageReference Include="Plugin.Maui.AppRating" Version="1.2.1" />
 		<PackageReference Include="Plugin.MauiMTAdmob" Version="2.0.2" />
 		<PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.0" />
-		<PackageReference Include="Syncfusion.Licensing" Version="29.2.11" />
-		<PackageReference Include="Syncfusion.Maui.Buttons" Version="29.2.11" />
-		<PackageReference Include="Syncfusion.Maui.Carousel" Version="29.2.11" />
-		<PackageReference Include="Syncfusion.Maui.Charts" Version="29.2.11" />
-		<PackageReference Include="Syncfusion.Maui.Expander" Version="29.2.11" />
-		<PackageReference Include="Syncfusion.Maui.Gauges" Version="29.2.11" />
-		<PackageReference Include="Syncfusion.Maui.Inputs" Version="29.2.11" />
-		<PackageReference Include="Syncfusion.Maui.ListView" Version="29.2.11" />
-		<PackageReference Include="Syncfusion.Maui.Picker" Version="29.2.11" />
-		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="29.2.11" />
-		<PackageReference Include="Syncfusion.Maui.Scheduler" Version="29.2.11" />
+		<PackageReference Include="Syncfusion.Licensing" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Maui.Buttons" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Maui.Carousel" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Maui.Charts" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Maui.Expander" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Maui.Gauges" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Maui.Inputs" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Maui.ListView" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Maui.Picker" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Maui.Scheduler" Version="30.1.37" />
 		<PackageReference Include="System.ObjectModel" Version="4.3.0" />
 		<PackageReference Include="System.Private.Uri" Version="4.3.2" />
 	</ItemGroup>

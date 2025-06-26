@@ -18,8 +18,8 @@ public partial class AddIncome : BasePage
     private readonly AddIncomeViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    private readonly IPopupService _ps;
-    public AddIncome(AddIncomeViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
+    private readonly IModalPopupService _ps;
+    public AddIncome(AddIncomeViewModel viewModel, IProductTools pt, IRestDataService ds, IModalPopupService ps)
 	{
         InitializeComponent();
 
@@ -31,13 +31,9 @@ public partial class AddIncome : BasePage
 
     }
 
-    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    protected override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
-        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
         _vm.IsPageBusy = false;
-
-        await Task.Delay(500);
         base.OnNavigatingFrom(args);
     }
 
@@ -56,6 +52,8 @@ public partial class AddIncome : BasePage
     {
         try
         {
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             if (_vm.BudgetID == 0)
             {
                 _vm.BudgetID = App.DefaultBudgetID;
@@ -145,7 +143,7 @@ public partial class AddIncome : BasePage
 
             base.OnAppearing();
 
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -549,7 +547,7 @@ public partial class AddIncome : BasePage
             PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
         };
 
-        IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageSingleInput, object>(
+        IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpPageSingleInput, object>(
             Shell.Current,
             options: popupOptions,
             shellParameters: queryAttributes,

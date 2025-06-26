@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.Messaging;
 using DailyBudgetMAUIApp.Converters;
 using DailyBudgetMAUIApp.Handlers;
@@ -14,7 +13,6 @@ using Newtonsoft.Json;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
 
@@ -28,9 +26,9 @@ namespace DailyBudgetMAUIApp.DataServices
     internal class ProductTools : IProductTools
     {
         private readonly IRestDataService _ds;
-        private readonly IPopupService _ps;
+        private readonly IModalPopupService _ps;
 
-        public ProductTools(IRestDataService ds, IPopupService ps)
+        public ProductTools(IRestDataService ds, IModalPopupService ps)
         {
             _ds = ds;
             _ps = ps;
@@ -87,6 +85,8 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task HandleException(Exception ex, string Page, string Method)
         {
+            await _ps.CloseAsync<PopUpPage>();
+
             if (ex.Message == "Connectivity")
             {
                 await Shell.Current.GoToAsync($"{nameof(NoNetworkAccess)}");
@@ -1295,7 +1295,7 @@ namespace DailyBudgetMAUIApp.DataServices
                             PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                         };
 
-                        IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyTransaction, object>(
+                        IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupDailyTransaction, object>(
                             Shell.Current,
                             options: popupOptions,
                             shellParameters: queryAttributes,
@@ -1408,7 +1408,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                 };
 
-                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyPayDay, object>(
+                IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupDailyPayDay, object>(
                     Shell.Current,
                     options: popupOptions,
                     shellParameters: queryAttributes,
@@ -1587,7 +1587,7 @@ namespace DailyBudgetMAUIApp.DataServices
                                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                             };
 
-                            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailySaving, object>(
+                            IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupDailySaving, object>(
                                 Shell.Current,
                                 options: popupOptions,
                                 shellParameters: queryAttributes,
@@ -1668,7 +1668,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                     };
 
-                    IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyBill, object>(
+                    IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupDailyBill, object>(
                         Shell.Current,
                         options: popupOptions,
                         shellParameters: queryAttributes,
@@ -1749,7 +1749,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                     };
 
-                    IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyIncome, object>(
+                    IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupDailyIncome, object>(
                         Shell.Current,
                         options: popupOptions,
                         shellParameters: queryAttributes,
@@ -1833,7 +1833,7 @@ namespace DailyBudgetMAUIApp.DataServices
                                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                             };
 
-                            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyTransaction, object>(
+                            IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupDailyTransaction, object>(
                                 Shell.Current,
                                 options: popupOptions,
                                 shellParameters: queryAttributes,
@@ -1916,7 +1916,7 @@ namespace DailyBudgetMAUIApp.DataServices
                                         PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                                     };
 
-                                    IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyAllowance, object>(
+                                    IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupDailyAllowance, object>(
                                         Shell.Current,
                                         options: popupOptions,
                                         shellParameters: queryAttributes,
@@ -2021,7 +2021,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                     };
 
-                    IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyAllowance, object>(
+                    IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupDailyAllowance, object>(
                         Shell.Current,
                         options: popupOptions,
                         shellParameters: queryAttributes,
@@ -2344,7 +2344,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                     };
 
-                    IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpOTP, object>(
+                    IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpOTP, object>(
                         Shell.Current,
                         options: popupOptions,
                         shellParameters: queryAttributes,
@@ -2508,11 +2508,6 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 if (navigate)
                 {
-                    if (App.IsPopupShowing)
-                    {
-                        App.IsPopupShowing = false;
-                        await _ps.ClosePopupAsync(Shell.Current);
-                    }
                     await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
                 }
             }   
@@ -2690,7 +2685,7 @@ namespace DailyBudgetMAUIApp.DataServices
                             PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                         };
 
-                        await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
+                        await _ps.PopupService.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
                     }
                 }
                 else
@@ -2810,7 +2805,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyBill, object>(
+            IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupDailyBill, object>(
                 Shell.Current,
                 options: popupOptions,
                 shellParameters: queryAttributes,
@@ -2819,6 +2814,8 @@ namespace DailyBudgetMAUIApp.DataServices
 
             if ((string)popupResult.Result.ToString() == "OK")
             {
+                await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
                 Bill.BillDueDate = DateTime.UtcNow;
                 Bill = await TransactBillAsync(Bill, budget);
                 await _ds.UpdateBill(Bill);
@@ -2850,7 +2847,7 @@ namespace DailyBudgetMAUIApp.DataServices
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopupDailyPayDay, object>(
+            IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopupDailyPayDay, object>(
                 Shell.Current,
                 options: popupOptions,
                 shellParameters: queryAttributes,
@@ -2950,11 +2947,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
                 }
 
-                if (App.IsPopupShowing)
-                {
-                    App.IsPopupShowing = false;
-                    await _ps.ClosePopupAsync(Shell.Current);
-                }
+                await _ps.CloseAsync<PopUpPage>();
 
                 if (App.CurrentBottomSheet != null)
                 {
@@ -2964,11 +2957,7 @@ namespace DailyBudgetMAUIApp.DataServices
             }
             else
             {
-                if (App.IsPopupShowing)
-                {
-                    App.IsPopupShowing = false;
-                    await _ps.ClosePopupAsync(Shell.Current);
-                }
+                await _ps.CloseAsync<PopUpPage>();
             }
         }
 

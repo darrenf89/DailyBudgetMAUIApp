@@ -12,7 +12,7 @@ namespace DailyBudgetMAUIApp.Pages;
 public partial class SelectPayeePage : BasePage
 {
 	private readonly IRestDataService _ds;
-	private readonly IPopupService _ps;
+	private readonly IModalPopupService _ps;
 	private readonly IProductTools _pt;
 	private readonly SelectPayeePageViewModel _vm;
     private IDispatcherTimer _payeeSearchTimer;
@@ -22,7 +22,7 @@ public partial class SelectPayeePage : BasePage
     public double ScreenHeight { get; set; }
     public string LastSearchPayee { get; set; } = "";
 
-    public SelectPayeePage(IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel, IPopupService ps)
+    public SelectPayeePage(IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel, IModalPopupService ps)
     {
         _ds = ds;
         _pt = pt;
@@ -56,7 +56,7 @@ public partial class SelectPayeePage : BasePage
 
     }
 
-    public SelectPayeePage(int BudgetID, Transactions Transaction, IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel)
+    public SelectPayeePage(int BudgetID, Transactions Transaction, IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel, IModalPopupService ps)
 	{
         if (Transaction.Payee == null)
         {
@@ -65,6 +65,7 @@ public partial class SelectPayeePage : BasePage
 
         _ds = ds;
         _pt = pt;
+        _ps = ps;
 
         InitializeComponent();
 
@@ -80,7 +81,7 @@ public partial class SelectPayeePage : BasePage
 
     }
 
-    public SelectPayeePage(int BudgetID, Bills Bill, IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel)
+    public SelectPayeePage(int BudgetID, Bills Bill, IRestDataService ds, IProductTools pt, SelectPayeePageViewModel viewModel, IModalPopupService ps)
     {
         if (Bill.BillPayee == null)
         {
@@ -89,6 +90,7 @@ public partial class SelectPayeePage : BasePage
 
         _ds = ds;
         _pt = pt;
+        _ps = ps;
 
         InitializeComponent();
 
@@ -102,13 +104,6 @@ public partial class SelectPayeePage : BasePage
         _vm.PageType = "Bill";
         entBillPayee.IsVisible = true;
 
-    }
-
-    async protected override void OnNavigatedTo(NavigatedToEventArgs args)
-    {
-
-        base.OnNavigatedTo(args);
-        if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
     }
 
     private void acrPayeeName_Tapped(object sender, TappedEventArgs e)
@@ -157,7 +152,13 @@ public partial class SelectPayeePage : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
+
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
+            base.OnAppearing();
 
             if (_vm.PageType == "ViewList")
             {
@@ -167,13 +168,10 @@ public partial class SelectPayeePage : BasePage
                 };
             }
 
-            await Task.Delay(10);
-
             TopBV.WidthRequest = ScreenWidth;
             MainAbs.WidthRequest = ScreenWidth;
             MainAbs.SetLayoutFlags(MainVSL, AbsoluteLayoutFlags.PositionProportional);
-            MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));
-            base.OnAppearing();
+            MainAbs.SetLayoutBounds(MainVSL, new Rect(0, 0, ScreenWidth, ScreenHeight));            
 
             _vm.SelectedPayee = _vm.Transaction.Payee;
             if (string.Equals(_vm.PageType, "Bill", StringComparison.OrdinalIgnoreCase))
@@ -200,6 +198,8 @@ public partial class SelectPayeePage : BasePage
             {
                 LoadPayeeList(_vm.Transaction.Payee);
             }
+
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {

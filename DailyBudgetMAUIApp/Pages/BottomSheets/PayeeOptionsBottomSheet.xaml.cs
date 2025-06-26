@@ -10,11 +10,10 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
 {
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
 
-    public PayeeOptionsBottomSheet(IRestDataService ds, IProductTools pt, IPopupService ps)
+    public PayeeOptionsBottomSheet(IRestDataService ds, IProductTools pt)
     {
         InitializeComponent();
 
@@ -25,7 +24,6 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
 
         _ds = ds;
         _pt = pt;
-        _ps = ps;
     }
 
     private void btnDismiss_Clicked(object sender, EventArgs e)
@@ -109,8 +107,6 @@ public partial class PayeeOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();

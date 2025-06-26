@@ -18,8 +18,8 @@ public partial class AddBill : BasePage
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
     private readonly IKeyboardService _ks;
-    private readonly IPopupService _ps;
-    public AddBill(AddBillViewModel viewModel, IProductTools pt, IRestDataService ds, IKeyboardService ks, IPopupService ps)
+    private readonly IModalPopupService _ps;
+    public AddBill(AddBillViewModel viewModel, IProductTools pt, IRestDataService ds, IKeyboardService ks, IModalPopupService ps)
 	{
 		InitializeComponent();
 
@@ -33,22 +33,12 @@ public partial class AddBill : BasePage
         dtpckBillDueDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(1);
     }
 
-    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
-    {
-        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
-        _vm.IsPageBusy = false;
-
-        await Task.Delay(500);
-        base.OnNavigatingFrom(args);
-    }
-
-
-    async protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
 
         base.OnNavigatedFrom(args);
         _vm.NavigatedFrom = "";
+        _vm.IsPageBusy = false;
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -65,7 +55,7 @@ public partial class AddBill : BasePage
     {
         try
         {
-
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
             base.OnAppearing();
 
             if (string.IsNullOrEmpty(_vm.NavigatedFrom))
@@ -201,8 +191,7 @@ public partial class AddBill : BasePage
                 _vm.Bill.AccountID = null;
             }
 
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
-
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -664,7 +653,7 @@ public partial class AddBill : BasePage
             PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
         };
 
-        IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageSingleInput, object>(
+        IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpPageSingleInput, object>(
             Shell.Current,
             options: popupOptions,
             shellParameters: queryAttributes,

@@ -16,7 +16,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
-        private readonly IPopupService _ps;
+        private readonly IModalPopupService _ps;
 
         [ObservableProperty]
         public partial List<BankAccounts> BankAccounts { get; set; } = new List<BankAccounts>();
@@ -31,7 +31,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public partial int AccountCount { get; set; }
 
 
-        public ViewAccountsViewModel(IProductTools pt, IRestDataService ds, IPopupService ps)
+        public ViewAccountsViewModel(IProductTools pt, IRestDataService ds, IModalPopupService ps)
         {
             _ds = ds;
             _pt = pt;
@@ -72,8 +72,6 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 App.CurrentBottomSheet = page;
 
-                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
-
                 await page.ShowAsync();
             }
             catch (Exception ex)
@@ -92,8 +90,6 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 if (result)
                 {
-                    if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
-
                     Transactions T = new Transactions
                     {
                         TransactionDate = _pt.GetBudgetLocalTime(DateTime.UtcNow),
@@ -178,7 +174,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                 };
 
-                IPopupResult<string> popupResult = await _ps.ShowPopupAsync<PopupMoveAccountBalance, string>(
+                IPopupResult<string> popupResult = await _ps.PopupService.ShowPopupAsync<PopupMoveAccountBalance, string>(
                     Shell.Current,
                     options: popupOptions,
                     shellParameters: queryAttributes,
@@ -215,7 +211,6 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                 App.CurrentBottomSheet = page;
 
-                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
                 await page.ShowAsync();
             }
             catch (Exception ex)

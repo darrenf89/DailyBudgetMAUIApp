@@ -13,7 +13,7 @@ public partial class SelectCategoryPage : BasePage
 {
 	private readonly IRestDataService _ds;
 	private readonly IProductTools _pt;
-	private readonly IPopupService _ps;
+	private readonly IModalPopupService _ps;
 	private readonly SelectCategoryPageViewModel _vm;
     private Dictionary<string, Grid> AddNewCat = new Dictionary<string, Grid>();
     private Dictionary<string, VerticalStackLayout> SubCatList = new Dictionary<string, VerticalStackLayout>();
@@ -25,7 +25,7 @@ public partial class SelectCategoryPage : BasePage
     public double ScreenWidth { get; set; }
     public double ScreenHeight { get; set; }
 
-    public SelectCategoryPage(IRestDataService ds, IProductTools pt, SelectCategoryPageViewModel viewModel, IPopupService ps)
+    public SelectCategoryPage(IRestDataService ds, IProductTools pt, SelectCategoryPageViewModel viewModel, IModalPopupService ps)
     {
         _ds = ds;
         _pt = pt;
@@ -61,20 +61,15 @@ public partial class SelectCategoryPage : BasePage
         _vm.BudgetID = BudgetID;
 
     }
-    async protected override void OnNavigatedTo(NavigatedToEventArgs args)
-    {
-
-        base.OnNavigatedTo(args);
-
-        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
-    }
-
 
     async protected override void OnAppearing()
     {
         try
         {
-            await Task.Delay(10);
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
 
             TopBV.WidthRequest = ScreenWidth;
             MainAbs.WidthRequest = ScreenWidth;
@@ -107,6 +102,8 @@ public partial class SelectCategoryPage : BasePage
             FillSubCategoryLists(_vm.GroupCategoryList);
             LoadCategoryList();
             LoadCategoryFilter();
+
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -936,8 +933,7 @@ public partial class SelectCategoryPage : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-            await Task.Delay(10);
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
 
             entCatFilterSearch.IsEnabled = false;
             entCatFilterSearch.IsEnabled = true;
@@ -999,7 +995,7 @@ public partial class SelectCategoryPage : BasePage
 
             acrFilterOption_Tapped(null, null);
 
-            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {

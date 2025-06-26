@@ -90,9 +90,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
-
                 await Shell.Current.GoToAsync($"{nameof(CreateNewFamilyAccounts)}?AccountID={0}");
             }
             catch (Exception ex)
@@ -107,11 +104,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
-
-                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
-                
+                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");                
             }
             catch (Exception ex)
             {
@@ -125,9 +118,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {            
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
-
                 FamilyUserAccount User = (FamilyUserAccount)obj;
                 await Shell.Current.GoToAsync($"{nameof(CreateNewFamilyAccounts)}?AccountID={User.UserID}");
             }
@@ -143,9 +133,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {            
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
-
                 FamilyUserAccount User = (FamilyUserAccount)obj;
                 await Shell.Current.GoToAsync($"//{nameof(FamilyAccountsView)}?FamilyAccountID={User.UserID}");
 

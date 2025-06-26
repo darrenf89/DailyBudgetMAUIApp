@@ -29,11 +29,11 @@ namespace DailyBudgetMAUIApp.DataServices
         private bool IsRefreshingToken = false;
 
         private readonly ILogService _ls;
-        private readonly IPopupService _ps;
+        private readonly IModalPopupService _ps;
 
         public bool IsPopUpNoServerShowing = false;
 
-        public RestDataService(ILogService ls, IPopupService ps)
+        public RestDataService(ILogService ls, IModalPopupService ps)
         {
             _httpClient = new HttpClient
             {
@@ -120,10 +120,7 @@ namespace DailyBudgetMAUIApp.DataServices
                         if (roundTripTime > 2000)
                         {
                             //TODO: SHOW A POPUP
-                            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
-                            _ps.ShowPopup<PopUpNoServer>(Application.Current.Windows[0].Page, options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
-                            IsPopUpNoServerShowing = true;
-                            App.IsPopupShowing = true;
+                            await _ps.ShowAsync<PopUpNoServer>(() => IPlatformApplication.Current.Services.GetService<PopUpNoServer>());
 
                             int i = 0;
                             while (roundTripTime > 2000 && i < 2)
@@ -139,7 +136,7 @@ namespace DailyBudgetMAUIApp.DataServices
                                 i++;
                             }
 
-                            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+                            await _ps.CloseAsync<PopUpNoServer>();
 
                             return true;
                         }
@@ -225,10 +222,7 @@ namespace DailyBudgetMAUIApp.DataServices
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
-                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
-                _ps.ShowPopup<PopUpNoNetwork>(Application.Current.Windows[0].Page, options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
-                App.IsPopupShowing = true;
-                await Task.Delay(1);
+                await _ps.ShowAsync<PopUpNoNetwork>(() => IPlatformApplication.Current.Services.GetService<PopUpNoNetwork>());
 
                 int i = 0;
                 while (Connectivity.Current.NetworkAccess != NetworkAccess.Internet && i < 30)
@@ -237,7 +231,7 @@ namespace DailyBudgetMAUIApp.DataServices
                     i++;
                 }
 
-                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+                await _ps.CloseAsync<PopUpNoNetwork>();
             }
 
             return Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
@@ -471,7 +465,6 @@ namespace DailyBudgetMAUIApp.DataServices
                 catch (Exception ex)
                 {
                     await _ls.LogErrorAsync($"PATCH REQUEST ERROR - attempt {attempt}. Reason: {ex.Message}");
-                    throw;
                 }
 
                 if (attempt == 1)
@@ -550,24 +543,12 @@ namespace DailyBudgetMAUIApp.DataServices
 
         public async Task ShowServerConnectionPopup()
         {
-            await Task.Delay(10);
-
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
-            if (Application.Current.Windows[0].Page != null)
-            {
-                _ps.ShowPopup<PopUpNoServer>(Application.Current.Windows[0].Page, options: new PopupOptions { CanBeDismissedByTappingOutsideOfPopup = false, PageOverlayColor = Color.FromArgb("#80000000") });
-                App.IsPopupShowing = true;
-                IsPopUpNoServerShowing = true;
-            }
+            await _ps.ShowAsync<PopUpNoServer>(() => IPlatformApplication.Current.Services.GetService<PopUpNoServer>());
 
         }
         public async Task HideServerConnectionPopup()
         {
-            if (IsPopUpNoServerShowing)
-            {
-                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
-                IsPopUpNoServerShowing = false;
-            }
+            await _ps.CloseAsync<PopUpNoServer>();
         }
 
         public async Task<string> PatchUserAccount(int UserID, List<PatchDoc> PatchDoc)

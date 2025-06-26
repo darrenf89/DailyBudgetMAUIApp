@@ -13,14 +13,14 @@ public partial class SelectSavingCategoryPage : BasePage
 {
 	private readonly IRestDataService _ds;
 	private readonly IProductTools _pt;
-	private readonly IPopupService _ps;
+	private readonly IModalPopupService _ps;
 	private readonly SelectSavingCategoryPageViewModel _vm;
 
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
     public double ScreenHeight { get; set; }
 
-    public SelectSavingCategoryPage(IRestDataService ds, IProductTools pt, SelectSavingCategoryPageViewModel viewModel, IPopupService ps)
+    public SelectSavingCategoryPage(IRestDataService ds, IProductTools pt, SelectSavingCategoryPageViewModel viewModel, IModalPopupService ps)
     {
         _ds = ds;
         _pt = pt;
@@ -35,7 +35,7 @@ public partial class SelectSavingCategoryPage : BasePage
         ScreenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - 60;
         ButtonWidth = ScreenWidth - 40;
     }
-    public SelectSavingCategoryPage(int BudgetID, Transactions Transaction, IRestDataService ds, IProductTools pt, SelectSavingCategoryPageViewModel viewModel)
+    public SelectSavingCategoryPage(int BudgetID, Transactions Transaction, IRestDataService ds, IProductTools pt, SelectSavingCategoryPageViewModel viewModel, IModalPopupService ps)
 	{
         if(Transaction.Category == null)
         {
@@ -45,6 +45,7 @@ public partial class SelectSavingCategoryPage : BasePage
 
         _ds = ds;
         _pt = pt;
+        _ps = ps;
 
         InitializeComponent();
 
@@ -61,7 +62,10 @@ public partial class SelectSavingCategoryPage : BasePage
     {
         try
         {
-            await Task.Delay(10);
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
 
             TopBV.WidthRequest = ScreenWidth;
             MainAbs.WidthRequest = ScreenWidth;
@@ -95,7 +99,7 @@ public partial class SelectSavingCategoryPage : BasePage
             _vm.EnvelopeFilteredSavingList = _vm.EnvelopeSavingList;
             LoadSavingList();
 
-            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -471,9 +475,7 @@ public partial class SelectSavingCategoryPage : BasePage
         try
         {
 
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
-            await Task.Delay(10);
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
 
             entEnvelopeSearch.IsEnabled = false;
             entEnvelopeSearch.IsEnabled = true;
@@ -512,7 +514,7 @@ public partial class SelectSavingCategoryPage : BasePage
 
             acrFilterOption_Tapped(null, null);
 
-            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {

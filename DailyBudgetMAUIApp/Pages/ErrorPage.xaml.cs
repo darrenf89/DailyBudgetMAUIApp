@@ -19,7 +19,6 @@ public partial class ErrorPage : BasePage
     {
         try 
         {
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
             if (_vm.Error is not null && _vm.Error.ErrorLogID != 0)
             {
                  _vm.TxtErrorMessage = _vm.Error.ErrorMessage;

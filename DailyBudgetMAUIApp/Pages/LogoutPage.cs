@@ -42,10 +42,8 @@ public class LogoutPage : ContentPage
         App.DefaultBudgetID = 0;
         App.DefaultBudget = null;
 
-        Application.Current!.MainPage = new AppShell();
         LocalNotificationCenter.Current.CancelAll();
 
-        if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
         if (App.CurrentBottomSheet != null)
         {
             await App.CurrentBottomSheet.DismissAsync();

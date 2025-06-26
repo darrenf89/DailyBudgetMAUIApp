@@ -69,6 +69,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<INotificationPermissions, NotificationPermissionsImplementation>();
         builder.Services.AddSingleton<IKeyboardService, KeyboardService>();
         builder.Services.AddSingleton<ILogService, LogService>();
+        builder.Services.AddSingleton<IModalPopupService, ModalPopupService>();
 
         //Pages
         builder.Services.AddTransient<MainPage>();

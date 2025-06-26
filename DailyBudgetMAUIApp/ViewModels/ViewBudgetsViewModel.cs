@@ -14,7 +14,7 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
-        private readonly IPopupService _ps;
+        private readonly IModalPopupService _ps;
 
 
         [ObservableProperty]
@@ -36,7 +36,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         public partial string NickName { get; set; }
 
 
-        public ViewBudgetsViewModel(IProductTools pt, IRestDataService ds, IPopupService ps)
+        public ViewBudgetsViewModel(IProductTools pt, IRestDataService ds, IModalPopupService ps)
         {
             _pt = pt;
             _ds = ds;
@@ -77,9 +77,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                 if (result != null)
                 {
 
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                    await Task.Delay(1);
-
+                    await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
                     Budgets NewBudget = new Budgets();
 
                     if (!string.IsNullOrEmpty(result))
@@ -112,7 +110,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     Preferences.Set(nameof(App.DefaultBudgetID), NewBudget.BudgetID);
 
-
+                    await _ps.CloseAsync<PopUpPage>();
                     await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(DailyBudgetMAUIApp.Pages.CreateNewBudget)}?BudgetID={NewBudget.BudgetID}&NavigatedFrom=View Budgets");
                 }
             }
@@ -134,8 +132,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                     return;
                 }
 
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
                 await Shell.Current.GoToAsync($"/{nameof(CreateNewBudget)}?BudgetID={Budget.BudgetID}&NavigatedFrom=View Budgets");
             }
             catch (Exception ex)
@@ -161,7 +157,6 @@ namespace DailyBudgetMAUIApp.ViewModels
                 }
                 else
                 {
-                    if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                     if (App.DefaultBudgetID == Budget.BudgetID)
                     {
                         await Shell.Current.GoToAsync($"//{nameof(MainPage)}");

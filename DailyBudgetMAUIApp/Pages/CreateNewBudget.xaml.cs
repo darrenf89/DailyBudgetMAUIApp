@@ -14,9 +14,9 @@ public partial class CreateNewBudget : BasePage
     private readonly CreateNewBudgetViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
-    public CreateNewBudget(CreateNewBudgetViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
+    public CreateNewBudget(CreateNewBudgetViewModel viewModel, IProductTools pt, IRestDataService ds, IModalPopupService ps)
 	{
 		InitializeComponent(); 
 
@@ -38,6 +38,11 @@ public partial class CreateNewBudget : BasePage
         base.OnAppearing();
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             if (App.CurrentSettings == null)
             {
                 BudgetSettingValues Settings = await _ds.GetBudgetSettingsValues(App.DefaultBudgetID);
@@ -104,7 +109,7 @@ public partial class CreateNewBudget : BasePage
                     PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                 };
 
-                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageSingleInput, object>(
+                IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpPageSingleInput, object>(
                     Shell.Current,
                     options: popupOptions,
                     shellParameters: queryAttributes,
@@ -198,7 +203,7 @@ public partial class CreateNewBudget : BasePage
                 vslIncomeList.IsVisible = true;
             }
 
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -728,8 +733,6 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
             if (ValidateFinaliseBudget())
             {
 
@@ -911,7 +914,6 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={0}&NavigatedFrom=CreateNewBudget");
         }
         catch (Exception ex)
@@ -924,7 +926,6 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={0}&NavigatedFrom=CreateNewBudget");
         }
         catch (Exception ex)
@@ -937,7 +938,6 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={0}&NavigatedFrom=CreateNewBudget");
         }
         catch (Exception ex)
@@ -976,7 +976,7 @@ public partial class CreateNewBudget : BasePage
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
+            await _ps.PopupService.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -1035,7 +1035,7 @@ public partial class CreateNewBudget : BasePage
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
+            await _ps.PopupService.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -1082,7 +1082,7 @@ public partial class CreateNewBudget : BasePage
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            await _ps.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
+            await _ps.PopupService.ShowPopupAsync<PopupInfo>(Shell.Current, options: popupOptions, shellParameters: queryAttributes, cancellationToken: CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -1628,7 +1628,6 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             var Bill = (Bills)e.Parameter;
 
             await Shell.Current.GoToAsync($"../{nameof(AddBill)}?BudgetID={_vm.BudgetID}&BillID={Bill.BillID}&NavigatedFrom=CreateNewBudget");
@@ -1677,7 +1676,6 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             var Saving = (Savings)e.Parameter;
 
             await Shell.Current.GoToAsync($"../{nameof(AddSaving)}?BudgetID={_vm.BudgetID}&SavingID={Saving.SavingID}&NavigatedFrom=CreateNewBudget");
@@ -1831,7 +1829,6 @@ public partial class CreateNewBudget : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             var Income = (IncomeEvents)e.Parameter;
 
             await Shell.Current.GoToAsync($"../{nameof(AddIncome)}?BudgetID={_vm.BudgetID}&IncomeID={Income.IncomeEventID}&NavigatedFrom=CreateNewBudget");

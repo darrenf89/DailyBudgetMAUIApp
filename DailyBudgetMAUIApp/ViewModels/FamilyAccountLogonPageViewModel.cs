@@ -17,9 +17,9 @@ namespace DailyBudgetMAUIApp.ViewModels
     {
         private readonly IRestDataService _ds;
         private readonly IProductTools _pt;
-        private readonly IPopupService _ps;
+        private readonly IModalPopupService _ps;
 
-        public FamilyAccountLogonPageViewModel(IRestDataService ds, IProductTools pt, IPopupService ps)
+        public FamilyAccountLogonPageViewModel(IRestDataService ds, IProductTools pt, IModalPopupService ps)
         {
             Title = "Sign In";
             _ds = ds;
@@ -109,7 +109,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                 };
 
-                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpOTP, object>(
+                IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpOTP, object>(
                     Shell.Current,
                     options: popupOptions,
                     shellParameters: queryAttributes,
@@ -151,7 +151,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                 };
 
-                IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpOTP, object>(
+                IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpOTP, object>(
                     Shell.Current,
                     options: popupOptions,
                     shellParameters: queryAttributes,
@@ -199,8 +199,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     return;
                 }
 
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
+                await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
                 if (!string.IsNullOrEmpty(Email))
                 {
                     if (!string.IsNullOrEmpty(Password))
@@ -219,7 +218,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         {
                             if (ex.Message.Contains("User not found"))
                             {
-                                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+                                await _ps.CloseAsync<PopUpPage>();
                                 await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                             }
                             else
@@ -231,7 +230,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                         switch (salt)
                         {
                             case "User not found":
-                                if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+                                await _ps.CloseAsync<PopUpPage>();
                                 await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                                 break;
                             case not "":
@@ -240,21 +239,21 @@ namespace DailyBudgetMAUIApp.ViewModels
 
                                 if (userDetails == null)
                                 {
-                                    if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+                                    await _ps.CloseAsync<PopUpPage>();
                                     await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                                 }
                                 else
                                 {
                                     if (!userDetails.IsActive)
                                     {
-                                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+                                        await _ps.CloseAsync<PopUpPage>();
                                         await Application.Current.Windows[0].Page.DisplayAlert("You aren't account isn't active", "This account is no longer active, if you'd still like to budget please get the owner of the parent account to reactive or create your own account with us!", "OK");
                                         return;
                                     }
 
                                     if (!userDetails.IsConfirmed)
                                     {
-                                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+                                        await _ps.CloseAsync<PopUpPage>();
                                         await Application.Current.Windows[0].Page.DisplayAlert("Please confirm your set up!", "You haven't completed your account set up, please click complete set up to set up a password and finalise you account!", "OK");
                                         return;
                                     }
@@ -262,7 +261,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                     string HashPassword = _pt.GenerateHashedPassword(Password, salt);
                                     if(userDetails.Password != HashPassword)
                                     {
-                                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+                                        await _ps.CloseAsync<PopUpPage>();
                                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                                     }
                                     else
@@ -341,6 +340,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                                             }
                                         }
 
+                                        await _ps.CloseAsync<PopUpPage>();
                                         await Shell.Current.GoToAsync($"//{nameof(FamilyAccountMainPage)}");
                                         
                                     }
@@ -353,14 +353,14 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                     else
                     {
-                        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+                        await _ps.CloseAsync<PopUpPage>();
                         await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                     }
                 }
                 else 
                 {
                     IsButtonBusy = false;
-                    if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
+                    await _ps.CloseAsync<PopUpPage>();
                     await Application.Current.Windows[0].Page.DisplayAlert("Opps", "That's not right ... check your details and try again!", "OK");
                 }
             }

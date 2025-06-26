@@ -19,9 +19,9 @@ public partial class EditCategoryBottomSheet : BottomSheet
     public string SelectedIcon { get; set; }
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
-    public EditCategoryBottomSheet(Categories Category, IProductTools pt, IRestDataService ds, IPopupService ps)
+    public EditCategoryBottomSheet(Categories Category, IProductTools pt, IRestDataService ds, IModalPopupService ps)
 	{
 		InitializeComponent();
 
@@ -122,9 +122,6 @@ public partial class EditCategoryBottomSheet : BottomSheet
                 lblValidator.Text = "You have to give the category an icon";
                 return;
             }
-
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-            await Task.Delay(500);
 
             List<PatchDoc> patchDoc = new List<PatchDoc>();
 

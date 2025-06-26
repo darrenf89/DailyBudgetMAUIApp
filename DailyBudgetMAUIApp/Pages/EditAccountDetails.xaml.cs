@@ -22,9 +22,9 @@ public partial class EditAccountDetails : BasePage
 
     private readonly EditAccountDetailsViewModel _vm;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
-    public EditAccountDetails(EditAccountDetailsViewModel viewModel, IProductTools pt, IAppRating ar, IPopupService ps)
+    public EditAccountDetails(EditAccountDetailsViewModel viewModel, IProductTools pt, IAppRating ar, IModalPopupService ps)
 	{
 		InitializeComponent();      
 
@@ -43,6 +43,11 @@ public partial class EditAccountDetails : BasePage
     {
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             base.OnAppearing();
 
             MainAbs.WidthRequest = ScreenWidth;
@@ -56,7 +61,7 @@ public partial class EditAccountDetails : BasePage
                 ViewSubDetails.IsVisible = false;
             }
 
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -224,7 +229,6 @@ public partial class EditAccountDetails : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Task.Delay(1);
 
             if (Preferences.ContainsKey(nameof(App.UserDetails)))
@@ -275,7 +279,7 @@ public partial class EditAccountDetails : BasePage
                 PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
             };
 
-            IPopupResult<string> popupResult = await _ps.ShowPopupAsync<PopUpContactUs, string>(
+            IPopupResult<string> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpContactUs, string>(
                 Shell.Current,
                 options: popupOptions,
                 shellParameters: null,

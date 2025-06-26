@@ -37,10 +37,10 @@ public partial class ViewCategory : BasePage
 
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 	private readonly ViewCategoryViewModel _vm;
     private readonly IDispatcherTimer _timer;
-    public ViewCategory(ViewCategoryViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
+    public ViewCategory(ViewCategoryViewModel viewModel, IProductTools pt, IRestDataService ds, IModalPopupService ps)
 	{
         this.BindingContext = viewModel;
         _vm = viewModel;
@@ -81,10 +81,17 @@ public partial class ViewCategory : BasePage
     {
         try
         {
+            if (_ps.CurrentPopup is not null)
+                return;
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             _vm.IsPageBusy = true;
             base.OnAppearing();
             await LoadData();
             _vm.IsPageBusy = false;
+
+            await _ps.CloseAsync<PopUpPage>();
+
         }
         catch (Exception ex)
         {
@@ -93,6 +100,7 @@ public partial class ViewCategory : BasePage
     }
     private async Task LoadData()
     {
+
         _vm.Categories.Clear();
         _vm.CategoriesChart.Clear();
 
@@ -128,7 +136,6 @@ public partial class ViewCategory : BasePage
             }
         }
 
-        if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
     }
 
     private async Task SwitchChart(int Index)
@@ -210,7 +217,6 @@ public partial class ViewCategory : BasePage
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             await Shell.Current.GoToAsync($"//{nameof(DailyBudgetMAUIApp.MainPage)}");
         }
         catch (Exception ex)
@@ -421,9 +427,6 @@ public partial class ViewCategory : BasePage
 
             if (!Cat.IsEditMode)
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1000);
-
                 FilterModel Filters = new FilterModel
                 {
                     CategoryFilter = new List<int>
@@ -449,6 +452,7 @@ public partial class ViewCategory : BasePage
     {
         try
         {
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
             AddSubCategoryBottomSheet page = new(await _ds.GetCategoryFromID(_vm.HeaderCatId), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>(), _ps);
 
             page.Detents = new DetentsCollection()
@@ -462,8 +466,8 @@ public partial class ViewCategory : BasePage
 
             App.CurrentBottomSheet = page;
 
-            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
             await page.ShowAsync();
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -475,6 +479,7 @@ public partial class ViewCategory : BasePage
     {
         try
         {
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
             EditCategoryBottomSheet page = new EditCategoryBottomSheet(await _ds.GetCategoryFromID(_vm.HeaderCatId), IPlatformApplication.Current.Services.GetService<IProductTools>(), IPlatformApplication.Current.Services.GetService<IRestDataService>(), _ps);
 
             page.Detents = new DetentsCollection()
@@ -488,8 +493,8 @@ public partial class ViewCategory : BasePage
 
             App.CurrentBottomSheet = page;
 
-            if (App.IsPopupShowing){App.IsPopupShowing = false;await _ps.ClosePopupAsync(Shell.Current);}
             await page.ShowAsync();
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -520,7 +525,7 @@ public partial class ViewCategory : BasePage
                     PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
                 };
 
-                IPopupResult<string> popupResult = await _ps.ShowPopupAsync<PopupReassignCategories, string>(
+                IPopupResult<string> popupResult = await _ps.PopupService.ShowPopupAsync<PopupReassignCategories, string>(
                     Shell.Current,
                     options: popupOptions,
                     shellParameters: queryAttributes,

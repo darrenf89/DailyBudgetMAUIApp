@@ -3,7 +3,7 @@ using DailyBudgetMAUIApp.ViewModels;
 
 namespace DailyBudgetMAUIApp.Handlers;
 
-public partial class PopUpPage
+public partial class PopUpPage : Popup
 {    
 	public PopUpPage()
 	{

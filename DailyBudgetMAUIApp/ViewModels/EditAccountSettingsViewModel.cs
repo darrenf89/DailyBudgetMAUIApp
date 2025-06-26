@@ -17,7 +17,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         private readonly IProductTools _pt;
         private readonly IRestDataService _ds;
         private readonly INotificationPermissions _notificationPermissions;
-        private readonly IPopupService _ps;
+        private readonly IModalPopupService _ps;
 
         [ObservableProperty]
         public partial UserDetailsModel User { get; set; }
@@ -123,7 +123,7 @@ namespace DailyBudgetMAUIApp.ViewModels
 
 
 
-        public EditAccountSettingsViewModel(IProductTools pt, IRestDataService ds, INotificationPermissions notificationPermissions, IPopupService ps)
+        public EditAccountSettingsViewModel(IProductTools pt, IRestDataService ds, INotificationPermissions notificationPermissions, IModalPopupService ps)
         {
             _pt = pt;
             _ds = ds;
@@ -205,9 +205,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(500);
-
                 await Shell.Current.GoToAsync($"..");
             }
             catch (Exception ex)
@@ -266,9 +263,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     bool UpdatePassword = await Application.Current.Windows[0].Page.DisplayAlert($"Are you sure you want to update your password?", $"Forgot your current password and you can reset it from the logon screen using your email", "Yes", "No");
                     if (UpdatePassword)
                     {
-                        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                        await Task.Delay(1);
-
+                        await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
                         string salt = App.IsFamilyAccount ? await _ds.GetFamilyUserSaltAsync(App.FamilyUserDetails.Email) : await _ds.GetUserSaltAsync(App.UserDetails.Email);
                         string Password = "";
                         if (App.IsFamilyAccount)
@@ -368,7 +363,7 @@ namespace DailyBudgetMAUIApp.ViewModels
                     }
                 }
 
-                if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+                await _ps.CloseAsync<PopUpPage>();
             }
             catch (Exception ex)
             {
@@ -676,12 +671,7 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                await Task.Delay(1);
-
                 await Shell.Current.GoToAsync($"//{(App.IsFamilyAccount ? nameof(FamilyAccountMainPage) : nameof(MainPage))}");
-
             }
             catch (Exception ex)
             {

@@ -1,5 +1,6 @@
 using CommunityToolkit.Maui;
 using DailyBudgetMAUIApp.DataServices;
+using DailyBudgetMAUIApp.Handlers;
 using DailyBudgetMAUIApp.Models;
 using DailyBudgetMAUIApp.ViewModels;
 using System.Text.RegularExpressions;
@@ -11,9 +12,9 @@ public partial class FamilyAccountsEdit : BasePage
     private readonly FamilyAccountsEditViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    private readonly IPopupService _ps;
+    private readonly IModalPopupService _ps;
 
-    public FamilyAccountsEdit(FamilyAccountsEditViewModel vm, IProductTools pt, IRestDataService ds, IPopupService ps)
+    public FamilyAccountsEdit(FamilyAccountsEditViewModel vm, IProductTools pt, IRestDataService ds, IModalPopupService ps)
     {
         InitializeComponent();
         _vm = vm;
@@ -34,7 +35,12 @@ public partial class FamilyAccountsEdit : BasePage
         base.OnAppearing();
         try
         {
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+
+            if (_ps.CurrentPopup is not null)
+                return;
+
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             _vm.IsPageBusy = true;
 
             await _vm.OnLoad();
@@ -44,7 +50,6 @@ public partial class FamilyAccountsEdit : BasePage
                 _vm.SwitchBudgetPicker.SelectedIndexChanged += async (s, e) =>
                 {
                     _vm.IsPageBusy = true;
-                    await Task.Delay(1);
 
                     var picker = (Picker)s;
                     var SelectedAccount = (FamilyUserAccount)picker.SelectedItem;
@@ -69,7 +74,7 @@ public partial class FamilyAccountsEdit : BasePage
                 NoFamilyAccounts.IsVisible = true;
             }
 
-
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {

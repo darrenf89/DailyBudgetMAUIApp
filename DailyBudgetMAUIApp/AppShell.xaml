@@ -8,6 +8,8 @@
     xmlns:sys="clr-namespace:System;assembly=netstandard"
     Shell.FlyoutBehavior="Disabled"
     Shell.TabBarIsVisible="True"
+    Shell.BackgroundColor="{StaticResource Primary}"
+    Shell.TitleColor="White"
     FlyoutBackgroundColor="White">
 
     <ShellItem Route="LandingPage" FlyoutItemIsVisible="False">

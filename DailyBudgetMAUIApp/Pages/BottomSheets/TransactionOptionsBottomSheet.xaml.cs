@@ -10,17 +10,15 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
 {
     private readonly IRestDataService _ds;
     private readonly IProductTools _pt;
-    private readonly IPopupService _ps;
     public double ButtonWidth { get; set; }
     public double ScreenWidth { get; set; }
 
-    public TransactionOptionsBottomSheet(IRestDataService ds, IProductTools pt, IPopupService ps)
+    public TransactionOptionsBottomSheet(IRestDataService ds, IProductTools pt)
     {
         InitializeComponent();
 
         _ds = ds;
         _pt = pt;
-        _ps = ps;
 
         ScreenWidth = DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
         var ScreenHeight = DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
@@ -55,14 +53,11 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
             bool result = await Shell.Current.DisplayAlert("Create new Transaction?", "Are you sure you want to create a new Transaction?", "Yes", "No");
             if (result)
             {
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 if (App.CurrentBottomSheet != null)
                 {
                     await this.DismissAsync();
                     App.CurrentBottomSheet = null;
                 }
-
-
                 Transactions transaction = new Transactions();
                 await Shell.Current.GoToAsync($"{nameof(MainPage)}/{nameof(AddTransaction)}?BudgetID={App.DefaultBudgetID}&TransactionID={transaction.TransactionID}&NavigatedFrom=ViewMainPage",
                     new Dictionary<string, object>
@@ -81,7 +76,6 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();
@@ -99,7 +93,6 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();
@@ -117,7 +110,6 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
     {
         try
         {
-            if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
             if (App.CurrentBottomSheet != null)
             {
                 await App.CurrentBottomSheet.DismissAsync();
@@ -157,7 +149,6 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
             else
             {
                 int SavingsID = EnvelopeSavings[SelectEnvelope];
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 string SpendType = "EnvelopeSaving";
                 Transactions T = new Transactions
                 {
@@ -209,7 +200,6 @@ public partial class TransactionOptionsBottomSheet : BottomSheet
             else
             {
                 int SavingsID = Savings[SelectedSaving];
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 Savings Saving = await _ds.GetSavingFromID(SavingsID);
                 string SpendType = Saving.SavingsType == "SavingsBuilder" ? "BuildingSaving" : "MaintainValues";
                 Transactions T = new Transactions

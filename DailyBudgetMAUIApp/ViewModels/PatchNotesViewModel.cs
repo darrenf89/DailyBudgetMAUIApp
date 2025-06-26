@@ -42,8 +42,6 @@ namespace DailyBudgetMAUIApp.ViewModels
         {
             try
             {
-
-                if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
                 await Shell.Current.GoToAsync($"///{nameof(MainPage)}");
             }
             catch (Exception ex)

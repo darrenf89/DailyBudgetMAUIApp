@@ -150,8 +150,6 @@ public partial class BudgetCategoryChart : ContentView
                     TapGesture.NumberOfTapsRequired = 1;
                     TapGesture.Tapped += async (s, e) =>
                     {
-                        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-                        await Task.Delay(1000);
                         FilterModel Filters = new FilterModel
                         {
                             CategoryFilter = new List<int>

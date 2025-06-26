@@ -13,8 +13,8 @@ public partial class AddSaving : BasePage
     private readonly AddSavingViewModel _vm;
     private readonly IProductTools _pt;
     private readonly IRestDataService _ds;
-    private readonly IPopupService _ps;
-    public AddSaving(AddSavingViewModel viewModel, IProductTools pt, IRestDataService ds, IPopupService ps)
+    private readonly IModalPopupService _ps;
+    public AddSaving(AddSavingViewModel viewModel, IProductTools pt, IRestDataService ds, IModalPopupService ps)
 	{
         InitializeComponent();
 
@@ -26,13 +26,9 @@ public partial class AddSaving : BasePage
 
     }
 
-    protected async override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    protected  override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
-        if(!App.IsPopupShowing){App.IsPopupShowing = true;_ps.ShowPopup<PopUpPage>(Application.Current.Windows[0].Page, options: new PopupOptions{CanBeDismissedByTappingOutsideOfPopup = false,PageOverlayColor = Color.FromArgb("#80000000")});}
-
         _vm.IsPageBusy = false;
-
-        await Task.Delay(500);
         base.OnNavigatingFrom(args);
     }
 
@@ -50,6 +46,8 @@ public partial class AddSaving : BasePage
     {
         try
         {
+            await _ps.ShowAsync<PopUpPage>(() => new PopUpPage());
+
             base.OnAppearing();
 
             dtpckGoalDate.MinimumDate = _pt.GetBudgetLocalTime(DateTime.UtcNow).AddDays(1);
@@ -168,7 +166,7 @@ public partial class AddSaving : BasePage
                 UpdateSelectedOptionDisabled(_vm.Saving.SavingsType);          
             }
 
-            if (App.IsPopupShowing) { App.IsPopupShowing = false; await _ps.ClosePopupAsync(Shell.Current); }
+            await _ps.CloseAsync<PopUpPage>();
         }
         catch (Exception ex)
         {
@@ -195,7 +193,7 @@ public partial class AddSaving : BasePage
             PageOverlayColor = Color.FromArgb("#800000").WithAlpha(0.5f),
         };
 
-        IPopupResult<object> popupResult = await _ps.ShowPopupAsync<PopUpPageSingleInput, object>(
+        IPopupResult<object> popupResult = await _ps.PopupService.ShowPopupAsync<PopUpPageSingleInput, object>(
             Shell.Current,
             options: popupOptions,
             shellParameters: queryAttributes,
